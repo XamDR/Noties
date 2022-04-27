@@ -5,7 +5,7 @@
 	<data>
 		<variable
 			name="mediaItem"
-			type="net.azurewebsites.eznotes.core.MediaItemEntity"/>
+			type="net.azurewebsites.noties.domain.ImageEntity"/>
 	</data>
 
 	<com.google.android.exoplayer2.ui.StyledPlayerView

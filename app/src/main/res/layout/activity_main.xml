@@ -37,7 +37,7 @@
 				android:layout_height="match_parent"
 				app:defaultNavHost="true"
 				app:layout_behavior="@string/appbar_scrolling_view_behavior"
-				tools:layout="@layout/fragment_note_list"/>
+				tools:layout="@layout/fragment_notes"/>
 
 			<com.google.android.material.floatingactionbutton.FloatingActionButton
 				android:id="@+id/fab"

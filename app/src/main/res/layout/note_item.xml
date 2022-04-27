@@ -4,12 +4,12 @@
 	xmlns:tools="http://schemas.android.com/tools">
 
 	<data>
-		<import type="net.azurewebsites.eznotes.ui.helpers.Converter"/>
+		<import type="net.azurewebsites.noties.ui.helpers.Converter"/>
 		<import type="android.view.View"/>
 		<import type="android.text.TextUtils"/>
 		<variable
 			name="note"
-			type="net.azurewebsites.eznotes.core.NoteEntity" />
+			type="net.azurewebsites.noties.domain.NoteEntity" />
 	</data>
 
 	<com.google.android.material.card.MaterialCardView

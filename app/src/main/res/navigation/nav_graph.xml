@@ -7,7 +7,7 @@
 
 	<fragment
 		android:id="@+id/nav_welcome"
-		android:name="net.azurewebsites.eznotes.ui.onboarding.WelcomeFragment"
+		android:name="net.azurewebsites.noties.ui.onboarding.WelcomeFragment"
 		android:label="">
 
 		<argument
@@ -28,9 +28,9 @@
 
 	<fragment
 		android:id="@+id/nav_notes"
-		android:name="net.azurewebsites.eznotes.ui.notes.NoteListFragment"
+		android:name="net.azurewebsites.noties.ui.notes.NotesFragment"
 		android:label=" "
-		tools:layout="@layout/fragment_note_list">
+		tools:layout="@layout/fragment_notes">
 
 		<argument
 			android:name="ShowToolbar"
@@ -47,9 +47,9 @@
 
 	<fragment
 		android:id="@+id/nav_editor"
-		android:name="net.azurewebsites.eznotes.ui.editor.TextEditorFragment"
+		android:name="net.azurewebsites.noties.ui.editor.EditorFragment"
 		android:label="@string/text_editor_fragment_label"
-		tools:layout="@layout/fragment_text_editor">
+		tools:layout="@layout/fragment_editor">
 
 		<argument
 			android:name="ShowToolbar"
@@ -66,9 +66,9 @@
 
 	<fragment
 		android:id="@+id/nav_folders"
-		android:name="net.azurewebsites.eznotes.ui.folders.FolderListFragment"
+		android:name="net.azurewebsites.noties.ui.folders.FoldersFragment"
 		android:label="@string/directory_list_fragment_label"
-		tools:layout="@layout/fragment_folder_list">
+		tools:layout="@layout/fragment_folders">
 
 		<argument
 			android:name="ShowToolbar"
@@ -81,7 +81,7 @@
 
 	<fragment
 		android:id="@+id/nav_settings"
-		android:name="net.azurewebsites.eznotes.ui.settings.SettingsFragment"
+		android:name="net.azurewebsites.noties.ui.settings.SettingsFragment"
 		android:label="@string/settings_fragment_label">
 
 		<argument
@@ -95,6 +95,6 @@
 
 	<activity
 		android:id="@+id/nav_gallery"
-		android:name="net.azurewebsites.eznotes.ui.media.GalleryActivity"
+		android:name="net.azurewebsites.noties.ui.media.GalleryActivity"
 		android:label="GalleryActivity" />
 </navigation>

@@ -13,7 +13,7 @@ android {
 	compileSdk 31
 
 	defaultConfig {
-		applicationId "net.azurewebsites.eznotes"
+		applicationId "net.azurewebsites.noties"
 		minSdk 23
 		targetSdk 31
 		versionCode 1
@@ -30,16 +30,14 @@ android {
 			applicationIdSuffix ".debug"
 			debuggable true
 			versionNameSuffix ".debug"
-			resValue "string", "app_version",
-					"${defaultConfig.versionName}${versionNameSuffix}"
+			resValue "string", "app_version", "${defaultConfig.versionName}${versionNameSuffix}"
 		}
 		release {
 			debuggable false
 			minifyEnabled true
 			shrinkResources true
 			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-			resValue "string", "app_version",
-					"${defaultConfig.versionName}"
+			resValue "string", "app_version", "${defaultConfig.versionName}"
 		}
 	}
 	sourceSets {
@@ -91,9 +89,6 @@ dependencies {
 
 	// Shimmer effect
 	implementation 'com.facebook.shimmer:shimmer:0.5.0'
-
-	// Azure Speech SDK
-	implementation 'com.microsoft.cognitiveservices.speech:client-sdk:1.20.0'
 
 	// Gif support
 	implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.24'
