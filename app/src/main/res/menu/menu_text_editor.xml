@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:context=".ui.editor.TextEditorFragment">
+
+	<item
+		android:id="@+id/share_content"
+		android:icon="@drawable/ic_share_content"
+		android:orderInCategory="0"
+		android:title="@string/share_content"
+		app:showAsAction="ifRoom"/>
+
+	<item
+		android:id="@+id/open_file"
+		android:orderInCategory="10"
+		android:title="@string/open_file"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/create_file"
+		android:orderInCategory="15"
+		android:title="@string/save_file"
+		app:showAsAction="never"/>
+</menu>

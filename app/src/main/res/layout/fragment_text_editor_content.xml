@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools">
+
+	<data>
+		<variable
+			name="note"
+			type="net.azurewebsites.eznotes.core.NoteEntity" />
+	</data>
+
+	<net.azurewebsites.eznotes.ui.views.LinedEditText
+		android:id="@+id/editor"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="@null"
+		android:gravity="top|start"
+		android:hint="@string/placeholder"
+		android:imeOptions="flagNoFullscreen"
+		android:importantForAutofill="no"
+		android:inputType="textMultiLine|textCapSentences"
+		android:padding="@dimen/content_padding"
+		android:scrollbars="none"
+		android:scrollHorizontally="false"
+		android:text="@={note.text}"
+		android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+		tools:text="@string/demo_content"/>
+</layout>

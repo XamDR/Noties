@@ -1,0 +1,13 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+	<dimen name="bottom_app_bar_item_height">48dp</dimen>
+	<dimen name="fab_margin">16dp</dimen>
+	<dimen name="design_fab_image_size" tools:override="true">36dp</dimen>
+	<dimen name="content_padding">10dp</dimen>
+	<dimen name="textInputEditTextSize">48dp</dimen>
+	<dimen name="note_drawable_size">128dp</dimen>
+	<dimen name="activity_horizontal_margin">16dp</dimen>
+	<dimen name="activity_vertical_margin">16dp</dimen>
+	<dimen name="nav_header_vertical_spacing">16dp</dimen>
+	<dimen name="imageViewSize">48dp</dimen>
+<!--	<dimen name="nav_header_height">176dp</dimen>-->
+</resources>

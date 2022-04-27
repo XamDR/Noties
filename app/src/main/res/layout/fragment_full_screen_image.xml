@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools">
+
+	<data>
+		<variable
+			name="mediaItem"
+			type="net.azurewebsites.eznotes.core.MediaItemEntity"/>
+	</data>
+
+	<net.azurewebsites.eznotes.ui.views.PannableHost
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		tools:context=".ui.media.FullScreenImageFragment">
+
+		<net.azurewebsites.eznotes.ui.views.PhotoImageView
+			android:id="@+id/image"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:adjustViewBounds="true"
+			android:contentDescription="@{mediaItem.description}"
+			android:scaleType="fitCenter"
+			app:source="@{mediaItem.uri}"
+			app:width="@{800}"
+			app:height="@{800}"
+			tools:src="@drawable/ic_android"/>
+	</net.azurewebsites.eznotes.ui.views.PannableHost>
+</layout>

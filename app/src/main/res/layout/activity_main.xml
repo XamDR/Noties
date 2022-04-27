@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools">
+
+	<androidx.drawerlayout.widget.DrawerLayout
+		android:id="@+id/drawer_layout"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:fitsSystemWindows="true">
+
+		<androidx.coordinatorlayout.widget.CoordinatorLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			tools:context=".ui.MainActivity">
+
+			<com.google.android.material.appbar.AppBarLayout
+				android:id="@+id/app_bar"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@android:color/transparent"
+				android:stateListAnimator="@null"
+				android:theme="@style/Theme.EzNotes.AppBarOverlay">
+
+				<androidx.appcompat.widget.Toolbar
+					android:id="@+id/toolbar"
+					android:layout_width="match_parent"
+					android:layout_height="?attr/actionBarSize"
+					android:theme="@style/MyThemeOverlayToolbar"
+					app:popupTheme="@style/Theme.PopupOverlay.Menu"/>
+			</com.google.android.material.appbar.AppBarLayout>
+
+			<androidx.fragment.app.FragmentContainerView
+				android:id="@+id/nav_host_fragment"
+				android:name="androidx.navigation.fragment.NavHostFragment"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				app:defaultNavHost="true"
+				app:layout_behavior="@string/appbar_scrolling_view_behavior"
+				tools:layout="@layout/fragment_note_list"/>
+
+			<com.google.android.material.floatingactionbutton.FloatingActionButton
+				android:id="@+id/fab"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="bottom|end"
+				android:layout_marginBottom="@dimen/fab_margin"
+				android:layout_marginEnd="@dimen/fab_margin"
+				android:contentDescription="@string/add_note"
+				style="@style/Widget.Material3.FloatingActionButton.Primary"
+				app:backgroundTint="?attr/colorPrimary"
+				app:srcCompat="@drawable/ic_add_item"
+				app:tint="?attr/colorOnBackground"/>
+		</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+		<com.google.android.material.navigation.NavigationView
+			android:id="@+id/nav_view"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_gravity="start"
+			android:fitsSystemWindows="true"
+			app:headerLayout="@layout/nav_header_main"
+			app:menu="@menu/activity_main_drawer" />
+	</androidx.drawerlayout.widget.DrawerLayout>
+</layout>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<item
+		android:id="@+id/share_image"
+		android:orderInCategory="0"
+		android:title="@string/share_image"
+		android:icon="@drawable/ic_share_content"
+		app:showAsAction="ifRoom"/>
+
+	<item
+		android:id="@+id/set_as"
+		android:orderInCategory="2"
+		android:title="@string/set_image_as"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/print"
+		android:orderInCategory="4"
+		android:title="@string/print_image"
+		app:showAsAction="never"/>
+</menu>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:context=".ui.notes.NoteListFragment">
+
+	<item
+		android:id="@+id/search"
+		android:icon="@drawable/ic_search"
+		android:orderInCategory="0"
+		android:title="@string/search"
+		app:showAsAction="ifRoom|collapseActionView"
+		app:actionViewClass="androidx.appcompat.widget.SearchView"/>
+
+	<item
+		android:id="@+id/sort"
+		android:orderInCategory="5"
+		android:title="@string/sort"
+		app:showAsAction="never">
+
+		<menu>
+			<group android:checkableBehavior="single">
+				<item
+					android:id="@+id/sort_by_content"
+					android:title="@string/sort_by_content"
+					android:orderInCategory="0"/>
+				<item
+					android:id="@+id/sort_by_last_edit"
+					android:title="@string/sort_by_last_edit"
+					android:orderInCategory="5"/>
+				<item
+					android:id="@+id/sort_by_title"
+					android:title="@string/sort_by_title"
+					android:orderInCategory="10"/>
+			</group>
+		</menu>
+	</item>
+
+	<item
+		android:id="@+id/change_layout"
+		android:orderInCategory="10"
+		android:title="@string/change_layout"
+		app:showAsAction="never">
+
+		<menu>
+			<group android:checkableBehavior="single">
+				<item
+					android:id="@+id/set_linear_layout"
+					android:title="@string/set_linear_layout"
+					android:orderInCategory="0"/>
+				<item
+					android:id="@+id/set_grid_layout"
+					android:title="@string/set_grid_layout"
+					android:orderInCategory="5"/>
+			</group>
+		</menu>
+	</item>
+</menu>

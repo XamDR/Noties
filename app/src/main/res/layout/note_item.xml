@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools">
+
+	<data>
+		<import type="net.azurewebsites.eznotes.ui.helpers.Converter"/>
+		<import type="android.view.View"/>
+		<import type="android.text.TextUtils"/>
+		<variable
+			name="note"
+			type="net.azurewebsites.eznotes.core.NoteEntity" />
+	</data>
+
+	<com.google.android.material.card.MaterialCardView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:cardElevation="0dp"
+		app:cardCornerRadius="5dp"
+		app:strokeWidth="1dp"
+		app:strokeColor="@color/stroke_color">
+
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+
+			<ImageView
+				android:id="@+id/image"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:adjustViewBounds="true"
+				android:contentDescription="@string/user_image"
+				android:scaleType="centerCrop"
+				android:visibility="@{note.previewImage == null ? View.GONE : View.VISIBLE}"
+				app:source="@{note.previewImage}"
+				app:width="@{400}"
+				app:height="@{400}"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toTopOf="parent"
+				tools:src="@drawable/ic_android"/>
+
+			<TextView
+				android:id="@+id/title"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_marginStart="10dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginEnd="10dp"
+				android:ellipsize="end"
+				android:maxLines="1"
+				android:text="@{note.title}"
+				android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+				android:textStyle="bold"
+				android:visibility="@{TextUtils.isEmpty(note.title) ? View.GONE : View.VISIBLE}"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toBottomOf="@id/image"
+				tools:text="Lorem Ipsum"
+				tools:visibility="visible" />
+
+			<TextView
+				android:id="@+id/content"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_marginStart="10dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginEnd="10dp"
+				android:ellipsize="end"
+				android:maxLines="3"
+				android:text="@{note.text}"
+				android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toBottomOf="@id/title"
+				tools:text="@string/demo_content" />
+
+			<com.google.android.material.chip.Chip
+				android:id="@+id/url"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginStart="10dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginBottom="10dp"
+				android:text='@{@plurals/number_urls(note.urlCount, note.urlCount)}'
+				android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+				android:visibility="@{note.urlCount == 0 ? View.GONE : View.VISIBLE}"
+				app:chipIcon="@drawable/ic_link"
+				app:chipStartPadding="10dp"
+				app:layout_constraintBottom_toBottomOf="@+id/date_modified"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toTopOf="@+id/date_modified"
+				tools:text="3 hyperlinks"
+				tools:visibility="visible" />
+
+			<TextView
+				android:id="@+id/date_modified"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="10dp"
+				android:layout_marginEnd="10dp"
+				android:layout_marginBottom="10dp"
+				android:text="@{Converter.displayCurrentDateTime(note.updateDate)}"
+				android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+				android:textStyle="italic"
+				app:layout_constraintBottom_toBottomOf="parent"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintTop_toBottomOf="@id/content"
+				tools:text="13 dic. 2021 23:46" />
+		</androidx.constraintlayout.widget.ConstraintLayout>
+	</com.google.android.material.card.MaterialCardView>
+</layout>

@@ -1,0 +1,61 @@
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<PreferenceCategory
+		app:title="@string/personalization_header"
+		app:iconSpaceReserved="false">
+
+		<ListPreference
+			app:defaultValue="-1"
+			app:entries="@array/theme_entries"
+			app:entryValues="@array/theme_values"
+			app:key="app_theme"
+			app:title="@string/app_theme_title"
+			app:dialogTitle="@string/app_theme_title"
+			app:useSimpleSummaryProvider="true"
+			app:icon="@drawable/ic_app_theme"/>
+	</PreferenceCategory>
+
+<!--	<PreferenceCategory-->
+<!--		app:title="@string/editor"-->
+<!--		app:iconSpaceReserved="false">-->
+
+<!--		<com.eznotes.ui.settings.preferences.EditorStylePreference-->
+<!--			app:defaultValue="blank"-->
+<!--			app:entryValues="@array/editor_style_values"-->
+<!--			app:key="editor_style"-->
+<!--			app:title="@string/editor_style"-->
+<!--			app:dialogTitle="@string/editor_style"-->
+<!--			app:icon="@drawable/ic_editor_style"/>-->
+
+<!--		<com.eznotes.ui.settings.preferences.NumberPickerPreference-->
+<!--			app:key="font_size"-->
+<!--			app:title="@string/font_size"-->
+<!--			app:dialogTitle="@string/font_size"-->
+<!--			app:icon="@drawable/ic_font_size"/>-->
+
+<!--		<SwitchPreferenceCompat-->
+<!--			app:defaultValue="true"-->
+<!--			app:key="auto_link"-->
+<!--			app:summaryOn="@string/summary_on"-->
+<!--			app:summaryOff="@string/summary_off"-->
+<!--			app:title="@string/enable_links"-->
+<!--			app:icon="@drawable/ic_link"/>-->
+<!--	</PreferenceCategory>-->
+
+	<PreferenceCategory
+		app:title="@string/about_header"
+		app:iconSpaceReserved="false">
+
+		<Preference
+			app:key="developer"
+			app:title="@string/developer"
+			app:summary="Max Díaz (xamdrsolutions@gmail.com)"
+			app:icon="@drawable/ic_dev"/>
+
+		<Preference
+			app:key="version"
+			app:title="@string/version"
+			app:summary="@string/app_version"
+			app:icon="@drawable/ic_app_version"/>
+	</PreferenceCategory>
+</androidx.preference.PreferenceScreen>

@@ -1,0 +1,27 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+	<style name="Theme.EzNotes" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+		<item name="colorPrimary">@color/blue_500</item>
+		<item name="colorPrimaryVariant">@color/blue_500</item>
+		<item name="colorOnPrimary">@color/white_smoke</item>
+		<item name="colorOnSecondary">@color/white_smoke</item>
+		<item name="colorAccent">@color/blue_500</item>
+		<item name="colorOnBackground">@color/black</item>
+		<item name="android:windowLightStatusBar">true</item>
+		<item name="android:statusBarColor" tools:targetApi="l">@color/white</item>
+		<item name="windowActionModeOverlay">true</item>
+		<item name="actionModeBackground">@color/white_smoke</item>
+		<item name="actionModeStyle">@style/MyActionMode</item>
+		<item name="actionModeCloseButtonStyle">@style/MyCloseButtonActionModeStyle</item>
+		<item name="autoCompleteTextViewStyle">@style/SearchViewStyle</item>
+		<item name="alertDialogTheme">@style/AppTheme.AlertDialogTheme</item>
+	</style>
+
+	<style name="Theme.EzNotes.Gallery" parent="Theme.EzNotes"/>
+
+	<style name="Theme.SplashScreen.EzNotes" parent="Theme.SplashScreen">
+		<item name="windowSplashScreenBackground">@color/blue_500</item>
+		<item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+		<item name="windowSplashScreenAnimationDuration">1000</item>
+		<item name="postSplashScreenTheme">@style/Theme.EzNotes</item>
+	</style>
+</resources>

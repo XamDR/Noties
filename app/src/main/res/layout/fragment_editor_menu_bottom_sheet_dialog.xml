@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="10dp"
+		app:behavior_hideable="true"
+		app:behavior_peekHeight="0dp"
+		app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+		<com.google.android.material.textview.MaterialTextView
+			android:id="@+id/attach_media"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:drawablePadding="10dp"
+			android:foreground="?attr/selectableItemBackground"
+			android:padding="2dp"
+			android:text="@string/attach_images"
+			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+			app:drawableStartCompat="@drawable/ic_attach_image"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toTopOf="@id/take_picture"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent" />
+
+		<com.google.android.material.textview.MaterialTextView
+			android:id="@+id/take_picture"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:drawablePadding="10dp"
+			android:foreground="?attr/selectableItemBackground"
+			android:padding="2dp"
+			android:text="@string/take_picture"
+			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+			app:drawableStartCompat="@drawable/ic_take_picture"
+			app:layout_constraintTop_toBottomOf="@id/attach_media"
+			app:layout_constraintBottom_toTopOf="@id/talk_to_write"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent" />
+
+		<com.google.android.material.textview.MaterialTextView
+			android:id="@+id/talk_to_write"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:drawablePadding="10dp"
+			android:foreground="?attr/selectableItemBackground"
+			android:padding="2dp"
+			android:text="@string/talk_to_write"
+			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+			app:drawableStartCompat="@drawable/ic_talk_to_write"
+			app:layout_constraintTop_toBottomOf="@id/take_picture"
+			app:layout_constraintBottom_toTopOf="@id/add_todo_list"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent" />
+
+		<com.google.android.material.textview.MaterialTextView
+			android:id="@+id/add_todo_list"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:drawablePadding="10dp"
+			android:foreground="?attr/selectableItemBackground"
+			android:padding="2dp"
+			android:text="@string/add_todo_list"
+			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+			app:drawableStartCompat="@drawable/ic_add_todo_list"
+			app:layout_constraintTop_toBottomOf="@id/talk_to_write"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent" />
+	</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
