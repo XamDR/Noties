@@ -3,6 +3,12 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools">
 
+	<data>
+		<variable
+			name="fragment"
+			type="net.azurewebsites.noties.ui.onboarding.WelcomeFragment"/>
+	</data>
+
 	<androidx.constraintlayout.widget.ConstraintLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
@@ -57,6 +63,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="32dp"
+			android:onClick="@{() -> fragment.navigateToMainScreen()}"
 			android:text="@string/start_button"
 			android:textColor="?attr/colorOnBackground"
 			app:layout_constraintEnd_toEndOf="parent"

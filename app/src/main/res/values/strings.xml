@@ -13,7 +13,7 @@
 	<!-- Folders Fragment -->
 	<string name="directory_list_fragment_label">Folders</string>
 	<string name="more_options">More options</string>
-	<string name="general_folder">General</string>
+	<string name="default_folder">General</string>
 	<string name="edit_folders">Edit folders</string>
 	<string name="new_folder">New folder</string>
 	<string name="folder_name">Folder name</string>

@@ -21,6 +21,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.AppBarLayout.LayoutParams
+import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.domain.FolderEntity
 import net.azurewebsites.noties.databinding.ActivityMainBinding
@@ -29,13 +30,15 @@ import net.azurewebsites.noties.ui.helpers.setNightMode
 import net.azurewebsites.noties.ui.helpers.showSnackbar
 import net.azurewebsites.noties.ui.notes.FabScrollingBehavior
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
 	private lateinit var binding: ActivityMainBinding
 	private val viewModel by viewModels<FoldersViewModel>()
 	private lateinit var appBarConfiguration: AppBarConfiguration
-	private lateinit var userPreferences: PreferenceStorage
+	@Inject lateinit var userPreferences: PreferenceStorage
 	private var currentFolder: FolderEntity? = null
 	private val deviceCredentialLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 		if (result.resultCode == Activity.RESULT_OK) {
@@ -53,7 +56,6 @@ class MainActivity : AppCompatActivity() {
 		binding = ActivityMainBinding.inflate(layoutInflater)
 		setContentView(binding.root)
 		setSupportActionBar(binding.toolbar)
-		userPreferences = PreferenceStorage(this)
 		setupNavigation()
 		createGeneralDirectory()
 	}
@@ -74,7 +76,7 @@ class MainActivity : AppCompatActivity() {
 		val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 		val navController = navHostFragment.navController
 		navController.graph = navController.navInflater.inflate(R.navigation.nav_graph).apply {
-			setStartDestination(if (userPreferences.isFirstRun) R.id.nav_welcome else R.id.nav_notes)
+			setStartDestination(if (userPreferences.isOnboardingCompleted) R.id.nav_notes else R.id.nav_welcome)
 		}
 		setupActionBarWithNavController(navController, appBarConfiguration)
 		binding.navView.setupWithNavController(navController)
@@ -100,9 +102,9 @@ class MainActivity : AppCompatActivity() {
 	}
 
 	private fun createGeneralDirectory() {
-		if (userPreferences.isFirstRun) {
-			val defaultDirectory = userPreferences.defaultDirectoryName?.let { FolderEntity(name = it) }
-			defaultDirectory?.let { viewModel.upsertDirectory(it) }
+		if (userPreferences.isOnboardingCompleted) {
+			val defaultDirectory = FolderEntity(name = userPreferences.defaultDirectoryName)
+			viewModel.upsertDirectory(defaultDirectory)
 		}
 	}
 

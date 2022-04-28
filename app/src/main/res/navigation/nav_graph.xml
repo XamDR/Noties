@@ -21,7 +21,6 @@
 		<action
 			android:id="@+id/action_welcome_to_notes"
 			app:destination="@id/nav_notes"
-			app:launchSingleTop="true"
 			app:popUpTo="@id/nav_graph"
 			app:popUpToInclusive="true"/>
 	</fragment>

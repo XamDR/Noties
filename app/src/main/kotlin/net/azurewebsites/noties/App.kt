@@ -1,10 +1,13 @@
+@file:Suppress("unused")
+
 package net.azurewebsites.noties
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 import net.azurewebsites.noties.data.AppRepository
 import net.azurewebsites.noties.ui.image.BitmapCache
 
-@Suppress("unused")
+@HiltAndroidApp
 class App : Application() {
 
 	override fun onCreate() {

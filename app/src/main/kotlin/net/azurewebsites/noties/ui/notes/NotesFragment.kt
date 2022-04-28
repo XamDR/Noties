@@ -1,6 +1,5 @@
 package net.azurewebsites.noties.ui.notes
 
-import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.core.os.bundleOf
@@ -16,17 +15,20 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialElevationScale
+import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
+import net.azurewebsites.noties.databinding.FragmentNotesBinding
 import net.azurewebsites.noties.domain.ImageEntity
 import net.azurewebsites.noties.domain.Note
-import net.azurewebsites.noties.databinding.FragmentNotesBinding
 import net.azurewebsites.noties.ui.folders.FoldersViewModel
 import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.media.MediaStorageManager
 import net.azurewebsites.noties.ui.notes.urls.UrlListDialogFragment
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
-import net.azurewebsites.noties.util.LayoutType
+import net.azurewebsites.noties.util.SortMode
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class NotesFragment : Fragment(), OnFabClickListener {
 
 	private var _binding: FragmentNotesBinding? = null
@@ -34,13 +36,8 @@ class NotesFragment : Fragment(), OnFabClickListener {
 	private val viewModel by viewModels<NotesViewModel>()
 	private val parentViewModel by activityViewModels<FoldersViewModel>()
 	private val noteAdapter = NoteAdapter()
-	private lateinit var userPreferences: PreferenceStorage
+	@Inject lateinit var userPreferences: PreferenceStorage
 	private var directoryId = 0
-
-	override fun onAttach(context: Context) {
-		super.onAttach(context)
-		userPreferences = PreferenceStorage(context)
-	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -124,8 +121,7 @@ class NotesFragment : Fragment(), OnFabClickListener {
 	private fun setupRecyclerView() {
 		binding.recyclerView.apply {
 			adapter = noteAdapter
-			(layoutManager as StaggeredGridLayoutManager).spanCount =
-				PreferenceStorage(requireContext()).layoutType?.spanCount ?: LayoutType.Linear.spanCount
+			(layoutManager as StaggeredGridLayoutManager).spanCount = 1
 		}
 		postponeEnterTransition()
 	}
@@ -139,12 +135,10 @@ class NotesFragment : Fragment(), OnFabClickListener {
 	}
 
 	private fun submitList(directoryId: Int) {
-		PreferenceStorage(requireContext()).sortMode?.let {
-			viewModel.sortNotes(directoryId, it).observe(viewLifecycleOwner) { notes ->
-				binding.empty.isVisible = notes.isEmpty()
-				noteAdapter.submitList(notes)
-				binding.root.doOnPreDraw { startPostponedEnterTransition() }
-			}
+		viewModel.sortNotes(directoryId, SortMode.LastEdit).observe(viewLifecycleOwner) { notes ->
+			binding.empty.isVisible = notes.isEmpty()
+			noteAdapter.submitList(notes)
+			binding.root.doOnPreDraw { startPostponedEnterTransition() }
 		}
 	}
 
