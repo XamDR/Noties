@@ -1,5 +1,5 @@
 <resources>
-	<string name="app_name">EzNotes</string>
+	<string name="app_name">Noties</string>
 	<string name="action_settings">Settings</string>
 	<string name="ok_button">OK</string>
 	<string name="cancel_button">Cancel</string>
@@ -10,7 +10,7 @@
 	<string name="save_button">Save</string>
 	<string name="onboarding_message">EzNotes is a note taking app that will help you to take notes, make to-do lists and add attachments like images or audios.</string>
 
-	<!-- Folder List Fragment -->
+	<!-- Folders Fragment -->
 	<string name="directory_list_fragment_label">Folders</string>
 	<string name="more_options">More options</string>
 	<string name="general_folder">General</string>
@@ -30,7 +30,7 @@
 	<string name="confirme_device_credential_desc">To continue, please unlock your device.</string>
 	<string name="error_auth">Error. Unable to verify your identity.</string>
 
-	<!-- Note List Fragment -->
+	<!-- Notes Fragment -->
 	<string name="note_list_fragment_label">Notes</string>
 	<string name="url_list_fragment_label">Urls</string>
 	<string name="make_todo_list">Make to-do list</string>
@@ -54,7 +54,7 @@
 	<string name="delete_notes_question"><![CDATA[Are you sure you want to <b>delete permanently</b> the selected notes?]]></string>
 	<string name="delete_notes_title">Delete notes</string>
 
-	<!-- Text Editor Fragment -->
+	<!-- Editor Fragment -->
 	<string name="text_editor_fragment_label">Text Editor</string>
 	<string name="placeholder">Write here…</string>
 	<string name="demo_content">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</string>

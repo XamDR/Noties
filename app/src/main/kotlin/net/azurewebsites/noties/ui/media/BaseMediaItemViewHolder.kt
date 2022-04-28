@@ -4,7 +4,7 @@ import androidx.core.os.bundleOf
 import androidx.databinding.ViewDataBinding
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import net.azurewebsites.noties.BR
+//import net.azurewebsites.noties.BR
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.domain.ImageEntity
 import net.azurewebsites.noties.ui.helpers.safeNavigate
@@ -14,7 +14,7 @@ open class BaseMediaItemViewHolder(private val binding: ViewDataBinding) : Recyc
 
 	fun bind(image: ImageEntity) {
 		binding.apply {
-			setVariable(BR.mediaItem, image)
+//			setVariable(BR.mediaItem, image)
 			executePendingBindings()
 		}
 	}
