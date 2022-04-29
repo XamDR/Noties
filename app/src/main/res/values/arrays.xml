@@ -1,9 +1,9 @@
 <resources>
 	<!-- App Theme Preference -->
 	<string-array name="theme_entries">
-		<item>@string/light_theme</item>
-		<item>@string/dark_theme</item>
-		<item>@string/os_theme</item>
+		<item>@string/mode_night_no</item>
+		<item>@string/mode_night_yes</item>
+		<item>@string/mode_night_auto_battery</item>
 	</string-array>
 
 	<string-array name="theme_values">

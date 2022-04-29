@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -33,7 +34,10 @@ fun Context.setNightMode() {
 	when (preferences.getString("app_theme", "-1")?.toInt()) {
 		0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 		1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-		-1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+		-1 -> AppCompatDelegate.setDefaultNightMode(
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+			else AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+		)
 	}
 }
 
@@ -94,15 +98,14 @@ fun View.showSnackbar(@StringRes message: Int,
 	}.also { it.show() }
 }
 
-fun NavController.safeNavigate(
+fun NavController.tryNavigate(
 	@IdRes resId: Int,
 	args: Bundle? = null,
 	navOptions: NavOptions? = null,
 	navigatorExtras: Navigator.Extras? = null
 ) {
 	// We make use of a try-catch block to prevent an exception if the call to NavController.navigate()
-	// happens too quickly. We shouldn't need to do this, but again the Android Team just didn't care
-	// about this bug, apparently.
+	// happens too fast, e.g. the user clicks twice a button quickly.
 	try {
 		this.navigate(resId, args, navOptions, navigatorExtras)
 	}

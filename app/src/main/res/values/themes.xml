@@ -1,25 +1,42 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-	<style name="Theme.EzNotes" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-		<item name="colorPrimary">@color/blue_500</item>
-		<item name="colorPrimaryVariant">@color/blue_500</item>
-		<item name="colorOnPrimary">@color/white_smoke</item>
-		<item name="colorOnSecondary">@color/white_smoke</item>
-		<item name="colorAccent">@color/blue_500</item>
-		<item name="colorOnBackground">@color/black</item>
+<resources>
+	<style name="Theme.EzNotes" parent="Theme.Material3.DayNight.NoActionBar">
+		<item name="colorPrimary">@color/md_theme_light_primary</item>
+		<item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+		<item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+		<item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+		<item name="colorSecondary">@color/md_theme_light_secondary</item>
+		<item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+		<item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+		<item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
+		<item name="colorError">@color/md_theme_light_error</item>
+		<item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
+		<item name="colorOnError">@color/md_theme_light_onError</item>
+		<item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
+		<item name="android:colorBackground">@color/md_theme_light_background</item>
+		<item name="colorOnBackground">@color/md_theme_light_onBackground</item>
+		<item name="colorSurface">@color/md_theme_light_surface</item>
+		<item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+		<item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
+		<item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
+		<item name="colorOutline">@color/md_theme_light_outline</item>
+		<item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
+		<item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
+		<item name="colorPrimaryInverse">@color/md_theme_light_primaryInverse</item>
+		<item name="colorAccent">@color/md_theme_light_primary</item>
+		<item name="android:statusBarColor">@color/md_theme_light_surface</item>
 		<item name="android:windowLightStatusBar">true</item>
-		<item name="android:statusBarColor" tools:targetApi="l">@color/white</item>
-		<item name="windowActionModeOverlay">true</item>
-		<item name="actionModeBackground">@color/white_smoke</item>
-		<item name="actionModeStyle">@style/MyActionMode</item>
-		<item name="actionModeCloseButtonStyle">@style/MyCloseButtonActionModeStyle</item>
-		<item name="autoCompleteTextViewStyle">@style/SearchViewStyle</item>
 		<item name="alertDialogTheme">@style/AppTheme.AlertDialogTheme</item>
+		<item name="android:textColorHighlight">@color/md_theme_light_primaryInverse</item>
+		<item name="windowActionModeOverlay">true</item>
+<!--		<item name="actionModeStyle">@style/MyActionMode</item>-->
+<!--		<item name="actionModeBackground">@color/white_smoke</item>-->
+<!--		<item name="android:colorBackgroundFloating">@color/md_theme_light_surfaceVariant</item>-->
 	</style>
 
 	<style name="Theme.EzNotes.Gallery" parent="Theme.EzNotes"/>
 
 	<style name="Theme.SplashScreen.EzNotes" parent="Theme.SplashScreen">
-		<item name="windowSplashScreenBackground">@color/blue_500</item>
+		<item name="windowSplashScreenBackground">@color/md_theme_light_primary</item>
 		<item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
 		<item name="windowSplashScreenAnimationDuration">1000</item>
 		<item name="postSplashScreenTheme">@style/Theme.EzNotes</item>

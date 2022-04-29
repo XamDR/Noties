@@ -8,6 +8,8 @@
 	<string name="not_now_button">Not now</string>
 	<string name="continue_button">Continue</string>
 	<string name="save_button">Save</string>
+
+	<!-- Welcome Fragment -->
 	<string name="onboarding_message">EzNotes is a note taking app that will help you to take notes, make to-do lists and add attachments like images or audios.</string>
 
 	<!-- Folders Fragment -->
@@ -35,7 +37,7 @@
 	<string name="url_list_fragment_label">Urls</string>
 	<string name="make_todo_list">Make to-do list</string>
 	<string name="add_note">Add a new note.</string>
-	<string name="empty_notes">There aren\'t notes</string>
+	<string name="empty_notes">No notes here</string>
 	<string name="deleted_note">Deleted note</string>
 	<string name="undo">Undo</string>
 	<string name="search">Search your notes</string>
@@ -119,9 +121,10 @@
 	<string name="version">Version</string>
 	<string name="personalization_header">Personalization</string>
 	<string name="app_theme_title">App Theme</string>
-	<string name="light_theme">Light</string>
-	<string name="dark_theme">Dark</string>
-	<string name="os_theme">System default</string>
+	<string name="mode_night_no">Light</string>
+	<string name="mode_night_yes">Dark</string>
+	<string name="mode_night_follow_system">System default</string>
+	<string name="mode_night_auto_battery">Set by Battery Saver</string>
 	<string name="editor">Editor</string>
 	<string name="editor_style">Paper Style</string>
 	<string name="blank_paper_style">Blank paper</string>
@@ -151,6 +154,7 @@
 	<string name="error_record_speech">Error recording speech</string>
 	<string name="recording_finished">Recording finished</string>
 
+	<!-- Plurals -->
 	<plurals name="note_count">
 		<item quantity="one">%d note</item>
 		<item quantity="other">%d notes</item>

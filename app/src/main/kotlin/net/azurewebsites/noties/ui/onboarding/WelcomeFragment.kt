@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.FragmentWelcomeBinding
+import net.azurewebsites.noties.ui.helpers.tryNavigate
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
 import java.io.File
 import javax.inject.Inject
@@ -42,7 +43,7 @@ class WelcomeFragment : Fragment() {
 	}
 
 	fun navigateToMainScreen() {
-		findNavController().navigate(R.id.action_welcome_to_notes)
+		findNavController().tryNavigate(R.id.action_welcome_to_notes)
 		preferenceStorage.isOnboardingCompleted = true
 	}
 

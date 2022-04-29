@@ -16,7 +16,7 @@ import net.azurewebsites.noties.databinding.NoteItemBinding
 import net.azurewebsites.noties.ui.editor.EditorFragment
 import net.azurewebsites.noties.ui.helpers.addItemTouchHelper
 import net.azurewebsites.noties.ui.helpers.printError
-import net.azurewebsites.noties.ui.helpers.safeNavigate
+import net.azurewebsites.noties.ui.helpers.tryNavigate
 import net.azurewebsites.noties.ui.helpers.setOnClickListener
 
 class NoteAdapter : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteAdapterCallback()) {
@@ -69,7 +69,7 @@ class NoteAdapter : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteAdapterCal
 		val args = bundleOf(EditorFragment.NOTE to note)
 		val extras = FragmentNavigatorExtras(holder.itemView to note.entity.id.toString())
 		try {
-			holder.itemView.findNavController().safeNavigate(
+			holder.itemView.findNavController().tryNavigate(
 				resId = R.id.action_notes_to_editor,
 				args = args,
 				navOptions = null,

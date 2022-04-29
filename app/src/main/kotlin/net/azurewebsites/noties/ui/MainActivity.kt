@@ -14,17 +14,14 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
 import androidx.navigation.NavDestination
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.AppBarLayout.LayoutParams
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.domain.FolderEntity
 import net.azurewebsites.noties.databinding.ActivityMainBinding
+import net.azurewebsites.noties.domain.FolderEntity
 import net.azurewebsites.noties.ui.folders.FoldersViewModel
 import net.azurewebsites.noties.ui.helpers.setNightMode
 import net.azurewebsites.noties.ui.helpers.showSnackbar
@@ -37,7 +34,6 @@ class MainActivity : AppCompatActivity() {
 
 	private lateinit var binding: ActivityMainBinding
 	private val viewModel by viewModels<FoldersViewModel>()
-	private lateinit var appBarConfiguration: AppBarConfiguration
 	@Inject lateinit var userPreferences: PreferenceStorage
 	private var currentFolder: FolderEntity? = null
 	private val deviceCredentialLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -66,19 +62,14 @@ class MainActivity : AppCompatActivity() {
 		binding.fab.setOnClickListener { onFabClickCallback.invoke() }
 	}
 
-	override fun onSupportNavigateUp(): Boolean {
-		val navController = findNavController(R.id.nav_host_fragment)
-		return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-	}
-
 	private fun setupNavigation() {
-		appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_notes), binding.drawerLayout)
+		val appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_notes), binding.drawerLayout)
 		val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 		val navController = navHostFragment.navController
 		navController.graph = navController.navInflater.inflate(R.navigation.nav_graph).apply {
 			setStartDestination(if (userPreferences.isOnboardingCompleted) R.id.nav_notes else R.id.nav_welcome)
 		}
-		setupActionBarWithNavController(navController, appBarConfiguration)
+		binding.toolbar.setupWithNavController(navController, appBarConfiguration)
 		binding.navView.setupWithNavController(navController)
 		navController.addOnDestinationChangedListener { _, destination, arguments ->
 			changeToolbarScrollFlags(destination)

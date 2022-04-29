@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- App Theme Preference -->
+	<string-array name="theme_entries">
+		<item>@string/mode_night_no</item>
+		<item>@string/mode_night_yes</item>
+		<item>@string/mode_night_follow_system</item>
+	</string-array>
+</resources>

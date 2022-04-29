@@ -92,7 +92,7 @@ class NotesFragment : Fragment(), OnFabClickListener {
 
 	override fun onClick() {
 		val args = bundleOf("id" to directoryId)
-		findNavController().safeNavigate(R.id.action_notes_to_editor, args)
+		findNavController().tryNavigate(R.id.action_notes_to_editor, args)
 	}
 
 	private fun showUndoSnackbar(note: Note) {

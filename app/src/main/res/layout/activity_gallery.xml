@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools">
 
 	<FrameLayout
@@ -18,15 +17,12 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:animateLayoutChanges="true"
-			android:background="?attr/colorOnPrimary"
-			android:theme="@style/Theme.EzNotes.AppBarOverlay">
+			android:background="?attr/colorOnPrimary">
 
 			<androidx.appcompat.widget.Toolbar
 				android:id="@+id/toolbar"
 				android:layout_width="match_parent"
-				android:layout_height="?attr/actionBarSize"
-				android:theme="@style/MyThemeOverlayToolbar"
-				app:popupTheme="@style/Theme.PopupOverlay.Menu"/>
+				android:layout_height="?attr/actionBarSize"/>
 		</com.google.android.material.appbar.AppBarLayout>
 	</FrameLayout>
 </layout>

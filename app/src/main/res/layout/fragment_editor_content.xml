@@ -22,6 +22,6 @@
 		android:scrollbars="none"
 		android:scrollHorizontally="false"
 		android:text="@={note.text}"
-		android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+		android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
 		tools:text="@string/demo_content"/>
 </layout>

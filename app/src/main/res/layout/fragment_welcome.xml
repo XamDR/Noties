@@ -51,7 +51,7 @@
 			android:layout_marginEnd="32dp"
 			android:justificationMode="inter_word"
 			android:text="@string/onboarding_message"
-			android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+			android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintTop_toBottomOf="@id/image_view"
@@ -65,7 +65,7 @@
 			android:layout_marginTop="32dp"
 			android:onClick="@{() -> fragment.navigateToMainScreen()}"
 			android:text="@string/start_button"
-			android:textColor="?attr/colorOnBackground"
+			android:textAllCaps="true"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toBottomOf="@id/message" />

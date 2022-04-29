@@ -27,7 +27,7 @@ object PermissionRationaleDialog {
 		val header = view.findViewById<LinearLayout>(R.id.header_container)
 		val textView = view.findViewById<TextView>(R.id.message_permission_rationale)
 		val drawable = ContextCompat.getDrawable(context, drawableRes)?.also {
-			DrawableCompat.setTint(it, ContextCompat.getColor(context, R.color.white))
+			DrawableCompat.setTint(it, ContextCompat.getColor(context, R.color.md_theme_light_onPrimary))
 		}
 		val imageView = ShapeableImageView(context).apply {
 			minimumWidth = context.resources.getDimensionPixelSize(R.dimen.imageViewSize)

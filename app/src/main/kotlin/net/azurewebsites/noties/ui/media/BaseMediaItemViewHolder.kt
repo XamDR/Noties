@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 //import net.azurewebsites.noties.BR
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.domain.ImageEntity
-import net.azurewebsites.noties.ui.helpers.safeNavigate
+import net.azurewebsites.noties.ui.helpers.tryNavigate
 import net.azurewebsites.noties.ui.image.BitmapCache
 
 open class BaseMediaItemViewHolder(private val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -25,6 +25,6 @@ open class BaseMediaItemViewHolder(private val binding: ViewDataBinding) : Recyc
 			"items" to ArrayList(images),
 			"pos" to position
 		)
-		itemView.findNavController().safeNavigate(R.id.action_editor_gallery, args)
+		itemView.findNavController().tryNavigate(R.id.action_editor_gallery, args)
 	}
 }

@@ -19,15 +19,13 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:background="@android:color/transparent"
-				android:stateListAnimator="@null"
-				android:theme="@style/Theme.EzNotes.AppBarOverlay">
+				android:stateListAnimator="@null">
 
-				<androidx.appcompat.widget.Toolbar
+				<com.google.android.material.appbar.MaterialToolbar
 					android:id="@+id/toolbar"
 					android:layout_width="match_parent"
 					android:layout_height="?attr/actionBarSize"
-					android:theme="@style/MyThemeOverlayToolbar"
-					app:popupTheme="@style/Theme.PopupOverlay.Menu"/>
+					app:popupTheme="@style/ThemeOverlay.MyTheme"/>
 			</com.google.android.material.appbar.AppBarLayout>
 
 			<androidx.fragment.app.FragmentContainerView
@@ -47,10 +45,9 @@
 				android:layout_marginBottom="@dimen/fab_margin"
 				android:layout_marginEnd="@dimen/fab_margin"
 				android:contentDescription="@string/add_note"
-				style="@style/Widget.Material3.FloatingActionButton.Primary"
 				app:backgroundTint="?attr/colorPrimary"
 				app:srcCompat="@drawable/ic_add_item"
-				app:tint="?attr/colorOnBackground"/>
+				app:tint="?attr/colorSurface"/>
 		</androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 		<com.google.android.material.navigation.NavigationView
@@ -59,7 +56,9 @@
 			android:layout_height="match_parent"
 			android:layout_gravity="start"
 			android:fitsSystemWindows="true"
+			android:background="?attr/colorSurfaceVariant"
 			app:headerLayout="@layout/nav_header_main"
-			app:menu="@menu/activity_main_drawer" />
+			app:menu="@menu/activity_main_drawer"
+			tools:ignore="PrivateResource" />
 	</androidx.drawerlayout.widget.DrawerLayout>
 </layout>
