@@ -27,6 +27,7 @@
 		<item name="alertDialogTheme">@style/AppTheme.AlertDialogTheme</item>
 		<item name="android:textColorHighlight">@color/md_theme_dark_primaryInverse</item>
 		<item name="windowActionModeOverlay">true</item>
+		<item name="fontFamily">@font/jetbrains_mono_medium</item>
 <!--		<item name="actionModeBackground">@color/dark</item>-->
 	</style>
 

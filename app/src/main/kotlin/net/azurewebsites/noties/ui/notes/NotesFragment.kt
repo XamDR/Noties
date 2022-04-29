@@ -2,7 +2,6 @@ package net.azurewebsites.noties.ui.notes
 
 import android.os.Bundle
 import android.view.*
-import androidx.core.os.bundleOf
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.documentfile.provider.DocumentFile
@@ -10,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -21,7 +19,10 @@ import net.azurewebsites.noties.databinding.FragmentNotesBinding
 import net.azurewebsites.noties.domain.ImageEntity
 import net.azurewebsites.noties.domain.Note
 import net.azurewebsites.noties.ui.folders.FoldersViewModel
-import net.azurewebsites.noties.ui.helpers.*
+import net.azurewebsites.noties.ui.helpers.inflateTransition
+import net.azurewebsites.noties.ui.helpers.mainActivity
+import net.azurewebsites.noties.ui.helpers.printDebug
+import net.azurewebsites.noties.ui.helpers.showSnackbar
 import net.azurewebsites.noties.ui.media.MediaStorageManager
 import net.azurewebsites.noties.ui.notes.urls.UrlListDialogFragment
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
@@ -29,7 +30,7 @@ import net.azurewebsites.noties.util.SortMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NotesFragment : Fragment(), OnFabClickListener {
+class NotesFragment : Fragment() {
 
 	private var _binding: FragmentNotesBinding? = null
 	private val binding get() = _binding!!
@@ -42,6 +43,7 @@ class NotesFragment : Fragment(), OnFabClickListener {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setHasOptionsMenu(true)
+		enterTransition = inflateTransition(R.transition.slide_from_bottom)
 		exitTransition = MaterialElevationScale(false)
 		reenterTransition = MaterialElevationScale(true)
 	}
@@ -83,16 +85,10 @@ class NotesFragment : Fragment(), OnFabClickListener {
 			submitList(directoryId)
 			if (hasUndo) showUndoSnackbar(notes.single())
 		}
-		mainActivity.setOnFabClickListener { onClick() }
 		setFragmentResultListener("deletion") { _, bundle ->
 			val noteToBeDeleted = bundle.getParcelable<Note>("note")
 			deleteEmptyNote(noteToBeDeleted)
 		}
-	}
-
-	override fun onClick() {
-		val args = bundleOf("id" to directoryId)
-		findNavController().tryNavigate(R.id.action_notes_to_editor, args)
 	}
 
 	private fun showUndoSnackbar(note: Note) {
@@ -128,7 +124,7 @@ class NotesFragment : Fragment(), OnFabClickListener {
 
 	private fun submitListAndUpdateToolbarTitle() {
 		parentViewModel.currentDirectory.observe(viewLifecycleOwner) {
-			mainActivity.supportActionBar?.title = it.name.ifEmpty { userPreferences.defaultDirectoryName }
+			mainActivity.supportActionBar?.title = it.name.ifEmpty { userPreferences.defaultFolderName }
 			directoryId = if (it.id == 0) 1 else it.id
 			submitList(directoryId)
 		}

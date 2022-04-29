@@ -1,6 +1,5 @@
 package net.azurewebsites.noties.ui.editor
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -19,7 +18,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
-import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialContainerTransform
 import kotlinx.coroutines.launch
@@ -45,17 +43,10 @@ class EditorFragment : Fragment() {
 	private lateinit var note: Note
 	private lateinit var textEditorMediaItemAdapter: EditorMediaItemAdapter
 	private lateinit var textEditorContentAdapter: EditorContentAdapter
-	private lateinit var player: ExoPlayer
 	private var directoryId: Int = 1
-
-	override fun onAttach(context: Context) {
-		super.onAttach(context)
-		player = ExoPlayer.Builder(context).build()
-	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		initTransition()
 		note = requireArguments().getParcelable(NOTE) ?: Note()
 		tempNote = note.clone()
 		directoryId = requireArguments().getInt("id")
@@ -85,6 +76,7 @@ class EditorFragment : Fragment() {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
+		initTransition()
 		binding.noteContent.apply {
 			transitionName = note.entity.id.toString()
 			adapter = ConcatAdapter(
@@ -142,9 +134,10 @@ class EditorFragment : Fragment() {
 	}
 
 	private fun initTransition() {
-		sharedElementEnterTransition = MaterialContainerTransform().apply {
-			fadeMode = MaterialContainerTransform.FADE_MODE_CROSS
-			fadeProgressThresholds = MaterialContainerTransform.ProgressThresholds(0f, 1f)
+		enterTransition = MaterialContainerTransform().apply {
+			startView = requireActivity().findViewById(R.id.fab)
+			endView = binding.root
+			endContainerColor = requireContext().getThemeColor(R.attr.colorSurface)
 			scrimColor = Color.TRANSPARENT
 		}
 	}

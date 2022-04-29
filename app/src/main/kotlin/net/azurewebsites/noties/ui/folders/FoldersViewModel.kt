@@ -16,7 +16,7 @@ class FoldersViewModel : ViewModel() {
 
 	val currentDirectory = MutableLiveData(FolderEntity())
 
-	fun upsertDirectory(folder: FolderEntity) {
+	fun upsertFolder(folder: FolderEntity) {
 		viewModelScope.launch {
 			try {
 				if (folder.id == 0) {

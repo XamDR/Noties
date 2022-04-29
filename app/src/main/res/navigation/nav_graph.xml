@@ -75,7 +75,7 @@
 
 		<argument
 			android:name="ShowFab"
-			android:defaultValue="true" />
+			android:defaultValue="false" />
 	</fragment>
 
 	<fragment

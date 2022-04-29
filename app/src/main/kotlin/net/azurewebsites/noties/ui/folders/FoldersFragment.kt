@@ -10,11 +10,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.domain.FolderEntity
 import net.azurewebsites.noties.databinding.FragmentFoldersBinding
-import net.azurewebsites.noties.ui.helpers.OnFabClickListener
 import net.azurewebsites.noties.ui.helpers.mainActivity
 import net.azurewebsites.noties.ui.helpers.showSnackbar
 
-class FoldersFragment : Fragment(), OnFabClickListener {
+class FoldersFragment : Fragment() {
 
 	private var _binding: FragmentFoldersBinding? = null
 	private val binding get() = _binding!!
@@ -70,14 +69,11 @@ class FoldersFragment : Fragment(), OnFabClickListener {
 
 	override fun onStart() {
 		super.onStart()
-		mainActivity.setOnFabClickListener { onClick() }
 		folderAdapter.setOnContextMenuListener { view, directory ->
 			this.folder = directory
 			view.showContextMenu()
 		}
 	}
-
-	override fun onClick() = showFolderDialog(FolderEntity())
 
 	private fun showFolderDialog(folder: FolderEntity) {
 		val folderDialog = FolderDialogFragment.newInstance(folder)
@@ -101,7 +97,7 @@ class FoldersFragment : Fragment(), OnFabClickListener {
 
 			if (keyguardManager.isDeviceSecure) {
 				val updatedDirectory = folder.copy(isProtected = true)
-				viewModel.upsertDirectory(updatedDirectory)
+				viewModel.upsertFolder(updatedDirectory)
 				MaterialAlertDialogBuilder(requireContext(), R.style.MyThemeOverlay_MaterialAlertDialog)
 					.setMessage(R.string.lock_confirmation)
 					.setPositiveButton(R.string.ok_button, null).show()
@@ -112,7 +108,7 @@ class FoldersFragment : Fragment(), OnFabClickListener {
 		}
 		else {
 			val updatedDirectory = folder.copy(isProtected = false)
-			viewModel.upsertDirectory(updatedDirectory)
+			viewModel.upsertFolder(updatedDirectory)
 			binding.root.showSnackbar(R.string.unlock_confirmation)
 		}
 	}

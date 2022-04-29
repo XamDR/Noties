@@ -30,12 +30,12 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center"
-			android:translationY="-48dp"
 			android:text="@string/empty_notes"
 			android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
 			android:textStyle="bold"
+			android:translationY="-48dp"
 			app:drawableBottomCompat="@drawable/ic_note"
 			app:drawableSize="@{@dimen/note_drawable_size}"
-			tools:visibility="gone"/>
+			tools:visibility="gone" />
 	</FrameLayout>
 </layout>

@@ -3,6 +3,12 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools">
 
+	<data>
+		<variable
+			name="activity"
+			type="net.azurewebsites.noties.ui.MainActivity" />
+	</data>
+
 	<androidx.drawerlayout.widget.DrawerLayout
 		android:id="@+id/drawer_layout"
 		android:layout_width="match_parent"
@@ -45,6 +51,7 @@
 				android:layout_marginBottom="@dimen/fab_margin"
 				android:layout_marginEnd="@dimen/fab_margin"
 				android:contentDescription="@string/add_note"
+				android:onClick="@{() -> activity.navigateToEditor()}"
 				app:backgroundTint="?attr/colorPrimary"
 				app:srcCompat="@drawable/ic_add_item"
 				app:tint="?attr/colorSurface"/>

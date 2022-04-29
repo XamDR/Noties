@@ -73,15 +73,15 @@ class FolderDialogFragment : DialogFragment() {
 
 	private fun insertOrUpdateDirectory(folder: FolderEntity) {
 		if (folder.id == 0) {
-			viewModel.upsertDirectory(FolderEntity(name = folder.name))
+			viewModel.upsertFolder(FolderEntity(name = folder.name))
 		}
 		else {
 			val newDirectory = FolderEntity(name = folder.name)
 			val updatedDirectory = folder.copy(name = newDirectory.name)
-			viewModel.upsertDirectory(updatedDirectory)
+			viewModel.upsertFolder(updatedDirectory)
 
 			if (folder.id == 1) {
-				userPreferences.defaultDirectoryName = folder.name
+				userPreferences.defaultFolderName = folder.name
 			}
 		}
 	}
