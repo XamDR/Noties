@@ -64,6 +64,7 @@
 			android:layout_gravity="start"
 			android:fitsSystemWindows="true"
 			android:background="?attr/colorSurfaceVariant"
+			app:itemTextAppearance="@style/MyCustomNavTextStyle"
 			app:headerLayout="@layout/nav_header_main"
 			app:menu="@menu/activity_main_drawer"
 			tools:ignore="PrivateResource" />

@@ -23,24 +23,27 @@ class FolderDialogFragment : DialogFragment() {
 	private var _binding: DialogFragmentFolderBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<FoldersViewModel>()
-	private lateinit var folder: FolderEntity
+	private val folder by lazy { requireArguments().getParcelable(KEY) ?: FolderEntity() }
 	@Inject lateinit var userPreferences: PreferenceStorage
-
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		folder = requireArguments().getParcelable("directory") ?: FolderEntity()
-	}
+	private val textWatcher = InputTextWatcher()
 
 	override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 		_binding = DialogFragmentFolderBinding.inflate(layoutInflater).apply {
-			directory = this@FolderDialogFragment.folder
+			folder = this@FolderDialogFragment.folder
 		}
 		return MaterialAlertDialogBuilder(requireContext(), R.style.MyThemeOverlay_MaterialAlertDialog)
 			.setTitle(R.string.new_folder)
 			.setView(binding.root)
 			.setNegativeButton(R.string.cancel_button, null)
 			.setPositiveButton(R.string.save_button, null)
-			.show()
+			.create().apply {
+				setOnShowListener {
+					getButton(AlertDialog.BUTTON_POSITIVE).apply {
+						isEnabled = false
+						setOnClickListener { insertOrUpdateFolder(folder) }
+					}
+				}
+			}
 	}
 
 	override fun onDestroyView() {
@@ -51,16 +54,16 @@ class FolderDialogFragment : DialogFragment() {
 	override fun onStart() {
 		super.onStart()
 		binding.root.post { binding.folderName.showSoftKeyboard() }
-		binding.folderName.addTextChangedListener(ErrorTextWatcher())
+		binding.folderName.addTextChangedListener(textWatcher)
+	}
+
+	override fun onStop() {
+		super.onStop()
+		binding.folderName.removeTextChangedListener(textWatcher)
 	}
 
 	override fun onResume() {
 		super.onResume()
-		if (dialog != null) {
-			(dialog as AlertDialog)
-				.getButton(AlertDialog.BUTTON_POSITIVE)
-				.setOnClickListener { insertOrUpdateDirectory(folder) }
-		}
 		viewModel.setResultListener { succeed ->
 			if (succeed) {
 				dialog?.dismiss()
@@ -71,7 +74,7 @@ class FolderDialogFragment : DialogFragment() {
 		}
 	}
 
-	private fun insertOrUpdateDirectory(folder: FolderEntity) {
+	private fun insertOrUpdateFolder(folder: FolderEntity) {
 		if (folder.id == 0) {
 			viewModel.upsertFolder(FolderEntity(name = folder.name))
 		}
@@ -86,23 +89,23 @@ class FolderDialogFragment : DialogFragment() {
 		}
 	}
 
-	private inner class ErrorTextWatcher : TextWatcher {
-		override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+	private inner class InputTextWatcher : TextWatcher {
+		override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-		override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+		override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+			(dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = s.isNotEmpty()
+		}
 
-		override fun afterTextChanged(s: Editable?) {
-			if (binding.input.error != null) {
-				binding.folderName.removeTextChangedListener(this)
-				binding.input.error = null
-				binding.folderName.addTextChangedListener(this)
-			}
+		override fun afterTextChanged(s: Editable) {
+			binding.input.error = if (binding.input.error != null) null else return
 		}
 	}
 
 	companion object {
+		const val KEY = "folder"
+
 		fun newInstance(folder: FolderEntity) = FolderDialogFragment().apply {
-			arguments = bundleOf("directory" to folder)
+			arguments = bundleOf(KEY to folder)
 		}
 	}
 }

@@ -37,7 +37,7 @@ class DirectoryDaoTest {
 			// Allowing main thread queries, just for testing.
 			.allowMainThreadQueries()
 			.build()
-		directoryDao = db.directoryDao()
+		directoryDao = db.folderDao()
 	}
 
 	@After
@@ -49,33 +49,33 @@ class DirectoryDaoTest {
 	@Test
 	fun insert_directory() = runBlocking {
 		val directory = FolderEntity(name = "Test")
-		directoryDao.insertDirectory(directory)
-		val allDirectories = directoryDao.getDirectories().asLiveData().getValueForTesting() ?: return@runBlocking
+		directoryDao.insertFolder(directory)
+		val allDirectories = directoryDao.getFolders().asLiveData().getValueForTesting() ?: return@runBlocking
 		assertTrue(allDirectories.contains(directory))
 	}
 
 	@Test
 	fun get_directories() = runBlocking {
-		val allDirectories = directoryDao.getDirectories().asLiveData().getValueForTesting()
+		val allDirectories = directoryDao.getFolders().asLiveData().getValueForTesting()
 		assertNotNull(allDirectories)
 	}
 
 	@Test
 	fun updateDirectory() = runBlocking {
 		val directory = FolderEntity(name = "Test")
-		directoryDao.insertDirectory(directory)
+		directoryDao.insertFolder(directory)
 		directory.name = "Test updated"
-		directoryDao.updateDirectory(directory)
-		val allDirectories = directoryDao.getDirectories().first()
+		directoryDao.updateFolder(directory)
+		val allDirectories = directoryDao.getFolders().first()
 		assertEquals(allDirectories[0].name, directory.name)
 	}
 
 	@Test
 	fun delete_directory() = runBlocking {
 		val directory = FolderEntity(name = "Test")
-		directoryDao.insertDirectory(directory)
-		directoryDao.deleteDirectories(listOf(directory))
-		val allDirectories = directoryDao.getDirectories().asLiveData().getValueForTesting() ?: return@runBlocking
+		directoryDao.insertFolder(directory)
+		directoryDao.deleteFolders(listOf(directory))
+		val allDirectories = directoryDao.getFolders().asLiveData().getValueForTesting() ?: return@runBlocking
 		assertFalse(allDirectories.contains(directory))
 	}
 }

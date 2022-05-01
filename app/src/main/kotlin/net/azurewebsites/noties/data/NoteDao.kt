@@ -46,6 +46,6 @@ abstract class NoteDao(private val appDatabase: AppDatabase) {
 		for (directory in folders) {
 			deleteNotesByDirectory(directory.id)
 		}
-		appDatabase.directoryDao().deleteDirectories(folders)
+		appDatabase.folderDao().deleteFolders(folders)
 	}
 }

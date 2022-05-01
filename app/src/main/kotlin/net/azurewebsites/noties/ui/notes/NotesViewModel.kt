@@ -1,19 +1,21 @@
 package net.azurewebsites.noties.ui.notes
 
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import net.azurewebsites.noties.data.ImageDao
 import net.azurewebsites.noties.domain.ImageEntity
 import net.azurewebsites.noties.domain.Note
-import net.azurewebsites.noties.data.AppRepository
-import net.azurewebsites.noties.util.Empty
 import net.azurewebsites.noties.util.SortMode
+import javax.inject.Inject
 
-class NotesViewModel : ViewModel() {
+@HiltViewModel
+class NotesViewModel @Inject constructor(private val imageDao: ImageDao) : ViewModel() {
 
 	val text = MutableLiveData(String.Empty)
 
 	private fun getNotes(directoryId: Int)
-		= AppRepository.Instance.fetchNotes(directoryId).asLiveData()
+		= imageDao.getNoteWithMediaItems(directoryId).asLiveData()
 
 	fun sortNotes(directoryId: Int, sortMode: SortMode): LiveData<List<Note>> = when (sortMode) {
 		SortMode.Content -> getNotes(directoryId).map { result ->
@@ -29,17 +31,13 @@ class NotesViewModel : ViewModel() {
 
 	fun deleteNotes(directoryId: Int, notes: List<Note>) {
 		viewModelScope.launch {
-			AppRepository.Instance.deleteNotes(directoryId, notes)
+			imageDao.deleteNotes(directoryId, notes)
 		}
 	}
 
 	fun restoreNote(directoryId: Int, note: Note, images: List<ImageEntity>) {
 		viewModelScope.launch {
-			AppRepository.Instance.insertNote(directoryId, note, images)
+			imageDao.insertNoteWithMediaItems(directoryId, note, images)
 		}
 	}
-
-//	fun searchNotesByContent() = text.switchMap {
-//		AppRepository.Instance.fetchNotesByContent(it).asLiveData()
-//	}
 }

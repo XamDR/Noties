@@ -47,7 +47,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 	override fun onStart() {
 		super.onStart()
 		navController.addOnDestinationChangedListener(this)
-		updateNavDrawer(listOf())
+//		updateNavDrawer(listOf())
+		viewModel.folders.observe(this) { updateNavDrawer(it) }
 	}
 
 	override fun onStop() {
@@ -99,7 +100,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 //					filterNotesByDirectory(directory); true
 //				}
 		}
-		item.subMenu.add(R.id.group_folders, R.id.nav_folders, 999, getString(R.string.edit_folders))
+		item.subMenu.add(R.id.group_folders, R.id.nav_folders, 999, getString(R.string.view_folders))
 			.setIcon(R.drawable.ic_edit_folder_name)
 	}
 

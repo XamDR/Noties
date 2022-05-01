@@ -8,7 +8,8 @@
 	<fragment
 		android:id="@+id/nav_welcome"
 		android:name="net.azurewebsites.noties.ui.onboarding.WelcomeFragment"
-		android:label="">
+		android:label=""
+		tools:layout="@layout/fragment_welcome">
 
 		<argument
 			android:name="ShowToolbar"
@@ -47,7 +48,7 @@
 	<fragment
 		android:id="@+id/nav_editor"
 		android:name="net.azurewebsites.noties.ui.editor.EditorFragment"
-		android:label="@string/text_editor_fragment_label"
+		android:label="@string/editor_fragment_label"
 		tools:layout="@layout/fragment_editor">
 
 		<argument
@@ -66,7 +67,7 @@
 	<fragment
 		android:id="@+id/nav_folders"
 		android:name="net.azurewebsites.noties.ui.folders.FoldersFragment"
-		android:label="@string/directory_list_fragment_label"
+		android:label="@string/folders_fragment_label"
 		tools:layout="@layout/fragment_folders">
 
 		<argument
@@ -76,7 +77,17 @@
 		<argument
 			android:name="ShowFab"
 			android:defaultValue="false" />
+
+		<action
+			android:id="@+id/action_folders_to_folder_dialog"
+			app:destination="@id/nav_folder_dialog" />
 	</fragment>
+
+	<dialog
+		android:id="@+id/nav_folder_dialog"
+		android:name="net.azurewebsites.noties.ui.folders.FolderDialogFragment"
+		android:label=""
+		tools:layout="@layout/dialog_fragment_folder"/>
 
 	<fragment
 		android:id="@+id/nav_settings"
@@ -95,5 +106,6 @@
 	<activity
 		android:id="@+id/nav_gallery"
 		android:name="net.azurewebsites.noties.ui.media.GalleryActivity"
-		android:label="GalleryActivity" />
+		android:label="GalleryActivity"
+		tools:layout="@layout/activity_gallery"/>
 </navigation>

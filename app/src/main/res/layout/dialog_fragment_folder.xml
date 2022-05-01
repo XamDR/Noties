@@ -5,7 +5,7 @@
 
 	<data>
 		<variable
-			name="directory"
+			name="folder"
 			type="net.azurewebsites.noties.domain.FolderEntity" />
 	</data>
 
@@ -32,7 +32,7 @@
 			android:inputType="textCapSentences"
 			android:maxLines="1"
 			android:minHeight="48dp"
-			android:text="@={directory.name}"
+			android:text="@={folder.name}"
 			android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
 			android:textColorHint="@color/hint_selector"
 			tools:text="Android" />

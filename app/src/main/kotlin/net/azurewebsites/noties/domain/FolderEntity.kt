@@ -6,7 +6,6 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
-import net.azurewebsites.noties.util.Empty
 
 @Parcelize
 @Entity(tableName = "Directories", indices = [Index(value = ["name"], unique = true)])

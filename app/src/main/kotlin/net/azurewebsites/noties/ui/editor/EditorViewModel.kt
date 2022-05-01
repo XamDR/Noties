@@ -2,34 +2,37 @@ package net.azurewebsites.noties.ui.editor
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import net.azurewebsites.noties.data.ImageDao
 import net.azurewebsites.noties.domain.ImageEntity
 import net.azurewebsites.noties.domain.Note
-import net.azurewebsites.noties.data.AppRepository
+import javax.inject.Inject
 
-class EditorViewModel : ViewModel() {
+@HiltViewModel
+class EditorViewModel @Inject constructor(private val imageDao: ImageDao) : ViewModel() {
 
 	fun insertNote(directoryId: Int, note: Note, images: List<ImageEntity>) {
 		viewModelScope.launch {
-			AppRepository.Instance.insertNote(directoryId, note, images)
+			imageDao.insertNoteWithMediaItems(directoryId, note, images)
 		}
 	}
 
 	fun updateNote(note: Note) {
 		viewModelScope.launch {
-			AppRepository.Instance.updateNote(note)
+			imageDao.updateNote(note)
 		}
 	}
 
 	fun deleteMediaItem(image: ImageEntity) {
 		viewModelScope.launch {
-			AppRepository.Instance.deleteMediaItem(image)
+			imageDao.deleteMediaItem(image)
 		}
 	}
 
 	fun updateMediaItem(image: ImageEntity) {
 		viewModelScope.launch {
-			AppRepository.Instance.updateMediaItem(image)
+			imageDao.updateMediaItem(image)
 		}
 	}
 }

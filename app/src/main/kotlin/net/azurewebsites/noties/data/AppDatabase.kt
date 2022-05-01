@@ -14,7 +14,7 @@ import net.azurewebsites.noties.domain.NoteEntity
 	UriToStringConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
-	abstract fun directoryDao(): FolderDao
-	abstract fun mediaItemDao(): ImageDao
+	abstract fun folderDao(): FolderDao
+	abstract fun imageDao(): ImageDao
 	abstract fun noteDao(): NoteDao
 }

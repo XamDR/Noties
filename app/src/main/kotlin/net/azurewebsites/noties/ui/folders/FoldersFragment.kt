@@ -5,20 +5,24 @@ import android.os.Bundle
 import android.view.*
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.ConcatAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.domain.FolderEntity
 import net.azurewebsites.noties.databinding.FragmentFoldersBinding
+import net.azurewebsites.noties.domain.FolderEntity
 import net.azurewebsites.noties.ui.helpers.mainActivity
 import net.azurewebsites.noties.ui.helpers.showSnackbar
 
+@AndroidEntryPoint
 class FoldersFragment : Fragment() {
 
 	private var _binding: FragmentFoldersBinding? = null
 	private val binding get() = _binding!!
-	private val viewModel by activityViewModels<FoldersViewModel>()
+	private val viewModel by viewModels<FoldersViewModel>()
 	private val folderAdapter = FolderAdapter()
+	private val headerAdapter = FolderHeaderAdapter()
 	private lateinit var folder: FolderEntity
 
 	override fun onCreateView(inflater: LayoutInflater,
@@ -35,9 +39,9 @@ class FoldersFragment : Fragment() {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		binding.folders.adapter = folderAdapter
+		binding.folders.adapter = ConcatAdapter(headerAdapter, folderAdapter)
 		registerForContextMenu(binding.folders)
-		viewModel.directories.observe(viewLifecycleOwner) { folderAdapter.submitList(it) }
+		viewModel.folders.observe(viewLifecycleOwner) { folderAdapter.submitList(it) }
 	}
 
 	override fun onCreateContextMenu(menu: ContextMenu,
@@ -86,8 +90,8 @@ class FoldersFragment : Fragment() {
 			.setMessage(R.string.delete_notes_warning)
 			.setNegativeButton(R.string.cancel_button, null)
 			.setPositiveButton(R.string.ok_button) { _, _ ->
-				viewModel.deleteDirectories(listOf(folder))
-				viewModel.currentDirectory.value = FolderEntity()
+				viewModel.deleteFolders(listOf(folder))
+				viewModel.currentFolder.value = FolderEntity()
 			}.show()
 	}
 

@@ -13,10 +13,11 @@
 	<string name="onboarding_message">EzNotes is a note taking app that will help you to take notes, make to-do lists and add attachments like images or audios.</string>
 
 	<!-- Folders Fragment -->
-	<string name="directory_list_fragment_label">Folders</string>
-	<string name="more_options">More options</string>
+	<string name="folders_fragment_label">Folders</string>
 	<string name="default_folder">General</string>
-	<string name="edit_folders">Edit folders</string>
+	<string name="add_folder">Create new folder</string>
+	<string name="more_options">More options</string>
+	<string name="view_folders">View folders</string>
 	<string name="new_folder">New folder</string>
 	<string name="folder_name">Folder name</string>
 	<string name="error_message_folder_duplicate">The folder already exists</string>
@@ -57,7 +58,7 @@
 	<string name="delete_notes_title">Delete notes</string>
 
 	<!-- Editor Fragment -->
-	<string name="text_editor_fragment_label">Text Editor</string>
+	<string name="editor_fragment_label">Editor</string>
 	<string name="placeholder">Write here…</string>
 	<string name="demo_content">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</string>
 	<string name="note_title">Title…</string>

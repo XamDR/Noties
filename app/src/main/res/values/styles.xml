@@ -22,4 +22,8 @@
 		<item name="dialogCornerRadius">16dp</item>
 		<item name="android:background" tools:ignore="PrivateResource">?attr/colorSurfaceVariant</item>
 	</style>
+
+	<style name="MyCustomNavTextStyle">
+		<item name="android:fontFamily">@font/jetbrains_mono_medium</item>
+	</style>
 </resources>

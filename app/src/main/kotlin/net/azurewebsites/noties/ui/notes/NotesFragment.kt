@@ -123,7 +123,7 @@ class NotesFragment : Fragment() {
 	}
 
 	private fun submitListAndUpdateToolbarTitle() {
-		parentViewModel.currentDirectory.observe(viewLifecycleOwner) {
+		parentViewModel.currentFolder.observe(viewLifecycleOwner) {
 			mainActivity.supportActionBar?.title = it.name.ifEmpty { userPreferences.defaultFolderName }
 			directoryId = if (it.id == 0) 1 else it.id
 			submitList(directoryId)

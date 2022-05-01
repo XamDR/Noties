@@ -8,14 +8,14 @@ import net.azurewebsites.noties.domain.FolderEntity
 interface FolderDao {
 
 	@Insert
-	suspend fun insertDirectory(folder: FolderEntity)
+	suspend fun insertFolder(folder: FolderEntity)
 
 	@Query("SELECT * FROM Directories ORDER BY (id <> 1), name")
-	fun getDirectories(): Flow<List<FolderEntity>>
+	fun getFolders(): Flow<List<FolderEntity>>
 
 	@Update
-	suspend fun updateDirectory(folder: FolderEntity)
+	suspend fun updateFolder(folder: FolderEntity)
 
 	@Delete
-	suspend fun deleteDirectories(folders: List<FolderEntity>)
+	suspend fun deleteFolders(folders: List<FolderEntity>)
 }

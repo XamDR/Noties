@@ -5,25 +5,28 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import net.azurewebsites.noties.data.FolderDao
 import net.azurewebsites.noties.domain.FolderEntity
-import net.azurewebsites.noties.data.AppRepository
 import net.azurewebsites.noties.ui.helpers.printError
+import javax.inject.Inject
 
-class FoldersViewModel : ViewModel() {
+@HiltViewModel
+class FoldersViewModel @Inject constructor(private val folderDao: FolderDao) : ViewModel() {
 
-	val directories = AppRepository.Instance.fetchDirectories().asLiveData()
+	val folders = folderDao.getFolders().asLiveData()
 
-	val currentDirectory = MutableLiveData(FolderEntity())
+	val currentFolder = MutableLiveData(FolderEntity())
 
 	fun upsertFolder(folder: FolderEntity) {
 		viewModelScope.launch {
 			try {
 				if (folder.id == 0) {
-					AppRepository.Instance.insertDirectory(folder)
+					folderDao.insertFolder(folder)
 				}
 				else {
-					AppRepository.Instance.updateDirectory(folder)
+					folderDao.updateFolder(folder)
 				}
 				onResultCallback.invoke(true)
 			}
@@ -34,9 +37,9 @@ class FoldersViewModel : ViewModel() {
 		}
 	}
 
-	fun deleteDirectories(folders: List<FolderEntity>) {
+	fun deleteFolders(folders: List<FolderEntity>) {
 		viewModelScope.launch {
-			AppRepository.Instance.deleteDirectories(folders)
+			folderDao.deleteFolders(folders)
 		}
 	}
 
