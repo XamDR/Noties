@@ -23,4 +23,15 @@
 		<item>blank</item>
 		<item>striped</item>
 	</string-array>
+
+	<array name="folder_context_menu_options">
+		<item>@string/edit_folder_name</item>
+		<item>@string/lock_folder</item>
+		<item>@string/delete_folder</item>
+	</array>
+
+	<array name="default_folder_context_menu_options">
+		<item>@string/edit_folder_name</item>
+		<item>@string/lock_folder</item>
+	</array>
 </resources>

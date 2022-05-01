@@ -7,19 +7,21 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.domain.FolderEntity
 import net.azurewebsites.noties.databinding.FolderItemBinding
+import net.azurewebsites.noties.domain.FolderEntity
 
-class FolderAdapter : ListAdapter<FolderEntity, FolderAdapter.DirectoryViewHolder>(DirectoryCallback()) {
+class FolderAdapter(private val listener: FolderItemContextMenuListener) :
+	ListAdapter<FolderEntity, FolderAdapter.FolderViewHolder>(FolderCallback()) {
 
-	inner class DirectoryViewHolder(private val binding: FolderItemBinding) : RecyclerView.ViewHolder(binding.root) {
+	inner class FolderViewHolder(private val binding: FolderItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
 		init {
 			binding.moreOptions.setOnClickListener {
 				if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
-					onContextMenuCallback.invoke(it, getItem(bindingAdapterPosition))
+					showContextMenu(bindingAdapterPosition, it)
 				}
 			}
 		}
@@ -32,12 +34,12 @@ class FolderAdapter : ListAdapter<FolderEntity, FolderAdapter.DirectoryViewHolde
 		}
 	}
 
-	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DirectoryViewHolder {
+	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FolderViewHolder {
 		val binding = FolderItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-		return DirectoryViewHolder(binding)
+		return FolderViewHolder(binding)
 	}
 
-	override fun onBindViewHolder(holder: DirectoryViewHolder, position: Int) {
+	override fun onBindViewHolder(holder: FolderViewHolder, position: Int) {
 		val directory = getItem(position)
 		holder.bind(directory)
 	}
@@ -50,13 +52,23 @@ class FolderAdapter : ListAdapter<FolderEntity, FolderAdapter.DirectoryViewHolde
 		).apply { dividerColor = MaterialColors.getColor(recyclerView, R.attr.colorPrimary) })
 	}
 
-	fun setOnContextMenuListener(callback: (view: View, folder: FolderEntity) -> Unit) {
-		onContextMenuCallback = callback
+	private fun showContextMenu(position: Int, view: View) {
+		val selectedFolder = getItem(position)
+		MaterialAlertDialogBuilder(view.context, R.style.MyThemeOverlay_MaterialAlertDialog)
+			.setTitle(selectedFolder.name)
+			.setItems(if (selectedFolder.id == 1) R.array.default_folder_context_menu_options
+			else R.array.folder_context_menu_options) { _, which ->
+				when (which) {
+					0 -> listener.updateFolderName(selectedFolder)
+					1 -> listener.lockFolder(selectedFolder)
+					2 -> listener.deleteFolder(selectedFolder)
+				}
+			}
+			.setNegativeButton(R.string.cancel_button, null)
+			.show()
 	}
 
-	private var onContextMenuCallback: (view: View, folder: FolderEntity) -> Unit = { _, _ -> }
-
-	class DirectoryCallback : DiffUtil.ItemCallback<FolderEntity>() {
+	class FolderCallback : DiffUtil.ItemCallback<FolderEntity>() {
 
 		override fun areItemsTheSame(oldItem: FolderEntity, newItem: FolderEntity) = oldItem.id == newItem.id
 

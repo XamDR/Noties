@@ -2,28 +2,30 @@ package net.azurewebsites.noties.ui.folders
 
 import android.app.KeyguardManager
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.getSystemService
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.FragmentFoldersBinding
 import net.azurewebsites.noties.domain.FolderEntity
-import net.azurewebsites.noties.ui.helpers.mainActivity
 import net.azurewebsites.noties.ui.helpers.showSnackbar
 
 @AndroidEntryPoint
-class FoldersFragment : Fragment() {
+class FoldersFragment : Fragment(), FolderItemContextMenuListener {
 
 	private var _binding: FragmentFoldersBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<FoldersViewModel>()
-	private val folderAdapter = FolderAdapter()
+	private val folderAdapter = FolderAdapter(this)
 	private val headerAdapter = FolderHeaderAdapter()
-	private lateinit var folder: FolderEntity
 
 	override fun onCreateView(inflater: LayoutInflater,
 	                          container: ViewGroup?,
@@ -40,51 +42,15 @@ class FoldersFragment : Fragment() {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		binding.folders.adapter = ConcatAdapter(headerAdapter, folderAdapter)
-		registerForContextMenu(binding.folders)
 		viewModel.folders.observe(viewLifecycleOwner) { folderAdapter.submitList(it) }
 	}
 
-	override fun onCreateContextMenu(menu: ContextMenu,
-	                                 v: View,
-	                                 menuInfo: ContextMenu.ContextMenuInfo?
-	) {
-		menu.setHeaderTitle(folder.name)
-		mainActivity.menuInflater.inflate(R.menu.menu_folder_item, menu)
-		if (folder.id == 1) {
-			menu.findItem(R.id.delete_folder).apply { isVisible = false }
-		}
-		if (folder.isProtected) {
-			menu.findItem(R.id.lock_folder).apply { title = getString(R.string.unlock_folder) }
-		}
+	override fun updateFolderName(folder: FolderEntity) {
+		val args = bundleOf(FolderDialogFragment.KEY to folder)
+		findNavController().navigate(R.id.action_folders_to_folder_dialog, args)
 	}
 
-	override fun onContextItemSelected(item: MenuItem) = when (item.itemId) {
-		R.id.edit_folder_name -> {
-			showFolderDialog(folder); true
-		}
-		R.id.delete_folder -> {
-			showDeletionFolderWarningDialog(); true
-		}
-		R.id.lock_folder -> {
-			lockFolder(); true
-		}
-		else -> false
-	}
-
-	override fun onStart() {
-		super.onStart()
-		folderAdapter.setOnContextMenuListener { view, directory ->
-			this.folder = directory
-			view.showContextMenu()
-		}
-	}
-
-	private fun showFolderDialog(folder: FolderEntity) {
-		val folderDialog = FolderDialogFragment.newInstance(folder)
-		folderDialog.show(parentFragmentManager, TAG)
-	}
-
-	private fun showDeletionFolderWarningDialog() {
+	override fun deleteFolder(folder: FolderEntity) {
 		MaterialAlertDialogBuilder(requireContext(), R.style.MyThemeOverlay_MaterialAlertDialog)
 			.setTitle(R.string.delete_folder)
 			.setMessage(R.string.delete_notes_warning)
@@ -95,13 +61,13 @@ class FoldersFragment : Fragment() {
 			}.show()
 	}
 
-	private fun lockFolder() {
+	override fun lockFolder(folder: FolderEntity) {
 		if (!folder.isProtected) {
 			val keyguardManager = context?.getSystemService<KeyguardManager>() ?: return
 
 			if (keyguardManager.isDeviceSecure) {
-				val updatedDirectory = folder.copy(isProtected = true)
-				viewModel.upsertFolder(updatedDirectory)
+				val updatedFolder = folder.copy(isProtected = true)
+				viewModel.upsertFolder(updatedFolder)
 				MaterialAlertDialogBuilder(requireContext(), R.style.MyThemeOverlay_MaterialAlertDialog)
 					.setMessage(R.string.lock_confirmation)
 					.setPositiveButton(R.string.ok_button, null).show()
@@ -111,13 +77,9 @@ class FoldersFragment : Fragment() {
 			}
 		}
 		else {
-			val updatedDirectory = folder.copy(isProtected = false)
-			viewModel.upsertFolder(updatedDirectory)
+			val updatedFolder = folder.copy(isProtected = false)
+			viewModel.upsertFolder(updatedFolder)
 			binding.root.showSnackbar(R.string.unlock_confirmation)
 		}
-	}
-
-	companion object {
-		private const val TAG = "FOLDER_DIALOG"
 	}
 }
