@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Some values were referenced from: https://android.googlesource.com/platform/frameworks/base/+/master/core/res/res/layout/select_dialog_item.xml
+	and https://android.googlesource.com/platform/frameworks/base/+/master/core/res/res/layout/select_dialog_singlechoice_material.xml -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/item"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:drawablePadding="20dp"
+	android:gravity="center_vertical"
+	android:minHeight="?android:attr/listPreferredItemHeightSmall"
+	android:paddingStart="20dp"
+	android:paddingEnd="?android:attr/dialogPreferredPadding"
+	android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+	tools:text="@string/edit_folder_name" />

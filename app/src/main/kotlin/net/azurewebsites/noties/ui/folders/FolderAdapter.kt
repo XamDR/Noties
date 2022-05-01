@@ -1,5 +1,6 @@
 package net.azurewebsites.noties.ui.folders
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,11 +54,12 @@ class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 	}
 
 	private fun showContextMenu(position: Int, view: View) {
+		val context = view.context
 		val selectedFolder = getItem(position)
-		MaterialAlertDialogBuilder(view.context, R.style.MyThemeOverlay_MaterialAlertDialog)
+		val items = getContextMenuItems(selectedFolder, context)
+		MaterialAlertDialogBuilder(context, R.style.MyThemeOverlay_MaterialAlertDialog)
 			.setTitle(selectedFolder.name)
-			.setItems(if (selectedFolder.id == 1) R.array.default_folder_context_menu_options
-			else R.array.folder_context_menu_options) { _, which ->
+			.setAdapter(FolderItemContextMenuAdapter(context, R.layout.folder_context_menu_item, items)) { _, which ->
 				when (which) {
 					0 -> listener.updateFolderName(selectedFolder)
 					1 -> listener.lockFolder(selectedFolder)
@@ -66,6 +68,23 @@ class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 			}
 			.setNegativeButton(R.string.cancel_button, null)
 			.show()
+	}
+
+	private fun getContextMenuItems(selectedFolder: FolderEntity, context: Context): List<FolderContextMenuItem> {
+		val items = if (selectedFolder.id == 1) {
+			listOf(
+				FolderContextMenuItem(R.drawable.ic_edit_folder_name, context.getString(R.string.edit_folder_name)),
+				FolderContextMenuItem(R.drawable.ic_lock_folder, context.getString(R.string.lock_folder)),
+			)
+		}
+		else {
+			listOf(
+				FolderContextMenuItem(R.drawable.ic_edit_folder_name, context.getString(R.string.edit_folder_name)),
+				FolderContextMenuItem(R.drawable.ic_lock_folder, context.getString(R.string.lock_folder)),
+				FolderContextMenuItem(R.drawable.ic_delete, context.getString(R.string.delete_folder))
+			)
+		}
+		return items
 	}
 
 	class FolderCallback : DiffUtil.ItemCallback<FolderEntity>() {
