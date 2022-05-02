@@ -68,6 +68,7 @@ class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 			}
 			.setNegativeButton(R.string.cancel_button, null)
 			.show()
+			.window?.setWindowAnimations(R.style.ScaleAnimationDialog)
 	}
 
 	private fun getContextMenuItems(selectedFolder: FolderEntity, context: Context): List<FolderContextMenuItem> {

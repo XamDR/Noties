@@ -65,13 +65,13 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 			binding.toolbar.isVisible = arguments.getBoolean("ShowToolbar")
 			if (arguments.getBoolean("ShowFab")) binding.fab.show() else binding.fab.hide()
 		}
-		if (destination.id == R.id.nav_editor) {
-			toggleToolbarScrollFlags(isEnabled = false)
-			toggleFabBehavior(isEnabled = false)
-		}
-		else {
+		if (destination.id == R.id.nav_notes) {
 			toggleToolbarScrollFlags(isEnabled = true)
 			toggleFabBehavior(isEnabled = true)
+		}
+		else {
+			toggleToolbarScrollFlags(isEnabled = false)
+			toggleFabBehavior(isEnabled = false)
 		}
 	}
 

@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.FragmentFoldersBinding
@@ -51,14 +50,9 @@ class FoldersFragment : Fragment(), FolderItemContextMenuListener {
 	}
 
 	override fun deleteFolder(folder: FolderEntity) {
-		MaterialAlertDialogBuilder(requireContext(), R.style.MyThemeOverlay_MaterialAlertDialog)
-			.setTitle(R.string.delete_folder)
-			.setMessage(R.string.delete_notes_warning)
-			.setNegativeButton(R.string.cancel_button, null)
-			.setPositiveButton(R.string.ok_button) { _, _ ->
-				viewModel.deleteFolders(listOf(folder))
-				viewModel.currentFolder.value = FolderEntity()
-			}.show()
+		viewModel.deleteFolders(listOf(folder))
+		viewModel.currentFolder.value = FolderEntity()
+		binding.root.showSnackbar(R.string.delete_notes_warning)
 	}
 
 	override fun lockFolder(folder: FolderEntity) {
@@ -68,9 +62,7 @@ class FoldersFragment : Fragment(), FolderItemContextMenuListener {
 			if (keyguardManager.isDeviceSecure) {
 				val updatedFolder = folder.copy(isProtected = true)
 				viewModel.upsertFolder(updatedFolder)
-				MaterialAlertDialogBuilder(requireContext(), R.style.MyThemeOverlay_MaterialAlertDialog)
-					.setMessage(R.string.lock_confirmation)
-					.setPositiveButton(R.string.ok_button, null).show()
+				binding.root.showSnackbar(R.string.lock_confirmation)
 			}
 			else {
 				binding.root.showSnackbar(R.string.no_lock_found)

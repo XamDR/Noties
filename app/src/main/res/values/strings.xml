@@ -23,10 +23,10 @@
 	<string name="error_message_folder_duplicate">The folder already exists</string>
 	<string name="edit_folder_name">Edit folder name</string>
 	<string name="delete_folder">Delete folder</string>
-	<string name="delete_notes_warning">The notes inside this folder will also be deleted. Are you sure you want to continue?</string>
+	<string name="delete_notes_warning">The notes inside this folder have been moved to the trash.</string>
 	<string name="lock_folder">Lock folder</string>
 	<string name="unlock_folder">Unlock folder</string>
-	<string name="lock_confirmation">This folder is now locked. In order to see its notes you will be prompted to unlock your device screen.</string>
+	<string name="lock_confirmation">This folder is now locked.</string>
 	<string name="no_lock_found">It is not possible to lock the folder. The device is not secured with a PIN, pattern or password.</string>
 	<string name="unlock_confirmation">This folder is no longer locked.</string>
 	<string name="confirme_device_credential_title">Unlock to see notes</string>

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.appcompat.app.AlertDialog
-import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -39,10 +38,11 @@ class FolderDialogFragment : DialogFragment() {
 			.create().apply {
 				setOnShowListener {
 					getButton(AlertDialog.BUTTON_POSITIVE).apply {
-						isEnabled = false
+						isEnabled = folder.name.isNotEmpty()
 						setOnClickListener { insertOrUpdateFolder(folder) }
 					}
 				}
+				window?.setWindowAnimations(R.style.ScaleAnimationDialog)
 			}
 	}
 
@@ -103,9 +103,5 @@ class FolderDialogFragment : DialogFragment() {
 
 	companion object {
 		const val KEY = "folder"
-
-		fun newInstance(folder: FolderEntity) = FolderDialogFragment().apply {
-			arguments = bundleOf(KEY to folder)
-		}
 	}
 }
