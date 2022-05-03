@@ -38,6 +38,7 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:theme="@style/ThemeOverlay.AppTheme.TextInputEditText.Outlined"
+					android:paddingTop="8dp"
 					app:boxBackgroundMode="none"
 					app:endIconContentDescription="@string/clear_note_title_text"
 					app:endIconMode="clear_text"
@@ -56,6 +57,7 @@
 						android:text="@={note.title}"
 						android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
 						android:textSize='@{PreferenceManager.getDefaultSharedPreferences(context).getInt("font_size", 16)}'
+						android:textCursorDrawable="@drawable/cursor_color"
 						tools:text="Lorem Ipsum" />
 				</com.google.android.material.textfield.TextInputLayout>
 			</androidx.appcompat.widget.Toolbar>

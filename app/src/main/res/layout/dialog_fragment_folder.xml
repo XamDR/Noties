@@ -34,7 +34,7 @@
 			android:minHeight="48dp"
 			android:text="@={folder.name}"
 			android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-			android:textColorHint="@color/hint_selector"
+			android:textCursorDrawable="@drawable/cursor_color"
 			tools:text="Android" />
 	</com.google.android.material.textfield.TextInputLayout>
 </layout>

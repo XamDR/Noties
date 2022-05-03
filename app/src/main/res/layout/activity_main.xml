@@ -12,8 +12,7 @@
 	<androidx.drawerlayout.widget.DrawerLayout
 		android:id="@+id/drawer_layout"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:fitsSystemWindows="true">
+		android:layout_height="match_parent">
 
 		<androidx.coordinatorlayout.widget.CoordinatorLayout
 			android:layout_width="match_parent"
@@ -30,8 +29,7 @@
 				<com.google.android.material.appbar.MaterialToolbar
 					android:id="@+id/toolbar"
 					android:layout_width="match_parent"
-					android:layout_height="?attr/actionBarSize"
-					app:popupTheme="@style/ThemeOverlay.MyTheme"/>
+					android:layout_height="?attr/actionBarSize"/>
 			</com.google.android.material.appbar.AppBarLayout>
 
 			<androidx.fragment.app.FragmentContainerView
@@ -62,7 +60,6 @@
 			android:layout_width="wrap_content"
 			android:layout_height="match_parent"
 			android:layout_gravity="start"
-			android:fitsSystemWindows="true"
 			android:background="?attr/colorSurfaceVariant"
 			app:itemTextAppearance="@style/MyCustomNavTextStyle"
 			app:headerLayout="@layout/nav_header_main"

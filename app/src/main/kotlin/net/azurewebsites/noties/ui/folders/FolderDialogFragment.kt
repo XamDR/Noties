@@ -31,18 +31,18 @@ class FolderDialogFragment : DialogFragment() {
 			folder = this@FolderDialogFragment.folder
 		}
 		return MaterialAlertDialogBuilder(requireContext(), R.style.MyThemeOverlay_MaterialAlertDialog)
-			.setTitle(R.string.new_folder)
+			.setTitle(if (folder.id == 0) R.string.new_folder else R.string.edit_folder_name)
 			.setView(binding.root)
 			.setNegativeButton(R.string.cancel_button, null)
 			.setPositiveButton(R.string.save_button, null)
 			.create().apply {
 				setOnShowListener {
 					getButton(AlertDialog.BUTTON_POSITIVE).apply {
-						isEnabled = folder.name.isNotEmpty()
+						isEnabled = false
 						setOnClickListener { insertOrUpdateFolder(folder) }
 					}
+					if (folder.id != 0) binding.folderName.selectAll()
 				}
-				window?.setWindowAnimations(R.style.ScaleAnimationDialog)
 			}
 	}
 

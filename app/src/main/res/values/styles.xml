@@ -4,8 +4,8 @@
 		<item name="colorControlActivated">?attr/colorPrimary</item>
 	</style>
 
-	<style name="ThemeOverlay.MyTheme" parent="ThemeOverlay.AppCompat.DayNight.ActionBar">
-		<item name="android:background" tools:ignore="PrivateResource">?attr/colorSurfaceVariant</item>
+	<style name="AppTheme.OverflowStyle" parent="@style/Widget.Material3.PopupMenu.Overflow">
+		<item name="android:popupBackground" tools:ignore="PrivateResource">?attr/colorSurfaceVariant</item>
 	</style>
 
 	<style name="ShapeAppearanceOverlay.Dialog.Rounded" parent="">
@@ -29,6 +29,6 @@
 	</style>
 
 	<style name="MyCustomNavTextStyle">
-		<item name="android:fontFamily">@font/jetbrains_mono_medium</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
 	</style>
 </resources>

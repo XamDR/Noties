@@ -47,6 +47,10 @@ class FoldersFragment : Fragment(), FolderItemContextMenuListener {
 	override fun updateFolderName(folder: FolderEntity) {
 		val args = bundleOf(FolderDialogFragment.KEY to folder)
 		findNavController().navigate(R.id.action_folders_to_folder_dialog, args)
+//		val dialog = FolderDialogFragment().apply {
+//			arguments = bundleOf(FolderDialogFragment.KEY to folder)
+//		}
+//		dialog.show(parentFragmentManager, "DIALOG")
 	}
 
 	override fun deleteFolder(folder: FolderEntity) {
