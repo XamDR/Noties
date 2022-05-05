@@ -1,10 +1,7 @@
 package net.azurewebsites.noties.ui.folders
 
 import android.database.sqlite.SQLiteConstraintException
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import net.azurewebsites.noties.core.Folder
@@ -21,9 +18,16 @@ class FoldersViewModel @Inject constructor(
 	getFoldersUseCase: GetFoldersUseCase,
 	private val insertFolderUseCase: InsertFolderUseCase,
 	private val updateFolderUseCase: UpdateFolderUseCase,
-	private val deleteFolderAndMoveNotesToTrashUseCase: DeleteFolderAndMoveNotesToTrashUseCase) : ViewModel() {
+	private val deleteFolderAndMoveNotesToTrashUseCase: DeleteFolderAndMoveNotesToTrashUseCase,
+	private val savedState: SavedStateHandle) : ViewModel() {
 
 	val folders = getFoldersUseCase().asLiveData()
+
+	var position = savedState.get<Int>(POSITION) ?: 0
+		set(value) {
+			field = value
+			savedState.set(POSITION, value)
+		}
 
 	val currentFolder = MutableLiveData(FolderEntity())
 
@@ -58,6 +62,7 @@ class FoldersViewModel @Inject constructor(
 	private var onResultCallback: (succeed: Boolean) -> Unit = {}
 
 	private companion object {
+		private const val POSITION = "position"
 		private const val TAG = "SQLITE"
 	}
 }

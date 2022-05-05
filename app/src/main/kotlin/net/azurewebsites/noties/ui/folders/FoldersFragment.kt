@@ -17,6 +17,7 @@ import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Folder
 import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.databinding.FragmentFoldersBinding
+import net.azurewebsites.noties.ui.helpers.printDebug
 import net.azurewebsites.noties.ui.helpers.showSnackbar
 
 @AndroidEntryPoint
@@ -27,7 +28,6 @@ class FoldersFragment : Fragment(), FolderItemContextMenuListener {
 	private val viewModel by viewModels<FoldersViewModel>()
 	private val folderAdapter = FolderAdapter(this)
 	private val headerAdapter = FolderHeaderAdapter()
-	private var position = 0
 
 	override fun onCreateView(inflater: LayoutInflater,
 	                          container: ViewGroup?,
@@ -51,13 +51,14 @@ class FoldersFragment : Fragment(), FolderItemContextMenuListener {
 		super.onStart()
 		setFragmentResultListener("result") { _, bundle ->
 			if (bundle.getBoolean("result")) {
-				folderAdapter.notifyItemChanged(position)
+				folderAdapter.notifyItemChanged(viewModel.position)
 			}
 		}
 	}
 
 	override fun updateFolderName(folder: FolderEntity, position: Int) {
-		this.position = position
+		viewModel.position = position
+		printDebug("POS", viewModel.position)
 		val args = bundleOf(FolderDialogFragment.KEY to folder)
 		findNavController().navigate(R.id.action_folders_to_folder_dialog, args)
 	}
