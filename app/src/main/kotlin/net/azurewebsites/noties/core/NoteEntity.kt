@@ -1,4 +1,4 @@
-package net.azurewebsites.noties.domain
+package net.azurewebsites.noties.core
 
 import android.net.Uri
 import android.os.Parcelable
@@ -20,7 +20,7 @@ data class NoteEntity(
 	@ColumnInfo(name = "preview_image") val previewImage: Uri? = null,
 	@ColumnInfo(name = "is_pinned") val pinned: Boolean = false,
 	@ColumnInfo(name = "is_task_list") val isTaskList: Boolean = false,
-	@ColumnInfo(name = "directory_id") val directoryId: Int = 0) : Parcelable {
+	@ColumnInfo(name = "folder_id") val folderId: Int = 0) : Parcelable {
 
 	fun getUrlCount() = urls.size
 

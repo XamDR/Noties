@@ -6,7 +6,7 @@
 	<data>
 		<variable
 			name="mediaItem"
-			type="net.azurewebsites.noties.domain.ImageEntity"/>
+			type="net.azurewebsites.noties.core.ImageEntity"/>
 	</data>
 
 	<ImageView

@@ -8,7 +8,7 @@
 		<import type="net.azurewebsites.noties.ui.helpers.Converter"/>
 		<variable
 			name="note"
-			type="net.azurewebsites.noties.domain.NoteEntity" />
+			type="net.azurewebsites.noties.core.NoteEntity" />
 	</data>
 
 	<androidx.constraintlayout.widget.ConstraintLayout

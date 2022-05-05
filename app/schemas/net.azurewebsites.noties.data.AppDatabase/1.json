@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "bb5caa781c6014ab0c1cb81115149482",
+    "identityHash": "6e1d4a9c7953c4d82612df48642c5db4",
     "entities": [
       {
         "tableName": "Directories",
@@ -98,7 +98,7 @@
       },
       {
         "tableName": "Notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `text` TEXT NOT NULL, `update_date` TEXT NOT NULL, `color` INTEGER NOT NULL, `urls` TEXT NOT NULL, `preview_image` TEXT, `is_pinned` INTEGER NOT NULL, `is_task_list` INTEGER NOT NULL, `directory_id` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `text` TEXT NOT NULL, `update_date` TEXT NOT NULL, `color` INTEGER NOT NULL, `urls` TEXT NOT NULL, `preview_image` TEXT, `is_pinned` INTEGER NOT NULL, `is_task_list` INTEGER NOT NULL, `folder_id` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -155,8 +155,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "directoryId",
-            "columnName": "directory_id",
+            "fieldPath": "folderId",
+            "columnName": "folder_id",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -174,7 +174,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bb5caa781c6014ab0c1cb81115149482')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6e1d4a9c7953c4d82612df48642c5db4')"
     ]
   }
 }

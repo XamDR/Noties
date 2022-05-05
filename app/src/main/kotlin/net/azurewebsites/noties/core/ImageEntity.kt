@@ -1,4 +1,4 @@
-package net.azurewebsites.noties.domain
+package net.azurewebsites.noties.core
 
 import android.net.Uri
 import android.os.Parcelable

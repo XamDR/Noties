@@ -2,8 +2,8 @@ package net.azurewebsites.noties.data
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
-import net.azurewebsites.noties.domain.FolderEntity
-import net.azurewebsites.noties.domain.NoteEntity
+import net.azurewebsites.noties.core.FolderEntity
+import net.azurewebsites.noties.core.NoteEntity
 
 @Dao
 abstract class NoteDao(private val appDatabase: AppDatabase) {
@@ -38,7 +38,7 @@ abstract class NoteDao(private val appDatabase: AppDatabase) {
 		decrementNoteCount(directoryId)
 	}
 
-	@Query("DELETE FROM Notes WHERE directory_id = :directoryId")
+	@Query("DELETE FROM Notes WHERE folder_id = :directoryId")
 	abstract suspend fun deleteNotesByDirectory(directoryId: Int)
 
 	@Transaction
@@ -48,4 +48,7 @@ abstract class NoteDao(private val appDatabase: AppDatabase) {
 		}
 		appDatabase.folderDao().deleteFolders(folders)
 	}
+
+	@Query("UPDATE Notes SET folder_id = -1 WHERE folder_id = :folderId")
+	abstract fun moveNotesToTrash(folderId: Int)
 }

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.domain.Note
+import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.NoteItemBinding
 import net.azurewebsites.noties.ui.editor.EditorFragment
 import net.azurewebsites.noties.ui.helpers.addItemTouchHelper

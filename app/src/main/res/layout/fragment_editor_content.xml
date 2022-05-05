@@ -5,7 +5,7 @@
 	<data>
 		<variable
 			name="note"
-			type="net.azurewebsites.noties.domain.NoteEntity" />
+			type="net.azurewebsites.noties.core.NoteEntity" />
 	</data>
 
 	<net.azurewebsites.noties.ui.views.LinedEditText

@@ -3,9 +3,9 @@ package net.azurewebsites.noties.data
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import net.azurewebsites.noties.domain.FolderEntity
-import net.azurewebsites.noties.domain.ImageEntity
-import net.azurewebsites.noties.domain.NoteEntity
+import net.azurewebsites.noties.core.FolderEntity
+import net.azurewebsites.noties.core.ImageEntity
+import net.azurewebsites.noties.core.NoteEntity
 
 @Database(entities = [FolderEntity::class, ImageEntity::class, NoteEntity::class], version = 1)
 @TypeConverters(

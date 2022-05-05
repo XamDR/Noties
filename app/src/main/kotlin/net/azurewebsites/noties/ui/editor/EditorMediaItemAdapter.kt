@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import net.azurewebsites.noties.databinding.FragmentEditorImagesBinding
-import net.azurewebsites.noties.domain.ImageEntity
+import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.ui.media.MediaItemAdapter
 
 class EditorMediaItemAdapter(

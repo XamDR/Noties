@@ -16,8 +16,8 @@ import com.google.android.material.transition.MaterialElevationScale
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.FragmentNotesBinding
-import net.azurewebsites.noties.domain.ImageEntity
-import net.azurewebsites.noties.domain.Note
+import net.azurewebsites.noties.core.ImageEntity
+import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.ui.folders.FoldersViewModel
 import net.azurewebsites.noties.ui.helpers.inflateTransition
 import net.azurewebsites.noties.ui.helpers.mainActivity

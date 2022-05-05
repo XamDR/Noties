@@ -2,8 +2,8 @@ package net.azurewebsites.noties.data
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
-import net.azurewebsites.noties.domain.ImageEntity
-import net.azurewebsites.noties.domain.Note
+import net.azurewebsites.noties.core.ImageEntity
+import net.azurewebsites.noties.core.Note
 
 @Dao
 abstract class ImageDao(private val appDatabase: AppDatabase) {
@@ -33,7 +33,7 @@ abstract class ImageDao(private val appDatabase: AppDatabase) {
 	}
 
 	@Transaction
-	@Query("SELECT * FROM Notes WHERE directory_id =:directoryId")
+	@Query("SELECT * FROM Notes WHERE folder_id =:directoryId")
 	abstract fun getNoteWithMediaItems(directoryId: Int): Flow<List<Note>>
 
 	@Transaction

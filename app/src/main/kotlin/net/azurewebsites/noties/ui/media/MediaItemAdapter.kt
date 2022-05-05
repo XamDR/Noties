@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.domain.ImageEntity
+import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.databinding.ImageItemBinding
 import net.azurewebsites.noties.databinding.SingleImageItemBinding
 import net.azurewebsites.noties.ui.helpers.printDebug

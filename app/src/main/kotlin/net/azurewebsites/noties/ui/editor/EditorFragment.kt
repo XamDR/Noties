@@ -23,9 +23,9 @@ import com.google.android.material.transition.MaterialContainerTransform
 import kotlinx.coroutines.launch
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.FragmentEditorBinding
-import net.azurewebsites.noties.domain.ImageEntity
-import net.azurewebsites.noties.domain.Note
-import net.azurewebsites.noties.domain.NoteEntity
+import net.azurewebsites.noties.core.ImageEntity
+import net.azurewebsites.noties.core.Note
+import net.azurewebsites.noties.core.NoteEntity
 import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.media.MediaItemAdapter
 import net.azurewebsites.noties.ui.media.MediaStorageManager
@@ -186,7 +186,7 @@ class EditorFragment : Fragment() {
 					context?.showToast(R.string.note_saved)
 				}
 				else {
-					val newNote = createNote(note.entity.title, note.entity.text, note.images, note.entity.directoryId, note.entity.id)
+					val newNote = createNote(note.entity.title, note.entity.text, note.images, note.entity.folderId, note.entity.id)
 					val updatedNote = note.clone(
 						entity = newNote.entity,
 						images = newNote.images
@@ -210,7 +210,7 @@ class EditorFragment : Fragment() {
 				updateDate = ZonedDateTime.now(),
 				urls = extractUrls(text),
 				previewImage = images.firstOrNull { it.mimeType?.startsWith("image") == true }?.uri,
-				directoryId = directoryId
+				folderId = directoryId
 			),
 			images = images
 		)

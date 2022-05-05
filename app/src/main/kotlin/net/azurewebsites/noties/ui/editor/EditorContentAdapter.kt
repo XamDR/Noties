@@ -7,8 +7,8 @@ import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.FragmentEditorContentBinding
-import net.azurewebsites.noties.domain.NoteEntity
-import net.azurewebsites.noties.domain.Task
+import net.azurewebsites.noties.core.NoteEntity
+import net.azurewebsites.noties.core.Task
 import net.azurewebsites.noties.databinding.TaskItemBinding
 import net.azurewebsites.noties.ui.helpers.printDebug
 import net.azurewebsites.noties.ui.media.MediaContentReceiverListener

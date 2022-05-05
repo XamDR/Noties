@@ -7,7 +7,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.FolderHeaderItemBinding
-import net.azurewebsites.noties.domain.FolderEntity
+import net.azurewebsites.noties.core.FolderEntity
 
 class FolderHeaderAdapter : RecyclerView.Adapter<FolderHeaderAdapter.FolderHeaderViewHolder>() {
 

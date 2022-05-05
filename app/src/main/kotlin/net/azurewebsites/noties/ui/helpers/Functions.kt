@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import com.linkedin.urls.detection.UrlDetector
 import com.linkedin.urls.detection.UrlDetectorOptions
-import net.azurewebsites.noties.domain.NoteEntity
+import net.azurewebsites.noties.core.NoteEntity
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.time.ZoneId

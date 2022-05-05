@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import net.azurewebsites.noties.data.ImageDao
-import net.azurewebsites.noties.domain.ImageEntity
-import net.azurewebsites.noties.domain.Note
+import net.azurewebsites.noties.core.ImageEntity
+import net.azurewebsites.noties.core.Note
 import javax.inject.Inject
 
 @HiltViewModel

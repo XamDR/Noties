@@ -2,7 +2,7 @@ package net.azurewebsites.noties.ui.media
 
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import net.azurewebsites.noties.domain.ImageEntity
+import net.azurewebsites.noties.core.ImageEntity
 
 class ViewPagerStateAdapter(activity: FragmentActivity, private val images: List<ImageEntity>) : FragmentStateAdapter(activity) {
 

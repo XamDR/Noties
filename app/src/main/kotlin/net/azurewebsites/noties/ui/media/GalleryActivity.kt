@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.print.PrintHelper
 import androidx.viewpager2.widget.ViewPager2
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.domain.ImageEntity
+import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.databinding.ActivityGalleryBinding
 import net.azurewebsites.noties.ui.helpers.printError
 import net.azurewebsites.noties.ui.helpers.showToast

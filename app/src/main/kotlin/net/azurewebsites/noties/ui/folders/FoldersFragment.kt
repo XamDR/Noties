@@ -14,7 +14,8 @@ import androidx.recyclerview.widget.ConcatAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.FragmentFoldersBinding
-import net.azurewebsites.noties.domain.FolderEntity
+import net.azurewebsites.noties.core.Folder
+import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.ui.helpers.showSnackbar
 
 @AndroidEntryPoint
@@ -47,14 +48,10 @@ class FoldersFragment : Fragment(), FolderItemContextMenuListener {
 	override fun updateFolderName(folder: FolderEntity) {
 		val args = bundleOf(FolderDialogFragment.KEY to folder)
 		findNavController().navigate(R.id.action_folders_to_folder_dialog, args)
-//		val dialog = FolderDialogFragment().apply {
-//			arguments = bundleOf(FolderDialogFragment.KEY to folder)
-//		}
-//		dialog.show(parentFragmentManager, "DIALOG")
 	}
 
-	override fun deleteFolder(folder: FolderEntity) {
-		viewModel.deleteFolders(listOf(folder))
+	override fun deleteFolder(folder: Folder) {
+		viewModel.deleteFolderAndNotes(folder)
 		viewModel.currentFolder.value = FolderEntity()
 		binding.root.showSnackbar(R.string.delete_notes_warning)
 	}

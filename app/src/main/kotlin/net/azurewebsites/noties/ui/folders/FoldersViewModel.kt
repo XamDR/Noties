@@ -8,7 +8,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import net.azurewebsites.noties.data.FolderDao
-import net.azurewebsites.noties.domain.FolderEntity
+import net.azurewebsites.noties.core.Folder
+import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.ui.helpers.printError
 import javax.inject.Inject
 
@@ -37,9 +38,9 @@ class FoldersViewModel @Inject constructor(private val folderDao: FolderDao) : V
 		}
 	}
 
-	fun deleteFolders(folders: List<FolderEntity>) {
+	fun deleteFolderAndNotes(folder: Folder) {
 		viewModelScope.launch {
-			folderDao.deleteFolders(folders)
+			folderDao.deleteFolderAndNotes(folder)
 		}
 	}
 

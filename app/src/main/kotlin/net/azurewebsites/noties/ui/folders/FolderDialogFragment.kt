@@ -11,7 +11,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.DialogFragmentFolderBinding
-import net.azurewebsites.noties.domain.FolderEntity
+import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.ui.helpers.showSoftKeyboard
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
 import javax.inject.Inject
@@ -79,12 +79,12 @@ class FolderDialogFragment : DialogFragment() {
 			viewModel.upsertFolder(FolderEntity(name = folder.name))
 		}
 		else {
-			val newDirectory = FolderEntity(name = folder.name)
-			val updatedDirectory = folder.copy(name = newDirectory.name)
-			viewModel.upsertFolder(updatedDirectory)
+			val newFolder = FolderEntity(name = folder.name)
+			val updatedFolder = folder.copy(name = newFolder.name)
+			viewModel.upsertFolder(updatedFolder)
 
 			if (folder.id == 1) {
-				userPreferences.defaultFolderName = folder.name
+				userPreferences.defaultFolderName = updatedFolder.name
 			}
 		}
 	}

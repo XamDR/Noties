@@ -12,10 +12,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.FolderItemBinding
-import net.azurewebsites.noties.domain.FolderEntity
+import net.azurewebsites.noties.core.Folder
+import net.azurewebsites.noties.core.FolderEntity
+import net.azurewebsites.noties.ui.helpers.printDebug
 
 class FolderAdapter(private val listener: FolderItemContextMenuListener) :
-	ListAdapter<FolderEntity, FolderAdapter.FolderViewHolder>(FolderCallback()) {
+	ListAdapter<Folder, FolderAdapter.FolderViewHolder>(FolderCallback()) {
 
 	inner class FolderViewHolder(private val binding: FolderItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -29,7 +31,7 @@ class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 
 		fun bind(folder: FolderEntity) {
 			binding.apply {
-				this.directory = folder
+				this.folder = folder
 				executePendingBindings()
 			}
 		}
@@ -41,8 +43,9 @@ class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 	}
 
 	override fun onBindViewHolder(holder: FolderViewHolder, position: Int) {
-		val directory = getItem(position)
-		holder.bind(directory)
+		val folder = getItem(position)
+		holder.bind(folder.entity)
+		printDebug("BIND", holder)
 	}
 
 	override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -58,11 +61,11 @@ class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 		val selectedFolder = getItem(position)
 		val items = getContextMenuItems(selectedFolder, context)
 		MaterialAlertDialogBuilder(context, R.style.MyThemeOverlay_MaterialAlertDialog)
-			.setTitle(selectedFolder.name)
+			.setTitle(selectedFolder.entity.name)
 			.setAdapter(FolderItemContextMenuAdapter(context, R.layout.folder_context_menu_item, items)) { _, which ->
 				when (which) {
-					0 -> listener.updateFolderName(selectedFolder)
-					1 -> listener.lockFolder(selectedFolder)
+					0 -> listener.updateFolderName(selectedFolder.entity)
+					1 -> listener.lockFolder(selectedFolder.entity)
 					2 -> listener.deleteFolder(selectedFolder)
 				}
 			}
@@ -71,8 +74,8 @@ class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 			.window?.setWindowAnimations(R.style.ScaleAnimationDialog)
 	}
 
-	private fun getContextMenuItems(selectedFolder: FolderEntity, context: Context): List<FolderContextMenuItem> {
-		val items = if (selectedFolder.id == 1) {
+	private fun getContextMenuItems(selectedFolder: Folder, context: Context): List<FolderContextMenuItem> {
+		val items = if (selectedFolder.entity.id == 1) {
 			listOf(
 				FolderContextMenuItem(R.drawable.ic_edit_folder_name, context.getString(R.string.edit_folder_name)),
 				FolderContextMenuItem(R.drawable.ic_lock_folder, context.getString(R.string.lock_folder)),
@@ -88,10 +91,10 @@ class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 		return items
 	}
 
-	class FolderCallback : DiffUtil.ItemCallback<FolderEntity>() {
+	class FolderCallback : DiffUtil.ItemCallback<Folder>() {
 
-		override fun areItemsTheSame(oldItem: FolderEntity, newItem: FolderEntity) = oldItem.id == newItem.id
+		override fun areItemsTheSame(oldItem: Folder, newItem: Folder) = oldItem.entity.id == newItem.entity.id
 
-		override fun areContentsTheSame(oldItem: FolderEntity, newItem: FolderEntity) = oldItem == newItem
+		override fun areContentsTheSame(oldItem: Folder, newItem: Folder) = oldItem == newItem
 	}
 }

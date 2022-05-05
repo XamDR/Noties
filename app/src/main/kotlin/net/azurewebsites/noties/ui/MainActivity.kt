@@ -16,7 +16,8 @@ import com.google.android.material.appbar.AppBarLayout.LayoutParams
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.ActivityMainBinding
-import net.azurewebsites.noties.domain.FolderEntity
+import net.azurewebsites.noties.core.Folder
+import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.ui.folders.FoldersViewModel
 import net.azurewebsites.noties.ui.helpers.findNavController
 import net.azurewebsites.noties.ui.helpers.setNightMode
@@ -89,13 +90,13 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		binding.navView.setupWithNavController(navController)
 	}
 
-	private fun updateNavDrawer(folders: List<FolderEntity>) {
+	private fun updateNavDrawer(folders: List<Folder>) {
 		val item = binding.navView.menu.getItem(0)
 		if (item.subMenu.isNotEmpty()) item.subMenu.clear()
 
 		for (folder in folders) {
-			item.subMenu.add(R.id.group_folders, Menu.NONE, Menu.NONE, folder.name)
-				.setIcon(if (folder.id == 1) R.drawable.ic_folder_general else R.drawable.ic_folder)
+			item.subMenu.add(R.id.group_folders, Menu.NONE, Menu.NONE, folder.entity.name)
+				.setIcon(if (folder.entity.id == 1) R.drawable.ic_folder_general else R.drawable.ic_folder)
 //				.setOnMenuItemClickListener {
 //					filterNotesByDirectory(directory); true
 //				}
@@ -105,7 +106,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 	}
 
 	private fun createDefaultFolder() {
-		if (userPreferences.isOnboardingCompleted) {
+		if (!userPreferences.isOnboardingCompleted) {
 			val defaultFolder = FolderEntity(name = userPreferences.defaultFolderName)
 			viewModel.upsertFolder(defaultFolder)
 		}

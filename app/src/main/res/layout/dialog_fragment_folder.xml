@@ -6,7 +6,7 @@
 	<data>
 		<variable
 			name="folder"
-			type="net.azurewebsites.noties.domain.FolderEntity" />
+			type="net.azurewebsites.noties.core.FolderEntity" />
 	</data>
 
 	<com.google.android.material.textfield.TextInputLayout

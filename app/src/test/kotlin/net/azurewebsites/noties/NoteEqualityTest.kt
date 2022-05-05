@@ -1,7 +1,7 @@
 package net.azurewebsites.noties
 
-import net.azurewebsites.noties.domain.ImageEntity
-import net.azurewebsites.noties.domain.Note
+import net.azurewebsites.noties.core.ImageEntity
+import net.azurewebsites.noties.core.Note
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
