@@ -8,14 +8,15 @@ import android.view.ViewGroup
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.databinding.FragmentFoldersBinding
 import net.azurewebsites.noties.core.Folder
 import net.azurewebsites.noties.core.FolderEntity
+import net.azurewebsites.noties.databinding.FragmentFoldersBinding
 import net.azurewebsites.noties.ui.helpers.showSnackbar
 
 @AndroidEntryPoint
@@ -26,6 +27,7 @@ class FoldersFragment : Fragment(), FolderItemContextMenuListener {
 	private val viewModel by viewModels<FoldersViewModel>()
 	private val folderAdapter = FolderAdapter(this)
 	private val headerAdapter = FolderHeaderAdapter()
+	private var position = 0
 
 	override fun onCreateView(inflater: LayoutInflater,
 	                          container: ViewGroup?,
@@ -45,7 +47,17 @@ class FoldersFragment : Fragment(), FolderItemContextMenuListener {
 		viewModel.folders.observe(viewLifecycleOwner) { folderAdapter.submitList(it) }
 	}
 
-	override fun updateFolderName(folder: FolderEntity) {
+	override fun onStart() {
+		super.onStart()
+		setFragmentResultListener("result") { _, bundle ->
+			if (bundle.getBoolean("result")) {
+				folderAdapter.notifyItemChanged(position)
+			}
+		}
+	}
+
+	override fun updateFolderName(folder: FolderEntity, position: Int) {
+		this.position = position
 		val args = bundleOf(FolderDialogFragment.KEY to folder)
 		findNavController().navigate(R.id.action_folders_to_folder_dialog, args)
 	}

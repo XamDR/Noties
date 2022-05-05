@@ -23,6 +23,9 @@ object DatabaseModule {
 	fun provideFolderDao(db: AppDatabase) = db.folderDao()
 
 	@Provides
+	fun providesNoteDao(db: AppDatabase) = db.noteDao()
+
+	@Provides
 	fun provideImageDao(db: AppDatabase) = db.imageDao()
 
 	private const val DATABASE_NAME = "App.db"

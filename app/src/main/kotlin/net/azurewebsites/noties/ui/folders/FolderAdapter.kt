@@ -64,7 +64,7 @@ class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 			.setTitle(selectedFolder.entity.name)
 			.setAdapter(FolderItemContextMenuAdapter(context, R.layout.folder_context_menu_item, items)) { _, which ->
 				when (which) {
-					0 -> listener.updateFolderName(selectedFolder.entity)
+					0 -> listener.updateFolderName(selectedFolder.entity, position)
 					1 -> listener.lockFolder(selectedFolder.entity)
 					2 -> listener.deleteFolder(selectedFolder)
 				}

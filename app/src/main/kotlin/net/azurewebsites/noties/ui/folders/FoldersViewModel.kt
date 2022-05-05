@@ -7,16 +7,23 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import net.azurewebsites.noties.data.FolderDao
 import net.azurewebsites.noties.core.Folder
 import net.azurewebsites.noties.core.FolderEntity
+import net.azurewebsites.noties.domain.DeleteFolderAndMoveNotesToTrashUseCase
+import net.azurewebsites.noties.domain.GetFoldersUseCase
+import net.azurewebsites.noties.domain.InsertFolderUseCase
+import net.azurewebsites.noties.domain.UpdateFolderUseCase
 import net.azurewebsites.noties.ui.helpers.printError
 import javax.inject.Inject
 
 @HiltViewModel
-class FoldersViewModel @Inject constructor(private val folderDao: FolderDao) : ViewModel() {
+class FoldersViewModel @Inject constructor(
+	getFoldersUseCase: GetFoldersUseCase,
+	private val insertFolderUseCase: InsertFolderUseCase,
+	private val updateFolderUseCase: UpdateFolderUseCase,
+	private val deleteFolderAndMoveNotesToTrashUseCase: DeleteFolderAndMoveNotesToTrashUseCase) : ViewModel() {
 
-	val folders = folderDao.getFolders().asLiveData()
+	val folders = getFoldersUseCase().asLiveData()
 
 	val currentFolder = MutableLiveData(FolderEntity())
 
@@ -24,23 +31,23 @@ class FoldersViewModel @Inject constructor(private val folderDao: FolderDao) : V
 		viewModelScope.launch {
 			try {
 				if (folder.id == 0) {
-					folderDao.insertFolder(folder)
+					insertFolderUseCase(folder)
 				}
 				else {
-					folderDao.updateFolder(folder)
+					updateFolderUseCase(folder)
 				}
-				onResultCallback.invoke(true)
+				onResultCallback(true)
 			}
 			catch (e: SQLiteConstraintException) {
-				printError("SQLITE_EX", e.message)
-				onResultCallback.invoke(false)
+				printError(TAG, e.message)
+				onResultCallback(false)
 			}
 		}
 	}
 
 	fun deleteFolderAndNotes(folder: Folder) {
 		viewModelScope.launch {
-			folderDao.deleteFolderAndNotes(folder)
+			deleteFolderAndMoveNotesToTrashUseCase(folder)
 		}
 	}
 
@@ -49,4 +56,8 @@ class FoldersViewModel @Inject constructor(private val folderDao: FolderDao) : V
 	}
 
 	private var onResultCallback: (succeed: Boolean) -> Unit = {}
+
+	private companion object {
+		private const val TAG = "SQLITE"
+	}
 }
