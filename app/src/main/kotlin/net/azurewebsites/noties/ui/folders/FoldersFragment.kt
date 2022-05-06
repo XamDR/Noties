@@ -19,6 +19,7 @@ import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.databinding.FragmentFoldersBinding
 import net.azurewebsites.noties.ui.helpers.printDebug
 import net.azurewebsites.noties.ui.helpers.showSnackbar
+import net.azurewebsites.noties.ui.helpers.tryNavigate
 
 @AndroidEntryPoint
 class FoldersFragment : Fragment(), FolderItemContextMenuListener {
@@ -60,7 +61,7 @@ class FoldersFragment : Fragment(), FolderItemContextMenuListener {
 		viewModel.position = position
 		printDebug("POS", viewModel.position)
 		val args = bundleOf(FolderDialogFragment.KEY to folder)
-		findNavController().navigate(R.id.action_folders_to_folder_dialog, args)
+		findNavController().tryNavigate(R.id.action_folders_to_folder_dialog, args)
 	}
 
 	override fun deleteFolder(folder: Folder) {

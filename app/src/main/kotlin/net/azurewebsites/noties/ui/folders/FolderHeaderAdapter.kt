@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.FolderHeaderItemBinding
 import net.azurewebsites.noties.core.FolderEntity
+import net.azurewebsites.noties.ui.helpers.tryNavigate
 
 class FolderHeaderAdapter : RecyclerView.Adapter<FolderHeaderAdapter.FolderHeaderViewHolder>() {
 
@@ -15,7 +16,7 @@ class FolderHeaderAdapter : RecyclerView.Adapter<FolderHeaderAdapter.FolderHeade
 		init {
 			binding.addNewFolder.setOnClickListener {
 				val args = bundleOf(FolderDialogFragment.KEY to FolderEntity())
-				it.findNavController().navigate(R.id.action_folders_to_folder_dialog, args)
+				it.findNavController().tryNavigate(R.id.action_folders_to_folder_dialog, args)
 			}
 		}
 	}
