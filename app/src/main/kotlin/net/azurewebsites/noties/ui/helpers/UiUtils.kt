@@ -10,17 +10,23 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
+import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.AttrRes
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.annotation.TransitionRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.getSystemService
 import androidx.core.os.ConfigurationCompat
 import androidx.core.view.ViewCompat
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
@@ -34,6 +40,8 @@ import com.google.android.material.behavior.SwipeDismissBehavior
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import net.azurewebsites.noties.ui.MainActivity
 import java.util.*
 
@@ -144,4 +152,41 @@ fun Context.getUriMimeType(uri: Uri): String? = contentResolver.getType(uri)
 fun Context.getUriExtension(uri: Uri): String? {
 	val mimeType = contentResolver.getType(uri)
 	return MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
+}
+
+inline fun Fragment.launchAndRepeatWithViewLifecycle(
+	minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+	crossinline block: suspend CoroutineScope.() -> Unit
+) {
+	viewLifecycleOwner.lifecycleScope.launch {
+		viewLifecycleOwner.repeatOnLifecycle(minActiveState) {
+			block()
+		}
+	}
+}
+
+inline fun DialogFragment.launchAndRepeatWithLifecycle(
+	minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+	crossinline block: suspend CoroutineScope.() -> Unit
+) {
+	lifecycleScope.launch {
+		repeatOnLifecycle(minActiveState) {
+			block()
+		}
+	}
+}
+
+inline fun FragmentActivity.launchAndRepeatWithLifecycle(
+	minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+	crossinline block: suspend CoroutineScope.() -> Unit
+) {
+	lifecycleScope.launch {
+		repeatOnLifecycle(minActiveState) {
+			block()
+		}
+	}
+}
+
+fun DialogFragment.getPositiveButton(): Button {
+	return (requireDialog() as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
 }

@@ -1,8 +1,5 @@
 package net.azurewebsites.noties.domain
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.conflate
-import kotlinx.coroutines.flow.flowOn
 import net.azurewebsites.noties.core.Folder
 import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.data.FolderDao
@@ -18,7 +15,7 @@ class UpdateFolderUseCase @Inject constructor(private val dao: FolderDao) {
 }
 
 class GetFoldersUseCase @Inject constructor(private val dao: FolderDao) {
-	operator fun invoke() = dao.getFolders().flowOn(Dispatchers.Main).conflate()
+	operator fun invoke() = dao.getFolders()
 }
 
 class DeleteFolderAndMoveNotesToTrashUseCase @Inject constructor(

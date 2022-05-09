@@ -5,8 +5,8 @@
 
 	<data>
 		<variable
-			name="folder"
-			type="net.azurewebsites.noties.core.FolderEntity" />
+			name="vm"
+			type="net.azurewebsites.noties.ui.folders.FoldersViewModel" />
 	</data>
 
 	<com.google.android.material.textfield.TextInputLayout
@@ -32,7 +32,8 @@
 			android:inputType="textCapSentences"
 			android:maxLines="1"
 			android:minHeight="48dp"
-			android:text="@={folder.name}"
+			android:text="@{vm.folderName}"
+			android:afterTextChanged="@{vm::updateFolderName}"
 			android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
 			android:textCursorDrawable="@drawable/cursor_color"
 			tools:text="Android" />

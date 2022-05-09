@@ -14,12 +14,14 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.AppBarLayout.LayoutParams
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.databinding.ActivityMainBinding
 import net.azurewebsites.noties.core.Folder
 import net.azurewebsites.noties.core.FolderEntity
+import net.azurewebsites.noties.databinding.ActivityMainBinding
 import net.azurewebsites.noties.ui.folders.FoldersViewModel
 import net.azurewebsites.noties.ui.helpers.findNavController
+import net.azurewebsites.noties.ui.helpers.launchAndRepeatWithLifecycle
 import net.azurewebsites.noties.ui.helpers.setNightMode
 import net.azurewebsites.noties.ui.helpers.tryNavigate
 import net.azurewebsites.noties.ui.notes.FabScrollingBehavior
@@ -43,13 +45,12 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		setSupportActionBar(binding.toolbar)
 		setupNavigation()
 		createDefaultFolder()
+		launchAndRepeatWithLifecycle { viewModel.folders.collect { updateNavDrawer(it) } }
 	}
 
 	override fun onStart() {
 		super.onStart()
 		navController.addOnDestinationChangedListener(this)
-//		updateNavDrawer(listOf())
-		viewModel.folders.observe(this) { updateNavDrawer(it) }
 	}
 
 	override fun onStop() {
@@ -108,7 +109,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 	private fun createDefaultFolder() {
 		if (!userPreferences.isOnboardingCompleted) {
 			val defaultFolder = FolderEntity(name = userPreferences.defaultFolderName)
-			viewModel.upsertFolder(defaultFolder)
+			viewModel.insertFolder(defaultFolder)
 		}
 	}
 
