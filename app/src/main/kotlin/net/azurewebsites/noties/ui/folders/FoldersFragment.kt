@@ -48,7 +48,7 @@ class FoldersFragment : Fragment(), NewFolderItemListener, FolderItemContextMenu
 		folderDialog.show(childFragmentManager, TAG)
 	}
 
-	override fun updateFolderName(folder: FolderEntity, position: Int) {
+	override fun updateFolderName(folder: FolderEntity) {
 		val uiState = FolderUiState(id = folder.id, name = folder.name, operation = Operation.Update)
 		val folderDialog = FolderDialogFragment.newInstance(uiState)
 		folderDialog.show(childFragmentManager, TAG)
