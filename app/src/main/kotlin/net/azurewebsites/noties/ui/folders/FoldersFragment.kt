@@ -10,12 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ConcatAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Folder
 import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.databinding.FragmentFoldersBinding
-import net.azurewebsites.noties.ui.helpers.launchAndRepeatWithViewLifecycle
 import net.azurewebsites.noties.ui.helpers.showSnackbar
 
 @AndroidEntryPoint
@@ -42,16 +40,17 @@ class FoldersFragment : Fragment(), NewFolderItemListener, FolderItemContextMenu
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		binding.folders.adapter = ConcatAdapter(headerAdapter, folderAdapter)
-		launchAndRepeatWithViewLifecycle { viewModel.folders.collect { folderAdapter.submitList(it) } }
+		viewModel.folders.observe(viewLifecycleOwner) { folderAdapter.submitList(it) }
 	}
 
 	override fun showFolderDialog() {
-		val folderDialog = FolderDialogFragment.newInstance(FolderEntity())
+		val folderDialog = FolderDialogFragment.newInstance(FolderUiState())
 		folderDialog.show(childFragmentManager, TAG)
 	}
 
 	override fun updateFolderName(folder: FolderEntity, position: Int) {
-		val folderDialog = FolderDialogFragment.newInstance(folder)
+		val uiState = FolderUiState(id = folder.id, name = folder.name, operation = Operation.Update)
+		val folderDialog = FolderDialogFragment.newInstance(uiState)
 		folderDialog.show(childFragmentManager, TAG)
 	}
 

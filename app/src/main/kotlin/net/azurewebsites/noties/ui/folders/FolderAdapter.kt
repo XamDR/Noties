@@ -77,13 +77,13 @@ class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 	private fun getContextMenuItems(selectedFolder: Folder, context: Context): List<FolderContextMenuItem> {
 		val items = if (selectedFolder.entity.id == 1) {
 			listOf(
-				FolderContextMenuItem(R.drawable.ic_edit_folder_name, context.getString(R.string.edit_folder_name)),
+				FolderContextMenuItem(R.drawable.ic_edit_folder_name, context.getString(R.string.update_folder_name)),
 				FolderContextMenuItem(R.drawable.ic_lock_folder, context.getString(R.string.lock_folder)),
 			)
 		}
 		else {
 			listOf(
-				FolderContextMenuItem(R.drawable.ic_edit_folder_name, context.getString(R.string.edit_folder_name)),
+				FolderContextMenuItem(R.drawable.ic_edit_folder_name, context.getString(R.string.update_folder_name)),
 				FolderContextMenuItem(R.drawable.ic_lock_folder, context.getString(R.string.lock_folder)),
 				FolderContextMenuItem(R.drawable.ic_delete, context.getString(R.string.delete_folder))
 			)

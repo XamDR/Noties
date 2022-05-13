@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
@@ -24,9 +25,6 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
@@ -40,8 +38,6 @@ import com.google.android.material.behavior.SwipeDismissBehavior
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import net.azurewebsites.noties.ui.MainActivity
 import java.util.*
 
@@ -154,39 +150,8 @@ fun Context.getUriExtension(uri: Uri): String? {
 	return MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
 }
 
-inline fun Fragment.launchAndRepeatWithViewLifecycle(
-	minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
-	crossinline block: suspend CoroutineScope.() -> Unit
-) {
-	viewLifecycleOwner.lifecycleScope.launch {
-		viewLifecycleOwner.repeatOnLifecycle(minActiveState) {
-			block()
-		}
-	}
-}
-
-inline fun DialogFragment.launchAndRepeatWithLifecycle(
-	minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
-	crossinline block: suspend CoroutineScope.() -> Unit
-) {
-	lifecycleScope.launch {
-		repeatOnLifecycle(minActiveState) {
-			block()
-		}
-	}
-}
-
-inline fun FragmentActivity.launchAndRepeatWithLifecycle(
-	minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
-	crossinline block: suspend CoroutineScope.() -> Unit
-) {
-	lifecycleScope.launch {
-		repeatOnLifecycle(minActiveState) {
-			block()
-		}
-	}
-}
-
 fun DialogFragment.getPositiveButton(): Button {
 	return (requireDialog() as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
 }
+
+fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)

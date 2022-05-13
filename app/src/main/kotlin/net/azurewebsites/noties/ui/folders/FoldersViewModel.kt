@@ -2,6 +2,7 @@ package net.azurewebsites.noties.ui.folders
 
 import android.text.Editable
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -23,46 +24,49 @@ class FoldersViewModel @Inject constructor(
 
 	init {
 		viewModelScope.launch {
-			folders.collect { names += it.map { folder -> folder.entity.name } }
+			getFoldersUseCase().collect { names += it.map { folder -> folder.entity.name } }
 		}
 	}
 
-	val folders = getFoldersUseCase()
+	val folders = getFoldersUseCase().asLiveData()
 	private val names = mutableListOf<String>()
 
-	private val _folderName = MutableStateFlow(String.Empty)
-	val folderName: StateFlow<String> = _folderName
+	private val uiState = MutableStateFlow(FolderUiState())
+	val folderUiState: StateFlow<FolderUiState> = uiState
 
-	private val _result: MutableStateFlow<Result> = MutableStateFlow(Result.EmptyName)
-	val result: StateFlow<Result> = _result
+	private val nameState: MutableStateFlow<InputNameState> = MutableStateFlow(InputNameState.EmptyName)
+	val inputNameState = nameState.asLiveData()
+
+	fun setFolderState(folderUiState: FolderUiState) = uiState.update { folderUiState }
 
 	fun updateFolderName(s: Editable) {
-		_folderName.update { s.toString() }
-		if (_folderName.value.isNotEmpty()) {
-			if (names.contains(_folderName.value)) {
-				_result.update { Result.ErrorDuplicateName }
+		uiState.update { uiState.value.copy(name = s.toString()) }
+
+		if (uiState.value.name.isNotEmpty()) {
+			if (names.contains(uiState.value.name)) {
+				when (uiState.value.operation) {
+					Operation.Insert -> nameState.update { InputNameState.ErrorDuplicateName }
+					Operation.Update -> {
+						nameState.update { InputNameState.UpdatingName }
+						uiState.update { uiState.value.copy(operation = Operation.Insert) }
+					}
+				}
 			}
 			else {
-				_result.update { Result.EditingName }
+				nameState.update { InputNameState.EditingName }
 			}
 		}
 		else {
-			_result.update { Result.EmptyName }
+			nameState.update { InputNameState.EmptyName }
 		}
 	}
 
 	fun insertFolder(folder: FolderEntity) {
-		viewModelScope.launch {
-			insertFolderUseCase(folder)
-			_result.update { Result.Success }
-		}
+		viewModelScope.launch { insertFolderUseCase(folder) }
 	}
 
 	fun updateFolder(folder: FolderEntity) {
-		viewModelScope.launch {
-			updateFolderUseCase(folder)
-			_result.update { Result.Success }
-		}
+		viewModelScope.launch { updateFolderUseCase(folder) }
 	}
 
 	fun deleteFolderAndNotes(folder: Folder) {
@@ -70,14 +74,7 @@ class FoldersViewModel @Inject constructor(
 	}
 
 	fun reset() {
-		_folderName.update { String.Empty }
-		_result.update { Result.EmptyName }
+		uiState.update { FolderUiState() }
+		nameState.update { InputNameState.EmptyName }
 	}
-}
-
-sealed class Result {
-	object EmptyName : Result()
-	object EditingName : Result()
-	object Success : Result()
-	object ErrorDuplicateName : Result()
 }

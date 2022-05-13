@@ -128,6 +128,7 @@ class NotesFragment : Fragment() {
 //			directoryId = if (it.id == 0) 1 else it.id
 //			submitList(directoryId)
 //		}
+		submitList(1)
 	}
 
 	private fun submitList(directoryId: Int) {

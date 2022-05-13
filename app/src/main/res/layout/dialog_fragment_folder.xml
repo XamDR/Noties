@@ -32,7 +32,7 @@
 			android:inputType="textCapSentences"
 			android:maxLines="1"
 			android:minHeight="48dp"
-			android:text="@{vm.folderName}"
+			android:text="@{vm.folderUiState.name}"
 			android:afterTextChanged="@{vm::updateFolderName}"
 			android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
 			android:textCursorDrawable="@drawable/cursor_color"
