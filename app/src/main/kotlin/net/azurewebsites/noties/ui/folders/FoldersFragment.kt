@@ -44,8 +44,12 @@ class FoldersFragment : Fragment(), NewFolderItemListener, FolderItemContextMenu
 	}
 
 	override fun showFolderDialog() {
-		val folderDialog = FolderDialogFragment.newInstance(FolderUiState())
-		folderDialog.show(childFragmentManager, TAG)
+		val previousDialog = childFragmentManager.findFragmentByTag(TAG)
+		// We check if the dialog exists in order to prevent to show it twice if the user clicks too fast
+		if (previousDialog == null) {
+			val folderDialog = FolderDialogFragment.newInstance(FolderUiState())
+			folderDialog.show(childFragmentManager, TAG)
+		}
 	}
 
 	override fun updateFolderName(folder: FolderEntity) {

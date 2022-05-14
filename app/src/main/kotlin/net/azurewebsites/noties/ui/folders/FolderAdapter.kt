@@ -11,10 +11,9 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.databinding.FolderItemBinding
 import net.azurewebsites.noties.core.Folder
 import net.azurewebsites.noties.core.FolderEntity
-import net.azurewebsites.noties.ui.helpers.printDebug
+import net.azurewebsites.noties.databinding.FolderItemBinding
 
 class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 	ListAdapter<Folder, FolderAdapter.FolderViewHolder>(FolderCallback()) {
@@ -45,7 +44,6 @@ class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 	override fun onBindViewHolder(holder: FolderViewHolder, position: Int) {
 		val folder = getItem(position)
 		holder.bind(folder.entity)
-		printDebug("BIND", holder)
 	}
 
 	override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -78,13 +76,21 @@ class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 		val items = if (selectedFolder.entity.id == 1) {
 			listOf(
 				FolderContextMenuItem(R.drawable.ic_edit_folder_name, context.getString(R.string.update_folder_name)),
-				FolderContextMenuItem(R.drawable.ic_lock_folder, context.getString(R.string.lock_folder)),
+				FolderContextMenuItem(
+					if (selectedFolder.entity.isProtected) R.drawable.ic_unlock_folder else R.drawable.ic_lock_folder,
+					if (selectedFolder.entity.isProtected) context.getString(R.string.unlock_folder)
+					else context.getString(R.string.lock_folder)
+				),
 			)
 		}
 		else {
 			listOf(
 				FolderContextMenuItem(R.drawable.ic_edit_folder_name, context.getString(R.string.update_folder_name)),
-				FolderContextMenuItem(R.drawable.ic_lock_folder, context.getString(R.string.lock_folder)),
+				FolderContextMenuItem(
+					if (selectedFolder.entity.isProtected) R.drawable.ic_unlock_folder else R.drawable.ic_lock_folder,
+					if (selectedFolder.entity.isProtected) context.getString(R.string.unlock_folder)
+					else context.getString(R.string.lock_folder)
+				),
 				FolderContextMenuItem(R.drawable.ic_delete, context.getString(R.string.delete_folder))
 			)
 		}
