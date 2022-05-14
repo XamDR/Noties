@@ -1,11 +1,17 @@
 package net.azurewebsites.noties.ui
 
+import android.app.Activity
+import android.app.KeyguardManager
 import android.os.Bundle
 import android.view.Menu
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.getSystemService
+import androidx.core.os.bundleOf
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.GravityCompat
 import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
 import androidx.navigation.NavController
@@ -21,6 +27,7 @@ import net.azurewebsites.noties.databinding.ActivityMainBinding
 import net.azurewebsites.noties.ui.folders.FoldersViewModel
 import net.azurewebsites.noties.ui.helpers.findNavController
 import net.azurewebsites.noties.ui.helpers.setNightMode
+import net.azurewebsites.noties.ui.helpers.showSnackbar
 import net.azurewebsites.noties.ui.helpers.tryNavigate
 import net.azurewebsites.noties.ui.notes.FabScrollingBehavior
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
@@ -33,6 +40,15 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 	private val navController by lazy { findNavController(R.id.nav_host_fragment) }
 	private val viewModel by viewModels<FoldersViewModel>()
 	@Inject lateinit var userPreferences: PreferenceStorage
+	private var currentFolder: FolderEntity? = null
+	private val deviceCredentialLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+		if (result.resultCode == Activity.RESULT_OK) {
+			currentFolder?.let { viewModel.updateCurrentFolder(it) }
+		}
+		else {
+			binding.root.showSnackbar(R.string.error_auth)
+		}
+	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		installSplashScreen()
@@ -43,12 +59,12 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		setSupportActionBar(binding.toolbar)
 		setupNavigation()
 		createDefaultFolder()
-		viewModel.folders.observe(this) { updateNavDrawer(it) }
 	}
 
 	override fun onStart() {
 		super.onStart()
 		navController.addOnDestinationChangedListener(this)
+		viewModel.folders.observe(this) { updateNavDrawer(it) }
 	}
 
 	override fun onStop() {
@@ -76,8 +92,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 	}
 
 	fun navigateToEditor() {
-//		val args = bundleOf("id" to directoryId)
-		navController.tryNavigate(R.id.action_notes_to_editor)
+		val args = bundleOf("id" to currentFolder?.id)
+		navController.tryNavigate(R.id.action_notes_to_editor, args)
 	}
 
 	private fun setupNavigation() {
@@ -96,9 +112,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		for (folder in folders) {
 			item.subMenu.add(R.id.group_folders, Menu.NONE, Menu.NONE, folder.entity.name)
 				.setIcon(if (folder.entity.id == 1) R.drawable.ic_folder_general else R.drawable.ic_folder)
-//				.setOnMenuItemClickListener {
-//					filterNotesByDirectory(directory); true
-//				}
+				.setOnMenuItemClickListener { filterNotesByFolder(folder.entity); true }
 		}
 		item.subMenu.add(R.id.group_folders, R.id.nav_folders, 999, getString(R.string.view_folders))
 			.setIcon(R.drawable.ic_edit_folder_name)
@@ -108,6 +122,30 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		if (!userPreferences.isOnboardingCompleted) {
 			val defaultFolder = FolderEntity(name = userPreferences.defaultFolderName)
 			viewModel.insertFolder(defaultFolder)
+		}
+	}
+
+	@Suppress("DEPRECATION")
+	private fun requestConfirmeDeviceCredential() {
+		val keyguardManager = getSystemService<KeyguardManager>() ?: return
+		val intent = keyguardManager.createConfirmDeviceCredentialIntent(
+			getString(R.string.confirme_device_credential_title),
+			getString(R.string.confirme_device_credential_desc)
+		)
+		deviceCredentialLauncher.launch(intent)
+	}
+
+	private fun filterNotesByFolder(folder: FolderEntity) {
+		binding.drawerLayout.closeDrawer(GravityCompat.START, true)
+		if (currentFolder != folder) {
+			currentFolder = folder
+
+			if (folder.isProtected) {
+				requestConfirmeDeviceCredential()
+			}
+			else {
+				viewModel.updateCurrentFolder(folder)
+			}
 		}
 	}
 

@@ -68,7 +68,7 @@ class FolderDialogFragment : DialogFragment() {
 		super.onStart()
 		binding.root.post { binding.folderName.showSoftKeyboard() }
 		if (shouldUpdate) {
-			viewModel.setFolderState(folderUiState)
+			viewModel.updateFolderState(folderUiState)
 			viewModel.updateFolderName(folderUiState.name.toEditable())
 			shouldUpdate = false
 		}

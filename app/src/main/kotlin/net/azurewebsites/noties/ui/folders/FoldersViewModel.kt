@@ -31,13 +31,18 @@ class FoldersViewModel @Inject constructor(
 	val folders = getFoldersUseCase().asLiveData()
 	private val names = mutableListOf<String>()
 
+	private val currentFolder = MutableStateFlow(FolderEntity())
+	val selectedFolder = currentFolder.asLiveData()
+
 	private val uiState = MutableStateFlow(FolderUiState())
 	val folderUiState: StateFlow<FolderUiState> = uiState
 
 	private val nameState: MutableStateFlow<InputNameState> = MutableStateFlow(InputNameState.EmptyName)
 	val inputNameState = nameState.asLiveData()
 
-	fun setFolderState(folderUiState: FolderUiState) = uiState.update { folderUiState }
+	fun updateCurrentFolder(folder: FolderEntity) = currentFolder.update { folder }
+
+	fun updateFolderState(folderUiState: FolderUiState) = uiState.update { folderUiState }
 
 	fun updateFolderName(s: Editable) {
 		uiState.update { uiState.value.copy(name = s.toString()) }
