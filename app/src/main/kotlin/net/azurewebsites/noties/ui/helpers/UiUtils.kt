@@ -155,3 +155,7 @@ fun DialogFragment.getPositiveButton(): Button {
 }
 
 fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
+
+fun View.setOnSingleClickListener(thresholdInMillis: Long = 500, action: (View) -> Unit) {
+	this.setOnClickListener(ThrottledOnClickListener(thresholdInMillis, action))
+}

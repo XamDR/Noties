@@ -14,6 +14,7 @@ import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Folder
 import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.databinding.FolderItemBinding
+import net.azurewebsites.noties.ui.helpers.setOnSingleClickListener
 
 class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 	ListAdapter<Folder, FolderAdapter.FolderViewHolder>(FolderCallback()) {
@@ -21,7 +22,7 @@ class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 	inner class FolderViewHolder(private val binding: FolderItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
 		init {
-			binding.moreOptions.setOnClickListener {
+			binding.moreOptions.setOnSingleClickListener {
 				if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
 					showContextMenu(bindingAdapterPosition, it)
 				}
