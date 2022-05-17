@@ -14,10 +14,7 @@ import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.NoteItemBinding
 import net.azurewebsites.noties.ui.editor.EditorFragment
-import net.azurewebsites.noties.ui.helpers.addItemTouchHelper
-import net.azurewebsites.noties.ui.helpers.printError
-import net.azurewebsites.noties.ui.helpers.tryNavigate
-import net.azurewebsites.noties.ui.helpers.setOnClickListener
+import net.azurewebsites.noties.ui.helpers.*
 
 class NoteAdapter : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteAdapterCallback()) {
 
@@ -25,20 +22,23 @@ class NoteAdapter : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteAdapterCal
 
 		init {
 			binding.url.setOnClickListener {
-				showNoteHyperlinks(getItem(bindingAdapterPosition))
+//				showNoteHyperlinks(getItem(bindingAdapterPosition))
+//				if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
+//
+//				}
 			}
 		}
 
 		fun bind(note: Note, isSelected: Boolean = false) {
 			binding.apply {
-				this.note = note.entity
+				this.note = note
 				ViewCompat.setTransitionName(root, note.entity.id.toString())
 				executePendingBindings()
 			}
 			itemView.isActivated = isSelected
 		}
 
-		private fun showNoteHyperlinks(note: Note) = onChipClickedCallback.invoke(note.entity.urls)
+//		private fun showNoteHyperlinks(note: Note) = onChipClickedCallback.invoke(note.entity.urls)
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
@@ -61,14 +61,15 @@ class NoteAdapter : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteAdapterCal
 
 	fun deleteNote(position: Int) {
 		val note = getItem(position)
-		onNotesDeletedCallback.invoke(listOf(note), true)
+		printDebug("NOTE", note)
+//		onNotesDeletedCallback.invoke(listOf(note), true)
 	}
 
 	private fun editNote(holder: RecyclerView.ViewHolder, position: Int) {
 		val note = getItem(position)
-		val args = bundleOf(EditorFragment.NOTE to note)
-		val extras = FragmentNavigatorExtras(holder.itemView to note.entity.id.toString())
-		try {
+		if (!note.entity.isTrashed) {
+			val args = bundleOf(EditorFragment.NOTE to note)
+			val extras = FragmentNavigatorExtras(holder.itemView to note.entity.id.toString())
 			holder.itemView.findNavController().tryNavigate(
 				resId = R.id.action_notes_to_editor,
 				args = args,
@@ -76,22 +77,7 @@ class NoteAdapter : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteAdapterCal
 				navigatorExtras = extras
 			)
 		}
-		catch (e: IllegalStateException) {
-			printError("ERROR_NAVIGATION", e.message)
-		}
 	}
-
-	fun setOnNotesDeletedListener(callback: (notes: List<Note>, hasUndo: Boolean) -> Unit) {
-		onNotesDeletedCallback = callback
-	}
-
-	private var onNotesDeletedCallback: (notes: List<Note>, hasUndo: Boolean) -> Unit = { _, _ -> }
-
-	fun setOnChipClickedListener(callback: (urls: List<String>) -> Unit) {
-		onChipClickedCallback = callback
-	}
-
-	private var onChipClickedCallback: (urls: List<String>) -> Unit = {}
 
 	private class NoteAdapterCallback : DiffUtil.ItemCallback<Note>() {
 

@@ -4,14 +4,13 @@
 	xmlns:tools="http://schemas.android.com/tools">
 
 	<data>
-		<import type="android.view.View"/>
+
 	</data>
 
 	<FrameLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:transitionGroup="true"
-		tools:context=".ui.notes.NotesFragment">
+		tools:context=".ui.trash.RecycleBinFragment">
 
 		<androidx.recyclerview.widget.RecyclerView
 			android:id="@+id/recycler_view"
@@ -24,18 +23,5 @@
 			android:scrollbars="none"
 			app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
 			tools:listitem="@layout/note_item"/>
-
-		<TextView
-			android:id="@+id/empty"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center"
-			android:text="@string/empty_notes"
-			android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
-			android:textStyle="bold"
-			android:translationY="-48dp"
-			app:drawableBottomCompat="@drawable/ic_note"
-			app:drawableSize="@{@dimen/note_drawable_size}"
-			tools:visibility="gone" />
 	</FrameLayout>
 </layout>

@@ -20,4 +20,7 @@ interface FolderDao {
 
 	@Delete
 	suspend fun deleteFolders(folders: List<FolderEntity>)
+
+	@Query("UPDATE Directories SET note_count = note_count + 1 WHERE id = :folderId")
+	suspend fun incrementNoteCount(folderId: Int)
 }

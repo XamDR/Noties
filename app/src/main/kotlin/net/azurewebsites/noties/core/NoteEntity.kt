@@ -1,6 +1,5 @@
 package net.azurewebsites.noties.core
 
-import android.net.Uri
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -14,16 +13,12 @@ data class NoteEntity(
 	@PrimaryKey(autoGenerate = true) val id: Long = 0,
 	var title: String? = null,
 	var text: String = String.Empty,
-	@ColumnInfo(name = "update_date") val updateDate: ZonedDateTime = ZonedDateTime.now(),
+	@ColumnInfo(name = "date_modification") val dateModification: ZonedDateTime = ZonedDateTime.now(),
 	@ColumnInfo(name = "color") val color: Int = 0,
 	@ColumnInfo(name = "urls") val urls: List<String> = emptyList(),
-	@ColumnInfo(name = "preview_image") val previewImage: Uri? = null,
 	@ColumnInfo(name = "is_pinned") val pinned: Boolean = false,
-	@ColumnInfo(name = "is_task_list") val isTaskList: Boolean = false,
+	@ColumnInfo(name = "is_trashed") val isTrashed: Boolean = false,
 	@ColumnInfo(name = "folder_id") val folderId: Int = 0) : Parcelable {
 
 	fun getUrlCount() = urls.size
-
-	fun toTaskList() = if (text.isEmpty()) emptyList()
-		else text.split("\n").map { Task(content = it) }
 }

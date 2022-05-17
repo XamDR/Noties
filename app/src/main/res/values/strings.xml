@@ -154,7 +154,7 @@
 	<string name="error_play_audio">Error playing audio file</string>
 	<string name="error_record_speech">Error recording speech</string>
 	<string name="recording_finished">Recording finished</string>
-	<string name="action_trash">Trash</string>
+	<string name="trash_fragment_label">Trash</string>
 
 	<!-- Plurals -->
 	<plurals name="note_count">

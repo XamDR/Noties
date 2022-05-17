@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "6e1d4a9c7953c4d82612df48642c5db4",
+    "identityHash": "52c1f873986d4a11a60b860249bc255a",
     "entities": [
       {
         "tableName": "Directories",
@@ -98,7 +98,7 @@
       },
       {
         "tableName": "Notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `text` TEXT NOT NULL, `update_date` TEXT NOT NULL, `color` INTEGER NOT NULL, `urls` TEXT NOT NULL, `preview_image` TEXT, `is_pinned` INTEGER NOT NULL, `is_task_list` INTEGER NOT NULL, `folder_id` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `text` TEXT NOT NULL, `date_modification` TEXT NOT NULL, `color` INTEGER NOT NULL, `urls` TEXT NOT NULL, `is_pinned` INTEGER NOT NULL, `is_trashed` INTEGER NOT NULL, `folder_id` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -119,8 +119,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "updateDate",
-            "columnName": "update_date",
+            "fieldPath": "dateModification",
+            "columnName": "date_modification",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -137,20 +137,14 @@
             "notNull": true
           },
           {
-            "fieldPath": "previewImage",
-            "columnName": "preview_image",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
             "fieldPath": "pinned",
             "columnName": "is_pinned",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "isTaskList",
-            "columnName": "is_task_list",
+            "fieldPath": "isTrashed",
+            "columnName": "is_trashed",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -174,7 +168,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6e1d4a9c7953c4d82612df48642c5db4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '52c1f873986d4a11a60b860249bc255a')"
     ]
   }
 }

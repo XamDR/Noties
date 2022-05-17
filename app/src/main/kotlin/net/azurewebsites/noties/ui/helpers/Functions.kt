@@ -48,7 +48,7 @@ fun readUriContent(context: Context, uri: Uri?): NoteEntity? {
 				return NoteEntity(
 					title = file?.name?.substringBeforeLast('.'),
 					text = it.readText(),
-					updateDate = ZonedDateTime.now(),
+					dateModification = ZonedDateTime.now(),
 					urls = extractUrls(it.readText())
 				)
 			}

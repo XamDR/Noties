@@ -24,7 +24,7 @@ class NoteEqualityTest {
 		val comparator = Comparator.comparing<ZonedDateTime, ZonedDateTime> { zdt ->
 			zdt.truncatedTo(ChronoUnit.MILLIS)
 		}
-		val result = comparator.compare(note1.entity.updateDate, note2.entity.updateDate)
+		val result = comparator.compare(note1.entity.dateModification, note2.entity.dateModification)
 		assertEquals(0, result)
 	}
 

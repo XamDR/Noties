@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		setContentView(binding.root)
 		setSupportActionBar(binding.toolbar)
 		setupNavigation()
-		createDefaultFolder()
+		createDefaultFolders()
 	}
 
 	override fun onStart() {
@@ -118,10 +118,12 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 			.setIcon(R.drawable.ic_edit_folder_name)
 	}
 
-	private fun createDefaultFolder() {
+	private fun createDefaultFolders() {
 		if (!userPreferences.isOnboardingCompleted) {
 			val defaultFolder = FolderEntity(name = userPreferences.defaultFolderName)
 			viewModel.insertFolder(defaultFolder)
+			val trashFolder = FolderEntity(name = "Recycle Bin")
+			viewModel.insertFolder(trashFolder)
 		}
 	}
 

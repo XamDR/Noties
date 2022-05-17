@@ -20,4 +20,6 @@ data class Note(
 		entity: NoteEntity = this.entity.copy(),
 		images: List<ImageEntity> = this.images
 	) = Note(entity, images)
+
+	fun getPreviewImage() = images.firstOrNull { it.mimeType?.startsWith("image") == true }?.uri
 }

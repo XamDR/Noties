@@ -7,8 +7,8 @@
 		<import type="androidx.preference.PreferenceManager"/>
 		<import type="net.azurewebsites.noties.ui.helpers.Converter"/>
 		<variable
-			name="note"
-			type="net.azurewebsites.noties.core.NoteEntity" />
+			name="vm"
+			type="net.azurewebsites.noties.ui.editor.EditorViewModel" />
 	</data>
 
 	<androidx.constraintlayout.widget.ConstraintLayout
@@ -54,7 +54,7 @@
 						android:inputType="textCapSentences"
 						android:maxLines="1"
 						android:paddingTop="8dp"
-						android:text="@={note.title}"
+						android:text="@{vm.note.title}"
 						android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
 						android:textSize='@{PreferenceManager.getDefaultSharedPreferences(context).getInt("font_size", 16)}'
 						android:textCursorDrawable="@drawable/cursor_color"
@@ -64,17 +64,42 @@
 		</com.google.android.material.appbar.AppBarLayout>
 
 		<androidx.recyclerview.widget.RecyclerView
-			android:id="@+id/note_content"
+			android:id="@+id/images"
 			android:layout_width="0dp"
-			android:layout_height="0dp"
-			android:orientation="vertical"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
 			android:scrollbars="none"
 			app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-			app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
+			app:layout_constraintBottom_toTopOf="@id/content"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toBottomOf="@id/app_bar"
-			tools:listitem="@layout/fragment_editor_content"/>
+			tools:listitem="@layout/fragment_editor_images"/>
+
+		<net.azurewebsites.noties.ui.views.LinedEditText
+			android:id="@+id/content"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:background="@null"
+			android:gravity="top|start"
+			android:hint="@string/placeholder"
+			android:imeOptions="flagNoFullscreen"
+			android:importantForAutofill="no"
+			android:inputType="textMultiLine|textCapSentences"
+			android:paddingStart="@dimen/content_padding"
+			android:paddingEnd="@dimen/content_padding"
+			android:paddingBottom="@dimen/content_padding"
+			android:scrollbars="none"
+			android:scrollHorizontally="false"
+			android:text="@{vm.note.text}"
+			android:afterTextChanged="@{vm::updateContent}"
+			android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+			android:textCursorDrawable="@drawable/cursor_color"
+			app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toBottomOf="@id/images"
+			tools:text="@string/demo_content"/>
 
 		<LinearLayout
 			android:id="@+id/bottom_toolbar"
@@ -83,7 +108,7 @@
 			android:orientation="horizontal"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/note_content"
+			app:layout_constraintTop_toBottomOf="@id/content"
 			app:layout_constraintBottom_toBottomOf="parent">
 
 			<ImageButton
@@ -104,7 +129,7 @@
 				android:layout_marginEnd="8dp"
 				android:layout_weight="1"
 				android:gravity="center"
-				android:text="@{@string/note_modified_date(Converter.displayCurrentDateTime(note.updateDate))}"
+				android:text="@{@string/note_modified_date(Converter.displayCurrentDateTime(vm.note.updateDate))}"
 				android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
 				tools:text="Última edición: 14/12/2021 22:20" />
 

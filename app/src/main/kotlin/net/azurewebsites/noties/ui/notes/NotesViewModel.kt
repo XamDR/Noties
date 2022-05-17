@@ -18,7 +18,7 @@ class NotesViewModel @Inject constructor(private val imageDao: ImageDao) : ViewM
 
 	fun sortNotes(directoryId: Int, sortMode: SortMode): LiveData<List<Note>> = when (sortMode) {
 		SortMode.Content -> getNotes(directoryId).map { result -> result.sortedBy { it.entity.text } }
-		SortMode.LastEdit -> getNotes(directoryId).map { result -> result.sortedByDescending { it.entity.updateDate } }
+		SortMode.LastEdit -> getNotes(directoryId).map { result -> result.sortedByDescending { it.entity.dateModification } }
 		SortMode.Title -> getNotes(directoryId).map { result -> result.sortedBy { it.entity.title } }
 	}
 

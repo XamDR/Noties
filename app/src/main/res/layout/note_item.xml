@@ -9,7 +9,7 @@
 		<import type="android.text.TextUtils"/>
 		<variable
 			name="note"
-			type="net.azurewebsites.noties.core.NoteEntity" />
+			type="net.azurewebsites.noties.core.Note" />
 	</data>
 
 	<com.google.android.material.card.MaterialCardView
@@ -49,10 +49,10 @@
 				android:layout_marginEnd="10dp"
 				android:ellipsize="end"
 				android:maxLines="1"
-				android:text="@{note.title}"
+				android:text="@{note.entity.title}"
 				android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
 				android:textStyle="bold"
-				android:visibility="@{TextUtils.isEmpty(note.title) ? View.GONE : View.VISIBLE}"
+				android:visibility="@{TextUtils.isEmpty(note.entity.title) ? View.GONE : View.VISIBLE}"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
 				app:layout_constraintTop_toBottomOf="@id/image"
@@ -68,7 +68,7 @@
 				android:layout_marginEnd="10dp"
 				android:ellipsize="end"
 				android:maxLines="3"
-				android:text="@{note.text}"
+				android:text="@{note.entity.text}"
 				android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
@@ -82,9 +82,9 @@
 				android:layout_marginStart="10dp"
 				android:layout_marginTop="10dp"
 				android:layout_marginBottom="10dp"
-				android:text='@{@plurals/number_urls(note.urlCount, note.urlCount)}'
+				android:text='@{@plurals/number_urls(note.entity.urlCount, note.entity.urlCount)}'
 				android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-				android:visibility="@{note.urlCount == 0 ? View.GONE : View.VISIBLE}"
+				android:visibility="@{note.entity.urlCount == 0 ? View.GONE : View.VISIBLE}"
 				app:chipIcon="@drawable/ic_link"
 				app:chipStartPadding="10dp"
 				app:layout_constraintBottom_toBottomOf="@+id/date_modified"
@@ -100,7 +100,7 @@
 				android:layout_marginTop="10dp"
 				android:layout_marginEnd="10dp"
 				android:layout_marginBottom="10dp"
-				android:text="@{Converter.displayCurrentDateTime(note.updateDate)}"
+				android:text="@{Converter.displayCurrentDateTime(note.entity.dateModification)}"
 				android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
 				android:textStyle="italic"
 				app:layout_constraintBottom_toBottomOf="parent"

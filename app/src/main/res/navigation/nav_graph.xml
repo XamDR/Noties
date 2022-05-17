@@ -80,6 +80,21 @@
 	</fragment>
 
 	<fragment
+		android:id="@+id/nav_trash"
+		android:name="net.azurewebsites.noties.ui.trash.RecycleBinFragment"
+		android:label="@string/trash_fragment_label"
+		tools:layout="@layout/fragment_recycle_bin">
+
+		<argument
+			android:name="ShowToolbar"
+			android:defaultValue="true" />
+
+		<argument
+			android:name="ShowFab"
+			android:defaultValue="false" />
+	</fragment>
+
+	<fragment
 		android:id="@+id/nav_settings"
 		android:name="net.azurewebsites.noties.ui.settings.SettingsFragment"
 		android:label="@string/settings_fragment_label">

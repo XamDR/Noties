@@ -10,12 +10,12 @@ class InsertFolderUseCase @Inject constructor(private val dao: FolderDao) {
 	suspend operator fun invoke(folder: FolderEntity) = dao.insertFolder(folder)
 }
 
-class UpdateFolderUseCase @Inject constructor(private val dao: FolderDao) {
-	suspend operator fun invoke(folder: FolderEntity) = dao.updateFolder(folder)
-}
-
 class GetFoldersUseCase @Inject constructor(private val dao: FolderDao) {
 	operator fun invoke() = dao.getFolders()
+}
+
+class UpdateFolderUseCase @Inject constructor(private val dao: FolderDao) {
+	suspend operator fun invoke(folder: FolderEntity) = dao.updateFolder(folder)
 }
 
 class DeleteFolderAndMoveNotesToTrashUseCase @Inject constructor(

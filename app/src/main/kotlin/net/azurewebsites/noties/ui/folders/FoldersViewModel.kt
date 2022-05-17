@@ -35,7 +35,7 @@ class FoldersViewModel @Inject constructor(
 	val selectedFolder = currentFolder.asLiveData()
 
 	private val uiState = MutableStateFlow(FolderUiState())
-	val folderUiState: StateFlow<FolderUiState> = uiState
+	val folderUiState = uiState.asStateFlow()
 
 	private val nameState: MutableStateFlow<InputNameState> = MutableStateFlow(InputNameState.EmptyName)
 	val inputNameState = nameState.asLiveData()
