@@ -23,7 +23,9 @@ class EditorFragment : Fragment() {
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<EditorViewModel>()
-	private val directoryId by lazy { requireArguments().getInt("id", 1) }
+	private val directoryId by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getInt("id", 1)
+	}
 
 	override fun onCreateView(inflater: LayoutInflater,
 							  container: ViewGroup?,
@@ -63,12 +65,12 @@ class EditorFragment : Fragment() {
 	private fun navigateUp() {
 		binding.editorToolbar.setNavigationOnClickListener {
 			it.hideSoftKeyboard()
-			activity?.onBackPressed()
+			requireActivity().onBackPressed()
 		}
 	}
 
 	private fun onBackPressed() {
-		activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner) {
+		requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
 			insertOrUpdateNote()
 			findNavController().popBackStack()
 		}

@@ -23,7 +23,7 @@
 		android:id="@+id/nav_trash"
 		android:icon="@drawable/ic_delete"
 		android:orderInCategory="999"
-		android:title="@string/trash_fragment_label" />
+		android:title="@string/recycle_bin_fragment_label" />
 
 	<item
 		android:id="@+id/nav_settings"

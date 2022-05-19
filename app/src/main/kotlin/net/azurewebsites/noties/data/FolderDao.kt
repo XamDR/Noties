@@ -12,7 +12,7 @@ interface FolderDao {
 	suspend fun insertFolder(folder: FolderEntity)
 
 	@Transaction
-	@Query("SELECT * FROM Directories ORDER BY (id <> 1), name")
+	@Query("SELECT * FROM Directories WHERE id <> -1 ORDER BY (id <> 1), name")
 	fun getFolders(): Flow<List<Folder>>
 
 	@Update

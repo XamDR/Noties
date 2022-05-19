@@ -29,8 +29,8 @@
 	<string name="lock_confirmation">This folder is now locked.</string>
 	<string name="no_lock_found">It is not possible to lock the folder. The device is not secured with a PIN, pattern or password.</string>
 	<string name="unlock_confirmation">This folder is no longer locked.</string>
-	<string name="confirme_device_credential_title">Unlock to see the notes of this folder</string>
-	<string name="confirme_device_credential_desc">To continue, please unlock your device.</string>
+	<string name="confirme_device_credential_title">Protected notes</string>
+	<string name="confirme_device_credential_desc">To continue, please unlock your device to see the notes of this folder.</string>
 	<string name="error_auth">Error. Unable to verify your identity.</string>
 
 	<!-- Notes Fragment -->
@@ -38,7 +38,7 @@
 	<string name="url_list_fragment_label">Urls</string>
 	<string name="make_todo_list">Make to-do list</string>
 	<string name="add_note">Add a new note.</string>
-	<string name="empty_notes">No notes here</string>
+	<string name="empty_notes_message">No notes here</string>
 	<string name="deleted_note">Deleted note</string>
 	<string name="undo">Undo</string>
 	<string name="search">Search your notes</string>
@@ -50,6 +50,9 @@
 	<string name="set_linear_layout">Linear</string>
 	<string name="set_grid_layout">Grid</string>
 	<string name="empty_note_deleted">Empty note deleted</string>
+
+	<!-- RecycleBin Fragment -->
+	<string name="empty_trash_message">Recycle Bin is empty</string>
 
 	<!-- Contextual Action Bar -->
 	<string name="delete_notes">Delete notes</string>
@@ -154,7 +157,7 @@
 	<string name="error_play_audio">Error playing audio file</string>
 	<string name="error_record_speech">Error recording speech</string>
 	<string name="recording_finished">Recording finished</string>
-	<string name="trash_fragment_label">Trash</string>
+	<string name="recycle_bin_fragment_label">Trash</string>
 
 	<!-- Plurals -->
 	<plurals name="note_count">

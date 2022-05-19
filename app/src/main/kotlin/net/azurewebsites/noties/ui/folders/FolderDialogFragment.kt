@@ -23,7 +23,9 @@ class FolderDialogFragment : DialogFragment() {
 	private var _binding: DialogFragmentFolderBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<FoldersViewModel>({ requireParentFragment() })
-	private val folderUiState by lazy { requireArguments().getParcelable(KEY) ?: FolderUiState() }
+	private val folderUiState by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getParcelable(KEY) ?: FolderUiState()
+	}
 	@Inject lateinit var userPreferences: PreferenceStorage
 	private var shouldUpdate = false
 

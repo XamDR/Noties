@@ -19,9 +19,9 @@ import java.util.concurrent.Executors
 @BindingAdapter("drawableSize")
 fun bindDrawableSize(textView: TextView, size: Float) {
 	val drawables = textView.compoundDrawables
-	if (drawables[3] != null) {
-		drawables[3].setBounds(0, 0, size.toInt(), size.toInt())
-		textView.setCompoundDrawables(null, null, null, drawables[3])
+	if (drawables[1] != null) {
+		drawables[1].setBounds(0, 0, size.toInt(), size.toInt())
+		textView.setCompoundDrawables(null, drawables[1], null, null)
 	}
 }
 

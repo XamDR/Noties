@@ -3,6 +3,7 @@ package net.azurewebsites.noties.data
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 import net.azurewebsites.noties.core.FolderEntity
+import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.core.NoteEntity
 
 @Dao
@@ -11,8 +12,9 @@ abstract class NoteDao(private val appDatabase: AppDatabase) {
 	@Insert
 	abstract suspend fun insertNote(note: NoteEntity): Long
 
-	@Query("SELECT * FROM Notes WHERE text LIKE '%' || :contentToSearch || '%'")
-	abstract fun getNotesByContent(contentToSearch: String): Flow<List<NoteEntity>>
+	@Transaction
+	@Query("SELECT * FROM Notes WHERE folder_id = -1")
+	abstract fun getTrashedNotes(): Flow<List<Note>>
 
 	@Update
 	abstract suspend fun updateNote(note: NoteEntity)
@@ -49,6 +51,6 @@ abstract class NoteDao(private val appDatabase: AppDatabase) {
 		appDatabase.folderDao().deleteFolders(folders)
 	}
 
-	@Query("UPDATE Notes SET folder_id = -1 WHERE folder_id = :folderId")
-	abstract fun moveNotesToTrash(folderId: Int)
+	@Query("UPDATE Notes SET folder_id = -1, is_trashed = 1 WHERE folder_id = :folderId")
+	abstract suspend fun moveNotesToTrash(folderId: Int)
 }

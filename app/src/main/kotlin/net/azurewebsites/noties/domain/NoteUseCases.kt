@@ -15,11 +15,15 @@ class InsertNoteUseCase @Inject constructor(
 	}
 }
 
-class UpdateNoteUseCase constructor(private val noteDao: NoteDao) {
+class GetTrashedNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
+	operator fun invoke() = noteDao.getTrashedNotes()
+}
+
+class UpdateNoteUseCase @Inject constructor(private val noteDao: NoteDao) {
 	suspend operator fun invoke(note: NoteEntity) = noteDao.updateNote(note)
 }
 
-class DeleteNotesUseCase constructor(private val noteDao: NoteDao) {
+class DeleteNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
 	suspend operator fun invoke(notes: List<NoteEntity>) = noteDao.deleteNotes(notes)
 }
 

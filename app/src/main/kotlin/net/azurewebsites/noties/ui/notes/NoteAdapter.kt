@@ -14,19 +14,17 @@ import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.NoteItemBinding
 import net.azurewebsites.noties.ui.editor.EditorFragment
-import net.azurewebsites.noties.ui.helpers.*
+import net.azurewebsites.noties.ui.helpers.addItemTouchHelper
+import net.azurewebsites.noties.ui.helpers.printDebug
+import net.azurewebsites.noties.ui.helpers.setOnClickListener
+import net.azurewebsites.noties.ui.helpers.tryNavigate
 
-class NoteAdapter : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteAdapterCallback()) {
+class NoteAdapter : ListAdapter<Note, RecyclerView.ViewHolder>(NoteAdapterCallback()) {
 
-	inner class NoteViewHolder(private val binding: NoteItemBinding): RecyclerView.ViewHolder(binding.root) {
+	inner class NoteViewHolder(private val binding: NoteItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
 		init {
-			binding.url.setOnClickListener {
-//				showNoteHyperlinks(getItem(bindingAdapterPosition))
-//				if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
-//
-//				}
-			}
+			binding.url.setOnClickListener { }
 		}
 
 		fun bind(note: Note, isSelected: Boolean = false) {
@@ -37,21 +35,28 @@ class NoteAdapter : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteAdapterCal
 			}
 			itemView.isActivated = isSelected
 		}
-
-//		private fun showNoteHyperlinks(note: Note) = onChipClickedCallback.invoke(note.entity.urls)
 	}
 
-	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
-		val binding = NoteItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-		return NoteViewHolder(binding).apply {
-			setOnClickListener { position, _ -> editNote(this, position) }
+	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
+		NOTE_LINEAR -> {
+			val binding = NoteItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+			NoteViewHolder(binding).apply {
+				setOnClickListener { position, _ -> editNote(this, position) }
+			}
+		}
+		else -> throw Exception("Unknown view type.")
+	}
+
+	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+		when (holder) {
+			is NoteViewHolder -> {
+				val note = getItem(position)
+				holder.bind(note)
+			}
 		}
 	}
 
-	override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-		val note = getItem(position)
-		holder.bind(note)
-	}
+	override fun getItemViewType(position: Int) = NOTE_LINEAR
 
 	override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
 		super.onAttachedToRecyclerView(recyclerView)
@@ -62,7 +67,6 @@ class NoteAdapter : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteAdapterCal
 	fun deleteNote(position: Int) {
 		val note = getItem(position)
 		printDebug("NOTE", note)
-//		onNotesDeletedCallback.invoke(listOf(note), true)
 	}
 
 	private fun editNote(holder: RecyclerView.ViewHolder, position: Int) {
@@ -84,5 +88,9 @@ class NoteAdapter : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteAdapterCal
 		override fun areItemsTheSame(oldNote: Note, newNote: Note) = oldNote.entity.id == newNote.entity.id
 
 		override fun areContentsTheSame(oldNote: Note, newNote: Note) = oldNote == newNote
+	}
+
+	private companion object {
+		private const val NOTE_LINEAR = R.layout.note_item
 	}
 }

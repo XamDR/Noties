@@ -36,8 +36,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
-	private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-	private val navController by lazy { findNavController(R.id.nav_host_fragment) }
+	private val binding by lazy(LazyThreadSafetyMode.NONE) { ActivityMainBinding.inflate(layoutInflater) }
+	private val navController by lazy(LazyThreadSafetyMode.NONE) { findNavController(R.id.nav_host_fragment) }
 	private val viewModel by viewModels<FoldersViewModel>()
 	@Inject lateinit var userPreferences: PreferenceStorage
 	private var currentFolder: FolderEntity? = null
@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		if (!userPreferences.isOnboardingCompleted) {
 			val defaultFolder = FolderEntity(name = userPreferences.defaultFolderName)
 			viewModel.insertFolder(defaultFolder)
-			val trashFolder = FolderEntity(name = "Recycle Bin")
+			val trashFolder = FolderEntity(id = -1, name = "Recycle Bin")
 			viewModel.insertFolder(trashFolder)
 		}
 	}

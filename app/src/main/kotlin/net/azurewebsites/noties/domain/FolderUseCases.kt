@@ -25,6 +25,7 @@ class DeleteFolderAndMoveNotesToTrashUseCase @Inject constructor(
 	suspend operator fun invoke(folder: Folder) {
 		for (note in folder.notes) {
 			noteDao.moveNotesToTrash(note.folderId)
+			folderDao.incrementNoteCount(folderId = -1)
 		}
 		folderDao.deleteFolders(listOf(folder.entity))
 	}

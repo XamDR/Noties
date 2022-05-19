@@ -3,17 +3,13 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools">
 
-	<data>
-		<import type="android.view.View"/>
-	</data>
-
 	<FrameLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:transitionGroup="true"
 		tools:context=".ui.notes.NotesFragment">
 
-		<androidx.recyclerview.widget.RecyclerView
+		<net.azurewebsites.noties.ui.views.CollectionView
 			android:id="@+id/recycler_view"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
@@ -26,15 +22,16 @@
 			tools:listitem="@layout/note_item"/>
 
 		<TextView
-			android:id="@+id/empty"
-			android:layout_width="wrap_content"
+			android:id="@+id/empty_view"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center"
-			android:text="@string/empty_notes"
-			android:textAppearance="@style/TextAppearance.Material3.HeadlineLarge"
+			android:gravity="center"
+			android:text="@string/empty_notes_message"
+			android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
 			android:textStyle="bold"
-			android:translationY="-48dp"
-			app:drawableBottomCompat="@drawable/ic_note"
+			android:translationY="-64dp"
+			app:drawableTopCompat="@drawable/ic_note"
 			app:drawableSize="@{@dimen/note_drawable_size}"
 			tools:visibility="gone" />
 	</FrameLayout>

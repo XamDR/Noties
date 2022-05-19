@@ -3,7 +3,6 @@ package net.azurewebsites.noties.ui.notes
 import android.os.Bundle
 import android.view.*
 import androidx.core.view.doOnPreDraw
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -61,6 +60,7 @@ class NotesFragment : Fragment() {
 
 	private fun setupRecyclerView() {
 		binding.recyclerView.apply {
+			setEmptyView(binding.emptyView)
 			adapter = noteAdapter
 			(layoutManager as StaggeredGridLayoutManager).spanCount = 1
 		}
@@ -77,7 +77,6 @@ class NotesFragment : Fragment() {
 
 	private fun submitList(directoryId: Int) {
 		viewModel.sortNotes(directoryId, SortMode.LastEdit).observe(viewLifecycleOwner) { notes ->
-			binding.empty.isVisible = notes.isEmpty()
 			noteAdapter.submitList(notes)
 			binding.root.doOnPreDraw { startPostponedEnterTransition() }
 		}
