@@ -158,6 +158,7 @@
 	<string name="error_record_speech">Error recording speech</string>
 	<string name="recording_finished">Recording finished</string>
 	<string name="recycle_bin_fragment_label">Trash</string>
+	<string name="empty_recycle_bin">Empty Recycle Bin</string>
 
 	<!-- Plurals -->
 	<plurals name="note_count">

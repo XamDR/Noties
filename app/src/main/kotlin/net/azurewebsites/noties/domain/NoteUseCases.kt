@@ -27,3 +27,39 @@ class DeleteNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
 	suspend operator fun invoke(notes: List<NoteEntity>) = noteDao.deleteNotes(notes)
 }
 
+class MoveNoteToTrashUseCase @Inject constructor(
+	private val noteDao: NoteDao,
+	private val folderDao: FolderDao) {
+
+	suspend operator fun invoke(note: NoteEntity) {
+		folderDao.decrementNoteCount(note.folderId)
+		val trashedNote = note.copy(folderId = -1, isTrashed = true)
+		noteDao.updateNote(trashedNote)
+		folderDao.incrementNoteCount(folderId = -1)
+	}
+}
+
+class RestoreNoteUseCase @Inject constructor(
+	private val noteDao: NoteDao,
+	private val folderDao: FolderDao) {
+
+	suspend operator fun invoke(note: NoteEntity, folderId: Int) {
+		folderDao.decrementNoteCount(folderId = -1)
+		val restoredNote = note.copy(folderId = folderId, isTrashed = false)
+		noteDao.updateNote(restoredNote)
+		folderDao.incrementNoteCount(folderId)
+	}
+}
+
+class EmptyTrashUseCase @Inject constructor(
+	private val noteDao: NoteDao,
+	private val folderDao: FolderDao) {
+
+	suspend operator fun invoke() {
+		val numDeletedRows = noteDao.emptyTrash()
+		repeat(numDeletedRows) {
+			folderDao.decrementNoteCount(folderId = -1)
+		}
+	}
+}
+

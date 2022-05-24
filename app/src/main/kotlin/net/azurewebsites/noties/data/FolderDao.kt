@@ -23,4 +23,7 @@ interface FolderDao {
 
 	@Query("UPDATE Directories SET note_count = note_count + 1 WHERE id = :folderId")
 	suspend fun incrementNoteCount(folderId: Int)
+
+	@Query("UPDATE Directories SET note_count = note_count - 1 WHERE id = :folderId")
+	suspend fun decrementNoteCount(folderId: Int)
 }

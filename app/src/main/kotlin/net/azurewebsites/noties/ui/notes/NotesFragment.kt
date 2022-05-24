@@ -1,36 +1,38 @@
 package net.azurewebsites.noties.ui.notes
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.transition.MaterialElevationScale
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
+import net.azurewebsites.noties.core.NoteEntity
 import net.azurewebsites.noties.databinding.FragmentNotesBinding
 import net.azurewebsites.noties.ui.folders.FoldersViewModel
-import net.azurewebsites.noties.ui.helpers.inflateTransition
-import net.azurewebsites.noties.ui.helpers.mainActivity
+import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NotesFragment : Fragment() {
+class NotesFragment : Fragment(), SwipeToDeleteListener {
 
 	private var _binding: FragmentNotesBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<NotesViewModel>()
 	private val parentViewModel by activityViewModels<FoldersViewModel>()
-	private val noteAdapter = NoteAdapter()
+	private val noteAdapter = NoteAdapter(this)
 	@Inject lateinit var userPreferences: PreferenceStorage
-	private var directoryId = 0
+	private var folderId = 0
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		setHasOptionsMenu(true)
 		enterTransition = inflateTransition(R.transition.slide_from_bottom)
 		exitTransition = MaterialElevationScale(false)
 		reenterTransition = MaterialElevationScale(true)
@@ -40,16 +42,13 @@ class NotesFragment : Fragment() {
 							  container: ViewGroup?,
 							  savedInstanceState: Bundle?): View {
 		_binding = FragmentNotesBinding.inflate(inflater, container, false)
+		addMenuProvider(NotesMenuProvider(), viewLifecycleOwner)
 		return binding.root
 	}
 
 	override fun onDestroyView() {
 		super.onDestroyView()
 		_binding = null
-	}
-
-	override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-		inflater.inflate(R.menu.menu_note_list, menu)
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,6 +62,7 @@ class NotesFragment : Fragment() {
 			setEmptyView(binding.emptyView)
 			adapter = noteAdapter
 			(layoutManager as StaggeredGridLayoutManager).spanCount = 1
+			addItemTouchHelper(ItemTouchHelper(SwipeToDeleteCallback(noteAdapter)))
 		}
 		postponeEnterTransition()
 	}
@@ -70,19 +70,27 @@ class NotesFragment : Fragment() {
 	private fun submitListAndUpdateToolbar() {
 		parentViewModel.selectedFolder.observe(viewLifecycleOwner) {
 			mainActivity.supportActionBar?.title = it.name.ifEmpty { userPreferences.defaultFolderName }
-			directoryId = if (it.id == 0) 1 else it.id
-			submitList(directoryId)
+			folderId = if (it.id == 0) 1 else it.id
+			submitList(folderId)
 		}
 	}
 
-	private fun submitList(directoryId: Int) {
-		viewModel.sortNotes(directoryId, SortMode.LastEdit).observe(viewLifecycleOwner) { notes ->
-			noteAdapter.submitList(notes)
+	private fun submitList(folderId: Int) {
+		viewModel.sortNotes(folderId, SortMode.LastEdit).observe(viewLifecycleOwner) {
+			noteAdapter.submitList(it)
 			binding.root.doOnPreDraw { startPostponedEnterTransition() }
 		}
 	}
 
-	private companion object {
-//		private const val TAG = "URL_LIST_DIALOG"
+	override fun moveNoteToTrash(note: NoteEntity) {
+		viewModel.moveNoteToTrash(note)
+		showUndoSnackbar(note)
+	}
+
+	private fun showUndoSnackbar(note: NoteEntity) {
+		binding.root.showSnackbar(R.string.deleted_note, action = R.string.undo) {
+			viewModel.restoreNote(note, folderId)
+			submitList(folderId)
+		}
 	}
 }

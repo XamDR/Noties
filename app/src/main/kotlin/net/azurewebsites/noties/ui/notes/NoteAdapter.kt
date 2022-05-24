@@ -7,19 +7,16 @@ import androidx.core.view.ViewCompat
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.NoteItemBinding
 import net.azurewebsites.noties.ui.editor.EditorFragment
-import net.azurewebsites.noties.ui.helpers.addItemTouchHelper
-import net.azurewebsites.noties.ui.helpers.printDebug
 import net.azurewebsites.noties.ui.helpers.setOnClickListener
 import net.azurewebsites.noties.ui.helpers.tryNavigate
 
-class NoteAdapter : ListAdapter<Note, RecyclerView.ViewHolder>(NoteAdapterCallback()) {
+class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Note, RecyclerView.ViewHolder>(NoteAdapterCallback()) {
 
 	inner class NoteViewHolder(private val binding: NoteItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -61,12 +58,11 @@ class NoteAdapter : ListAdapter<Note, RecyclerView.ViewHolder>(NoteAdapterCallba
 	override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
 		super.onAttachedToRecyclerView(recyclerView)
 		recyclerView.addItemDecoration(SpaceItemDecoration(spacing = 16))
-		recyclerView.addItemTouchHelper(ItemTouchHelper(SwipeToDeleteCallback(this)))
 	}
 
-	fun deleteNote(position: Int) {
+	fun moveNoteToTrash(position: Int) {
 		val note = getItem(position)
-		printDebug("NOTE", note)
+		listener.moveNoteToTrash(note.entity)
 	}
 
 	private fun editNote(holder: RecyclerView.ViewHolder, position: Int) {

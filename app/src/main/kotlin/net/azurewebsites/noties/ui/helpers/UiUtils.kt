@@ -21,10 +21,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.getSystemService
 import androidx.core.os.ConfigurationCompat
+import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
@@ -158,4 +161,12 @@ fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(t
 
 fun View.setOnSingleClickListener(thresholdInMillis: Long = 500, action: (View) -> Unit) {
 	this.setOnClickListener(ThrottledOnClickListener(thresholdInMillis, action))
+}
+
+fun Fragment.addMenuProvider(provider: MenuProvider, owner: LifecycleOwner) {
+	this.requireActivity().addMenuProvider(provider, owner)
+}
+
+fun Fragment.removeMenuProvider(provider: MenuProvider) {
+	this.requireActivity().removeMenuProvider(provider)
 }
