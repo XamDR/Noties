@@ -14,6 +14,7 @@ import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Folder
 import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.databinding.FragmentFoldersBinding
+import net.azurewebsites.noties.ui.helpers.printDebug
 import net.azurewebsites.noties.ui.helpers.showSnackbar
 
 @AndroidEntryPoint
@@ -60,7 +61,8 @@ class FoldersFragment : Fragment(), NewFolderItemListener, FolderItemContextMenu
 
 	override fun deleteFolder(folder: Folder) {
 		viewModel.deleteFolderAndNotes(folder)
-//		viewModel.currentFolder.value = FolderEntity()
+		viewModel.updateCurrentFolder(FolderEntity())
+		printDebug("SELECTED_FOLDER", viewModel.selectedFolder.value)
 		binding.root.showSnackbar(R.string.delete_notes_warning)
 	}
 

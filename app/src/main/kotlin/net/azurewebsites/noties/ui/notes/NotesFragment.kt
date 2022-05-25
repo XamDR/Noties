@@ -69,7 +69,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener {
 
 	private fun submitListAndUpdateToolbar() {
 		parentViewModel.selectedFolder.observe(viewLifecycleOwner) {
-			mainActivity.supportActionBar?.title = it.name.ifEmpty { userPreferences.defaultFolderName }
+			supportActionBar?.title = it.name.ifEmpty { userPreferences.defaultFolderName }
 			folderId = if (it.id == 0) 1 else it.id
 			submitList(folderId)
 		}
