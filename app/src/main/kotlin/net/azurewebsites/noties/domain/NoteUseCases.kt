@@ -15,8 +15,8 @@ class InsertNoteUseCase @Inject constructor(
 	}
 }
 
-class GetTrashedNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
-	operator fun invoke() = noteDao.getTrashedNotes()
+class GetNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
+	operator fun invoke(folderId: Int) = noteDao.getNotes(folderId)
 }
 
 class UpdateNoteUseCase @Inject constructor(private val noteDao: NoteDao) {
@@ -49,6 +49,10 @@ class RestoreNoteUseCase @Inject constructor(
 		noteDao.updateNote(restoredNote)
 		folderDao.incrementNoteCount(folderId)
 	}
+}
+
+class GetTrashedNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
+	operator fun invoke() = noteDao.getTrashedNotes()
 }
 
 class EmptyTrashUseCase @Inject constructor(

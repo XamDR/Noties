@@ -55,6 +55,7 @@
 						android:maxLines="1"
 						android:paddingTop="8dp"
 						android:text="@{vm.note.title}"
+						android:afterTextChanged="@{vm::updateTitle}"
 						android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
 						android:textSize='@{PreferenceManager.getDefaultSharedPreferences(context).getInt("font_size", 16)}'
 						android:textCursorDrawable="@drawable/cursor_color"

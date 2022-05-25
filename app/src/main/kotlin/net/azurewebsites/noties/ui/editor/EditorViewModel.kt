@@ -27,6 +27,10 @@ class EditorViewModel @Inject constructor(
 		uiState.update { uiState.value.copy(text = s.toString()) }
 	}
 
+	fun updateTitle(s: Editable) {
+		uiState.update { uiState.value.copy(title = s.toString()) }
+	}
+
 	fun createNote(title: String?, text: String, images: List<ImageEntity>, folderId: Int, id: Long = 0): Note {
 		return Note(
 			entity = NoteEntity(

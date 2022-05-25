@@ -13,7 +13,7 @@ class RecycleBinMenuProvider(private val listener: RecycleBinMenuListener) : Men
 
 	override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
 		R.id.empty_recycle_bin -> {
-			listener.emptyRecycleBin(); true
+			listener.showEmptyRecycleBinDialog(); true
 		}
 		else -> false
 	}

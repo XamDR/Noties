@@ -48,12 +48,19 @@ class RecycleBinFragment : Fragment(), SwipeToDeleteListener, RecycleBinMenuList
 
 	override fun moveNoteToTrash(note: NoteEntity) {}
 
-	override fun emptyRecycleBin() = viewModel.emptyRecycleBin()
+	override fun showEmptyRecycleBinDialog() {
+		val dialog = EmptyRecycleBinDialogFragment()
+		dialog.show(childFragmentManager, TAG)
+	}
 
 	private fun observeTrashedNotes() {
 		viewModel.getTrashedNotes().observe(viewLifecycleOwner) {
 			noteAdapter.submitList(it)
 			if (it.isEmpty()) removeMenuProvider(provider)
 		}
+	}
+
+	private companion object {
+		private const val TAG = "EMPTY_RECYCLE_BIN_DIALOG"
 	}
 }
