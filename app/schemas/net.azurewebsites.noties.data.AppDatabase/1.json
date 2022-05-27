@@ -2,10 +2,10 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "52c1f873986d4a11a60b860249bc255a",
+    "identityHash": "741c6443d80b23bb392b79d6c3d73041",
     "entities": [
       {
-        "tableName": "Directories",
+        "tableName": "Folders",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `note_count` INTEGER NOT NULL, `is_protected` INTEGER NOT NULL)",
         "fields": [
           {
@@ -41,19 +41,19 @@
         },
         "indices": [
           {
-            "name": "index_Directories_name",
+            "name": "index_Folders_name",
             "unique": true,
             "columnNames": [
               "name"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Directories_name` ON `${TABLE_NAME}` (`name`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Folders_name` ON `${TABLE_NAME}` (`name`)"
           }
         ],
         "foreignKeys": []
       },
       {
-        "tableName": "MediaItems",
+        "tableName": "Images",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uri` TEXT, `mime_type` TEXT, `alt_text` TEXT, `note_id` INTEGER NOT NULL)",
         "fields": [
           {
@@ -168,7 +168,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '52c1f873986d4a11a60b860249bc255a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '741c6443d80b23bb392b79d6c3d73041')"
     ]
   }
 }

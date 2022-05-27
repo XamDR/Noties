@@ -10,7 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import net.azurewebsites.noties.ui.image.BitmapCache
-import net.azurewebsites.noties.ui.media.MediaStorageManager
+import net.azurewebsites.noties.ui.media.ImageStorageManager
 import net.azurewebsites.noties.ui.views.LinedEditText
 import net.azurewebsites.noties.util.EditorStyle
 import pl.droidsonroids.gif.GifDrawable
@@ -68,7 +68,7 @@ fun bindImageSrc(imageView: ImageView, src: Uri?, width: Int, height: Int) {
 					gifDrawable = GifDrawable(imageView.context.contentResolver, src)
 				}
 				else {
-					bitmap = MediaStorageManager.getImageFromInternalStorage(imageView.context, src, width, height)?.also {
+					bitmap = ImageStorageManager.getImageFromInternalStorage(imageView.context, src, width, height)?.also {
 						BitmapCache.Instance.addBitmapToMemoryCache(imageKey, it)
 					}
 				}

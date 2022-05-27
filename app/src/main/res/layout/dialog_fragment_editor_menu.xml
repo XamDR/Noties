@@ -2,6 +2,12 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto">
 
+	<data>
+		<variable
+			name="fragment"
+			type="net.azurewebsites.noties.ui.editor.EditorMenuFragment" />
+	</data>
+
 	<androidx.constraintlayout.widget.ConstraintLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -20,6 +26,7 @@
 			android:padding="2dp"
 			android:text="@string/attach_images"
 			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+			android:onClick="@{() -> fragment.invokeCallback()}"
 			app:drawableStartCompat="@drawable/ic_attach_image"
 			app:layout_constraintTop_toTopOf="parent"
 			app:layout_constraintBottom_toTopOf="@id/take_picture"

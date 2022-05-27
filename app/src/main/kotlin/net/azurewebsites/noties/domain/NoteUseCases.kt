@@ -1,17 +1,23 @@
 package net.azurewebsites.noties.domain
 
+import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.core.NoteEntity
 import net.azurewebsites.noties.data.FolderDao
+import net.azurewebsites.noties.data.ImageDao
 import net.azurewebsites.noties.data.NoteDao
 import javax.inject.Inject
 
-class InsertNoteUseCase @Inject constructor(
+class InsertNoteWithImagesUseCase @Inject constructor(
 	private val folderDao: FolderDao,
-	private val noteDao: NoteDao) {
+	private val noteDao: NoteDao, private val imageDao: ImageDao) {
 
-	suspend operator fun invoke(note: NoteEntity): Long {
+	suspend operator fun invoke(note: NoteEntity, images: List<ImageEntity>) {
 		folderDao.incrementNoteCount(note.folderId)
-		return noteDao.insertNote(note)
+		val id = noteDao.insertNote(note)
+		for (image in images) {
+			image.noteId = id
+		}
+		imageDao.insertImages(images)
 	}
 }
 

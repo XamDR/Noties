@@ -169,3 +169,10 @@ fun Fragment.addMenuProvider(provider: MenuProvider, owner: LifecycleOwner) {
 fun Fragment.removeMenuProvider(provider: MenuProvider) {
 	this.requireActivity().removeMenuProvider(provider)
 }
+
+fun Fragment.showDialog(dialog: DialogFragment, tag: String) {
+	val previousDialog = this.childFragmentManager.findFragmentByTag(tag)
+	if (previousDialog == null) {
+		dialog.show(childFragmentManager, tag)
+	}
+}

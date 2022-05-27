@@ -12,7 +12,7 @@ interface FolderDao {
 	suspend fun insertFolder(folder: FolderEntity)
 
 	@Transaction
-	@Query("SELECT * FROM Directories WHERE id <> -1 ORDER BY (id <> 1), name")
+	@Query("SELECT * FROM Folders WHERE id <> -1 ORDER BY (id <> 1), name")
 	fun getFolders(): Flow<List<Folder>>
 
 	@Update
@@ -21,9 +21,9 @@ interface FolderDao {
 	@Delete
 	suspend fun deleteFolders(folders: List<FolderEntity>)
 
-	@Query("UPDATE Directories SET note_count = note_count + 1 WHERE id = :folderId")
+	@Query("UPDATE Folders SET note_count = note_count + 1 WHERE id = :folderId")
 	suspend fun incrementNoteCount(folderId: Int)
 
-	@Query("UPDATE Directories SET note_count = note_count - 1 WHERE id = :folderId")
+	@Query("UPDATE Folders SET note_count = note_count - 1 WHERE id = :folderId")
 	suspend fun decrementNoteCount(folderId: Int)
 }

@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@Entity(tableName = "Directories", indices = [Index(value = ["name"], unique = true)])
+@Entity(tableName = "Folders", indices = [Index(value = ["name"], unique = true)])
 data class FolderEntity(
 	@PrimaryKey(autoGenerate = true) val id: Int = 0,
 	val name: String = String.Empty,

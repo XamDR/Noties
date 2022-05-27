@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@Entity(tableName = "MediaItems")
+@Entity(tableName = "Images")
 data class ImageEntity(
 	@PrimaryKey(autoGenerate = true) val id: Int = 0,
 	val uri: Uri? = null,

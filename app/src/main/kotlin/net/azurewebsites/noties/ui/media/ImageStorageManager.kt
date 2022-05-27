@@ -9,7 +9,7 @@ import net.azurewebsites.noties.ui.image.BitmapHelper
 import java.io.File
 import java.io.FileOutputStream
 
-object MediaStorageManager {
+object ImageStorageManager {
 
 	private const val size = 1024
 

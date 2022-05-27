@@ -13,7 +13,7 @@ import net.azurewebsites.noties.databinding.SingleImageItemBinding
 import net.azurewebsites.noties.ui.helpers.printDebug
 import net.azurewebsites.noties.ui.helpers.setOnClickListener
 
-class MediaItemAdapter : ListAdapter<ImageEntity, BaseMediaItemViewHolder>(MediaItemAdapterCallback()) {
+class ImageAdapter : ListAdapter<ImageEntity, BaseMediaItemViewHolder>(MediaItemAdapterCallback()) {
 
 	inner class ImageMediaItemViewHolder(binding: ImageItemBinding) : BaseMediaItemViewHolder(binding) {
 		init {
