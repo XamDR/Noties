@@ -10,7 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import net.azurewebsites.noties.ui.image.BitmapCache
-import net.azurewebsites.noties.ui.media.ImageStorageManager
+import net.azurewebsites.noties.ui.image.ImageStorageManager
 import net.azurewebsites.noties.ui.views.LinedEditText
 import net.azurewebsites.noties.util.EditorStyle
 import pl.droidsonroids.gif.GifDrawable

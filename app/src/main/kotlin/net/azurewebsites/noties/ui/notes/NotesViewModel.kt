@@ -30,8 +30,11 @@ class NotesViewModel @Inject constructor(
 		return sortedNotes.asLiveData()
 	}
 
-	fun moveNoteToTrash(note: NoteEntity) {
-		viewModelScope.launch { moveNoteToTrashUseCase(note) }
+	fun moveNoteToTrash(note: NoteEntity, action: (note: NoteEntity) -> Unit) {
+		viewModelScope.launch {
+			moveNoteToTrashUseCase(note)
+			action(note)
+		}
 	}
 
 	fun restoreNote(note: NoteEntity, folderId: Int) {

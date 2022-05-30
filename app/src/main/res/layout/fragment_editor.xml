@@ -57,7 +57,7 @@
 						android:inputType="textCapSentences"
 						android:maxLines="1"
 						android:paddingTop="8dp"
-						android:text="@={vm.note.title}"
+						android:text="@={vm.note.entity.title}"
 						android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
 						android:textSize='@{PreferenceManager.getDefaultSharedPreferences(context).getInt("font_size", 16)}'
 						android:textCursorDrawable="@drawable/cursor_color"
@@ -108,7 +108,7 @@
 				android:layout_marginEnd="8dp"
 				android:layout_weight="1"
 				android:gravity="center"
-				android:text="@{@string/note_modified_date(Converter.displayCurrentDateTime(vm.note.dateModification))}"
+				android:text="@{@string/note_modified_date(Converter.displayCurrentDateTime(vm.note.entity.dateModification))}"
 				android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
 				tools:text="Última edición: 14/12/2021 22:20" />
 

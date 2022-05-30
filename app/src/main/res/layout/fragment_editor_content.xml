@@ -21,7 +21,7 @@
 		android:padding="8dp"
 		android:scrollbars="none"
 		android:scrollHorizontally="false"
-		android:text="@={vm.note.text}"
+		android:text="@={vm.note.entity.text}"
 		android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
 		android:textCursorDrawable="@drawable/cursor_color"
 		tools:text="@string/demo_content"/>

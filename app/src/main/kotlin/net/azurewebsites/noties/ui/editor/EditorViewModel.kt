@@ -4,20 +4,19 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.core.NoteEntity
 import net.azurewebsites.noties.domain.InsertNoteWithImagesUseCase
+import net.azurewebsites.noties.domain.UpdateNoteUseCase
 import net.azurewebsites.noties.ui.helpers.extractUrls
 import net.azurewebsites.noties.ui.helpers.getUriExtension
 import net.azurewebsites.noties.ui.helpers.getUriMimeType
-import net.azurewebsites.noties.ui.media.ImageStorageManager
+import net.azurewebsites.noties.ui.image.ImageStorageManager
 import java.io.File
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
@@ -26,38 +25,49 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditorViewModel @Inject constructor(
-	private val insertNoteWithImagesUseCase: InsertNoteWithImagesUseCase) : ViewModel() {
+	private val insertNoteWithImagesUseCase: InsertNoteWithImagesUseCase,
+	private val updateNoteUseCase: UpdateNoteUseCase) : ViewModel() {
 
-	private val _note = MutableStateFlow(NoteEntity())
-	val note = _note.asStateFlow()
+	val note = MutableStateFlow(Note())
+	val tempNote = MutableStateFlow(Note())
 
-	private val _images = MutableStateFlow(emptyList<ImageEntity>())
-	val images = _images.asLiveData()
-
-	fun addImages(context: Context, uris: List<Uri>) {
-		viewModelScope.launch {
-			for (uri in uris) {
-				val newUri = copyUri(context, uri)
-				val image = ImageEntity(
-					uri = newUri,
-					mimeType = context.getUriMimeType(newUri),
-					noteId = _note.value.id
-				)
-				_images.value += image
-			}
+	suspend fun addImages(context: Context, uris: List<Uri>) {
+		for (uri in uris) {
+			val newUri = copyUri(context, uri)
+			val image = ImageEntity(
+				uri = newUri,
+				mimeType = context.getUriMimeType(newUri),
+				noteId = note.value.entity.id
+			)
+			note.value.images += image
 		}
 	}
 
-	fun insertNote(directoryId: Int) {
-		if (_note.value.text.isNotEmpty() || _images.value.isNotEmpty()) {
-			val note = createNote(
-				title = _note.value.title,
-				text = _note.value.text,
-				images = _images.value,
-				folderId = directoryId
-			)
-			insertNote(note)
+	suspend fun insertorUpdateNote(directoryId: Int): Result {
+		if (note.value.isNonEmpty()) {
+			if (note.value.entity.id == 0L) {
+				val newNote = createNote(
+					title = note.value.entity.title,
+					text = note.value.entity.text,
+					images = note.value.images,
+					folderId = directoryId
+				)
+				return insertNote(newNote)
+			}
+			else {
+				if (note.value != tempNote.value) {
+					val updatedNote = createNote(
+						title = note.value.entity.title,
+						text = note.value.entity.text,
+						images = note.value.images,
+						folderId = note.value.entity.folderId,
+						id = note.value.entity.id
+					)
+					return updateNote(updatedNote)
+				}
+			}
 		}
+		return Result.Nothing
 	}
 
 	private fun createNote(title: String?, text: String, images: List<ImageEntity>, folderId: Int, id: Long = 0): Note {
@@ -74,15 +84,24 @@ class EditorViewModel @Inject constructor(
 		)
 	}
 
-	private fun insertNote(note: Note) {
-		viewModelScope.launch { insertNoteWithImagesUseCase(note.entity, note.images) }
+	private suspend fun insertNote(note: Note) = withContext(viewModelScope.coroutineContext) {
+		insertNoteWithImagesUseCase(note.entity, note.images)
+		Result.SuccesfulInsert
+	}
+
+	private suspend fun updateNote(note: Note) = withContext(viewModelScope.coroutineContext) {
+		updateNoteUseCase(note.entity)
+		Result.SuccesfulUpdate
 	}
 
 	private suspend fun copyUri(context: Context, uri: Uri): Uri {
-		val sufix = (0..999).random()
 		val extension = context.getUriExtension(uri) ?: "jpeg"
-		val fileName = "IMG_${DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(LocalDateTime.now())}_$sufix.$extension"
-		val fullPath = ImageStorageManager.saveToInternalStorage(context, uri, fileName)
+		val fileName = buildString {
+			append("IMG_")
+			append(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(LocalDateTime.now()))
+			append("_${(0..999).random()}.$extension")
+		}
+		val fullPath = ImageStorageManager.saveImage(context, uri, fileName)
 		val file = File(fullPath)
 		return FileProvider.getUriForFile(context, AUTHORITY, file)
 	}

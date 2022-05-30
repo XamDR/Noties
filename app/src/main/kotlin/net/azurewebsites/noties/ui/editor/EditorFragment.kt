@@ -10,11 +10,14 @@ import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import com.google.android.material.transition.MaterialContainerTransform
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import net.azurewebsites.noties.R
+import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.FragmentEditorBinding
 import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.media.ImageAdapter
@@ -34,9 +37,16 @@ class EditorFragment : Fragment(), AttachImagesListener {
 	)
 	private val editorImageAdapter = EditorImageAdapter(ImageAdapter())
 	private lateinit var editorContentAdapter: EditorContentAdapter
+	private var note: Note? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
+		if (savedInstanceState == null) {
+			note = arguments?.getParcelable<Note>(NOTE)?.also {
+				viewModel.note.value = it
+				viewModel.tempNote.value = viewModel.note.value.clone()
+			}
+		}
 		editorContentAdapter = EditorContentAdapter(viewModel)
 	}
 
@@ -46,6 +56,7 @@ class EditorFragment : Fragment(), AttachImagesListener {
 		_binding = FragmentEditorBinding.inflate(inflater, container, false).apply {
 			vm = viewModel
 			fragment = this@EditorFragment
+			lifecycleOwner = viewLifecycleOwner
 		}
 		return binding.root
 	}
@@ -61,7 +72,7 @@ class EditorFragment : Fragment(), AttachImagesListener {
 		navigateUp()
 		onBackPressed()
 		binding.content.adapter = ConcatAdapter(editorImageAdapter, editorContentAdapter)
-		viewModel.images.observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
+		editorImageAdapter.submitList(viewModel.note.value.images)
 	}
 
 	override fun onStart() {
@@ -70,8 +81,10 @@ class EditorFragment : Fragment(), AttachImagesListener {
 	}
 
 	override fun addImages(uris: List<Uri>) {
-		viewModel.addImages(requireContext(), uris)
-		viewModel.images.observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
+		viewLifecycleOwner.lifecycleScope.launch {
+			viewModel.addImages(requireContext(), uris)
+			editorImageAdapter.submitList(viewModel.note.value.images)
+		}
 	}
 
 	fun showBottomSheetMenu() {
@@ -99,13 +112,19 @@ class EditorFragment : Fragment(), AttachImagesListener {
 
 	private fun onBackPressed() {
 		requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-			viewModel.insertNote(directoryId)
-			findNavController().popBackStack()
+			viewLifecycleOwner.lifecycleScope.launch {
+				when (viewModel.insertorUpdateNote(directoryId)) {
+					Result.Nothing -> {}
+					Result.SuccesfulInsert -> context?.showToast(R.string.note_saved)
+					Result.SuccesfulUpdate -> context?.showToast(R.string.note_updated)
+				}
+				findNavController().popBackStack()
+			}
 		}
 	}
 
 	private fun showSoftKeyboard() {
-		if (viewModel.note.value.id == 0L) {
+		if (viewModel.note.value.entity.id == 0L) {
 			binding.content.showSoftKeyboard()
 		}
 	}

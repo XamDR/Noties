@@ -1,11 +1,10 @@
-package net.azurewebsites.noties.ui.media
+package net.azurewebsites.noties.ui.image
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
-import net.azurewebsites.noties.ui.image.BitmapHelper
 import java.io.File
 import java.io.FileOutputStream
 
@@ -14,7 +13,7 @@ object ImageStorageManager {
 	private const val size = 1024
 
 	@Suppress("BlockingMethodInNonBlockingContext")
-	suspend fun saveToInternalStorage(context: Context, uri: Uri, fileName: String): String = withContext(IO) {
+	suspend fun saveImage(context: Context, uri: Uri, fileName: String): String = withContext(IO) {
 		val directory = "${context.filesDir}/images"
 		context.contentResolver.openInputStream(uri).use {
 			FileOutputStream(File(directory, fileName)).use { fos ->
@@ -38,7 +37,7 @@ object ImageStorageManager {
 		else null
 	}
 
-	fun deleteImageFromInternalStorage(context: Context, imageFileName: String): Boolean {
+	fun deleteImage(context: Context, imageFileName: String): Boolean {
 		val directory = "${context.filesDir}/images"
 		val file = File(directory, imageFileName)
 		return file.delete()

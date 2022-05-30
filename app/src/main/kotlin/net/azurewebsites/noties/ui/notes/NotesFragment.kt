@@ -83,8 +83,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener {
 	}
 
 	override fun moveNoteToTrash(note: NoteEntity) {
-		viewModel.moveNoteToTrash(note)
-		showUndoSnackbar(note)
+		viewModel.moveNoteToTrash(note) { showUndoSnackbar(it) }
 	}
 
 	private fun showUndoSnackbar(note: NoteEntity) {

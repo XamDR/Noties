@@ -22,4 +22,6 @@ data class Note(
 	) = Note(entity, images)
 
 	fun getPreviewImage() = images.firstOrNull { it.mimeType?.startsWith("image") == true }?.uri
+
+	fun isNonEmpty() = entity.text.isNotEmpty() || images.isNotEmpty()
 }
