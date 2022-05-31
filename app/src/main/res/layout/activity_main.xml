@@ -3,12 +3,6 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools">
 
-	<data>
-		<variable
-			name="activity"
-			type="net.azurewebsites.noties.ui.MainActivity" />
-	</data>
-
 	<androidx.drawerlayout.widget.DrawerLayout
 		android:id="@+id/drawer_layout"
 		android:layout_width="match_parent"
@@ -40,19 +34,6 @@
 				app:defaultNavHost="true"
 				app:layout_behavior="@string/appbar_scrolling_view_behavior"
 				tools:layout="@layout/fragment_notes"/>
-
-			<com.google.android.material.floatingactionbutton.FloatingActionButton
-				android:id="@+id/fab"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_gravity="bottom|end"
-				android:layout_marginBottom="@dimen/fab_margin"
-				android:layout_marginEnd="@dimen/fab_margin"
-				android:contentDescription="@string/add_note"
-				android:onClick="@{() -> activity.navigateToEditor()}"
-				app:backgroundTint="?attr/colorPrimary"
-				app:srcCompat="@drawable/ic_add_item"
-				app:tint="?attr/colorSurface"/>
 		</androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 		<com.google.android.material.navigation.NavigationView
@@ -63,7 +44,6 @@
 			android:background="?attr/colorSurfaceVariant"
 			app:itemTextAppearance="@style/MyCustomNavTextStyle"
 			app:headerLayout="@layout/nav_header_main"
-			app:menu="@menu/activity_main_drawer"
-			tools:ignore="PrivateResource" />
+			app:menu="@menu/activity_main_drawer"/>
 	</androidx.drawerlayout.widget.DrawerLayout>
 </layout>

@@ -43,7 +43,7 @@ class WelcomeFragment : Fragment() {
 	}
 
 	fun navigateToMainScreen() {
-		findNavController().tryNavigate(R.id.action_welcome_to_notes)
+		findNavController().tryNavigate(R.id.action_welcome_to_folders)
 		preferenceStorage.isOnboardingCompleted = true
 	}
 

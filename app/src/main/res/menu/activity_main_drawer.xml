@@ -3,21 +3,17 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	tools:showIn="navigation_view">
 
-	<group
-		android:id="@+id/group_folders"
-		android:checkableBehavior="single"
-		android:orderInCategory="0">
+	<item
+		android:id="@+id/nav_folders"
+		android:icon="@drawable/ic_folder"
+		android:orderInCategory="0"
+		android:title="@string/folders_fragment_label"/>
 
-		<item
-			android:id="@+id/nav_notes"
-			android:orderInCategory="0"
-			android:title="@string/folders_fragment_label">
-
-			<menu>
-				<!-- Items will be added here dynamically -->
-			</menu>
-		</item>
-	</group>
+	<item
+		android:id="@+id/nav_notes"
+		android:icon="@drawable/ic_note"
+		android:orderInCategory="1"
+		android:title="@string/notes_fragment_label"/>
 
 	<item
 		android:id="@+id/nav_trash"

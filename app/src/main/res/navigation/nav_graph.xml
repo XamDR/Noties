@@ -15,13 +15,9 @@
 			android:name="ShowToolbar"
 			android:defaultValue="false" />
 
-		<argument
-			android:name="ShowFab"
-			android:defaultValue="false" />
-
 		<action
-			android:id="@+id/action_welcome_to_notes"
-			app:destination="@id/nav_notes"
+			android:id="@+id/action_welcome_to_folders"
+			app:destination="@id/nav_folders"
 			app:popUpTo="@id/nav_graph"
 			app:popUpToInclusive="true"/>
 	</fragment>
@@ -34,10 +30,6 @@
 
 		<argument
 			android:name="ShowToolbar"
-			android:defaultValue="true" />
-
-		<argument
-			android:name="ShowFab"
 			android:defaultValue="true" />
 
 		<action
@@ -55,10 +47,6 @@
 			android:name="ShowToolbar"
 			android:defaultValue="false" />
 
-		<argument
-			android:name="ShowFab"
-			android:defaultValue="false" />
-
 		<action
 			android:id="@+id/action_editor_gallery"
 			app:destination="@id/nav_gallery" />
@@ -74,9 +62,9 @@
 			android:name="ShowToolbar"
 			android:defaultValue="true" />
 
-		<argument
-			android:name="ShowFab"
-			android:defaultValue="false" />
+		<action
+			android:id="@+id/action_folders_to_notes"
+			app:destination="@id/nav_notes" />
 	</fragment>
 
 	<fragment
@@ -88,10 +76,6 @@
 		<argument
 			android:name="ShowToolbar"
 			android:defaultValue="true" />
-
-		<argument
-			android:name="ShowFab"
-			android:defaultValue="false" />
 	</fragment>
 
 	<fragment
@@ -102,10 +86,6 @@
 		<argument
 			android:name="ShowToolbar"
 			android:defaultValue="true" />
-
-		<argument
-			android:name="ShowFab"
-			android:defaultValue="false" />
 	</fragment>
 
 	<activity

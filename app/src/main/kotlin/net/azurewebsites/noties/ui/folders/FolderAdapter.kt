@@ -4,17 +4,19 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.divider.MaterialDividerItemDecoration
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Folder
 import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.databinding.FolderItemBinding
+import net.azurewebsites.noties.ui.helpers.setOnClickListener
 import net.azurewebsites.noties.ui.helpers.setOnSingleClickListener
+import net.azurewebsites.noties.ui.helpers.tryNavigate
 
 class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 	ListAdapter<Folder, FolderAdapter.FolderViewHolder>(FolderCallback()) {
@@ -39,7 +41,9 @@ class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FolderViewHolder {
 		val binding = FolderItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-		return FolderViewHolder(binding)
+		return FolderViewHolder(binding).apply {
+			setOnClickListener { position, _ -> navigateToNotes(this, position) }
+		}
 	}
 
 	override fun onBindViewHolder(holder: FolderViewHolder, position: Int) {
@@ -47,12 +51,10 @@ class FolderAdapter(private val listener: FolderItemContextMenuListener) :
 		holder.bind(folder.entity)
 	}
 
-	override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-		super.onAttachedToRecyclerView(recyclerView)
-		recyclerView.addItemDecoration(MaterialDividerItemDecoration(
-			recyclerView.context,
-			MaterialDividerItemDecoration.VERTICAL
-		).apply { dividerColor = MaterialColors.getColor(recyclerView, R.attr.colorPrimary) })
+	private fun navigateToNotes(holder: RecyclerView.ViewHolder, position: Int) {
+		val folder = getItem(position).entity
+		val args = bundleOf(FoldersFragment.FOLDER to folder)
+		holder.itemView.findNavController().tryNavigate(R.id.action_folders_to_notes, args)
 	}
 
 	private fun showContextMenu(position: Int, view: View) {

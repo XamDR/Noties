@@ -4,18 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.transition.MaterialElevationScale
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
+import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.core.NoteEntity
 import net.azurewebsites.noties.databinding.FragmentNotesBinding
-import net.azurewebsites.noties.ui.folders.FoldersViewModel
+import net.azurewebsites.noties.ui.folders.FoldersFragment
 import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
 import javax.inject.Inject
@@ -26,10 +28,11 @@ class NotesFragment : Fragment(), SwipeToDeleteListener {
 	private var _binding: FragmentNotesBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<NotesViewModel>()
-	private val parentViewModel by activityViewModels<FoldersViewModel>()
 	private val noteAdapter = NoteAdapter(this)
 	@Inject lateinit var userPreferences: PreferenceStorage
-	private var folderId = 0
+	private val folder by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getParcelable(FoldersFragment.FOLDER) ?: FolderEntity()
+	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -41,7 +44,9 @@ class NotesFragment : Fragment(), SwipeToDeleteListener {
 	override fun onCreateView(inflater: LayoutInflater,
 							  container: ViewGroup?,
 							  savedInstanceState: Bundle?): View {
-		_binding = FragmentNotesBinding.inflate(inflater, container, false)
+		_binding = FragmentNotesBinding.inflate(inflater, container, false).apply {
+			fragment = this@NotesFragment
+		}
 		addMenuProvider(NotesMenuProvider(), viewLifecycleOwner)
 		return binding.root
 	}
@@ -57,6 +62,11 @@ class NotesFragment : Fragment(), SwipeToDeleteListener {
 		submitListAndUpdateToolbar()
 	}
 
+	fun createNote() {
+		val args = bundleOf(ID to folder.id)
+		findNavController().tryNavigate(R.id.action_notes_to_editor, args)
+	}
+
 	private fun setupRecyclerView() {
 		binding.recyclerView.apply {
 			setEmptyView(binding.emptyView)
@@ -68,11 +78,8 @@ class NotesFragment : Fragment(), SwipeToDeleteListener {
 	}
 
 	private fun submitListAndUpdateToolbar() {
-		parentViewModel.selectedFolder.observe(viewLifecycleOwner) {
-			supportActionBar?.title = it.name.ifEmpty { userPreferences.defaultFolderName }
-			folderId = if (it.id == 0) 1 else it.id
-			submitList(folderId)
-		}
+		supportActionBar?.title = folder.name.ifEmpty { getString(R.string.notes_fragment_label) }
+		submitList(folder.id)
 	}
 
 	private fun submitList(folderId: Int) {
@@ -88,8 +95,12 @@ class NotesFragment : Fragment(), SwipeToDeleteListener {
 
 	private fun showUndoSnackbar(note: NoteEntity) {
 		binding.root.showSnackbar(R.string.deleted_note, action = R.string.undo) {
-			viewModel.restoreNote(note, folderId)
-			submitList(folderId)
+			viewModel.restoreNote(note, folder.id)
+			submitList(folder.id)
 		}
+	}
+
+	companion object {
+		const val ID = "id"
 	}
 }

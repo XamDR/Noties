@@ -8,13 +8,12 @@ import android.view.ViewGroup
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.ConcatAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Folder
 import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.databinding.FragmentFoldersBinding
-import net.azurewebsites.noties.ui.helpers.printDebug
+import net.azurewebsites.noties.ui.helpers.showDialog
 import net.azurewebsites.noties.ui.helpers.showSnackbar
 
 @AndroidEntryPoint
@@ -23,7 +22,6 @@ class FoldersFragment : Fragment(), NewFolderItemListener, FolderItemContextMenu
 	private var _binding: FragmentFoldersBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<FoldersViewModel>()
-	private val headerAdapter = FolderHeaderAdapter(this)
 	private val folderAdapter = FolderAdapter(this)
 
 	override fun onCreateView(inflater: LayoutInflater,
@@ -40,29 +38,23 @@ class FoldersFragment : Fragment(), NewFolderItemListener, FolderItemContextMenu
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		binding.folders.adapter = ConcatAdapter(headerAdapter, folderAdapter)
+		binding.folders.adapter = folderAdapter
 		viewModel.folders.observe(viewLifecycleOwner) { folderAdapter.submitList(it) }
 	}
 
 	override fun showFolderDialog() {
-		val previousDialog = childFragmentManager.findFragmentByTag(TAG)
-		// We check if the dialog exists in order to prevent to show it twice if the user clicks too fast
-		if (previousDialog == null) {
-			val folderDialog = FolderDialogFragment.newInstance(FolderUiState())
-			folderDialog.show(childFragmentManager, TAG)
-		}
+		val folderDialog = FolderDialogFragment.newInstance(FolderUiState())
+		showDialog(folderDialog, TAG)
 	}
 
 	override fun updateFolderName(folder: FolderEntity) {
 		val uiState = FolderUiState(id = folder.id, name = folder.name, operation = Operation.Update)
 		val folderDialog = FolderDialogFragment.newInstance(uiState)
-		folderDialog.show(childFragmentManager, TAG)
+		showDialog(folderDialog, TAG)
 	}
 
 	override fun deleteFolder(folder: Folder) {
 		viewModel.deleteFolderAndNotes(folder)
-		viewModel.updateCurrentFolder(FolderEntity())
-		printDebug("SELECTED_FOLDER", viewModel.selectedFolder.value)
 		binding.root.showSnackbar(R.string.delete_notes_warning)
 	}
 
@@ -86,7 +78,8 @@ class FoldersFragment : Fragment(), NewFolderItemListener, FolderItemContextMenu
 		}
 	}
 
-	private companion object {
+	companion object {
+		const val FOLDER = "folder"
 		private const val TAG = "FOLDER_DIALOG"
 	}
 }

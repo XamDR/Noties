@@ -35,8 +35,8 @@
 	<string name="error_auth">Error. Unable to verify your identity.</string>
 
 	<!-- Notes Fragment -->
-	<string name="note_list_fragment_label">Notes</string>
-	<string name="url_list_fragment_label">Urls</string>
+	<string name="notes_fragment_label">Notes</string>
+	<string name="urls_fragment_label">Urls</string>
 	<string name="make_todo_list">Make to-do list</string>
 	<string name="add_note">Add a new note.</string>
 	<string name="empty_notes_message">No notes here</string>
@@ -47,7 +47,7 @@
 	<string name="sort_by_content">By content</string>
 	<string name="sort_by_last_edit">By last edit</string>
 	<string name="sort_by_title">By title</string>
-	<string name="change_layout">View</string>
+	<string name="change_layout">Notes layout</string>
 	<string name="set_linear_layout">Linear</string>
 	<string name="set_grid_layout">Grid</string>
 	<string name="empty_note_deleted">Empty note deleted</string>

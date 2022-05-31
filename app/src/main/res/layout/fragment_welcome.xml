@@ -36,7 +36,7 @@
 			android:layout_marginBottom="32dp"
 			android:src="@drawable/ic_note"
 			android:scaleType="centerCrop"
-			android:contentDescription="@string/note_list_fragment_label"
+			android:importantForAccessibility="no"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintTop_toBottomOf="@id/app_name"
@@ -66,6 +66,7 @@
 			android:onClick="@{() -> fragment.navigateToMainScreen()}"
 			android:text="@string/start_button"
 			android:textAllCaps="true"
+			android:textColor="?attr/colorSurface"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toBottomOf="@id/message" />

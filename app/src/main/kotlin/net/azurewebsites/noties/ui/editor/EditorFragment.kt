@@ -21,6 +21,7 @@ import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.FragmentEditorBinding
 import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.media.ImageAdapter
+import net.azurewebsites.noties.ui.notes.NotesFragment
 
 @AndroidEntryPoint
 class EditorFragment : Fragment(), AttachImagesListener {
@@ -28,8 +29,8 @@ class EditorFragment : Fragment(), AttachImagesListener {
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<EditorViewModel>()
-	private val directoryId by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getInt("id", 1)
+	private val folderId by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getInt(NotesFragment.ID, 1)
 	}
 	private val pickImagesLauncher = registerForActivityResult(
 		ActivityResultContracts.OpenMultipleDocuments(),
@@ -113,7 +114,7 @@ class EditorFragment : Fragment(), AttachImagesListener {
 	private fun onBackPressed() {
 		requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
 			viewLifecycleOwner.lifecycleScope.launch {
-				when (viewModel.insertorUpdateNote(directoryId)) {
+				when (viewModel.insertorUpdateNote(folderId)) {
 					Result.Nothing -> {}
 					Result.SuccesfulInsert -> context?.showToast(R.string.note_saved)
 					Result.SuccesfulUpdate -> context?.showToast(R.string.note_updated)
