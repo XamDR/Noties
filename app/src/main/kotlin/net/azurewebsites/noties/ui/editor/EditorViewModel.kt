@@ -84,14 +84,18 @@ class EditorViewModel @Inject constructor(
 		)
 	}
 
-	private suspend fun insertNote(note: Note) = withContext(viewModelScope.coroutineContext) {
-		insertNoteWithImagesUseCase(note.entity, note.images)
-		Result.SuccesfulInsert
+	private suspend fun insertNote(note: Note): Result {
+		return withContext(viewModelScope.coroutineContext) {
+			insertNoteWithImagesUseCase(note.entity, note.images)
+			Result.SuccesfulInsert
+		}
 	}
 
-	private suspend fun updateNote(note: Note) = withContext(viewModelScope.coroutineContext) {
-		updateNoteUseCase(note.entity)
-		Result.SuccesfulUpdate
+	private suspend fun updateNote(note: Note): Result {
+		return withContext(viewModelScope.coroutineContext) {
+			updateNoteUseCase(note.entity, note.images)
+			Result.SuccesfulUpdate
+		}
 	}
 
 	private suspend fun copyUri(context: Context, uri: Uri): Uri {
