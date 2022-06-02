@@ -3,16 +3,14 @@ package net.azurewebsites.noties.ui.helpers
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
-import android.text.util.Linkify
-import android.util.TypedValue
-import android.widget.EditText
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.IdRes
 import androidx.databinding.BindingAdapter
 import net.azurewebsites.noties.ui.image.BitmapCache
 import net.azurewebsites.noties.ui.image.ImageStorageManager
-import net.azurewebsites.noties.ui.views.LinedEditText
-import net.azurewebsites.noties.util.EditorStyle
+import net.azurewebsites.noties.ui.views.CollectionView
 import pl.droidsonroids.gif.GifDrawable
 import java.util.concurrent.Executors
 
@@ -25,23 +23,10 @@ fun bindDrawableSize(textView: TextView, size: Float) {
 	}
 }
 
-@BindingAdapter("android:autoLink")
-fun bindAutolink(editText: EditText, isAutolinkEnabled: Boolean) {
-	editText.autoLinkMask = if (isAutolinkEnabled) Linkify.WEB_URLS else 0
-}
-
-@BindingAdapter("android:textSize")
-fun bindTextSize(editText: EditText, size: Float) {
-	editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, size)
-}
-
-@BindingAdapter("hasGridLines")
-fun bindHasGridLines(editText: LinedEditText, value: String) {
-	when (EditorStyle.from(value)) {
-		EditorStyle.Blank -> editText.hasGridLines = false
-		EditorStyle.Striped -> editText.hasGridLines = true
-		else -> throw Exception("Unknown editor style.")
-	}
+@BindingAdapter("emptyView")
+fun bindEmptyView(collectionView: CollectionView, @IdRes viewId: Int) {
+	val emptyView = collectionView.rootView.findViewById<View>(viewId)
+	collectionView.setEmptyView(emptyView)
 }
 
 private val executor = Executors.newSingleThreadExecutor()

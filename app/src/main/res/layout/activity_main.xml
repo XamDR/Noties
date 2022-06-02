@@ -2,48 +2,60 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools">
+	
+	<data>
+		<variable
+			name="activity"
+			type="net.azurewebsites.noties.ui.MainActivity" />
+	</data>
 
-	<androidx.drawerlayout.widget.DrawerLayout
-		android:id="@+id/drawer_layout"
+	<androidx.coordinatorlayout.widget.CoordinatorLayout
 		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+		android:layout_height="match_parent"
+		tools:context=".ui.MainActivity">
 
-		<androidx.coordinatorlayout.widget.CoordinatorLayout
+		<com.google.android.material.appbar.AppBarLayout
+			android:id="@+id/app_bar"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="@android:color/transparent"
+			android:stateListAnimator="@null">
+
+			<com.google.android.material.appbar.MaterialToolbar
+				android:id="@+id/toolbar"
+				android:layout_width="match_parent"
+				android:layout_height="?attr/actionBarSize" />
+		</com.google.android.material.appbar.AppBarLayout>
+
+		<androidx.fragment.app.FragmentContainerView
+			android:id="@+id/nav_host_fragment"
+			android:name="androidx.navigation.fragment.NavHostFragment"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			tools:context=".ui.MainActivity">
+			app:defaultNavHost="true"
+			app:layout_behavior="@string/appbar_scrolling_view_behavior"
+			tools:layout="@layout/fragment_notes" />
 
-			<com.google.android.material.appbar.AppBarLayout
-				android:id="@+id/app_bar"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:background="@android:color/transparent"
-				android:stateListAnimator="@null">
-
-				<com.google.android.material.appbar.MaterialToolbar
-					android:id="@+id/toolbar"
-					android:layout_width="match_parent"
-					android:layout_height="?attr/actionBarSize"/>
-			</com.google.android.material.appbar.AppBarLayout>
-
-			<androidx.fragment.app.FragmentContainerView
-				android:id="@+id/nav_host_fragment"
-				android:name="androidx.navigation.fragment.NavHostFragment"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				app:defaultNavHost="true"
-				app:layout_behavior="@string/appbar_scrolling_view_behavior"
-				tools:layout="@layout/fragment_notes"/>
-		</androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-		<com.google.android.material.navigation.NavigationView
-			android:id="@+id/nav_view"
+		<com.google.android.material.floatingactionbutton.FloatingActionButton
+			android:id="@+id/fab"
 			android:layout_width="wrap_content"
-			android:layout_height="match_parent"
-			android:layout_gravity="start"
-			android:background="?attr/colorSurfaceVariant"
-			app:itemTextAppearance="@style/MyCustomNavTextStyle"
-			app:headerLayout="@layout/nav_header_main"
-			app:menu="@menu/activity_main_drawer"/>
-	</androidx.drawerlayout.widget.DrawerLayout>
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom|end"
+			android:layout_marginEnd="@dimen/fab_margin"
+			android:layout_marginBottom="@dimen/fab_margin"
+			android:contentDescription="@string/add_note"
+			android:onClick="@{() -> activity.invokeCallback()}"
+			app:backgroundTint="?attr/colorPrimary"
+			app:srcCompat="@drawable/ic_add_item"
+			app:tint="?attr/colorSurface" />
+
+		<com.google.android.material.bottomnavigation.BottomNavigationView
+			android:id="@+id/nav_view"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom"
+			app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+			app:layout_insetEdge="bottom"
+			app:menu="@menu/bottom_nav_menu" />
+	</androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

@@ -43,14 +43,14 @@ class EditorViewModel @Inject constructor(
 		}
 	}
 
-	suspend fun insertorUpdateNote(directoryId: Int): Result {
+	suspend fun insertorUpdateNote(folderId: Int): Result {
 		if (note.value.isNonEmpty()) {
 			if (note.value.entity.id == 0L) {
 				val newNote = createNote(
 					title = note.value.entity.title,
 					text = note.value.entity.text,
 					images = note.value.images,
-					folderId = directoryId
+					folderId = folderId
 				)
 				return insertNote(newNote)
 			}

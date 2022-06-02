@@ -17,6 +17,7 @@
 			android:layout_marginBottom="8dp"
 			android:orientation="vertical"
 			android:scrollbars="none"
+			app:emptyView="@{emptyView}"
 			app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
 			app:spanCount="1"
 			tools:listitem="@layout/note_item"/>

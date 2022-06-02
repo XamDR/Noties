@@ -8,7 +8,7 @@
 		android:id="@+id/search"
 		android:icon="@drawable/ic_search"
 		android:orderInCategory="0"
-		android:title="@string/search"
+		android:title="@string/search_notes"
 		app:actionViewClass="androidx.appcompat.widget.SearchView"
 		app:showAsAction="always|collapseActionView" />
 

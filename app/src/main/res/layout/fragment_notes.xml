@@ -3,12 +3,6 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools">
 
-	<data>
-		<variable
-			name="fragment"
-			type="net.azurewebsites.noties.ui.notes.NotesFragment" />
-	</data>
-
 	<FrameLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
@@ -25,6 +19,7 @@
 			android:orientation="vertical"
 			android:scrollbars="none"
 			app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+			app:emptyView="@{emptyView}"
 			tools:listitem="@layout/note_item"/>
 
 		<TextView
@@ -40,18 +35,5 @@
 			app:drawableTopCompat="@drawable/ic_note"
 			app:drawableSize="@{@dimen/note_drawable_size}"
 			tools:visibility="gone" />
-
-		<com.google.android.material.floatingactionbutton.FloatingActionButton
-			android:id="@+id/fab"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="bottom|end"
-			android:layout_marginBottom="@dimen/fab_margin"
-			android:layout_marginEnd="@dimen/fab_margin"
-			android:contentDescription="@string/add_note"
-			android:onClick="@{() -> fragment.createNote()}"
-			app:backgroundTint="?attr/colorPrimary"
-			app:srcCompat="@drawable/ic_add_item"
-			app:tint="?attr/colorSurface"/>
 	</FrameLayout>
 </layout>

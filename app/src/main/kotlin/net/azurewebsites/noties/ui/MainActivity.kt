@@ -1,8 +1,9 @@
 package net.azurewebsites.noties.ui
 
 import android.os.Bundle
-import androidx.activity.viewModels
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.os.bundleOf
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isVisible
@@ -11,39 +12,44 @@ import androidx.navigation.NavDestination
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.AppBarLayout.LayoutParams
+import com.google.android.material.navigation.NavigationBarView
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.databinding.ActivityMainBinding
-import net.azurewebsites.noties.ui.folders.FoldersViewModel
+import net.azurewebsites.noties.ui.folders.FoldersFragment
 import net.azurewebsites.noties.ui.helpers.findNavController
 import net.azurewebsites.noties.ui.helpers.setNightMode
 import net.azurewebsites.noties.ui.helpers.tryNavigate
+import net.azurewebsites.noties.ui.notes.FabScrollingBehavior
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
+class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener,
+	NavigationBarView.OnItemReselectedListener {
 
 	private val binding by lazy(LazyThreadSafetyMode.NONE) { ActivityMainBinding.inflate(layoutInflater) }
 	private val navController by lazy(LazyThreadSafetyMode.NONE) { findNavController(R.id.nav_host_fragment) }
-	private val viewModel by viewModels<FoldersViewModel>()
+	private val appBarConfiguration by lazy(LazyThreadSafetyMode.NONE) {
+		AppBarConfiguration(setOf(R.id.nav_folders, R.id.nav_notes, R.id.nav_trash))
+	}
 	@Inject lateinit var userPreferences: PreferenceStorage
-	private var currentFolder: FolderEntity? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		installSplashScreen()
 		super.onCreate(savedInstanceState)
 		setNightMode()
+		binding.activity = this
 		setContentView(binding.root)
 		setSupportActionBar(binding.toolbar)
 		setupNavigation()
-		createDefaultFolders()
 	}
 
 	override fun onStart() {
 		super.onStart()
 		navController.addOnDestinationChangedListener(this)
+		binding.navView.setOnItemReselectedListener(this)
 	}
 
 	override fun onStop() {
@@ -58,36 +64,36 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 	{
 		if (arguments != null) {
 			binding.toolbar.isVisible = arguments.getBoolean("ShowToolbar")
+			if (arguments.getBoolean("ShowFab")) binding.fab.show() else binding.fab.hide()
+		}
+		when (destination.id) {
+			R.id.nav_notes, R.id.nav_trash -> toggleToolbarScrollFlags(isEnabled = true)
+			else -> toggleToolbarScrollFlags(isEnabled = false)
 		}
 		if (destination.id == R.id.nav_notes) {
-			toggleToolbarScrollFlags(isEnabled = true)
+			toggleFabBehavior(isEnabled = true)
 		}
 		else {
-			toggleToolbarScrollFlags(isEnabled = false)
+			toggleFabBehavior(isEnabled = false)
+		}
+		binding.navView.isVisible = appBarConfiguration.topLevelDestinations.contains(destination.id)
+	}
+
+	override fun onNavigationItemReselected(item: MenuItem) {
+		if (item.itemId == R.id.nav_notes) {
+			val args = bundleOf(FoldersFragment.FOLDER to FolderEntity())
+			navController.tryNavigate(R.id.action_notes_to_self, args)
 		}
 	}
 
-	fun navigateToEditor() {
-		val args = bundleOf("id" to currentFolder?.id)
-		navController.tryNavigate(R.id.action_notes_to_editor, args)
-	}
+	fun invokeCallback() = fabClickedListener()
 
 	private fun setupNavigation() {
-		val appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_folders), binding.drawerLayout)
 		navController.graph = navController.navInflater.inflate(R.navigation.nav_graph).apply {
 			setStartDestination(if (userPreferences.isOnboardingCompleted) R.id.nav_folders else R.id.nav_welcome)
 		}
 		binding.toolbar.setupWithNavController(navController, appBarConfiguration)
 		binding.navView.setupWithNavController(navController)
-	}
-
-	private fun createDefaultFolders() {
-		if (!userPreferences.isOnboardingCompleted) {
-			val defaultFolder = FolderEntity(name = userPreferences.defaultFolderName)
-			viewModel.insertFolder(defaultFolder)
-			val trashFolder = FolderEntity(id = -1, name = "Recycle Bin")
-			viewModel.insertFolder(trashFolder)
-		}
 	}
 
 	private fun toggleToolbarScrollFlags(isEnabled: Boolean) {
@@ -96,4 +102,15 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 			LayoutParams.SCROLL_FLAG_SCROLL or LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
 		} else 0
 	}
+
+	private fun toggleFabBehavior(isEnabled: Boolean) {
+		val params = binding.fab.layoutParams as CoordinatorLayout.LayoutParams
+		params.behavior = if (isEnabled) FabScrollingBehavior() else null
+	}
+
+	fun setOnFabClickListener(callback: () -> Unit) {
+		fabClickedListener = callback
+	}
+
+	private var fabClickedListener: () -> Unit = {}
 }

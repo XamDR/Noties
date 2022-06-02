@@ -1,5 +1,6 @@
 package net.azurewebsites.noties.ui.folders
 
-interface NewFolderItemListener {
+interface FolderToolbarItemListener {
 	fun showFolderDialog()
+	fun navigateToSettings()
 }

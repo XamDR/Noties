@@ -25,6 +25,10 @@ class GetNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
 	operator fun invoke(folderId: Int) = noteDao.getNotes(folderId)
 }
 
+class GetAllNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
+	operator fun invoke() = noteDao.getAllNotes()
+}
+
 class UpdateNoteUseCase @Inject constructor(
 	private val noteDao: NoteDao,
 	private val imageDao: ImageDao) {

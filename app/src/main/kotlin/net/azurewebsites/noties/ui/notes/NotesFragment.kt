@@ -1,5 +1,6 @@
 package net.azurewebsites.noties.ui.notes
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,13 +18,14 @@ import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.core.NoteEntity
 import net.azurewebsites.noties.databinding.FragmentNotesBinding
+import net.azurewebsites.noties.ui.MainActivity
 import net.azurewebsites.noties.ui.folders.FoldersFragment
 import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NotesFragment : Fragment(), SwipeToDeleteListener {
+class NotesFragment : Fragment(), SwipeToDeleteListener, NavigateToEditorListener {
 
 	private var _binding: FragmentNotesBinding? = null
 	private val binding get() = _binding!!
@@ -32,6 +34,11 @@ class NotesFragment : Fragment(), SwipeToDeleteListener {
 	@Inject lateinit var userPreferences: PreferenceStorage
 	private val folder by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelable(FoldersFragment.FOLDER) ?: FolderEntity()
+	}
+
+	override fun onAttach(context: Context) {
+		super.onAttach(context)
+		(context as MainActivity).setOnFabClickListener { navigateToEditor() }
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,9 +51,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener {
 	override fun onCreateView(inflater: LayoutInflater,
 							  container: ViewGroup?,
 							  savedInstanceState: Bundle?): View {
-		_binding = FragmentNotesBinding.inflate(inflater, container, false).apply {
-			fragment = this@NotesFragment
-		}
+		_binding = FragmentNotesBinding.inflate(inflater, container, false)
 		addMenuProvider(NotesMenuProvider(), viewLifecycleOwner)
 		return binding.root
 	}
@@ -62,14 +67,13 @@ class NotesFragment : Fragment(), SwipeToDeleteListener {
 		submitListAndUpdateToolbar()
 	}
 
-	fun createNote() {
-		val args = bundleOf(ID to folder.id)
+	override fun navigateToEditor() {
+		val args = bundleOf(ID to if (folder.id == 0) 1 else folder.id)
 		findNavController().tryNavigate(R.id.action_notes_to_editor, args)
 	}
 
 	private fun setupRecyclerView() {
 		binding.recyclerView.apply {
-			setEmptyView(binding.emptyView)
 			adapter = noteAdapter
 			(layoutManager as StaggeredGridLayoutManager).spanCount = 1
 			addItemTouchHelper(ItemTouchHelper(SwipeToDeleteCallback(noteAdapter)))
@@ -97,7 +101,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener {
 		binding.root.showSnackbar(R.string.deleted_note, action = R.string.undo) {
 			viewModel.restoreNote(note, folder.id)
 			submitList(folder.id)
-		}
+		}.anchorView = requireActivity().findViewById(R.id.fab)
 	}
 
 	companion object {

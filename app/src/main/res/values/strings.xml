@@ -16,6 +16,7 @@
 	<!-- Folders Fragment -->
 	<string name="folders_fragment_label">Folders</string>
 	<string name="default_folder">General</string>
+	<string name="search_folders">Search your folders</string>
 	<string name="add_folder">Create new folder</string>
 	<string name="more_options">More options</string>
 	<string name="view_folders">View folders</string>
@@ -42,7 +43,7 @@
 	<string name="empty_notes_message">No notes here</string>
 	<string name="deleted_note">Deleted note</string>
 	<string name="undo">Undo</string>
-	<string name="search">Search your notes</string>
+	<string name="search_notes">Search your notes</string>
 	<string name="sort">Sort</string>
 	<string name="sort_by_content">By content</string>
 	<string name="sort_by_last_edit">By last edit</string>

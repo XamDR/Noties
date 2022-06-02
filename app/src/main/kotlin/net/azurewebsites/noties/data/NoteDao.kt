@@ -15,6 +15,10 @@ interface NoteDao {
 	@Query("SELECT * FROM Notes WHERE folder_id = :folderId")
 	fun getNotes(folderId: Int): Flow<List<Note>>
 
+	@Transaction
+	@Query("SELECT * FROM Notes WHERE folder_id <> -1")
+	fun getAllNotes(): Flow<List<Note>>
+
 	@Update
 	suspend fun updateNote(note: NoteEntity)
 

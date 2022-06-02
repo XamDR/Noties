@@ -70,7 +70,6 @@ class EditorFragment : Fragment(), AttachImagesListener {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		initTransition()
-		navigateUp()
 		onBackPressed()
 		binding.content.adapter = ConcatAdapter(editorImageAdapter, editorContentAdapter)
 		editorImageAdapter.submitList(viewModel.note.value.images)
@@ -104,11 +103,9 @@ class EditorFragment : Fragment(), AttachImagesListener {
 		}
 	}
 
-	private fun navigateUp() {
-		binding.editorToolbar.setNavigationOnClickListener {
-			it.hideSoftKeyboard()
-			requireActivity().onBackPressed()
-		}
+	fun navigateUp() {
+		binding.root.hideSoftKeyboard()
+		requireActivity().onBackPressed()
 	}
 
 	private fun onBackPressed() {

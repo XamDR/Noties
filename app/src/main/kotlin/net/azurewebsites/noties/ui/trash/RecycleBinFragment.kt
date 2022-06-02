@@ -11,6 +11,7 @@ import net.azurewebsites.noties.core.NoteEntity
 import net.azurewebsites.noties.databinding.FragmentRecycleBinBinding
 import net.azurewebsites.noties.ui.helpers.addMenuProvider
 import net.azurewebsites.noties.ui.helpers.removeMenuProvider
+import net.azurewebsites.noties.ui.helpers.showDialog
 import net.azurewebsites.noties.ui.notes.NoteAdapter
 import net.azurewebsites.noties.ui.notes.SwipeToDeleteListener
 
@@ -21,26 +22,24 @@ class RecycleBinFragment : Fragment(), SwipeToDeleteListener, RecycleBinMenuList
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<RecycleBinViewModel>()
 	private val noteAdapter = NoteAdapter(this)
-	private val provider = RecycleBinMenuProvider(this)
+	private val menuProvider = RecycleBinMenuProvider(this)
 
 	override fun onCreateView(inflater: LayoutInflater,
 	                          container: ViewGroup?,
 	                          savedInstanceState: Bundle?): View {
 		_binding = FragmentRecycleBinBinding.inflate(inflater, container, false)
-		addMenuProvider(provider, viewLifecycleOwner)
+		addMenuProvider(menuProvider, viewLifecycleOwner)
 		return binding.root
 	}
 
 	override fun onDestroyView() {
 		super.onDestroyView()
-		binding.recyclerView.adapter = null
 		_binding = null
 	}
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		binding.recyclerView.apply {
-			setEmptyView(binding.emptyView)
 			adapter = noteAdapter
 		}
 		observeTrashedNotes()
@@ -49,17 +48,14 @@ class RecycleBinFragment : Fragment(), SwipeToDeleteListener, RecycleBinMenuList
 	override fun moveNoteToTrash(note: NoteEntity) {}
 
 	override fun showEmptyRecycleBinDialog() {
-		val previousDialog = childFragmentManager.findFragmentByTag(TAG)
-		if (previousDialog == null) {
-			val emptyRecycleBinDialog = EmptyRecycleBinDialogFragment()
-			emptyRecycleBinDialog.show(childFragmentManager, TAG)
-		}
+		val emptyRecycleBinDialog = EmptyRecycleBinDialogFragment()
+		showDialog(emptyRecycleBinDialog, TAG)
 	}
 
 	private fun observeTrashedNotes() {
 		viewModel.getTrashedNotes().observe(viewLifecycleOwner) {
 			noteAdapter.submitList(it)
-			if (it.isEmpty()) removeMenuProvider(provider)
+			if (it.isEmpty()) removeMenuProvider(menuProvider)
 		}
 	}
 
