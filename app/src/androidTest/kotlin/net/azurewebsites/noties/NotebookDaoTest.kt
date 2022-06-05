@@ -10,7 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.runBlocking
 //import net.azurewebsites.noties.core.FolderEntity
 import net.azurewebsites.noties.data.AppDatabase
-import net.azurewebsites.noties.data.FolderDao
+import net.azurewebsites.noties.data.NotebookDao
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -21,8 +21,8 @@ import org.junit.runner.RunWith
 import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
-class DirectoryDaoTest {
-	private lateinit var directoryDao: FolderDao
+class NotebookDaoTest {
+	private lateinit var directoryDao: NotebookDao
 	private lateinit var db: AppDatabase
 
 	@get:Rule
@@ -37,7 +37,7 @@ class DirectoryDaoTest {
 			// Allowing main thread queries, just for testing.
 			.allowMainThreadQueries()
 			.build()
-		directoryDao = db.folderDao()
+		directoryDao = db.notebookDao()
 	}
 
 	@After

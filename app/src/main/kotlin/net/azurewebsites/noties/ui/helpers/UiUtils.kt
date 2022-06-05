@@ -22,7 +22,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.getSystemService
-import androidx.core.os.ConfigurationCompat
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.DialogFragment
@@ -42,7 +41,6 @@ import com.google.android.material.behavior.SwipeDismissBehavior
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import java.util.*
 
 fun FragmentActivity.findNavController(@IdRes id: Int) =
 	(this.supportFragmentManager.findFragmentById(id) as NavHostFragment).navController
@@ -140,10 +138,6 @@ fun NavController.tryNavigate(
 
 val Fragment.supportActionBar: ActionBar?
 	get() = (this.activity as AppCompatActivity).supportActionBar
-
-fun Context.getCurrentLocale(): Locale {
-	return ConfigurationCompat.getLocales(this.resources.configuration)[0]
-}
 
 fun Context.getUriMimeType(uri: Uri): String? = contentResolver.getType(uri)
 

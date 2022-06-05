@@ -1,4 +1,4 @@
-package net.azurewebsites.noties.ui.folders
+package net.azurewebsites.noties.ui.notebooks
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
@@ -17,7 +17,7 @@ sealed class Operation : Parcelable {
 }
 
 @Parcelize
-data class FolderUiState(
+data class NotebookUiState(
 	val id: Int = 0,
 	val name: String = String.Empty,
 	val operation: Operation = Operation.Insert) : Parcelable

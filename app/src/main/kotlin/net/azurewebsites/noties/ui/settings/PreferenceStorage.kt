@@ -14,7 +14,7 @@ class PreferenceStorage @Inject constructor(@ApplicationContext context: Context
 
 	var isOnboardingCompleted by BooleanPreference(preferences, PREF_ONBOARDING, false)
 
-	var defaultFolderName by StringPreference(preferences, PREF_DIRECTORY_NAME, context.getString(R.string.default_folder))
+	var defaultFolderName by StringPreference(preferences, PREF_DIRECTORY_NAME, context.getString(R.string.default_notebook))
 
 	companion object {
 		private const val PREF_ONBOARDING = "pref_onboarding"

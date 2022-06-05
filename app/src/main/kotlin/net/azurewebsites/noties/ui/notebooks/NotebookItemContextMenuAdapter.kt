@@ -1,4 +1,4 @@
-package net.azurewebsites.noties.ui.folders
+package net.azurewebsites.noties.ui.notebooks
 
 import android.content.Context
 import android.view.LayoutInflater

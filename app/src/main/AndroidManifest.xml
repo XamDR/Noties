@@ -18,13 +18,13 @@
 			android:name="net.azurewebsites.noties.ui.media.GalleryActivity"
 			android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|layoutDirection|fontScale"
 			android:exported="false"
-			android:theme="@style/Theme.EzNotes.Gallery"
+			android:theme="@style/Theme.Noties.Gallery"
 			android:windowSoftInputMode="stateAlwaysHidden"/>
 
 		<activity
 			android:name="net.azurewebsites.noties.ui.MainActivity"
 			android:exported="true"
-			android:theme="@style/Theme.SplashScreen.EzNotes"
+			android:theme="@style/Theme.SplashScreen.Noties"
 			android:windowSoftInputMode="adjustResize">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -40,7 +40,7 @@
 
 		<provider
 			android:name="androidx.core.content.FileProvider"
-			android:authorities="net.azurewebsites.eznotes"
+			android:authorities="net.azurewebsites.noties"
 			android:exported="false"
 			android:grantUriPermissions="true">
 			<meta-data

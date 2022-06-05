@@ -12,11 +12,11 @@ interface NoteDao {
 	suspend fun insertNote(note: NoteEntity): Long
 
 	@Transaction
-	@Query("SELECT * FROM Notes WHERE folder_id = :folderId")
-	fun getNotes(folderId: Int): Flow<List<Note>>
+	@Query("SELECT * FROM Notes WHERE notebook_id = :notebookId")
+	fun getNotes(notebookId: Int): Flow<List<Note>>
 
 	@Transaction
-	@Query("SELECT * FROM Notes WHERE folder_id <> -1")
+	@Query("SELECT * FROM Notes WHERE notebook_id <> -1")
 	fun getAllNotes(): Flow<List<Note>>
 
 	@Update
@@ -26,9 +26,9 @@ interface NoteDao {
 	suspend fun deleteNotes(notes: List<NoteEntity>)
 
 	@Transaction
-	@Query("SELECT * FROM Notes WHERE folder_id = -1")
+	@Query("SELECT * FROM Notes WHERE notebook_id = -1")
 	fun getTrashedNotes(): Flow<List<Note>>
 
-	@Query("DELETE FROM Notes WHERE folder_id = -1")
+	@Query("DELETE FROM Notes WHERE notebook_id = -1")
 	suspend fun emptyTrash(): Int
 }

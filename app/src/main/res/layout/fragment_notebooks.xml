@@ -6,7 +6,7 @@
 	<FrameLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		tools:context=".ui.folders.FoldersFragment">
+		tools:context=".ui.notebooks.NotebooksFragment">
 
 		<androidx.recyclerview.widget.RecyclerView
 			android:id="@+id/folders"
@@ -14,8 +14,7 @@
 			android:layout_height="match_parent"
 			android:layout_margin="10dp"
 			android:orientation="vertical"
-			app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-			app:spanCount="2"
-			tools:listitem="@layout/folder_item" />
+			app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+			tools:listitem="@layout/notebook_item" />
 	</FrameLayout>
 </layout>

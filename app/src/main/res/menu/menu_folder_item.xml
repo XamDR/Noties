@@ -4,15 +4,15 @@
 	<item
 		android:id="@+id/edit_folder_name"
 		android:orderInCategory="0"
-		android:title="@string/update_folder_name"/>
+		android:title="@string/update_notebook_name"/>
 
 	<item
 		android:id="@+id/delete_folder"
 		android:orderInCategory="5"
-		android:title="@string/delete_folder"/>
+		android:title="@string/delete_notebook"/>
 
 	<item
 		android:id="@+id/lock_folder"
 		android:orderInCategory="10"
-		android:title="@string/lock_folder"/>
+		android:title="@string/lock_notebook"/>
 </menu>

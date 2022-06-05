@@ -25,13 +25,13 @@
 	</string-array>
 
 	<array name="folder_context_menu_options">
-		<item>@string/update_folder_name</item>
-		<item>@string/lock_folder</item>
-		<item>@string/delete_folder</item>
+		<item>@string/update_notebook_name</item>
+		<item>@string/lock_notebook</item>
+		<item>@string/delete_notebook</item>
 	</array>
 
 	<array name="default_folder_context_menu_options">
-		<item>@string/update_folder_name</item>
-		<item>@string/lock_folder</item>
+		<item>@string/update_notebook_name</item>
+		<item>@string/lock_notebook</item>
 	</array>
 </resources>

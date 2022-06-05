@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import net.azurewebsites.noties.data.AppDatabase
+import net.azurewebsites.noties.data.AppDatabaseCallback
 import javax.inject.Singleton
 
 @Module
@@ -17,10 +18,12 @@ object DatabaseModule {
 	@Singleton
 	@Provides
 	fun provideAppDatabase(@ApplicationContext context: Context) =
-		Room.databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME).build()
+		Room.databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME)
+			.addCallback(AppDatabaseCallback(context))
+			.build()
 
 	@Provides
-	fun provideFolderDao(db: AppDatabase) = db.folderDao()
+	fun provideNotebookDao(db: AppDatabase) = db.notebookDao()
 
 	@Provides
 	fun providesNoteDao(db: AppDatabase) = db.noteDao()

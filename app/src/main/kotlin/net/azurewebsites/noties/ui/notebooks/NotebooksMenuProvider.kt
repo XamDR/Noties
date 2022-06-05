@@ -1,4 +1,4 @@
-package net.azurewebsites.noties.ui.folders
+package net.azurewebsites.noties.ui.notebooks
 
 import android.view.Menu
 import android.view.MenuInflater
@@ -6,17 +6,14 @@ import android.view.MenuItem
 import androidx.core.view.MenuProvider
 import net.azurewebsites.noties.R
 
-class FoldersMenuProvider(private val listener: FolderToolbarItemListener) : MenuProvider {
+class NotebooksMenuProvider(private val listener: NotebookToolbarItemListener) : MenuProvider {
 	override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-		menuInflater.inflate(R.menu.menu_folders, menu)
+		menuInflater.inflate(R.menu.menu_notebooks, menu)
 	}
 
 	override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
-		R.id.add_new_folder -> {
-			listener.showFolderDialog(); true
-		}
-		R.id.nav_settings -> {
-			listener.navigateToSettings(); true
+		R.id.add_new_notebook -> {
+			listener.showCreateNotebookDialog(); true
 		}
  		else -> false
 	}

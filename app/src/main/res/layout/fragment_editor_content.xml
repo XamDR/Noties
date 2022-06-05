@@ -18,11 +18,14 @@
 		android:imeOptions="flagNoFullscreen"
 		android:importantForAutofill="no"
 		android:inputType="textMultiLine|textCapSentences"
-		android:padding="8dp"
+		android:paddingStart="16dp"
+		android:paddingTop="8dp"
+		android:paddingEnd="16dp"
+		android:paddingBottom="8dp"
 		android:scrollbars="none"
 		android:scrollHorizontally="false"
 		android:text="@={vm.note.entity.text}"
 		android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
 		android:textCursorDrawable="@drawable/cursor_color"
-		tools:text="@string/demo_content"/>
+		tools:text="@string/demo_content" />
 </layout>

@@ -1,40 +1,54 @@
 package net.azurewebsites.noties.ui
 
+import android.app.KeyguardManager
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.GravityCompat
+import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.AppBarLayout.LayoutParams
-import com.google.android.material.navigation.NavigationBarView
+import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.core.FolderEntity
+import net.azurewebsites.noties.core.Notebook
+import net.azurewebsites.noties.core.NotebookEntity
 import net.azurewebsites.noties.databinding.ActivityMainBinding
-import net.azurewebsites.noties.ui.folders.FoldersFragment
 import net.azurewebsites.noties.ui.helpers.findNavController
 import net.azurewebsites.noties.ui.helpers.setNightMode
+import net.azurewebsites.noties.ui.helpers.showSnackbar
 import net.azurewebsites.noties.ui.helpers.tryNavigate
+import net.azurewebsites.noties.ui.notebooks.NotebooksFragment
+import net.azurewebsites.noties.ui.notebooks.NotebooksViewModel
 import net.azurewebsites.noties.ui.notes.FabScrollingBehavior
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener,
-	NavigationBarView.OnItemReselectedListener {
+	NavigationView.OnNavigationItemSelectedListener {
 
 	private val binding by lazy(LazyThreadSafetyMode.NONE) { ActivityMainBinding.inflate(layoutInflater) }
 	private val navController by lazy(LazyThreadSafetyMode.NONE) { findNavController(R.id.nav_host_fragment) }
-	private val appBarConfiguration by lazy(LazyThreadSafetyMode.NONE) {
-		AppBarConfiguration(setOf(R.id.nav_folders, R.id.nav_notes, R.id.nav_trash))
-	}
+	private val viewModel by viewModels<NotebooksViewModel>()
 	@Inject lateinit var userPreferences: PreferenceStorage
+	private var selectedNotebook: NotebookEntity? = null
+	private val deviceCredentialLauncher = registerForActivityResult(
+		ActivityResultContracts.StartActivityForResult()) { result ->
+		activityResultCallback(result)
+	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		installSplashScreen()
@@ -49,7 +63,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 	override fun onStart() {
 		super.onStart()
 		navController.addOnDestinationChangedListener(this)
-		binding.navView.setOnItemReselectedListener(this)
+		binding.navView.setNavigationItemSelectedListener(this)
+		viewModel.notebooks.observe(this) { updateNavDrawer(it) }
 	}
 
 	override fun onStop() {
@@ -76,24 +91,87 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		else {
 			toggleFabBehavior(isEnabled = false)
 		}
-		binding.navView.isVisible = appBarConfiguration.topLevelDestinations.contains(destination.id)
 	}
 
-	override fun onNavigationItemReselected(item: MenuItem) {
-		if (item.itemId == R.id.nav_notes) {
-			val args = bundleOf(FoldersFragment.FOLDER to FolderEntity())
-			navController.tryNavigate(R.id.action_notes_to_self, args)
+	override fun onNavigationItemSelected(item: MenuItem): Boolean {
+		binding.drawerLayout.closeDrawer(GravityCompat.START, true)
+		return when (item.itemId) {
+			R.id.nav_all_notes -> {
+				navigateToNotes(NotebookEntity()); true
+			}
+			else -> NavigationUI.onNavDestinationSelected(item, navController)
 		}
 	}
 
-	fun invokeCallback() = fabClickedListener()
-
 	private fun setupNavigation() {
+		val appBarConfiguration = AppBarConfiguration(
+			setOf(R.id.nav_notes, R.id.nav_notebooks),
+			binding.drawerLayout
+		)
 		navController.graph = navController.navInflater.inflate(R.navigation.nav_graph).apply {
-			setStartDestination(if (userPreferences.isOnboardingCompleted) R.id.nav_folders else R.id.nav_welcome)
+			setStartDestination(
+				if (userPreferences.isOnboardingCompleted) R.id.nav_notes else R.id.nav_welcome
+			)
 		}
 		binding.toolbar.setupWithNavController(navController, appBarConfiguration)
 		binding.navView.setupWithNavController(navController)
+	}
+
+	private fun updateNavDrawer(notebooks: List<Notebook>) {
+		val item = binding.navView.menu.getItem(1)
+		if (item.subMenu.isNotEmpty()) item.subMenu.clear()
+
+		for (notebook in notebooks) {
+			item.subMenu.add(R.id.group_notebooks, 1, 1, notebook.entity.name)
+				.setIcon(R.drawable.ic_notebook)
+				.setOnMenuItemClickListener { filterNotesByNotebook(notebook.entity); true }
+		}
+		item.subMenu.add(R.id.group_notebooks, R.id.nav_notebooks, 1000, getString(R.string.view_notebooks))
+			.setIcon(R.drawable.ic_edit_notebooks)
+	}
+
+	private fun filterNotesByNotebook(notebook: NotebookEntity) {
+		binding.drawerLayout.closeDrawer(GravityCompat.START, true)
+		if (notebook != selectedNotebook) {
+			selectedNotebook = notebook
+		}
+		if (notebook.isProtected) {
+			requestConfirmeDeviceCredential()
+		}
+		else {
+			navigateToNotes(notebook)
+		}
+	}
+
+	@Suppress("DEPRECATION")
+	private fun requestConfirmeDeviceCredential() {
+		val keyguardManager = getSystemService<KeyguardManager>() ?: return
+		val intent = keyguardManager.createConfirmDeviceCredentialIntent(
+			getString(R.string.confirme_device_credential_title),
+			getString(R.string.confirme_device_credential_desc)
+		)
+		deviceCredentialLauncher.launch(intent)
+	}
+
+	private fun activityResultCallback(result: ActivityResult) {
+		if (result.resultCode == RESULT_OK) {
+			selectedNotebook?.let { navigateToNotes(it) }
+		}
+		else {
+			binding.root.showSnackbar(R.string.error_auth).apply {
+				anchorView = if (navController.currentDestination?.id == R.id.nav_notes) binding.fab else null
+			}
+		}
+	}
+
+	private fun navigateToNotes(notebook: NotebookEntity) {
+		val args = bundleOf(NotebooksFragment.NOTEBOOK to notebook)
+		val currentDestinationId = navController.currentDestination?.id
+		when (currentDestinationId) {
+			R.id.nav_notes -> navController.tryNavigate(R.id.action_notes_to_self, args)
+			R.id.nav_notebooks -> navController.tryNavigate(R.id.action_notebooks_to_notes, args)
+			else -> throw Exception("There is no route from $currentDestinationId to ${R.id.nav_notes}")
+		}
 	}
 
 	private fun toggleToolbarScrollFlags(isEnabled: Boolean) {
@@ -108,9 +186,11 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		params.behavior = if (isEnabled) FabScrollingBehavior() else null
 	}
 
+	fun invokeCallback() = onFabClickCallback()
+
 	fun setOnFabClickListener(callback: () -> Unit) {
-		fabClickedListener = callback
+		onFabClickCallback = callback
 	}
 
-	private var fabClickedListener: () -> Unit = {}
+	private var onFabClickCallback: () -> Unit = {}
 }

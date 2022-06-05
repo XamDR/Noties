@@ -1,5 +1,5 @@
 <resources>
-	<style name="Theme.EzNotes" parent="Theme.Material3.DayNight.NoActionBar">
+	<style name="Theme.Noties" parent="Theme.Material3.DayNight.NoActionBar">
 		<item name="colorPrimary">@color/md_theme_light_primary</item>
 		<item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
 		<item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
@@ -34,12 +34,12 @@
 <!--		<item name="actionModeBackground">@color/white_smoke</item>-->
 	</style>
 
-	<style name="Theme.EzNotes.Gallery" parent="Theme.EzNotes"/>
+	<style name="Theme.Noties.Gallery" parent="Theme.Noties"/>
 
-	<style name="Theme.SplashScreen.EzNotes" parent="Theme.SplashScreen">
+	<style name="Theme.SplashScreen.Noties" parent="Theme.SplashScreen">
 		<item name="windowSplashScreenBackground">@color/md_theme_light_primary</item>
 		<item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
 		<item name="windowSplashScreenAnimationDuration">1000</item>
-		<item name="postSplashScreenTheme">@style/Theme.EzNotes</item>
+		<item name="postSplashScreenTheme">@style/Theme.Noties</item>
 	</style>
 </resources>

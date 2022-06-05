@@ -6,10 +6,10 @@ import androidx.room.Relation
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Folder(
-	@Embedded val entity: FolderEntity = FolderEntity(),
+data class Notebook(
+	@Embedded val entity: NotebookEntity = NotebookEntity(),
 	@Relation(
 		parentColumn = "id",
-		entityColumn = "folder_id"
+		entityColumn = "notebook_id"
 	)
 	val notes: List<NoteEntity> = listOf()) : Parcelable

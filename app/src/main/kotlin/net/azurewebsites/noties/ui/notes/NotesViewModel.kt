@@ -19,18 +19,16 @@ class NotesViewModel @Inject constructor(
 	private val moveNoteToTrashUseCase: MoveNoteToTrashUseCase,
 	private val restoreNoteUseCase: RestoreNoteUseCase) : ViewModel() {
 
-	val text = MutableLiveData(String.Empty)
-
-	fun sortNotes(folderId: Int, sortMode: SortMode): LiveData<List<Note>> {
+	fun sortNotes(notebookId: Int, sortMode: SortMode): LiveData<List<Note>> {
 		val sortedNotes = when (sortMode) {
-			SortMode.Content -> getNotesByFolderId(folderId).map {
-					result -> result.sortedBy { it.entity.text }
+			SortMode.Content -> getNotesByFolderId(notebookId).map {
+				result -> result.sortedBy { it.entity.text }
 			}
-			SortMode.LastEdit -> getNotesByFolderId(folderId).map {
-					result -> result.sortedByDescending { it.entity.dateModification }
+			SortMode.LastEdit -> getNotesByFolderId(notebookId).map {
+				result -> result.sortedByDescending { it.entity.dateModification }
 			}
-			SortMode.Title -> getNotesByFolderId(folderId).map {
-					result -> result.sortedBy { it.entity.title }
+			SortMode.Title -> getNotesByFolderId(notebookId).map {
+				result -> result.sortedBy { it.entity.title }
 			}
 		}
 		return sortedNotes.asLiveData()
@@ -43,10 +41,10 @@ class NotesViewModel @Inject constructor(
 		}
 	}
 
-	fun restoreNote(note: NoteEntity, folderId: Int) {
-		viewModelScope.launch { restoreNoteUseCase(note, folderId) }
+	fun restoreNote(note: NoteEntity, notebookId: Int) {
+		viewModelScope.launch { restoreNoteUseCase(note, notebookId) }
 	}
 
-	private fun getNotesByFolderId(folderId: Int) =
-		if (folderId == 0) getAllNotesUseCase() else getNotesUseCase(folderId)
+	private fun getNotesByFolderId(notebookId: Int) =
+		if (notebookId == 0) getAllNotesUseCase() else getNotesUseCase(notebookId)
 }

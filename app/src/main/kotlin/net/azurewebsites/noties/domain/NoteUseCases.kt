@@ -2,17 +2,17 @@ package net.azurewebsites.noties.domain
 
 import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.core.NoteEntity
-import net.azurewebsites.noties.data.FolderDao
+import net.azurewebsites.noties.data.NotebookDao
 import net.azurewebsites.noties.data.ImageDao
 import net.azurewebsites.noties.data.NoteDao
 import javax.inject.Inject
 
 class InsertNoteWithImagesUseCase @Inject constructor(
-	private val folderDao: FolderDao,
+	private val notebookDao: NotebookDao,
 	private val noteDao: NoteDao, private val imageDao: ImageDao) {
 
 	suspend operator fun invoke(note: NoteEntity, images: List<ImageEntity>) {
-		folderDao.incrementNoteCount(note.folderId)
+		notebookDao.incrementNoteCount(note.notebookId)
 		val id = noteDao.insertNote(note)
 		for (image in images) {
 			image.noteId = id
@@ -45,25 +45,25 @@ class DeleteNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
 
 class MoveNoteToTrashUseCase @Inject constructor(
 	private val noteDao: NoteDao,
-	private val folderDao: FolderDao) {
+	private val notebookDao: NotebookDao) {
 
 	suspend operator fun invoke(note: NoteEntity) {
-		folderDao.decrementNoteCount(note.folderId)
-		val trashedNote = note.copy(folderId = -1, isTrashed = true)
+		notebookDao.decrementNoteCount(note.notebookId)
+		val trashedNote = note.copy(notebookId = -1, isTrashed = true)
 		noteDao.updateNote(trashedNote)
-		folderDao.incrementNoteCount(folderId = -1)
+		notebookDao.incrementNoteCount(notebookId = -1)
 	}
 }
 
 class RestoreNoteUseCase @Inject constructor(
 	private val noteDao: NoteDao,
-	private val folderDao: FolderDao) {
+	private val notebookDao: NotebookDao) {
 
-	suspend operator fun invoke(note: NoteEntity, folderId: Int) {
-		folderDao.decrementNoteCount(folderId = -1)
-		val restoredNote = note.copy(folderId = folderId, isTrashed = false)
+	suspend operator fun invoke(note: NoteEntity, notebookId: Int) {
+		notebookDao.decrementNoteCount(notebookId = -1)
+		val restoredNote = note.copy(notebookId = notebookId, isTrashed = false)
 		noteDao.updateNote(restoredNote)
-		folderDao.incrementNoteCount(folderId)
+		notebookDao.incrementNoteCount(notebookId)
 	}
 }
 
@@ -73,12 +73,12 @@ class GetTrashedNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
 
 class EmptyTrashUseCase @Inject constructor(
 	private val noteDao: NoteDao,
-	private val folderDao: FolderDao) {
+	private val notebookDao: NotebookDao) {
 
 	suspend operator fun invoke() {
 		val numDeletedRows = noteDao.emptyTrash()
 		repeat(numDeletedRows) {
-			folderDao.decrementNoteCount(folderId = -1)
+			notebookDao.decrementNoteCount(notebookId = -1)
 		}
 	}
 }

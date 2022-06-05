@@ -19,7 +19,10 @@ import kotlinx.coroutines.launch
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.FragmentEditorBinding
-import net.azurewebsites.noties.ui.helpers.*
+import net.azurewebsites.noties.ui.helpers.getThemeColor
+import net.azurewebsites.noties.ui.helpers.hideSoftKeyboard
+import net.azurewebsites.noties.ui.helpers.showDialog
+import net.azurewebsites.noties.ui.helpers.showToast
 import net.azurewebsites.noties.ui.media.ImageAdapter
 import net.azurewebsites.noties.ui.notes.NotesFragment
 
@@ -29,7 +32,7 @@ class EditorFragment : Fragment(), AttachImagesListener {
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<EditorViewModel>()
-	private val folderId by lazy(LazyThreadSafetyMode.NONE) {
+	private val notebookId by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getInt(NotesFragment.ID, 1)
 	}
 	private val pickImagesLauncher = registerForActivityResult(
@@ -72,18 +75,13 @@ class EditorFragment : Fragment(), AttachImagesListener {
 		initTransition()
 		onBackPressed()
 		binding.content.adapter = ConcatAdapter(editorImageAdapter, editorContentAdapter)
-		editorImageAdapter.submitList(viewModel.note.value.images)
-	}
-
-	override fun onStart() {
-		super.onStart()
-		showSoftKeyboard()
+		viewModel.getImages().observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
 	}
 
 	override fun addImages(uris: List<Uri>) {
 		viewLifecycleOwner.lifecycleScope.launch {
 			viewModel.addImages(requireContext(), uris)
-			editorImageAdapter.submitList(viewModel.note.value.images)
+			viewModel.getImages().observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
 		}
 	}
 
@@ -111,19 +109,13 @@ class EditorFragment : Fragment(), AttachImagesListener {
 	private fun onBackPressed() {
 		requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
 			viewLifecycleOwner.lifecycleScope.launch {
-				when (viewModel.insertorUpdateNote(folderId)) {
-					Result.Nothing -> {}
+				when (viewModel.insertorUpdateNote(notebookId)) {
 					Result.SuccesfulInsert -> context?.showToast(R.string.note_saved)
 					Result.SuccesfulUpdate -> context?.showToast(R.string.note_updated)
+					else -> {}
 				}
 				findNavController().popBackStack()
 			}
-		}
-	}
-
-	private fun showSoftKeyboard() {
-		if (viewModel.note.value.entity.id == 0L) {
-			binding.content.showSoftKeyboard()
 		}
 	}
 

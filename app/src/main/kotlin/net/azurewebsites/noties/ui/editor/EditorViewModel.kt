@@ -4,9 +4,11 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.core.Note
@@ -31,6 +33,8 @@ class EditorViewModel @Inject constructor(
 	val note = MutableStateFlow(Note())
 	val tempNote = MutableStateFlow(Note())
 
+	fun getImages() = note.map { it.images }.asLiveData()
+
 	suspend fun addImages(context: Context, uris: List<Uri>) {
 		for (uri in uris) {
 			val newUri = copyUri(context, uri)
@@ -43,14 +47,14 @@ class EditorViewModel @Inject constructor(
 		}
 	}
 
-	suspend fun insertorUpdateNote(folderId: Int): Result {
+	suspend fun insertorUpdateNote(folderId: Int): Result? {
 		if (note.value.isNonEmpty()) {
 			if (note.value.entity.id == 0L) {
 				val newNote = createNote(
 					title = note.value.entity.title,
 					text = note.value.entity.text,
 					images = note.value.images,
-					folderId = folderId
+					notebookId = folderId
 				)
 				return insertNote(newNote)
 			}
@@ -60,17 +64,17 @@ class EditorViewModel @Inject constructor(
 						title = note.value.entity.title,
 						text = note.value.entity.text,
 						images = note.value.images,
-						folderId = note.value.entity.folderId,
+						notebookId = note.value.entity.notebookId,
 						id = note.value.entity.id
 					)
 					return updateNote(updatedNote)
 				}
 			}
 		}
-		return Result.Nothing
+		return null
 	}
 
-	private fun createNote(title: String?, text: String, images: List<ImageEntity>, folderId: Int, id: Long = 0): Note {
+	private fun createNote(title: String?, text: String, images: List<ImageEntity>, notebookId: Int, id: Long = 0): Note {
 		return Note(
 			entity = NoteEntity(
 				id = id,
@@ -78,7 +82,7 @@ class EditorViewModel @Inject constructor(
 				text = text,
 				dateModification = ZonedDateTime.now(),
 				urls = extractUrls(text),
-				folderId = folderId
+				notebookId = notebookId
 			),
 			images = images
 		)
@@ -111,6 +115,6 @@ class EditorViewModel @Inject constructor(
 	}
 
 	private companion object {
-		private const val AUTHORITY = "net.azurewebsites.eznotes"
+		private const val AUTHORITY = "net.azurewebsites.noties"
 	}
 }

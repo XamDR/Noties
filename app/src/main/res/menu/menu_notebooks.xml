@@ -2,17 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
-	tools:context=".ui.folders.FoldersFragment">
+	tools:context=".ui.notebooks.NotebooksFragment">
 
 	<item
-		android:id="@+id/add_new_folder"
-		android:icon="@drawable/ic_add_item"
+		android:id="@+id/add_new_notebook"
+		android:icon="@drawable/ic_create_new_notebook"
 		android:orderInCategory="5"
-		android:title="@string/add_folder"
+		android:title="@string/add_notebook"
 		app:showAsAction="ifRoom" />
-
-	<item
-		android:id="@+id/nav_settings"
-		android:title="@string/action_settings"
-		app:showAsAction="never"/>
 </menu>

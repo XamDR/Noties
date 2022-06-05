@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
-import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat.getInsetsController
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
@@ -51,14 +51,14 @@ class FullScreenImageFragment : Fragment() {
 	}
 
 	private fun hideSystemBars(view: View) {
-		ViewCompat.getWindowInsetsController(view)?.apply {
+		getInsetsController(requireActivity().window, view).apply {
 			systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE
 			hide(WindowInsetsCompat.Type.systemBars())
 		}
 	}
 
 	private fun showSystemBars(view: View) {
-		ViewCompat.getWindowInsetsController(view)?.apply {
+		getInsetsController(requireActivity().window, view).apply {
 			systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE
 			show(WindowInsetsCompat.Type.systemBars())
 		}

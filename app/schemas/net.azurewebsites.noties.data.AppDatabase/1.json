@@ -2,10 +2,10 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "741c6443d80b23bb392b79d6c3d73041",
+    "identityHash": "439921600f1a5bbc299abcf2c8e0c089",
     "entities": [
       {
-        "tableName": "Folders",
+        "tableName": "Notebooks",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `note_count` INTEGER NOT NULL, `is_protected` INTEGER NOT NULL)",
         "fields": [
           {
@@ -41,13 +41,13 @@
         },
         "indices": [
           {
-            "name": "index_Folders_name",
+            "name": "index_Notebooks_name",
             "unique": true,
             "columnNames": [
               "name"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Folders_name` ON `${TABLE_NAME}` (`name`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Notebooks_name` ON `${TABLE_NAME}` (`name`)"
           }
         ],
         "foreignKeys": []
@@ -98,7 +98,7 @@
       },
       {
         "tableName": "Notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `text` TEXT NOT NULL, `date_modification` TEXT NOT NULL, `color` INTEGER NOT NULL, `urls` TEXT NOT NULL, `is_pinned` INTEGER NOT NULL, `is_trashed` INTEGER NOT NULL, `folder_id` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `text` TEXT NOT NULL, `date_modification` TEXT NOT NULL, `color` INTEGER NOT NULL, `urls` TEXT NOT NULL, `is_protected` INTEGER NOT NULL, `is_trashed` INTEGER NOT NULL, `notebook_id` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -137,8 +137,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "pinned",
-            "columnName": "is_pinned",
+            "fieldPath": "isProtected",
+            "columnName": "is_protected",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -149,8 +149,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "folderId",
-            "columnName": "folder_id",
+            "fieldPath": "notebookId",
+            "columnName": "notebook_id",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -168,7 +168,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '741c6443d80b23bb392b79d6c3d73041')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '439921600f1a5bbc299abcf2c8e0c089')"
     ]
   }
 }

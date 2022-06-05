@@ -1,4 +1,4 @@
-package net.azurewebsites.noties.ui.folders
+package net.azurewebsites.noties.ui.notebooks
 
 import android.app.Dialog
 import android.os.Bundle
@@ -9,8 +9,8 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.core.FolderEntity
-import net.azurewebsites.noties.databinding.DialogFragmentFolderBinding
+import net.azurewebsites.noties.core.NotebookEntity
+import net.azurewebsites.noties.databinding.DialogFragmentNotebookBinding
 import net.azurewebsites.noties.ui.helpers.getPositiveButton
 import net.azurewebsites.noties.ui.helpers.showSoftKeyboard
 import net.azurewebsites.noties.ui.helpers.toEditable
@@ -18,39 +18,39 @@ import net.azurewebsites.noties.ui.settings.PreferenceStorage
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FolderDialogFragment : DialogFragment() {
+class NotebookDialogFragment : DialogFragment() {
 
-	private var _binding: DialogFragmentFolderBinding? = null
+	private var _binding: DialogFragmentNotebookBinding? = null
 	private val binding get() = _binding!!
-	private val viewModel by viewModels<FoldersViewModel>({ requireParentFragment() })
-	private val folderUiState by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getParcelable(KEY) ?: FolderUiState()
+	private val viewModel by viewModels<NotebooksViewModel>({ requireParentFragment() })
+	private val notebookUiState by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getParcelable(KEY) ?: NotebookUiState()
 	}
 	@Inject lateinit var userPreferences: PreferenceStorage
 	private var shouldUpdate = false
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		shouldUpdate = folderUiState.operation == Operation.Update
+		shouldUpdate = notebookUiState.operation == Operation.Update
 		if (savedInstanceState != null) {
 			shouldUpdate = savedInstanceState.getBoolean(UPDATE)
 		}
 	}
 
 	override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-		_binding = DialogFragmentFolderBinding.inflate(layoutInflater).apply {
+		_binding = DialogFragmentNotebookBinding.inflate(layoutInflater).apply {
 			vm = viewModel
-			lifecycleOwner = this@FolderDialogFragment
+			lifecycleOwner = this@NotebookDialogFragment
 		}
 		return MaterialAlertDialogBuilder(requireContext(), R.style.MyThemeOverlay_MaterialAlertDialog)
-			.setTitle(if (folderUiState.operation == Operation.Insert) R.string.new_folder else R.string.update_folder_name)
+			.setTitle(if (notebookUiState.operation == Operation.Insert) R.string.new_notebook else R.string.update_notebook_name)
 			.setView(binding.root)
 			.setNegativeButton(R.string.cancel_button) { _, _ -> viewModel.reset() }
 			.setPositiveButton(R.string.save_button, null)
 			.create().apply {
 				setOnShowListener {
 					getButton(AlertDialog.BUTTON_POSITIVE).apply {
-						setOnClickListener { insertOrUpdateFolder(folderUiState) }
+						setOnClickListener { insertOrUpdateFolder(notebookUiState) }
 					}
 				}
 			}
@@ -68,10 +68,10 @@ class FolderDialogFragment : DialogFragment() {
 
 	override fun onStart() {
 		super.onStart()
-		binding.root.post { binding.folderName.showSoftKeyboard() }
+		binding.root.post { binding.notebookName.showSoftKeyboard() }
 		if (shouldUpdate) {
-			viewModel.updateFolderState(folderUiState)
-			viewModel.updateFolderName(folderUiState.name.toEditable())
+			viewModel.updateNotebookState(notebookUiState)
+			viewModel.updateNotebookName(notebookUiState.name.toEditable())
 			shouldUpdate = false
 		}
 	}
@@ -86,29 +86,29 @@ class FolderDialogFragment : DialogFragment() {
 					if (!getPositiveButton().isEnabled) getPositiveButton().isEnabled = true
 				}
 				InputNameState.UpdatingName -> {
-					binding.folderName.selectAll()
+					binding.notebookName.selectAll()
 					getPositiveButton().isEnabled = false
 				}
 				InputNameState.ErrorDuplicateName -> {
-					binding.input.error = getString(R.string.error_message_folder_duplicate)
+					binding.input.error = getString(R.string.error_message_notebook_duplicate)
 					getPositiveButton().isEnabled = false
 				}
 			}
 		}
 	}
 
-	private fun insertOrUpdateFolder(folderUiState: FolderUiState) {
-		when (folderUiState.operation) {
+	private fun insertOrUpdateFolder(notebookUiState: NotebookUiState) {
+		when (notebookUiState.operation) {
 			Operation.Insert -> {
-				val newFolder = FolderEntity(name = viewModel.folderUiState.value.name)
-				viewModel.insertFolder(newFolder)
+				val newFolder = NotebookEntity(name = viewModel.notebookUiState.value.name)
+				viewModel.insertNotebook(newFolder)
 			}
 			Operation.Update -> {
-				val updatedFolder = FolderEntity(
-					id = folderUiState.id,
-					name = viewModel.folderUiState.value.name
+				val updatedFolder = NotebookEntity(
+					id = notebookUiState.id,
+					name = viewModel.notebookUiState.value.name
 				)
-				viewModel.updateFolder(updatedFolder)
+				viewModel.updateNotebook(updatedFolder)
 				if (updatedFolder.id == 1) {
 					userPreferences.defaultFolderName = updatedFolder.name
 				}
@@ -119,10 +119,10 @@ class FolderDialogFragment : DialogFragment() {
 	}
 
 	companion object {
-		const val KEY = "folder"
+		const val KEY = "notebook"
 		private const val UPDATE = "update"
 
-		fun newInstance(uiState: FolderUiState) = FolderDialogFragment().apply {
+		fun newInstance(uiState: NotebookUiState) = NotebookDialogFragment().apply {
 			arguments = bundleOf(KEY to uiState)
 		}
 	}

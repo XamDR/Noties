@@ -15,25 +15,25 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.transition.MaterialElevationScale
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.core.FolderEntity
+import net.azurewebsites.noties.core.NotebookEntity
 import net.azurewebsites.noties.core.NoteEntity
 import net.azurewebsites.noties.databinding.FragmentNotesBinding
 import net.azurewebsites.noties.ui.MainActivity
-import net.azurewebsites.noties.ui.folders.FoldersFragment
+import net.azurewebsites.noties.ui.notebooks.NotebooksFragment
 import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NotesFragment : Fragment(), SwipeToDeleteListener, NavigateToEditorListener {
+class NotesFragment : Fragment(), SwipeToDeleteListener {
 
 	private var _binding: FragmentNotesBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<NotesViewModel>()
 	private val noteAdapter = NoteAdapter(this)
 	@Inject lateinit var userPreferences: PreferenceStorage
-	private val folder by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getParcelable(FoldersFragment.FOLDER) ?: FolderEntity()
+	private val notebook by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getParcelable(NotebooksFragment.NOTEBOOK) ?: NotebookEntity()
 	}
 
 	override fun onAttach(context: Context) {
@@ -67,8 +67,12 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, NavigateToEditorListene
 		submitListAndUpdateToolbar()
 	}
 
-	override fun navigateToEditor() {
-		val args = bundleOf(ID to if (folder.id == 0) 1 else folder.id)
+	override fun moveNoteToTrash(note: NoteEntity) {
+		viewModel.moveNoteToTrash(note) { showUndoSnackbar(it) }
+	}
+
+	private fun navigateToEditor() {
+		val args = bundleOf(ID to if (notebook.id == 0) 1 else notebook.id)
 		findNavController().tryNavigate(R.id.action_notes_to_editor, args)
 	}
 
@@ -82,26 +86,22 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, NavigateToEditorListene
 	}
 
 	private fun submitListAndUpdateToolbar() {
-		supportActionBar?.title = folder.name.ifEmpty { getString(R.string.notes_fragment_label) }
-		submitList(folder.id)
+		supportActionBar?.title = notebook.name.ifEmpty { getString(R.string.notes_fragment_label) }
+		submitList(notebook.id)
 	}
 
-	private fun submitList(folderId: Int) {
-		viewModel.sortNotes(folderId, SortMode.LastEdit).observe(viewLifecycleOwner) {
+	private fun submitList(notebookId: Int) {
+		viewModel.sortNotes(notebookId, SortMode.LastEdit).observe(viewLifecycleOwner) {
 			noteAdapter.submitList(it)
 			binding.root.doOnPreDraw { startPostponedEnterTransition() }
 		}
 	}
 
-	override fun moveNoteToTrash(note: NoteEntity) {
-		viewModel.moveNoteToTrash(note) { showUndoSnackbar(it) }
-	}
-
 	private fun showUndoSnackbar(note: NoteEntity) {
 		binding.root.showSnackbar(R.string.deleted_note, action = R.string.undo) {
-			viewModel.restoreNote(note, folder.id)
-			submitList(folder.id)
-		}.anchorView = requireActivity().findViewById(R.id.fab)
+			viewModel.restoreNote(note, notebook.id)
+			submitList(notebook.id)
+		}
 	}
 
 	companion object {
