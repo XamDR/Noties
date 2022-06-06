@@ -4,7 +4,7 @@
 	<item
 		android:id="@+id/edit_folder_name"
 		android:orderInCategory="0"
-		android:title="@string/update_notebook_name"/>
+		android:title="@string/edit_notebook_name"/>
 
 	<item
 		android:id="@+id/delete_folder"

@@ -1,12 +1,10 @@
 package net.azurewebsites.noties.ui.notebooks
 
-import android.app.KeyguardManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
-import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -51,46 +49,34 @@ class NotebooksFragment : Fragment(), NotebookToolbarItemListener, NotebookItemC
 	}
 
 	override fun showCreateNotebookDialog() {
-		val folderDialog = NotebookDialogFragment.newInstance(NotebookUiState())
-		showDialog(folderDialog, TAG)
+		val notebookDialog = NotebookDialogFragment.newInstance(NotebookUiState())
+		showDialog(notebookDialog, TAG)
 	}
 
-	override fun changeNotebookName(notebook: NotebookEntity) {
-		val uiState = NotebookUiState(id = notebook.id, name = notebook.name, operation = Operation.Update)
-		val folderDialog = NotebookDialogFragment.newInstance(uiState)
-		showDialog(folderDialog, TAG)
-	}
-
-	override fun deleteNotebook(notebook: Notebook) {
-		viewModel.deleteNotebookAndNotes(notebook)
-		binding.root.showSnackbar(R.string.delete_notes_warning)
-	}
-
-	override fun lockNotebook(notebook: NotebookEntity) {
-		if (!notebook.isProtected) {
-			val keyguardManager = context?.getSystemService<KeyguardManager>() ?: return
-
-			if (keyguardManager.isDeviceSecure) {
-				val updatedFolder = notebook.copy(isProtected = true)
-				viewModel.updateNotebook(updatedFolder)
-				binding.root.showSnackbar(R.string.lock_confirmation)
-			}
-			else {
-				binding.root.showSnackbar(R.string.no_lock_found)
-			}
+	override fun showContextMenu(notebook: Notebook) {
+		val itemMenuDialog = NotebookItemMenuDialogFragment.newInstance(notebook).apply {
+			setShowSnackbarListener { binding.root.showSnackbar(R.string.delete_notes_warning) }
 		}
-		else {
-			val updatedFolder = notebook.copy(isProtected = false)
-			viewModel.updateNotebook(updatedFolder)
-			binding.root.showSnackbar(R.string.unlock_confirmation)
-		}
+		showDialog(itemMenuDialog, MENU_TAG)
 	}
+
+//	override fun editNotebookName(notebook: NotebookEntity) {
+//		val uiState = NotebookUiState(id = notebook.id, name = notebook.name, operation = Operation.Update)
+//		val folderDialog = NotebookDialogFragment.newInstance(uiState)
+//		showDialog(folderDialog, TAG)
+//	}
+//
+//	override fun deleteNotebook(notebook: Notebook) {
+////		viewModel.deleteNotebookAndNotes(notebook)
+////		binding.root.showSnackbar(R.string.delete_notes_warning)
+//	}
 
 	private fun onBackPressed() {
 		requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
 			if (viewModel.shouldNavigate) {
 				// HACK: If a folder is deleted and the fragment with such folder name
 				// was in the back stack, we navigate to "All folders".
+				// There is a bug here...
 				val args = bundleOf(NOTEBOOK to NotebookEntity())
 				findNavController().tryNavigate(R.id.action_notebooks_to_notes, args)
 			}
@@ -103,5 +89,6 @@ class NotebooksFragment : Fragment(), NotebookToolbarItemListener, NotebookItemC
 	companion object {
 		const val NOTEBOOK = "notebook"
 		private const val TAG = "NOTEBOOK_DIALOG"
+		private const val MENU_TAG = "NOTEBOOK_ITEM_MENU_DIALOG"
 	}
 }

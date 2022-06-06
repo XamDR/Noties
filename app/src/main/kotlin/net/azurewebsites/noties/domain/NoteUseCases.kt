@@ -9,10 +9,11 @@ import javax.inject.Inject
 
 class InsertNoteWithImagesUseCase @Inject constructor(
 	private val notebookDao: NotebookDao,
-	private val noteDao: NoteDao, private val imageDao: ImageDao) {
+	private val noteDao: NoteDao,
+	private val imageDao: ImageDao) {
 
 	suspend operator fun invoke(note: NoteEntity, images: List<ImageEntity>) {
-		notebookDao.incrementNoteCount(note.notebookId)
+		notebookDao.incrementNotebookNoteCount(note.notebookId)
 		val id = noteDao.insertNote(note)
 		for (image in images) {
 			image.noteId = id
@@ -48,10 +49,10 @@ class MoveNoteToTrashUseCase @Inject constructor(
 	private val notebookDao: NotebookDao) {
 
 	suspend operator fun invoke(note: NoteEntity) {
-		notebookDao.decrementNoteCount(note.notebookId)
+		notebookDao.decrementNotebookNoteCount(note.notebookId)
 		val trashedNote = note.copy(notebookId = -1, isTrashed = true)
 		noteDao.updateNote(trashedNote)
-		notebookDao.incrementNoteCount(notebookId = -1)
+		notebookDao.incrementNotebookNoteCount(notebookId = -1)
 	}
 }
 
@@ -60,10 +61,10 @@ class RestoreNoteUseCase @Inject constructor(
 	private val notebookDao: NotebookDao) {
 
 	suspend operator fun invoke(note: NoteEntity, notebookId: Int) {
-		notebookDao.decrementNoteCount(notebookId = -1)
+		notebookDao.decrementNotebookNoteCount(notebookId = -1)
 		val restoredNote = note.copy(notebookId = notebookId, isTrashed = false)
 		noteDao.updateNote(restoredNote)
-		notebookDao.incrementNoteCount(notebookId)
+		notebookDao.incrementNotebookNoteCount(notebookId)
 	}
 }
 
@@ -78,7 +79,7 @@ class EmptyTrashUseCase @Inject constructor(
 	suspend operator fun invoke() {
 		val numDeletedRows = noteDao.emptyTrash()
 		repeat(numDeletedRows) {
-			notebookDao.decrementNoteCount(notebookId = -1)
+			notebookDao.decrementNotebookNoteCount(notebookId = -1)
 		}
 	}
 }

@@ -56,7 +56,7 @@ class NotebookDaoTest {
 
 	@Test
 	fun get_directories() = runBlocking {
-		val allDirectories = directoryDao.getFolders().asLiveData().getValueForTesting()
+		val allDirectories = directoryDao.getNotebooks().asLiveData().getValueForTesting()
 		assertNotNull(allDirectories)
 	}
 

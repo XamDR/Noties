@@ -12,4 +12,4 @@
 	android:paddingStart="20dp"
 	android:paddingEnd="?android:attr/dialogPreferredPadding"
 	android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-	tools:text="@string/update_notebook_name" />
+	tools:text="@string/edit_notebook_name" />

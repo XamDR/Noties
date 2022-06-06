@@ -15,21 +15,22 @@
 
 	<!-- Notebooks Fragment -->
 	<string name="notebooks_fragment_label">Notebooks</string>
-	<string name="default_notebook">General</string>
+	<string name="empty_notebooks_message">No notebooks here</string>
+	<string name="create_notebook">Create notebook</string>
+	<string name="view_notebooks">View notebooks</string>
 	<string name="search_notebooks">Search your notebooks</string>
 	<string name="add_notebook">Create new notebook</string>
 	<string name="more_options">More options</string>
-	<string name="view_notebooks">View all notebooks</string>
 	<string name="new_notebook">New notebook</string>
 	<string name="notebook_name">Notebook name</string>
 	<string name="error_message_notebook_duplicate">The notebook already exists</string>
-	<string name="update_notebook_name">Change notebook name</string>
+	<string name="edit_notebook_name">Edit notebook name</string>
 	<string name="delete_notebook">Delete notebook</string>
 	<string name="delete_notes_warning">The notes inside this notebook have been moved to the trash.</string>
 	<string name="lock_notebook">Lock notebook</string>
 	<string name="unlock_notebook">Unlock notebook</string>
 	<string name="lock_confirmation">This notebook is now locked.</string>
-	<string name="no_lock_found">Error. The device is not secured with a PIN, pattern or password.</string>
+	<string name="error_no_auth">Error. The device is not secured with a PIN, pattern or password.</string>
 	<string name="unlock_confirmation">This notebook is no longer locked.</string>
 	<string name="confirme_device_credential_title">Protected notes</string>
 	<string name="confirme_device_credential_desc">To continue, please unlock your device to see the notes of this notebook.</string>

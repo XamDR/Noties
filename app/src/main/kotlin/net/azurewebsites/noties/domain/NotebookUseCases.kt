@@ -6,16 +6,16 @@ import net.azurewebsites.noties.data.NotebookDao
 import net.azurewebsites.noties.data.NoteDao
 import javax.inject.Inject
 
-class InsertNotebookUseCase @Inject constructor(private val dao: NotebookDao) {
-	suspend operator fun invoke(folder: NotebookEntity) = dao.insertFolder(folder)
+class CreateNotebookUseCase @Inject constructor(private val notebookDao: NotebookDao) {
+	suspend operator fun invoke(notebook: NotebookEntity) = notebookDao.insertNotebook(notebook)
 }
 
-class GetNotebooksUseCase @Inject constructor(private val dao: NotebookDao) {
-	operator fun invoke() = dao.getFolders()
+class GetNotebooksUseCase @Inject constructor(private val notebookDao: NotebookDao) {
+	operator fun invoke() = notebookDao.getNotebooks()
 }
 
-class UpdateNotebookUseCase @Inject constructor(private val dao: NotebookDao) {
-	suspend operator fun invoke(folder: NotebookEntity) = dao.updateFolder(folder)
+class UpdateNotebookUseCase @Inject constructor(private val notebookDao: NotebookDao) {
+	suspend operator fun invoke(folder: NotebookEntity) = notebookDao.updateNotebook(folder)
 }
 
 class DeleteNotebookAndMoveNotesToTrashUseCase @Inject constructor(
@@ -26,8 +26,8 @@ class DeleteNotebookAndMoveNotesToTrashUseCase @Inject constructor(
 		for (note in notebook.notes) {
 			val trashedNote = note.copy(notebookId = -1, isTrashed = true)
 			noteDao.updateNote(trashedNote)
-			notebookDao.incrementNoteCount(notebookId = -1)
+			notebookDao.incrementNotebookNoteCount(notebookId = -1)
 		}
-		notebookDao.deleteFolders(listOf(notebook.entity))
+		notebookDao.deleteNotebooks(listOf(notebook.entity))
 	}
 }

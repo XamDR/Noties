@@ -15,12 +15,12 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.transition.MaterialElevationScale
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.core.NotebookEntity
 import net.azurewebsites.noties.core.NoteEntity
+import net.azurewebsites.noties.core.NotebookEntity
 import net.azurewebsites.noties.databinding.FragmentNotesBinding
 import net.azurewebsites.noties.ui.MainActivity
-import net.azurewebsites.noties.ui.notebooks.NotebooksFragment
 import net.azurewebsites.noties.ui.helpers.*
+import net.azurewebsites.noties.ui.notebooks.NotebooksFragment
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
 import javax.inject.Inject
 
@@ -72,7 +72,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener {
 	}
 
 	private fun navigateToEditor() {
-		val args = bundleOf(ID to if (notebook.id == 0) 1 else notebook.id)
+		val args = bundleOf(ID to notebook.id)
 		findNavController().tryNavigate(R.id.action_notes_to_editor, args)
 	}
 

@@ -19,7 +19,7 @@ object DatabaseModule {
 	@Provides
 	fun provideAppDatabase(@ApplicationContext context: Context) =
 		Room.databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME)
-			.addCallback(AppDatabaseCallback(context))
+			.addCallback(AppDatabaseCallback())
 			.build()
 
 	@Provides

@@ -14,8 +14,6 @@ import net.azurewebsites.noties.databinding.DialogFragmentNotebookBinding
 import net.azurewebsites.noties.ui.helpers.getPositiveButton
 import net.azurewebsites.noties.ui.helpers.showSoftKeyboard
 import net.azurewebsites.noties.ui.helpers.toEditable
-import net.azurewebsites.noties.ui.settings.PreferenceStorage
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class NotebookDialogFragment : DialogFragment() {
@@ -26,7 +24,6 @@ class NotebookDialogFragment : DialogFragment() {
 	private val notebookUiState by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelable(KEY) ?: NotebookUiState()
 	}
-	@Inject lateinit var userPreferences: PreferenceStorage
 	private var shouldUpdate = false
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,14 +40,14 @@ class NotebookDialogFragment : DialogFragment() {
 			lifecycleOwner = this@NotebookDialogFragment
 		}
 		return MaterialAlertDialogBuilder(requireContext(), R.style.MyThemeOverlay_MaterialAlertDialog)
-			.setTitle(if (notebookUiState.operation == Operation.Insert) R.string.new_notebook else R.string.update_notebook_name)
+			.setTitle(if (notebookUiState.operation == Operation.Insert) R.string.new_notebook else R.string.edit_notebook_name)
 			.setView(binding.root)
 			.setNegativeButton(R.string.cancel_button) { _, _ -> viewModel.reset() }
 			.setPositiveButton(R.string.save_button, null)
 			.create().apply {
 				setOnShowListener {
 					getButton(AlertDialog.BUTTON_POSITIVE).apply {
-						setOnClickListener { insertOrUpdateFolder(notebookUiState) }
+						setOnClickListener { createOrUpdateNotebook(notebookUiState) }
 					}
 				}
 			}
@@ -97,21 +94,18 @@ class NotebookDialogFragment : DialogFragment() {
 		}
 	}
 
-	private fun insertOrUpdateFolder(notebookUiState: NotebookUiState) {
+	private fun createOrUpdateNotebook(notebookUiState: NotebookUiState) {
 		when (notebookUiState.operation) {
 			Operation.Insert -> {
-				val newFolder = NotebookEntity(name = viewModel.notebookUiState.value.name)
-				viewModel.insertNotebook(newFolder)
+				val newNotebook = NotebookEntity(name = viewModel.notebookUiState.value.name)
+				viewModel.createNotebook(newNotebook)
 			}
 			Operation.Update -> {
-				val updatedFolder = NotebookEntity(
+				val updatedNotebook = NotebookEntity(
 					id = notebookUiState.id,
 					name = viewModel.notebookUiState.value.name
 				)
-				viewModel.updateNotebook(updatedFolder)
-				if (updatedFolder.id == 1) {
-					userPreferences.defaultFolderName = updatedFolder.name
-				}
+				viewModel.updateNotebook(updatedNotebook)
 			}
 		}
 		requireDialog().dismiss()

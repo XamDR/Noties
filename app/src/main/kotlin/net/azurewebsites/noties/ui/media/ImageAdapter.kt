@@ -40,7 +40,7 @@ class ImageAdapter : ListAdapter<ImageEntity, BaseMediaItemViewHolder>(MediaItem
 		MULTIPLE_IMAGES -> {
 			val binding = ImageItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 			ImageMediaItemViewHolder(binding).apply {
-				setOnClickListener { position, _ -> showMediaItemFullScreen(currentList, position) }
+				setOnClickListener { position -> showMediaItemFullScreen(currentList, position) }
 			}
 		}
 		else -> throw Exception("Unknown view type.")

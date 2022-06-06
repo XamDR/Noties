@@ -10,7 +10,6 @@ import net.azurewebsites.noties.ui.helpers.showSoftKeyboard
 class EditorContentAdapter(private val viewModel: EditorViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 	inner class EditorViewHolder(private val binding: FragmentEditorContentBinding) : RecyclerView.ViewHolder(binding.root) {
-
 		init {
 			if (viewModel.note.value.entity.id == 0L) {
 				binding.editor.post { binding.editor.showSoftKeyboard() }

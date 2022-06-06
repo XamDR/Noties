@@ -3,6 +3,7 @@ package net.azurewebsites.noties.ui.helpers
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.BlurMaskFilter
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
@@ -12,6 +13,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.AttrRes
 import androidx.annotation.IdRes
@@ -91,10 +93,10 @@ fun Context.copyUriToClipboard(@StringRes label: Int, uri: Uri, @StringRes copie
 	this.showToast(copiedMsg)
 }
 
-fun <T : RecyclerView.ViewHolder> T.setOnClickListener(callback: (position: Int, type: Int) -> Unit): T {
+fun <T : RecyclerView.ViewHolder> T.setOnClickListener(callback: (position: Int) -> Unit): T {
 	itemView.setOnClickListener {
 		ViewCompat.postOnAnimationDelayed(it, {
-			callback.invoke(bindingAdapterPosition, itemViewType)
+			callback.invoke(bindingAdapterPosition)
 		}, 100)
 	}
 	return this
@@ -169,4 +171,10 @@ fun Fragment.showDialog(dialog: DialogFragment, tag: String) {
 	if (previousDialog == null) {
 		dialog.show(childFragmentManager, tag)
 	}
+}
+
+fun TextView.blur() {
+	this.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+	val blurMask = BlurMaskFilter(10f, BlurMaskFilter.Blur.NORMAL)
+	this.paint.maskFilter = blurMask
 }

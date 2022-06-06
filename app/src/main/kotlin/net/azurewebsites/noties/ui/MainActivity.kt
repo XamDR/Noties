@@ -1,14 +1,10 @@
 package net.azurewebsites.noties.ui
 
-import android.app.KeyguardManager
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
@@ -28,7 +24,6 @@ import net.azurewebsites.noties.core.NotebookEntity
 import net.azurewebsites.noties.databinding.ActivityMainBinding
 import net.azurewebsites.noties.ui.helpers.findNavController
 import net.azurewebsites.noties.ui.helpers.setNightMode
-import net.azurewebsites.noties.ui.helpers.showSnackbar
 import net.azurewebsites.noties.ui.helpers.tryNavigate
 import net.azurewebsites.noties.ui.notebooks.NotebooksFragment
 import net.azurewebsites.noties.ui.notebooks.NotebooksViewModel
@@ -44,11 +39,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 	private val navController by lazy(LazyThreadSafetyMode.NONE) { findNavController(R.id.nav_host_fragment) }
 	private val viewModel by viewModels<NotebooksViewModel>()
 	@Inject lateinit var userPreferences: PreferenceStorage
-	private var selectedNotebook: NotebookEntity? = null
-	private val deviceCredentialLauncher = registerForActivityResult(
-		ActivityResultContracts.StartActivityForResult()) { result ->
-		activityResultCallback(result)
-	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		installSplashScreen()
@@ -132,36 +122,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
 	private fun filterNotesByNotebook(notebook: NotebookEntity) {
 		binding.drawerLayout.closeDrawer(GravityCompat.START, true)
-		if (notebook != selectedNotebook) {
-			selectedNotebook = notebook
-		}
-		if (notebook.isProtected) {
-			requestConfirmeDeviceCredential()
-		}
-		else {
-			navigateToNotes(notebook)
-		}
-	}
-
-	@Suppress("DEPRECATION")
-	private fun requestConfirmeDeviceCredential() {
-		val keyguardManager = getSystemService<KeyguardManager>() ?: return
-		val intent = keyguardManager.createConfirmDeviceCredentialIntent(
-			getString(R.string.confirme_device_credential_title),
-			getString(R.string.confirme_device_credential_desc)
-		)
-		deviceCredentialLauncher.launch(intent)
-	}
-
-	private fun activityResultCallback(result: ActivityResult) {
-		if (result.resultCode == RESULT_OK) {
-			selectedNotebook?.let { navigateToNotes(it) }
-		}
-		else {
-			binding.root.showSnackbar(R.string.error_auth).apply {
-				anchorView = if (navController.currentDestination?.id == R.id.nav_notes) binding.fab else null
-			}
-		}
+		navigateToNotes(notebook)
 	}
 
 	private fun navigateToNotes(notebook: NotebookEntity) {

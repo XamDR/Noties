@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "439921600f1a5bbc299abcf2c8e0c089",
+    "identityHash": "7e7740020651bbf64d9305717cee8e9b",
     "entities": [
       {
         "tableName": "Notebooks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `note_count` INTEGER NOT NULL, `is_protected` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `note_count` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -23,12 +23,6 @@
           {
             "fieldPath": "noteCount",
             "columnName": "note_count",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "isProtected",
-            "columnName": "is_protected",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -168,7 +162,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '439921600f1a5bbc299abcf2c8e0c089')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7e7740020651bbf64d9305717cee8e9b')"
     ]
   }
 }

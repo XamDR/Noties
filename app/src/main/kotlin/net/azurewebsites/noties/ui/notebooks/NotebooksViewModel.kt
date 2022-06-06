@@ -6,27 +6,28 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import net.azurewebsites.noties.core.Notebook
 import net.azurewebsites.noties.core.NotebookEntity
-import net.azurewebsites.noties.domain.DeleteNotebookAndMoveNotesToTrashUseCase
-import net.azurewebsites.noties.domain.GetNotebooksUseCase
-import net.azurewebsites.noties.domain.InsertNotebookUseCase
-import net.azurewebsites.noties.domain.UpdateNotebookUseCase
+import net.azurewebsites.noties.domain.*
 import javax.inject.Inject
 
 @HiltViewModel
 class NotebooksViewModel @Inject constructor(
 	getNotebooksUseCase: GetNotebooksUseCase,
-	private val insertNotebookUseCase: InsertNotebookUseCase,
+	private val createNotebookUseCase: CreateNotebookUseCase,
 	private val updateNotebookUseCase: UpdateNotebookUseCase,
 	private val deleteNotebookAndMoveNotesToTrashUseCase: DeleteNotebookAndMoveNotesToTrashUseCase,
 	private val savedState: SavedStateHandle) : ViewModel() {
 
 	init {
 		viewModelScope.launch {
-			getNotebooksUseCase().collect { names += it.map { folder -> folder.entity.name } }
+			getNotebooksUseCase()
+				.flowOn(Dispatchers.Main)
+				.conflate()
+				.collect { names += it.map { notebook -> notebook.entity.name } }
 		}
 	}
 
@@ -38,7 +39,7 @@ class NotebooksViewModel @Inject constructor(
 	val shouldNavigate get() = _shouldNavigate
 
 	val notebooks = getNotebooksUseCase().asLiveData()
-	private val names = mutableListOf<String>()
+	private val names = mutableSetOf<String>()
 
 	private val uiState = MutableStateFlow(NotebookUiState())
 	val notebookUiState = uiState.asStateFlow()
@@ -70,18 +71,20 @@ class NotebooksViewModel @Inject constructor(
 		}
 	}
 
-	fun insertNotebook(notebook: NotebookEntity) {
-		viewModelScope.launch { insertNotebookUseCase(notebook) }
+	fun createNotebook(notebook: NotebookEntity) {
+		viewModelScope.launch { createNotebookUseCase(notebook) }
 	}
 
 	fun updateNotebook(notebook: NotebookEntity) {
 		viewModelScope.launch { updateNotebookUseCase(notebook) }
 	}
 
-	fun deleteNotebookAndNotes(notebook: Notebook) {
+	fun deleteNotebookAndNotes(notebook: Notebook, action: () -> Unit) {
 		viewModelScope.launch {
 			deleteNotebookAndMoveNotesToTrashUseCase(notebook)
+			names.remove(notebook.entity.name)
 			_shouldNavigate = true
+			action()
 		}
 	}
 

@@ -8,13 +8,29 @@
 		android:layout_height="match_parent"
 		tools:context=".ui.notebooks.NotebooksFragment">
 
-		<androidx.recyclerview.widget.RecyclerView
+		<net.azurewebsites.noties.ui.views.CollectionView
 			android:id="@+id/folders"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:layout_margin="10dp"
+			android:layout_margin="8dp"
 			android:orientation="vertical"
+			app:emptyView="@{emptyView}"
 			app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
 			tools:listitem="@layout/notebook_item" />
+
+		<TextView
+			android:id="@+id/empty_view"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:drawablePadding="8dp"
+			android:gravity="center"
+			android:text="@string/empty_notebooks_message"
+			android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+			android:textStyle="bold"
+			android:translationY="-32dp"
+			app:drawableTopCompat="@drawable/ic_notebook"
+			app:drawableSize="@{@dimen/note_drawable_size}"
+			tools:visibility="gone" />
 	</FrameLayout>
 </layout>

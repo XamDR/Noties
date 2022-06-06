@@ -9,12 +9,12 @@ import android.widget.TextView
 import androidx.annotation.LayoutRes
 import net.azurewebsites.noties.R
 
-data class FolderContextMenuItem(val icon: Int, val text: String)
+data class NotebookContextMenuItem(val icon: Int, val text: String)
 
-class FolderItemContextMenuAdapter(
+class NotebookItemContextMenuAdapter(
 	context: Context,
 	@LayoutRes private val resource: Int,
-	private val items: List<FolderContextMenuItem>) : ArrayAdapter<FolderContextMenuItem>(context, resource, items) {
+	private val items: List<NotebookContextMenuItem>) : ArrayAdapter<NotebookContextMenuItem>(context, resource, items) {
 
 	override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 		val layoutInflater = LayoutInflater.from(context)

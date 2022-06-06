@@ -9,21 +9,21 @@ import net.azurewebsites.noties.core.NotebookEntity
 interface NotebookDao {
 
 	@Insert
-	suspend fun insertFolder(notebook: NotebookEntity)
+	suspend fun insertNotebook(notebook: NotebookEntity)
 
 	@Transaction
-	@Query("SELECT * FROM Notebooks WHERE id <> -1 ORDER BY (id <> 1), name")
-	fun getFolders(): Flow<List<Notebook>>
+	@Query("SELECT * FROM Notebooks WHERE id <> -1 ORDER BY name")
+	fun getNotebooks(): Flow<List<Notebook>>
 
 	@Update
-	suspend fun updateFolder(notebook: NotebookEntity)
+	suspend fun updateNotebook(notebook: NotebookEntity)
 
 	@Delete
-	suspend fun deleteFolders(notebooks: List<NotebookEntity>)
+	suspend fun deleteNotebooks(notebooks: List<NotebookEntity>)
 
 	@Query("UPDATE Notebooks SET note_count = note_count + 1 WHERE id = :notebookId")
-	suspend fun incrementNoteCount(notebookId: Int)
+	suspend fun incrementNotebookNoteCount(notebookId: Int)
 
 	@Query("UPDATE Notebooks SET note_count = note_count - 1 WHERE id = :notebookId")
-	suspend fun decrementNoteCount(notebookId: Int)
+	suspend fun decrementNotebookNoteCount(notebookId: Int)
 }

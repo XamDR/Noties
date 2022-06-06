@@ -12,5 +12,4 @@ import kotlinx.parcelize.Parcelize
 data class NotebookEntity(
 	@PrimaryKey(autoGenerate = true) val id: Int = 0,
 	val name: String = String.Empty,
-	@ColumnInfo(name = "note_count") val noteCount: Int = 0,
-	@ColumnInfo(name = "is_protected") val isProtected: Boolean = false) : Parcelable
+	@ColumnInfo(name = "note_count") val noteCount: Int = 0) : Parcelable

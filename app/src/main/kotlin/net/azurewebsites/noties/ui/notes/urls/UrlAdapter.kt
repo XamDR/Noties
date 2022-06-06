@@ -24,7 +24,7 @@ class UrlAdapter(private val urls: List<String>) : RecyclerView.Adapter<UrlAdapt
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UrlViewHolder {
 		val binding = UrlItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-		return UrlViewHolder(binding).setOnClickListener { position, _ ->
+		return UrlViewHolder(binding).setOnClickListener { position ->
 			openUrl(position, parent.context)
 		}
 	}
