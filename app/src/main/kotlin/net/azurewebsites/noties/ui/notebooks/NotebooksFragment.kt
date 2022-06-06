@@ -60,17 +60,6 @@ class NotebooksFragment : Fragment(), NotebookToolbarItemListener, NotebookItemC
 		showDialog(itemMenuDialog, MENU_TAG)
 	}
 
-//	override fun editNotebookName(notebook: NotebookEntity) {
-//		val uiState = NotebookUiState(id = notebook.id, name = notebook.name, operation = Operation.Update)
-//		val folderDialog = NotebookDialogFragment.newInstance(uiState)
-//		showDialog(folderDialog, TAG)
-//	}
-//
-//	override fun deleteNotebook(notebook: Notebook) {
-////		viewModel.deleteNotebookAndNotes(notebook)
-////		binding.root.showSnackbar(R.string.delete_notes_warning)
-//	}
-
 	private fun onBackPressed() {
 		requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
 			if (viewModel.shouldNavigate) {

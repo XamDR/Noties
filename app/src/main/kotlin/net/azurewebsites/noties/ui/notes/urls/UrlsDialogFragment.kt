@@ -9,7 +9,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import net.azurewebsites.noties.databinding.DialogFragmentUrlsBinding
 import net.azurewebsites.noties.ui.helpers.printDebug
 
-class UrlListDialogFragment : BottomSheetDialogFragment() {
+class UrlsDialogFragment : BottomSheetDialogFragment() {
 
 	private var _binding: DialogFragmentUrlsBinding? = null
 	private val binding get() = _binding!!
@@ -36,12 +36,12 @@ class UrlListDialogFragment : BottomSheetDialogFragment() {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		binding.list.adapter = UrlAdapter(urls).apply {
-			setOnUrlOpenedListener { this@UrlListDialogFragment.dismiss() }
+			setOnUrlOpenedListener { this@UrlsDialogFragment.dismiss() }
 		}
 	}
 
 	companion object {
-		fun newInstance(urls: Array<String>) = UrlListDialogFragment().apply {
+		fun newInstance(urls: Array<String>) = UrlsDialogFragment().apply {
 			arguments = bundleOf("urls" to urls)
 		}
 	}
