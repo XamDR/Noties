@@ -9,16 +9,15 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.AttrRes
-import androidx.annotation.IdRes
-import androidx.annotation.StringRes
-import androidx.annotation.TransitionRes
+import androidx.annotation.*
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -43,6 +42,7 @@ import com.google.android.material.behavior.SwipeDismissBehavior
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import net.azurewebsites.noties.R
 
 fun FragmentActivity.findNavController(@IdRes id: Int) =
 	(this.supportFragmentManager.findFragmentById(id) as NavHostFragment).navController
@@ -115,11 +115,37 @@ fun View.showSnackbar(@StringRes message: Int,
 	}.also { it.show() }
 }
 
+fun View.showSnackbar(message: String,
+                      length: Int = Snackbar.LENGTH_LONG,
+                      @StringRes action: Int,
+                      listener: ((View) -> Unit)? = null): Snackbar {
+	return Snackbar.make(this, message, length).setAction(action, listener).apply {
+		behavior = BaseTransientBottomBar.Behavior().apply { setSwipeDirection(SwipeDismissBehavior.SWIPE_DIRECTION_ANY) }
+	}.also { it.show() }
+}
+
 fun View.showSnackbar(@StringRes message: Int,
                       length: Int = Snackbar.LENGTH_LONG): Snackbar {
 	return Snackbar.make(this, message, length).apply {
 		behavior = BaseTransientBottomBar.Behavior().apply { setSwipeDirection(SwipeDismissBehavior.SWIPE_DIRECTION_ANY) }
 	}.also { it.show() }
+}
+
+fun Snackbar.addExtraAction(@LayoutRes layoutId: Int, @StringRes label: Int, listener: View.OnClickListener): Snackbar {
+	val button = LayoutInflater.from(view.context).inflate(layoutId, null) as Button
+	view.findViewById<Button>(R.id.snackbar_action).let {
+		button.layoutParams = it.layoutParams
+		button.setTextColor(it.textColors)
+		(it.parent as ViewGroup).addView(button)
+	}
+	button.also {
+		it.text = view.context.getString(label)
+		it.setOnClickListener { v ->
+			this.dismiss()
+			listener.onClick(v)
+		}
+	}
+	return this
 }
 
 fun NavController.tryNavigate(

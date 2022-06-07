@@ -1,4 +1,4 @@
-package net.azurewebsites.noties.ui.notes.urls
+package net.azurewebsites.noties.ui.urls
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,18 +7,13 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import net.azurewebsites.noties.databinding.DialogFragmentUrlsBinding
-import net.azurewebsites.noties.ui.helpers.printDebug
 
-class UrlsDialogFragment : BottomSheetDialogFragment() {
+class UrlsDialogFragment : BottomSheetDialogFragment(), OnCloseDialogListener {
 
 	private var _binding: DialogFragmentUrlsBinding? = null
 	private val binding get() = _binding!!
-	private lateinit var urls: List<String>
-
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		urls = requireArguments().getStringArray("urls")?.toList() ?: emptyList()
-		printDebug("URLS", urls)
+	private val urls by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getStringArray(KEY)?.toList() ?: emptyList()
 	}
 
 	override fun onCreateView(inflater: LayoutInflater,
@@ -35,14 +30,14 @@ class UrlsDialogFragment : BottomSheetDialogFragment() {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		binding.list.adapter = UrlAdapter(urls).apply {
-			setOnUrlOpenedListener { this@UrlsDialogFragment.dismiss() }
-		}
+		binding.list.adapter = UrlAdapter(urls, this)
 	}
 
 	companion object {
+		private const val KEY = "urls"
+
 		fun newInstance(urls: Array<String>) = UrlsDialogFragment().apply {
-			arguments = bundleOf("urls" to urls)
+			arguments = bundleOf(KEY to urls)
 		}
 	}
 }

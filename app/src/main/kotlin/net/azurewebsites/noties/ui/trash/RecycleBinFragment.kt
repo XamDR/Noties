@@ -14,14 +14,15 @@ import net.azurewebsites.noties.ui.helpers.removeMenuProvider
 import net.azurewebsites.noties.ui.helpers.showDialog
 import net.azurewebsites.noties.ui.notes.NoteAdapter
 import net.azurewebsites.noties.ui.notes.SwipeToDeleteListener
+import net.azurewebsites.noties.ui.urls.UrlListener
 
 @AndroidEntryPoint
-class RecycleBinFragment : Fragment(), SwipeToDeleteListener, RecycleBinMenuListener {
+class RecycleBinFragment : Fragment(), SwipeToDeleteListener, RecycleBinMenuListener, UrlListener {
 
 	private var _binding: FragmentRecycleBinBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<RecycleBinViewModel>()
-	private val noteAdapter = NoteAdapter(this)
+	private val noteAdapter = NoteAdapter(this, this)
 	private val menuProvider = RecycleBinMenuProvider(this)
 
 	override fun onCreateView(inflater: LayoutInflater,
@@ -46,6 +47,8 @@ class RecycleBinFragment : Fragment(), SwipeToDeleteListener, RecycleBinMenuList
 	}
 
 	override fun moveNoteToTrash(note: NoteEntity) {}
+
+	override fun showUrlsDialog(urls: List<String>) {}
 
 	override fun showEmptyRecycleBinDialog() {
 		val emptyRecycleBinDialog = EmptyRecycleBinDialogFragment()

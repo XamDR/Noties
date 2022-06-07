@@ -3,9 +3,8 @@ package net.azurewebsites.noties.ui.helpers
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.util.Patterns
 import androidx.documentfile.provider.DocumentFile
-import com.linkedin.urls.detection.UrlDetector
-import com.linkedin.urls.detection.UrlDetectorOptions
 import net.azurewebsites.noties.core.NoteEntity
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -27,16 +26,10 @@ fun printDebug(tag: String, msg: Any?) = Log.d(tag, msg.toString())
 
 fun printError(tag: String, msg: Any?) = Log.e(tag, msg.toString())
 
-fun extractUrls(input: String): List<String> {
-	val parser = UrlDetector(input, UrlDetectorOptions.Default)
-	val urls = parser.detect()
-	val result = mutableListOf<String>()
-
-	for (url in urls) {
-		result.add(url.fullUrl)
-	}
-	return result
-}
+fun extractUrls(input: String) = Regex(Patterns.WEB_URL.pattern())
+	.findAll(input)
+	.map { it.value }
+	.toList()
 
 fun readUriContent(context: Context, uri: Uri?): NoteEntity? {
 	try {

@@ -22,15 +22,17 @@ import net.azurewebsites.noties.ui.MainActivity
 import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.notebooks.NotebooksFragment
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
+import net.azurewebsites.noties.ui.urls.UrlListener
+import net.azurewebsites.noties.ui.urls.UrlsDialogFragment
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NotesFragment : Fragment(), SwipeToDeleteListener {
+class NotesFragment : Fragment(), SwipeToDeleteListener, UrlListener {
 
 	private var _binding: FragmentNotesBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<NotesViewModel>()
-	private val noteAdapter = NoteAdapter(this)
+	private val noteAdapter = NoteAdapter(this, this)
 	@Inject lateinit var userPreferences: PreferenceStorage
 	private val notebook by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelable(NotebooksFragment.NOTEBOOK) ?: NotebookEntity()
@@ -71,6 +73,11 @@ class NotesFragment : Fragment(), SwipeToDeleteListener {
 		viewModel.moveNoteToTrash(note) { showUndoSnackbar(it) }
 	}
 
+	override fun showUrlsDialog(urls: List<String>) {
+		val urlsDialog = UrlsDialogFragment.newInstance(urls.toTypedArray())
+		showDialog(urlsDialog, TAG)
+	}
+
 	private fun navigateToEditor() {
 		val args = bundleOf(ID to notebook.id)
 		findNavController().tryNavigate(R.id.action_notes_to_editor, args)
@@ -106,5 +113,6 @@ class NotesFragment : Fragment(), SwipeToDeleteListener {
 
 	companion object {
 		const val ID = "id"
+		private const val TAG = "URLS_DIALOG"
 	}
 }

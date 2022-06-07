@@ -1,4 +1,4 @@
-package net.azurewebsites.noties.ui.notes.urls
+package net.azurewebsites.noties.ui.urls
 
 import android.content.Context
 import android.content.Intent
@@ -10,7 +10,7 @@ import com.google.android.material.divider.MaterialDividerItemDecoration
 import net.azurewebsites.noties.databinding.UrlItemBinding
 import net.azurewebsites.noties.ui.helpers.setOnClickListener
 
-class UrlAdapter(private val urls: List<String>) : RecyclerView.Adapter<UrlAdapter.UrlViewHolder>() {
+class UrlAdapter(private val urls: List<String>, private val listener: OnCloseDialogListener) : RecyclerView.Adapter<UrlAdapter.UrlViewHolder>() {
 
 	class UrlViewHolder(private val binding: UrlItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -43,15 +43,9 @@ class UrlAdapter(private val urls: List<String>) : RecyclerView.Adapter<UrlAdapt
 		)
 	}
 
-	fun setOnUrlOpenedListener(callback: () -> Unit) {
-		onUrlOpenedCallback = callback
-	}
-
 	private fun openUrl(position: Int, context: Context) {
-		onUrlOpenedCallback?.invoke()
+		listener.dismiss()
 		val url = urls[position]
 		context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
 	}
-
-	private var onUrlOpenedCallback: (() -> Unit)? = null
 }

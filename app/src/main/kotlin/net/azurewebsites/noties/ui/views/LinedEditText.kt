@@ -17,7 +17,7 @@ import android.view.MotionEvent
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.text.getSpans
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.ui.helpers.copyTextToClipboard
 import kotlin.math.max
@@ -76,7 +76,7 @@ class LinedEditText @JvmOverloads constructor(
 
 	override fun onKeyPreIme(keyCode: Int, event: KeyEvent?): Boolean {
 		if (keyCode == KeyEvent.KEYCODE_BACK && TextUtils.isEmpty(text)) {
-			emptyCallback.invoke()
+			emptyContentCallback.invoke()
 			return false
 		}
 		return super.onKeyPreIme(keyCode, event)
@@ -84,27 +84,27 @@ class LinedEditText @JvmOverloads constructor(
 
 	override fun onAttachedToWindow() {
 		super.onAttachedToWindow()
-		setOnLinkClickedListener { url -> showUrlOptionsDialog(url) }
+		setOnLinkClickedListener { url -> showUrlSnackbar(url) }
 	}
 
-	private fun showUrlOptionsDialog(url: String) {
-		MaterialAlertDialogBuilder(context, R.style.MyThemeOverlay_MaterialAlertDialog)
-			.setTitle(url)
-			.setItems(R.array.url_options) { dialog, which ->
-				dialog.dismiss()
-				when (which) {
-					0 -> context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-					1 -> {}
-					2 -> context.copyTextToClipboard(R.string.label_link, url, R.string.url_copied_msg)
-				}
-			}.also { it.show() }
+	private fun showUrlSnackbar(url: String) {
+//		showSnackbar(url, action = R.string.open_url) {
+//			context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+//		}.addExtraAction(R.layout.extra_action_snacknar, R.string.copy_url) {
+//			context.copyTextToClipboard(R.string.label_link, url, R.string.url_copied_msg)
+//		}
+		TwoActionsSnackbar.make(this, url, Snackbar.LENGTH_LONG).setAction(R.string.open_url) {
+			context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+		}.setExtraAction(R.string.copy_url) {
+			context.copyTextToClipboard(R.string.label_link, url, R.string.url_copied_msg)
+		}.show()
 	}
 
-	fun setOnEmptyListener(callback: () -> Unit) {
-		emptyCallback = callback
-	}
+//	fun setOnEmptyContentListener(callback: () -> Unit) {
+//		emptyContentCallback = callback
+//	}
 
-	private var emptyCallback: () -> Unit = {}
+	private var emptyContentCallback: () -> Unit = {}
 
 	private var callback: (linkText: String) -> Unit = {}
 

@@ -12,6 +12,6 @@
 		app:behavior_hideable="true"
 		app:behavior_peekHeight="0dp"
 		app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-		tools:context=".ui.notes.urls.UrlsDialogFragment"
+		tools:context=".ui.urls.UrlsDialogFragment"
 		tools:listitem="@layout/url_item" />
 </layout>

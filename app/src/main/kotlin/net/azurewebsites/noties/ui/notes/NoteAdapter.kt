@@ -17,12 +17,15 @@ import net.azurewebsites.noties.ui.editor.EditorFragment
 import net.azurewebsites.noties.ui.helpers.blur
 import net.azurewebsites.noties.ui.helpers.setOnClickListener
 import net.azurewebsites.noties.ui.helpers.tryNavigate
+import net.azurewebsites.noties.ui.urls.UrlListener
 
-class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Note, RecyclerView.ViewHolder>(NoteAdapterCallback()) {
+class NoteAdapter(
+	private val listener: SwipeToDeleteListener,
+	private val urlListener: UrlListener) : ListAdapter<Note, RecyclerView.ViewHolder>(NoteAdapterCallback()) {
 
 	inner class NoteViewHolder(private val binding: NoteItemBinding) : RecyclerView.ViewHolder(binding.root) {
 		init {
-			binding.url.setOnClickListener { }
+			binding.url.setOnClickListener { showUrlsDialog(bindingAdapterPosition) }
 		}
 
 		fun bind(note: Note, isSelected: Boolean = false) {
@@ -100,6 +103,13 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 				navOptions = null,
 				navigatorExtras = extras
 			)
+		}
+	}
+
+	private fun showUrlsDialog(position: Int) {
+		if (position != RecyclerView.NO_POSITION) {
+			val note = getItem(position)
+			urlListener.showUrlsDialog(note.entity.urls)
 		}
 	}
 
