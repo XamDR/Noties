@@ -1,12 +1,10 @@
 package net.azurewebsites.noties.ui.views
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
-import android.net.Uri
 import android.text.Spannable
 import android.text.TextUtils
 import android.text.method.ArrowKeyMovementMethod
@@ -17,9 +15,7 @@ import android.view.MotionEvent
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.text.getSpans
-import com.google.android.material.snackbar.Snackbar
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.ui.helpers.copyTextToClipboard
 import kotlin.math.max
 
 // Based on these answers:
@@ -82,33 +78,11 @@ class LinedEditText @JvmOverloads constructor(
 		return super.onKeyPreIme(keyCode, event)
 	}
 
-	override fun onAttachedToWindow() {
-		super.onAttachedToWindow()
-		setOnLinkClickedListener { url -> showUrlSnackbar(url) }
-	}
-
-	private fun showUrlSnackbar(url: String) {
-//		showSnackbar(url, action = R.string.open_url) {
-//			context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-//		}.addExtraAction(R.layout.extra_action_snacknar, R.string.copy_url) {
-//			context.copyTextToClipboard(R.string.label_link, url, R.string.url_copied_msg)
-//		}
-		TwoActionsSnackbar.make(this, url, Snackbar.LENGTH_LONG).setAction(R.string.open_url) {
-			context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-		}.setExtraAction(R.string.copy_url) {
-			context.copyTextToClipboard(R.string.label_link, url, R.string.url_copied_msg)
-		}.show()
-	}
-
-//	fun setOnEmptyContentListener(callback: () -> Unit) {
-//		emptyContentCallback = callback
-//	}
-
 	private var emptyContentCallback: () -> Unit = {}
 
 	private var callback: (linkText: String) -> Unit = {}
 
-	private fun setOnLinkClickedListener(callback: (linkText: String) -> Unit) {
+	fun setOnLinkClickedListener(callback: (linkText: String) -> Unit) {
 		this.callback = callback
 	}
 

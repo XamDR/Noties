@@ -1,5 +1,6 @@
 package net.azurewebsites.noties.ui.editor
 
+import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -19,15 +20,13 @@ import kotlinx.coroutines.launch
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.FragmentEditorBinding
-import net.azurewebsites.noties.ui.helpers.getThemeColor
-import net.azurewebsites.noties.ui.helpers.hideSoftKeyboard
-import net.azurewebsites.noties.ui.helpers.showDialog
-import net.azurewebsites.noties.ui.helpers.showToast
+import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.media.ImageAdapter
 import net.azurewebsites.noties.ui.notes.NotesFragment
+import net.azurewebsites.noties.ui.urls.JsoupHelper
 
 @AndroidEntryPoint
-class EditorFragment : Fragment(), AttachImagesListener {
+class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
@@ -51,7 +50,7 @@ class EditorFragment : Fragment(), AttachImagesListener {
 				viewModel.tempNote.value = viewModel.note.value.clone()
 			}
 		}
-		editorContentAdapter = EditorContentAdapter(viewModel)
+		editorContentAdapter = EditorContentAdapter(viewModel, this)
 	}
 
 	override fun onCreateView(inflater: LayoutInflater,
@@ -122,5 +121,14 @@ class EditorFragment : Fragment(), AttachImagesListener {
 	companion object {
 		const val NOTE = "note"
 		private const val TAG = "MENU_DIALOG"
+	}
+
+	override fun onLinkClicked(url: String) {
+		viewLifecycleOwner.lifecycleScope.launch {
+			val urlTitle = JsoupHelper.extractTitle(url) ?: url
+			binding.root.showSnackbar(urlTitle, action = R.string.open_url) {
+				startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+			}
+		}
 	}
 }

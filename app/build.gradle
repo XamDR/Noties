@@ -95,6 +95,9 @@ dependencies {
 	// Gif support
 	implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.24'
 
+	// Jsoup
+	implementation 'org.jsoup:jsoup:1.15.1'
+
 	// Testing
 	testImplementation 'junit:junit:4.13.2'
 	androidTestImplementation "androidx.arch.core:core-testing:2.1.0"

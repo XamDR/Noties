@@ -7,13 +7,16 @@ import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.FragmentEditorContentBinding
 import net.azurewebsites.noties.ui.helpers.showSoftKeyboard
 
-class EditorContentAdapter(private val viewModel: EditorViewModel) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class EditorContentAdapter(
+	private val viewModel: EditorViewModel,
+	private val listener: LinkClickedListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 	inner class EditorViewHolder(private val binding: FragmentEditorContentBinding) : RecyclerView.ViewHolder(binding.root) {
 		init {
 			if (viewModel.note.value.entity.id == 0L) {
 				binding.editor.post { binding.editor.showSoftKeyboard() }
 			}
+			binding.editor.setOnLinkClickedListener { url -> listener.onLinkClicked(url) }
 		}
 
 		fun bind(viewModel: EditorViewModel) {
