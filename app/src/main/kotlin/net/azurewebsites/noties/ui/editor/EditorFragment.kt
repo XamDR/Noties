@@ -50,6 +50,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 				viewModel.tempNote.value = viewModel.note.value.clone()
 			}
 		}
+		printDebug("NOTE", note)
 		editorContentAdapter = EditorContentAdapter(viewModel, this)
 	}
 
@@ -84,11 +85,25 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 		}
 	}
 
+	override fun onLinkClicked(url: String) {
+		viewLifecycleOwner.lifecycleScope.launch {
+			val urlTitle = JsoupHelper.extractTitle(url) ?: url
+			binding.root.showSnackbar(urlTitle, action = R.string.open_url) {
+				startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+			}
+		}
+	}
+
 	fun showBottomSheetMenu() {
 		val menuDialog = EditorMenuFragment().apply {
 			setOnActivityResultListener { pickImagesLauncher.launch(arrayOf("image/*")) }
 		}
 		showDialog(menuDialog, TAG)
+	}
+
+	fun navigateUp() {
+		binding.root.hideSoftKeyboard()
+		requireActivity().onBackPressed()
 	}
 
 	private fun initTransition() {
@@ -98,11 +113,6 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 			endContainerColor = requireContext().getThemeColor(R.attr.colorSurface)
 			scrimColor = Color.TRANSPARENT
 		}
-	}
-
-	fun navigateUp() {
-		binding.root.hideSoftKeyboard()
-		requireActivity().onBackPressed()
 	}
 
 	private fun onBackPressed() {
@@ -121,14 +131,5 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 	companion object {
 		const val NOTE = "note"
 		private const val TAG = "MENU_DIALOG"
-	}
-
-	override fun onLinkClicked(url: String) {
-		viewLifecycleOwner.lifecycleScope.launch {
-			val urlTitle = JsoupHelper.extractTitle(url) ?: url
-			binding.root.showSnackbar(urlTitle, action = R.string.open_url) {
-				startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-			}
-		}
 	}
 }

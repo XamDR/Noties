@@ -32,7 +32,7 @@
 				android:maxLines="3"
 				android:padding="16dp"
 				android:text="@string/demo_content"
-				app:drawableEndCompat="@drawable/ic_lock_notebook" />
+				app:drawableEndCompat="@drawable/ic_lock_note" />
 
 			<TextView
 				android:layout_width="wrap_content"

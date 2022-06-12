@@ -21,6 +21,7 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.view.ActionMode
 import androidx.core.content.getSystemService
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
@@ -165,6 +166,10 @@ fun Fragment.showDialog(dialog: DialogFragment, tag: String) {
 	if (previousDialog == null) {
 		dialog.show(childFragmentManager, tag)
 	}
+}
+
+fun Fragment.startActionMode(callback: ActionMode.Callback): ActionMode? {
+	return (this.requireActivity() as AppCompatActivity).startSupportActionMode(callback)
 }
 
 fun TextView.blur() {
