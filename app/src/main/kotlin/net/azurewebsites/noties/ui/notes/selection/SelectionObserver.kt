@@ -23,7 +23,6 @@ class SelectionObserver(
 			numSelectedItems
 		)
 		if (tracker.hasSelection() && actionMode == null) {
-//			actionMode = (context as AppCompatActivity).startSupportActionMode(callback)
 			actionMode = (FragmentComponentManager.findActivity(context) as AppCompatActivity).startSupportActionMode(callback)
 			actionMode?.title = title
 		}
@@ -33,6 +32,7 @@ class SelectionObserver(
 		}
 		else {
 			actionMode?.title = title
+			actionMode?.invalidate()
 		}
 	}
 }

@@ -23,7 +23,7 @@ interface NoteDao {
 	suspend fun updateNote(note: NoteEntity)
 
 	@Delete
-	suspend fun deleteNotes(notes: List<NoteEntity>)
+	suspend fun deleteNote(note: NoteEntity)
 
 	@Transaction
 	@Query("SELECT * FROM Notes WHERE notebook_id = -1")

@@ -1,5 +1,7 @@
 package net.azurewebsites.noties.ui.editor
 
+import android.app.Activity
+import android.app.KeyguardManager
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -8,7 +10,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.getSystemService
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -40,17 +45,19 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 	)
 	private val editorImageAdapter = EditorImageAdapter(ImageAdapter())
 	private lateinit var editorContentAdapter: EditorContentAdapter
-	private var note: Note? = null
+	private val note by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getParcelable(NOTE) ?: Note()
+	}
+	private val deviceCredentialLauncher = registerForActivityResult(
+		ActivityResultContracts.StartActivityForResult()
+	) { result -> activityResultCallback(result) }
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		if (savedInstanceState == null) {
-			note = arguments?.getParcelable<Note>(NOTE)?.also {
-				viewModel.note.value = it
-				viewModel.tempNote.value = viewModel.note.value.clone()
-			}
+			viewModel.note.value = note
+			viewModel.tempNote.value = viewModel.note.value.clone()
 		}
-		printDebug("NOTE", note)
 		editorContentAdapter = EditorContentAdapter(viewModel, this)
 	}
 
@@ -72,16 +79,24 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
+		checkIfNoteIsProtected()
 		initTransition()
 		onBackPressed()
 		binding.content.adapter = ConcatAdapter(editorImageAdapter, editorContentAdapter)
-		viewModel.getImages().observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
+		viewModel.images.observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
+	}
+
+	private fun checkIfNoteIsProtected() {
+		if (note.entity.isProtected) {
+			binding.root.isVisible = false
+			requestConfirmeDeviceCredential()
+		}
 	}
 
 	override fun addImages(uris: List<Uri>) {
 		viewLifecycleOwner.lifecycleScope.launch {
 			viewModel.addImages(requireContext(), uris)
-			viewModel.getImages().observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
+			viewModel.images.observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
 		}
 	}
 
@@ -125,6 +140,26 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 				}
 				findNavController().popBackStack()
 			}
+		}
+	}
+
+	@Suppress("DEPRECATION")
+	private fun requestConfirmeDeviceCredential() {
+		val keyguardManager = requireContext().getSystemService<KeyguardManager>() ?: return
+		val intent = keyguardManager.createConfirmDeviceCredentialIntent(
+			getString(R.string.confirme_device_credential_title),
+			getString(R.string.confirme_device_credential_desc)
+		)
+		deviceCredentialLauncher.launch(intent)
+	}
+
+	private fun activityResultCallback(result: ActivityResult) {
+		if (result.resultCode == Activity.RESULT_OK) {
+			binding.root.isVisible = true
+		}
+		else {
+			findNavController().popBackStack()
+			binding.root.showSnackbar(R.string.error_auth)
 		}
 	}
 

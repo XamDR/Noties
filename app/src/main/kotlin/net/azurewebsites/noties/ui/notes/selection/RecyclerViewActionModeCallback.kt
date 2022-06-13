@@ -17,7 +17,21 @@ class RecyclerViewActionModeCallback(private val adapter: NoteAdapter) : ActionM
 		return true
 	}
 
-	override fun onPrepareActionMode(mode: ActionMode, menu: Menu) = false
+	override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+		if (adapter.getSelectedNotes().any { !it.entity.isProtected }) {
+			mode.menu.findItem(R.id.lock_note).apply {
+				setIcon(R.drawable.ic_lock_note)
+				setTitle(R.string.lock_note)
+			}
+		}
+		else {
+			mode.menu.findItem(R.id.lock_note).apply {
+				setIcon(R.drawable.ic_unlock_note)
+				setTitle(R.string.unlock_note)
+			}
+		}
+		return true
+	}
 
 	override fun onActionItemClicked(mode: ActionMode, item: MenuItem) = when (item.itemId) {
 		R.id.select_all -> {
@@ -27,7 +41,7 @@ class RecyclerViewActionModeCallback(private val adapter: NoteAdapter) : ActionM
 			adapter.deleteNotes(); true
 		}
 		R.id.lock_note -> {
-			adapter.lockNotes(); true
+			adapter.toggleLockedStatusForNotes(); true
 		}
 		else -> false
 	}

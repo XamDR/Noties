@@ -174,7 +174,16 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	private fun setupAdapterListeners() {
 		noteAdapter.setOnShowUrlsListener { urls -> showUrlsDialog(urls) }
 		noteAdapter.setOnDeleteNotesListener { notes -> showDeleteNotesDialog(notes) }
-		noteAdapter.setOnLockNotesListener { notes -> viewModel.lockNotes(notes) }
+		noteAdapter.setOnLockNotesListener { notes -> toggleLockedStatusForNotes(notes) }
+	}
+
+	private fun toggleLockedStatusForNotes(notes: List<Note>) {
+		if (notes.map { it.entity }.any { !it.isProtected }) {
+			viewModel.lockNotes(notes)
+		}
+		else {
+			viewModel.unlockNotes(notes)
+		}
 	}
 
 	companion object {

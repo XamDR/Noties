@@ -96,33 +96,26 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 		listener.moveNoteToTrash(note.entity)
 	}
 
-	fun deleteNotes() {
+	fun getSelectedNotes(): List<Note> {
 		val iterator = tracker?.selection?.iterator()
+		val notes = mutableListOf<Note>()
 		iterator?.let {
-			val notes = mutableListOf<Note>()
 			while (iterator.hasNext()) {
 				notes.add(iterator.next())
 			}
-			onDeleteNotesCallback(notes)
 		}
+		return notes
 	}
+
+	fun deleteNotes() = onDeleteNotesCallback(getSelectedNotes())
+
+	fun toggleLockedStatusForNotes() = onLockNotesCallback(getSelectedNotes())
 
 	fun selectAllNotes() {
 		for (note in currentList) {
 			if (tracker?.isSelected(note) == false) {
 				tracker?.select(note)
 			}
-		}
-	}
-
-	fun lockNotes() {
-		val iterator = tracker?.selection?.iterator()
-		iterator?.let {
-			val notes = mutableListOf<Note>()
-			while (iterator.hasNext()) {
-				notes.add(iterator.next())
-			}
-			onLockNotesCallback(notes)
 		}
 	}
 

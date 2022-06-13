@@ -19,7 +19,8 @@ class NotesViewModel @Inject constructor(
 	private val moveNoteToTrashUseCase: MoveNoteToTrashUseCase,
 	private val deleteNotesUseCase: DeleteNotesUseCase,
 	private val restoreNoteUseCase: RestoreNoteUseCase,
-	private val lockNotesUseCase: LockNotesUseCase) : ViewModel() {
+	private val lockNotesUseCase: LockNotesUseCase,
+	private val unlockNotesUseCase: UnlockNotesUseCase) : ViewModel() {
 
 	fun sortNotes(notebookId: Int, sortMode: SortMode): LiveData<List<Note>> {
 		val sortedNotes = when (sortMode) {
@@ -57,6 +58,12 @@ class NotesViewModel @Inject constructor(
 	fun lockNotes(notes: List<Note>) {
 		viewModelScope.launch {
 			lockNotesUseCase(notes.map { it.entity })
+		}
+	}
+
+	fun unlockNotes(notes: List<Note>) {
+		viewModelScope.launch {
+			unlockNotesUseCase(notes.map { it.entity })
 		}
 	}
 
