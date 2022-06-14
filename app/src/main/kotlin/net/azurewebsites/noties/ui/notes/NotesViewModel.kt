@@ -55,15 +55,15 @@ class NotesViewModel @Inject constructor(
 		}
 	}
 
-	fun lockNotes(notes: List<Note>) {
+	fun toggleLockedStatusForNotes(notes: List<Note>, action: () -> Unit) {
 		viewModelScope.launch {
-			lockNotesUseCase(notes.map { it.entity })
-		}
-	}
-
-	fun unlockNotes(notes: List<Note>) {
-		viewModelScope.launch {
-			unlockNotesUseCase(notes.map { it.entity })
+			if (notes.map { it.entity }.any { !it.isProtected }) {
+				lockNotesUseCase(notes.map { it.entity })
+			}
+			else {
+				unlockNotesUseCase(notes.map { it.entity })
+			}
+			action()
 		}
 	}
 

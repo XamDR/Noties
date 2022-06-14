@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.doOnPreDraw
+import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -18,12 +19,14 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.transition.MaterialElevationScale
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
+import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.core.NoteEntity
 import net.azurewebsites.noties.core.NotebookEntity
 import net.azurewebsites.noties.databinding.FragmentNotesBinding
 import net.azurewebsites.noties.ui.MainActivity
 import net.azurewebsites.noties.ui.helpers.*
+import net.azurewebsites.noties.ui.image.ImageStorageManager
 import net.azurewebsites.noties.ui.notebooks.NotebooksFragment
 import net.azurewebsites.noties.ui.notes.selection.*
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
@@ -102,9 +105,24 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 
 	override fun showDeleteNotesDialog(notes: List<Note>) {
 		val deleteNotesDialog = DeleteNotesDialogFragment.newInstance(notes).apply {
-			setOnNotesDeletedListener { selectionObserver.actionMode?.finish() }
+			setOnNotesDeletedListener {
+				selectionObserver.actionMode?.finish()
+				for (note in notes) {
+					deleteImages(note.images)
+				}
+			}
 		}
 		showDialog(deleteNotesDialog, DELETE_NOTES)
+	}
+
+	private fun deleteImages(images: List<ImageEntity>) {
+		for (image in images) {
+			val fileName = DocumentFile.fromSingleUri(requireContext(), image.uri!!)?.name
+			fileName?.let {
+				val result = ImageStorageManager.deleteImage(requireContext(), it)
+				printDebug("ImageStorageManager", result)
+			}
+		}
 	}
 
 	private fun navigateToEditor() {
@@ -174,15 +192,8 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	private fun setupAdapterListeners() {
 		noteAdapter.setOnShowUrlsListener { urls -> showUrlsDialog(urls) }
 		noteAdapter.setOnDeleteNotesListener { notes -> showDeleteNotesDialog(notes) }
-		noteAdapter.setOnLockNotesListener { notes -> toggleLockedStatusForNotes(notes) }
-	}
-
-	private fun toggleLockedStatusForNotes(notes: List<Note>) {
-		if (notes.map { it.entity }.any { !it.isProtected }) {
-			viewModel.lockNotes(notes)
-		}
-		else {
-			viewModel.unlockNotes(notes)
+		noteAdapter.setOnLockNotesListener { notes ->
+			viewModel.toggleLockedStatusForNotes(notes) { selectionObserver.actionMode?.finish() }
 		}
 	}
 
