@@ -4,11 +4,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
+import androidx.databinding.ViewDataBinding
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.recyclerview.selection.ItemDetailsLookup
+import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import net.azurewebsites.noties.BR
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.NoteItemBinding
@@ -18,35 +22,36 @@ import net.azurewebsites.noties.ui.helpers.blur
 import net.azurewebsites.noties.ui.helpers.setOnClickListener
 import net.azurewebsites.noties.ui.helpers.tryNavigate
 
-class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Note, RecyclerView.ViewHolder>(NoteAdapterCallback()) {
+class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Note, NoteAdapter.BaseViewHolder>(NoteAdapterCallback()) {
 
-	inner class NoteViewHolder(private val binding: NoteItemBinding) : RecyclerView.ViewHolder(binding.root) {
-		init {
-			binding.url.setOnClickListener { showUrlsDialog(bindingAdapterPosition) }
-		}
+	var tracker: SelectionTracker<Note>? = null
+
+	open inner class BaseViewHolder(private val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root) {
 
 		fun bind(note: Note, isSelected: Boolean = false) {
 			binding.apply {
-				this.note = note
+				setVariable(BR.note, note)
 				ViewCompat.setTransitionName(root, note.entity.id.toString())
 				executePendingBindings()
 			}
 			itemView.isActivated = isSelected
 		}
+
+		fun getItemDetails() = object : ItemDetailsLookup.ItemDetails<Note>() {
+			override fun getPosition(): Int = bindingAdapterPosition
+			override fun getSelectionKey(): Note = getItem(position)
+		}
 	}
 
-	inner class ProtectedNoteViewHolder(private val binding: ProtectedNoteItemBinding) : RecyclerView.ViewHolder(binding.root) {
+	inner class NoteViewHolder(binding: NoteItemBinding) : BaseViewHolder(binding) {
+		init {
+			binding.url.setOnClickListener { showUrlsDialog(bindingAdapterPosition) }
+		}
+	}
+
+	inner class ProtectedNoteViewHolder(binding: ProtectedNoteItemBinding) : BaseViewHolder(binding) {
 		init {
 			binding.placeholderContent.blur()
-		}
-
-		fun bind(note: Note, isSelected: Boolean = false) {
-			binding.apply {
-				this.note = note
-				ViewCompat.setTransitionName(root, note.entity.id.toString())
-				executePendingBindings()
-			}
-			itemView.isSelected = isSelected
 		}
 	}
 
@@ -66,11 +71,13 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 		else -> throw Exception("Unknown view type.")
 	}
 
-	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+	override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
 		val note = getItem(position)
-		when (holder) {
-			is NoteViewHolder -> holder.bind(note)
-			is ProtectedNoteViewHolder -> holder.bind(note)
+		if (tracker == null) {
+			holder.bind(note)
+		}
+		else {
+			tracker?.let { holder.bind(note, it.isSelected(note)) }
 		}
 	}
 
@@ -87,6 +94,29 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 	fun moveNoteToTrash(position: Int) {
 		val note = getItem(position)
 		listener.moveNoteToTrash(note.entity)
+	}
+
+	fun getSelectedNotes(): List<Note> {
+		val iterator = tracker?.selection?.iterator()
+		val notes = mutableListOf<Note>()
+		iterator?.let {
+			while (iterator.hasNext()) {
+				notes.add(iterator.next())
+			}
+		}
+		return notes
+	}
+
+	fun deleteNotes() = onDeleteNotesCallback(getSelectedNotes())
+
+	fun toggleLockedStatusForNotes() = onLockNotesCallback(getSelectedNotes())
+
+	fun selectAllNotes() {
+		for (note in currentList) {
+			if (tracker?.isSelected(note) == false) {
+				tracker?.select(note)
+			}
+		}
 	}
 
 	private fun editNote(holder: RecyclerView.ViewHolder, position: Int) {
@@ -114,7 +144,19 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 		onShowUrlsCallback = callback
 	}
 
+	fun setOnDeleteNotesListener(callback: (notes: List<Note>) -> Unit) {
+		onDeleteNotesCallback = callback
+	}
+
+	fun setOnLockNotesListener(callback: (notes: List<Note>) -> Unit) {
+		onLockNotesCallback = callback
+	}
+
 	private var onShowUrlsCallback: (urls: List<String>) -> Unit = {}
+
+	private var onDeleteNotesCallback: (notes: List<Note>) -> Unit = {}
+
+	private var onLockNotesCallback: (notes: List<Note>) -> Unit = {}
 
 	private class NoteAdapterCallback : DiffUtil.ItemCallback<Note>() {
 

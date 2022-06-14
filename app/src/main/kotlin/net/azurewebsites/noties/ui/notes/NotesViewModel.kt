@@ -1,15 +1,15 @@
 package net.azurewebsites.noties.ui.notes
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.core.NoteEntity
-import net.azurewebsites.noties.domain.GetAllNotesUseCase
-import net.azurewebsites.noties.domain.GetNotesUseCase
-import net.azurewebsites.noties.domain.MoveNoteToTrashUseCase
-import net.azurewebsites.noties.domain.RestoreNoteUseCase
+import net.azurewebsites.noties.domain.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,7 +17,10 @@ class NotesViewModel @Inject constructor(
 	private val getNotesUseCase: GetNotesUseCase,
 	private val getAllNotesUseCase: GetAllNotesUseCase,
 	private val moveNoteToTrashUseCase: MoveNoteToTrashUseCase,
-	private val restoreNoteUseCase: RestoreNoteUseCase) : ViewModel() {
+	private val deleteNotesUseCase: DeleteNotesUseCase,
+	private val restoreNoteUseCase: RestoreNoteUseCase,
+	private val lockNotesUseCase: LockNotesUseCase,
+	private val unlockNotesUseCase: UnlockNotesUseCase) : ViewModel() {
 
 	fun sortNotes(notebookId: Int, sortMode: SortMode): LiveData<List<Note>> {
 		val sortedNotes = when (sortMode) {
@@ -43,6 +46,25 @@ class NotesViewModel @Inject constructor(
 
 	fun restoreNote(note: NoteEntity, notebookId: Int) {
 		viewModelScope.launch { restoreNoteUseCase(note, notebookId) }
+	}
+
+	fun deleteNotes(notes: List<Note>, action: () -> Unit) {
+		viewModelScope.launch {
+			deleteNotesUseCase(notes)
+			action()
+		}
+	}
+
+	fun toggleLockedStatusForNotes(notes: List<Note>, action: () -> Unit) {
+		viewModelScope.launch {
+			if (notes.map { it.entity }.any { !it.isProtected }) {
+				lockNotesUseCase(notes.map { it.entity })
+			}
+			else {
+				unlockNotesUseCase(notes.map { it.entity })
+			}
+			action()
+		}
 	}
 
 	private fun getNotesByFolderId(notebookId: Int) =

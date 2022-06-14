@@ -32,8 +32,7 @@ class EditorViewModel @Inject constructor(
 
 	val note = MutableStateFlow(Note())
 	val tempNote = MutableStateFlow(Note())
-
-	fun getImages() = note.map { it.images }.asLiveData()
+	val images get() = note.map { it.images }.asLiveData()
 
 	suspend fun addImages(context: Context, uris: List<Uri>) {
 		for (uri in uris) {

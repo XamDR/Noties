@@ -1,6 +1,7 @@
 package net.azurewebsites.noties.domain
 
 import net.azurewebsites.noties.core.ImageEntity
+import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.core.NoteEntity
 import net.azurewebsites.noties.data.NotebookDao
 import net.azurewebsites.noties.data.ImageDao
@@ -40,8 +41,18 @@ class UpdateNoteUseCase @Inject constructor(
 	}
 }
 
-class DeleteNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
-	suspend operator fun invoke(notes: List<NoteEntity>) = noteDao.deleteNotes(notes)
+class DeleteNotesUseCase @Inject constructor(
+	private val noteDao: NoteDao,
+	private val imageDao: ImageDao,
+	private val notebookDao: NotebookDao) {
+
+	suspend operator fun invoke(notes: List<Note>) {
+		for (note in notes) {
+			imageDao.deleteImages(note.images)
+			noteDao.deleteNote(note.entity)
+			notebookDao.decrementNotebookNoteCount(note.entity.notebookId)
+		}
+	}
 }
 
 class MoveNoteToTrashUseCase @Inject constructor(
@@ -84,3 +95,22 @@ class EmptyTrashUseCase @Inject constructor(
 	}
 }
 
+class LockNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
+	suspend operator fun invoke(notes: List<NoteEntity>) {
+		for (note in notes) {
+			if (!note.isProtected) {
+				val updatedNote = note.copy(isProtected = true)
+				noteDao.updateNote(updatedNote)
+			}
+		}
+	}
+}
+
+class UnlockNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
+	suspend operator fun invoke(notes: List<NoteEntity>) {
+		for (note in notes) {
+			val updatedNote = note.copy(isProtected = false)
+			noteDao.updateNote(updatedNote)
+		}
+	}
+}
