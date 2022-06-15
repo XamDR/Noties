@@ -83,6 +83,10 @@ class GetTrashedNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
 	operator fun invoke() = noteDao.getTrashedNotes()
 }
 
+class GetTrashedNotesSyncUseCase @Inject constructor(private val noteDao: NoteDao) {
+	suspend operator fun invoke() = noteDao.getTrashedNotesSync()
+}
+
 class EmptyTrashUseCase @Inject constructor(
 	private val noteDao: NoteDao,
 	private val notebookDao: NotebookDao) {

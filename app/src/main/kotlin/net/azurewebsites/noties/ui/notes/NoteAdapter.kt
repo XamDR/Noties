@@ -119,6 +119,8 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 		}
 	}
 
+	fun restoreNotes() = onRestoreNotesCallback(getSelectedNotes())
+
 	private fun editNote(holder: RecyclerView.ViewHolder, position: Int) {
 		val note = getItem(position)
 		if (!note.entity.isTrashed) {
@@ -152,11 +154,17 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 		onLockNotesCallback = callback
 	}
 
+	fun setOnRestoreNotesListener(callback: (notes: List<Note>) -> Unit) {
+		onRestoreNotesCallback = callback
+	}
+
 	private var onShowUrlsCallback: (urls: List<String>) -> Unit = {}
 
 	private var onDeleteNotesCallback: (notes: List<Note>) -> Unit = {}
 
 	private var onLockNotesCallback: (notes: List<Note>) -> Unit = {}
+
+	private var onRestoreNotesCallback: (notes: List<Note>) -> Unit = {}
 
 	private class NoteAdapterCallback : DiffUtil.ItemCallback<Note>() {
 

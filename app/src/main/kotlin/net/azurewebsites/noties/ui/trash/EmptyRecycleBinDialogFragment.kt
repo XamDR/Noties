@@ -14,6 +14,12 @@ class EmptyRecycleBinDialogFragment : DialogFragment() {
 		.setTitle(R.string.empty_trash_question)
 		.setMessage(R.string.empty_trash_message_warning)
 		.setNegativeButton(R.string.cancel_button, null)
-		.setPositiveButton(R.string.yes_button) { _, _ -> viewModel.emptyRecycleBin() }
+		.setPositiveButton(R.string.yes_button) { _, _ -> viewModel.emptyRecycleBin(onRecycleBinEmptyCallback) }
 		.create()
+
+	fun setOnRecycleBinEmptyListener(callback: () -> Unit) {
+		onRecycleBinEmptyCallback = callback
+	}
+
+	private var onRecycleBinEmptyCallback: () -> Unit = {}
 }

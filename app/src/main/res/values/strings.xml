@@ -56,6 +56,8 @@
 	<string name="empty_trash_message">Recycle Bin is empty</string>
 	<string name="empty_trash_question">Empty Recycle Bin?</string>
 	<string name="empty_trash_message_warning">All the notes will be permanently deleted.</string>
+	<string name="delete_forever">Delete forever</string>
+	<string name="restore_note">Restore notes</string>
 
 	<!-- Contextual Action Bar -->
 	<string name="delete_notes">Delete notes</string>

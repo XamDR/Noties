@@ -29,6 +29,10 @@ interface NoteDao {
 	@Query("SELECT * FROM Notes WHERE notebook_id = -1")
 	fun getTrashedNotes(): Flow<List<Note>>
 
+	@Transaction
+	@Query("SELECT * FROM Notes WHERE notebook_id = -1")
+	suspend fun getTrashedNotesSync(): List<Note>
+
 	@Query("DELETE FROM Notes WHERE notebook_id = -1")
 	suspend fun emptyTrash(): Int
 }
