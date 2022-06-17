@@ -86,13 +86,6 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 		viewModel.images.observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
 	}
 
-	private fun checkIfNoteIsProtected() {
-		if (note.entity.isProtected) {
-			binding.root.isVisible = false
-			requestConfirmeDeviceCredential()
-		}
-	}
-
 	override fun addImages(uris: List<Uri>) {
 		viewLifecycleOwner.lifecycleScope.launch {
 			viewModel.addImages(requireContext(), uris)
@@ -119,6 +112,13 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 	fun navigateUp() {
 		binding.root.hideSoftKeyboard()
 		requireActivity().onBackPressed()
+	}
+
+	private fun checkIfNoteIsProtected() {
+		if (note.entity.isProtected) {
+			binding.root.isVisible = false
+			requestConfirmeDeviceCredential()
+		}
 	}
 
 	private fun initTransition() {

@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.doOnPreDraw
-import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -19,7 +18,6 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.transition.MaterialElevationScale
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.core.NoteEntity
 import net.azurewebsites.noties.core.NotebookEntity
@@ -83,7 +81,9 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 
 	override fun onSaveInstanceState(outState: Bundle) {
 		super.onSaveInstanceState(outState)
-		selectionTracker.onSaveInstanceState(outState)
+		if (::selectionTracker.isInitialized) {
+			selectionTracker.onSaveInstanceState(outState)
+		}
 		outState.putBoolean(ACTION_MODE, actionModeCallback.isVisible)
 	}
 
@@ -108,21 +108,14 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 			setOnNotesDeletedListener {
 				selectionObserver.actionMode?.finish()
 				for (note in notes) {
-					deleteImages(note.images)
+					ImageStorageManager.deleteImages(
+						this@NotesFragment.requireContext(),
+						note.images
+					)
 				}
 			}
 		}
 		showDialog(deleteNotesDialog, DELETE_NOTES)
-	}
-
-	private fun deleteImages(images: List<ImageEntity>) {
-		for (image in images) {
-			val fileName = DocumentFile.fromSingleUri(requireContext(), image.uri!!)?.name
-			fileName?.let {
-				val result = ImageStorageManager.deleteImage(requireContext(), it)
-				printDebug("ImageStorageManager", result)
-			}
-		}
 	}
 
 	private fun navigateToEditor() {

@@ -16,7 +16,7 @@ class SwipeToDeleteCallback(private val adapter: NoteAdapter) :
 	): Boolean = false
 
 	override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-		if (viewHolder is NoteAdapter.NoteViewHolder) {
+		if (viewHolder is NoteAdapter.BaseViewHolder) {
 			val position = viewHolder.bindingAdapterPosition
 			adapter.moveNoteToTrash(position)
 		}

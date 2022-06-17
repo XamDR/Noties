@@ -10,7 +10,7 @@ import net.azurewebsites.noties.core.Note
 
 class SelectionObserver(
 	private val context: Context,
-	private val callback: RecyclerViewActionModeCallback,
+	private val callback: ActionMode.Callback,
 	private val tracker: SelectionTracker<Note>) : SelectionTracker.SelectionObserver<Note>() {
 
 	var actionMode: ActionMode? = null
