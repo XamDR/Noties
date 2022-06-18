@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter
 
 object BitmapHelper {
 
-	private const val authority = "net.azurewebsites.eznotes"
+	private const val authority = "net.azurewebsites.noties"
 
 	fun getBitmapFromUri(context: Context, uri: Uri, reqWidth: Int, reqHeight: Int): Bitmap? {
 		val bitmap: Bitmap?

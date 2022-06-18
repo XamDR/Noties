@@ -1,10 +1,13 @@
 package net.azurewebsites.noties.ui.editor
 
+import android.Manifest
 import android.app.Activity
 import android.app.KeyguardManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +15,7 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -26,6 +30,7 @@ import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.FragmentEditorBinding
 import net.azurewebsites.noties.ui.helpers.*
+import net.azurewebsites.noties.ui.image.BitmapHelper
 import net.azurewebsites.noties.ui.media.ImageAdapter
 import net.azurewebsites.noties.ui.notes.NotesFragment
 import net.azurewebsites.noties.ui.urls.JsoupHelper
@@ -51,6 +56,61 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 	private val deviceCredentialLauncher = registerForActivityResult(
 		ActivityResultContracts.StartActivityForResult()
 	) { result -> activityResultCallback(result) }
+
+	private val requestPermissionLauncher = registerForActivityResult(
+		ActivityResultContracts.RequestPermission(),
+		RequestExternalPermissionCallback { takePicture() }.apply {
+			setOnPermissionDeniedListener { binding.root.showSnackbar(R.string.permission_denied) }
+		}
+	)
+	private val takePictureLauncher = registerForActivityResult(
+		ActivityResultContracts.TakePicture()
+	) { success -> takePictureCallback(success) }
+
+	private lateinit var tempUri: Uri
+
+	private fun takePictureCallback(result: Boolean) {
+		if (result && ::tempUri.isInitialized) {
+			addImages(listOf(tempUri))
+		}
+		else {
+			context?.showToast(R.string.error_take_picture)
+		}
+	}
+
+	private fun takePicture() {
+		val savedUri = BitmapHelper.savePicture(requireContext()) ?: return
+		tempUri = savedUri
+		takePictureLauncher.launch(tempUri)
+	}
+
+	private fun takePictureOrRequestPermission() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			takePicture()
+		}
+		else {
+			if (ContextCompat.checkSelfPermission(
+					requireContext(),
+					Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+				showRationaleDialog()
+			}
+			else {
+				takePicture()
+			}
+		}
+	}
+
+	private fun showRationaleDialog() {
+		PermissionRationaleDialog.createFor(
+			requireContext(),
+			R.string.write_external_storage_permission_rationale,
+			R.drawable.ic_external_storage
+		)
+		.setNegativeButton(R.string.not_now_button, null)
+		.setPositiveButton(R.string.continue_button) { _, _ ->
+			requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+		}.show()
+	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -105,6 +165,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 	fun showBottomSheetMenu() {
 		val menuDialog = EditorMenuFragment().apply {
 			setOnActivityResultListener { pickImagesLauncher.launch(arrayOf("image/*")) }
+			setOnTakePictureListener { takePictureOrRequestPermission() }
 		}
 		showDialog(menuDialog, TAG)
 	}

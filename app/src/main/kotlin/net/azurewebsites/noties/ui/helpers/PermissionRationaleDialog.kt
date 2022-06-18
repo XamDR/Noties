@@ -7,6 +7,7 @@ import android.widget.LinearLayout.LayoutParams
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.NonNull
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -20,7 +21,7 @@ object PermissionRationaleDialog {
 
 	fun createFor(
 		@NonNull context: Context,
-		@NonNull message: String,
+		@StringRes @NonNull message: Int,
 		@DrawableRes drawableRes: Int): MaterialAlertDialogBuilder {
 
 		val view = LayoutInflater.from(context).inflate(R.layout.dialog_permission_rationale, null)
@@ -36,7 +37,7 @@ object PermissionRationaleDialog {
 			layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
 		}
 		header.addView(imageView)
-		textView.text = message
+		textView.text = context.getString(message)
 		return MaterialAlertDialogBuilder(context, R.style.MyThemeOverlay_MaterialAlertDialog).setView(view)
 	}
 }
