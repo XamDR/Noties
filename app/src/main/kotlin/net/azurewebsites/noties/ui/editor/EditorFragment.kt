@@ -69,49 +69,6 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 
 	private lateinit var tempUri: Uri
 
-	private fun takePictureCallback(result: Boolean) {
-		if (result && ::tempUri.isInitialized) {
-			addImages(listOf(tempUri))
-		}
-		else {
-			context?.showToast(R.string.error_take_picture)
-		}
-	}
-
-	private fun takePicture() {
-		val savedUri = BitmapHelper.savePicture(requireContext()) ?: return
-		tempUri = savedUri
-		takePictureLauncher.launch(tempUri)
-	}
-
-	private fun takePictureOrRequestPermission() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-			takePicture()
-		}
-		else {
-			if (ContextCompat.checkSelfPermission(
-					requireContext(),
-					Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-				showRationaleDialog()
-			}
-			else {
-				takePicture()
-			}
-		}
-	}
-
-	private fun showRationaleDialog() {
-		PermissionRationaleDialog.createFor(
-			requireContext(),
-			R.string.write_external_storage_permission_rationale,
-			R.drawable.ic_external_storage
-		)
-		.setNegativeButton(R.string.not_now_button, null)
-		.setPositiveButton(R.string.continue_button) { _, _ ->
-			requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-		}.show()
-	}
-
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		if (savedInstanceState == null) {
@@ -222,6 +179,49 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 			findNavController().popBackStack()
 			binding.root.showSnackbar(R.string.error_auth)
 		}
+	}
+
+	private fun takePictureCallback(result: Boolean) {
+		if (result && ::tempUri.isInitialized) {
+			addImages(listOf(tempUri))
+		}
+		else {
+			context?.showToast(R.string.error_take_picture)
+		}
+	}
+
+	private fun takePictureOrRequestPermission() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			takePicture()
+		}
+		else {
+			if (ContextCompat.checkSelfPermission(
+					requireContext(),
+					Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+				showRationaleDialog()
+			}
+			else {
+				takePicture()
+			}
+		}
+	}
+
+	private fun takePicture() {
+		val savedUri = BitmapHelper.savePicture(requireContext()) ?: return
+		tempUri = savedUri
+		takePictureLauncher.launch(tempUri)
+	}
+
+	private fun showRationaleDialog() {
+		PermissionRationaleDialog.createFor(
+			requireContext(),
+			R.string.write_external_storage_permission_rationale,
+			R.drawable.ic_external_storage
+		)
+			.setNegativeButton(R.string.not_now_button, null)
+			.setPositiveButton(R.string.continue_button) { _, _ ->
+				requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+			}.show()
 	}
 
 	companion object {

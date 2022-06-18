@@ -101,13 +101,13 @@
 	<string name="attach_images">Attach images</string>
 	<string name="attach_multimedia">Attach multimedia</string>
 	<string name="take_picture">Take a picture</string>
-	<string name="write_external_storage_permission_rationale">EzNotes needs permission to access your gallery in order to save the picture taken by the camera.</string>
+	<string name="write_external_storage_permission_rationale">Noties needs permission to access your gallery in order to save the picture taken by the camera.</string>
 	<string name="take_video">Record a video</string>
 	<string name="talk_to_write">Talk to write</string>
 	<string name="add_todo_list">Add to-do list</string>
 	<string name="user_image">Image added by the user</string>
 	<string name="image_saved">Picture saved</string>
-	<string name="error_take_picture">An error occurred while taking the photo.</string>
+	<string name="error_take_picture">No photo was taken.</string>
 	<string name="permission_denied">Permission denied.</string>
 	<string name="gif_icon">Gif icon</string>
 
@@ -155,7 +155,7 @@
 	<string name="speech_recording_fragment_label">Record speech</string>
 	<string name="record_audio">Record Audio</string>
 	<string name="more_info_permission">More info</string>
-	<string name="audio_recording_permission_rationale">EzNotes needs permission to access the microphone of your device in order to enable the speech recording feature.</string>
+	<string name="audio_recording_permission_rationale">Noties needs permission to access the microphone of your device in order to enable the speech recording feature.</string>
 	<string name="delete_audio">Delete audio</string>
 	<string name="audio_progress_desc">Audio progress</string>
 	<string name="play_audio">Play/pause audio</string>
