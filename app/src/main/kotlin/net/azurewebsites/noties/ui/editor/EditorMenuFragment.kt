@@ -31,9 +31,20 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 		dismiss()
 	}
 
+	fun invokeTakePictureCallback() {
+		onTakePictureCallback()
+		dismiss()
+	}
+
 	fun setOnActivityResultListener(callback: () -> Unit) {
 		onActivityResultCallback = callback
 	}
 
+	fun setOnTakePictureListener(callback: () -> Unit) {
+		onTakePictureCallback = callback
+	}
+
 	private var onActivityResultCallback: () -> Unit = {}
+
+	private var onTakePictureCallback: () -> Unit = {}
 }
