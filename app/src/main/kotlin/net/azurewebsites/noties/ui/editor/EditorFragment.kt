@@ -75,7 +75,9 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 			viewModel.note.value = note
 			viewModel.tempNote.value = viewModel.note.value.clone()
 		}
-		editorContentAdapter = EditorContentAdapter(viewModel, this)
+		editorContentAdapter = EditorContentAdapter(viewModel, this).apply {
+			setOnContentReceivedListener { uri -> addImages(listOf(uri)) }
+		}
 	}
 
 	override fun onCreateView(inflater: LayoutInflater,
@@ -217,8 +219,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 			requireContext(),
 			R.string.write_external_storage_permission_rationale,
 			R.drawable.ic_external_storage
-		)
-			.setNegativeButton(R.string.not_now_button, null)
+		).setNegativeButton(R.string.not_now_button, null)
 			.setPositiveButton(R.string.continue_button) { _, _ ->
 				requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 			}.show()

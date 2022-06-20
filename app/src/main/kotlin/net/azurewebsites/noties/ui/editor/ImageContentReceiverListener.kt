@@ -1,11 +1,12 @@
-package net.azurewebsites.noties.ui.media
+package net.azurewebsites.noties.ui.editor
 
 import android.net.Uri
 import android.view.View
 import androidx.core.view.ContentInfoCompat
 import androidx.core.view.OnReceiveContentListener
 
-class MediaContentReceiverListener(private val contentReceived: (uri: Uri, source: Int) -> Unit) : OnReceiveContentListener {
+class ImageContentReceiverListener(
+	private val contentReceived: (uri: Uri, source: Int) -> Unit) : OnReceiveContentListener {
 
 	override fun onReceiveContent(view: View, payload: ContentInfoCompat): ContentInfoCompat? {
 		val pair = payload.partition { it.uri != null }
