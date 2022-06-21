@@ -19,6 +19,7 @@
 		android:imeOptions="flagNoFullscreen"
 		android:importantForAutofill="no"
 		android:inputType="textMultiLine|textCapSentences"
+		android:minHeight="48dp"
 		android:paddingStart="16dp"
 		android:paddingTop="8dp"
 		android:paddingEnd="16dp"

@@ -1,4 +1,4 @@
-package net.azurewebsites.noties.ui.media
+package net.azurewebsites.noties.ui.gallery
 
 import android.view.View
 import androidx.viewpager2.widget.ViewPager2

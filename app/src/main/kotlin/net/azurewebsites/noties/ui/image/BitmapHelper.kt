@@ -60,9 +60,12 @@ object BitmapHelper {
 
 	@Suppress("DEPRECATION")
 	fun savePicture(context: Context): Uri? {
-		val sufix = (0..999).random()
-		val fileName = "IMG_${DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(LocalDateTime.now())}_$sufix.jpg"
-		val directory = "${Environment.DIRECTORY_PICTURES}/EzNotes"
+		val fileName = buildString {
+			append("IMG_")
+			append(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(LocalDateTime.now()))
+			append("_${(0..999).random()}.jpg")
+		}
+		val directory = "${Environment.DIRECTORY_PICTURES}/Noties"
 
 		val imageUri: Uri? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 			val contentValues = ContentValues().apply {
@@ -74,7 +77,7 @@ object BitmapHelper {
 		}
 		else {
 			val picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-			val appPicturesDir = File("${picturesDir}/EzNotes")
+			val appPicturesDir = File("${picturesDir}/Noties")
 			if (!appPicturesDir.exists()) appPicturesDir.mkdir()
 			val imageFile = File(appPicturesDir, "/$fileName")
 			FileProvider.getUriForFile(context, authority, imageFile)
