@@ -1,5 +1,7 @@
 package net.azurewebsites.noties.ui.helpers
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.BlurMaskFilter
 import android.graphics.Color
@@ -176,4 +178,11 @@ fun TextView.blur() {
 	this.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
 	val blurMask = BlurMaskFilter(10f, BlurMaskFilter.Blur.NORMAL)
 	this.paint.maskFilter = blurMask
+}
+
+fun Context.copyUriToClipboard(@StringRes label: Int, uri: Uri, @StringRes copiedMsg: Int) {
+	val manager = this.getSystemService<ClipboardManager>() ?: return
+	val clip = ClipData.newUri(this.contentResolver, this.getString(label), uri)
+	manager.setPrimaryClip(clip)
+	this.showToast(copiedMsg)
 }

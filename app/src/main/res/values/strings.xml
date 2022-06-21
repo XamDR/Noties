@@ -117,8 +117,8 @@
 	<string name="delete_item">Delete item</string>
 	<string name="delete_all_items">Delete all items</string>
 	<string name="delete_all_items_question">Are you sure you want to delete all the images attached to the note?</string>
-	<string name="label_item">Multimedia item</string>
-	<string name="item_copied_msg">Item copied to clipboard</string>
+	<string name="image_item">Image</string>
+	<string name="image_copied_msg">Image copied to clipboard</string>
 	<string name="alt_text">Alternative text</string>
 	<string name="image_desc">Write the image description</string>
 	<string name="alt_text_updated">Image description updated</string>

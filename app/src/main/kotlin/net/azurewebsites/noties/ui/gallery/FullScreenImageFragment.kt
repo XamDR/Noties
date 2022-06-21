@@ -1,4 +1,4 @@
-package net.azurewebsites.noties.ui.media
+package net.azurewebsites.noties.ui.gallery
 
 import android.os.Bundle
 import android.view.LayoutInflater

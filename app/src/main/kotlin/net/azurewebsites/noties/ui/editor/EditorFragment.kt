@@ -27,16 +27,16 @@ import com.google.android.material.transition.MaterialContainerTransform
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import net.azurewebsites.noties.R
+import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.FragmentEditorBinding
 import net.azurewebsites.noties.ui.helpers.*
-import net.azurewebsites.noties.ui.image.BitmapHelper
-import net.azurewebsites.noties.ui.media.ImageAdapter
+import net.azurewebsites.noties.ui.image.*
 import net.azurewebsites.noties.ui.notes.NotesFragment
 import net.azurewebsites.noties.ui.urls.JsoupHelper
 
 @AndroidEntryPoint
-class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
+class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener, ImageItemContextMenuListener {
 
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
@@ -48,7 +48,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 		ActivityResultContracts.OpenMultipleDocuments(),
 		PickImagesCallback(this)
 	)
-	private val editorImageAdapter = EditorImageAdapter(ImageAdapter())
+	private val editorImageAdapter = EditorImageAdapter(ImageAdapter(this))
 	private lateinit var editorContentAdapter: EditorContentAdapter
 	private val note by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelable(NOTE) ?: Note()
@@ -121,12 +121,31 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 		}
 	}
 
+	override fun copyImage(position: Int) {
+		val uri = viewModel.note.value.images[position].uri
+		if (uri != null) {
+			requireContext().copyUriToClipboard(R.string.image_item, uri, R.string.image_copied_msg)
+		}
+	}
+
+	override fun addAltText(position: Int) {
+		val image = viewModel.note.value.images[position]
+		val imageDescriptionDialog = ImageDescriptionDialogFragment.newInstance(image)
+		showDialog(imageDescriptionDialog, ALT_TEXT_DIALOG_TAG)
+	}
+
+	override fun deleteImage(position: Int) {
+		val imageToBeDeleted = viewModel.note.value.images[position]
+		deleteImage(imageToBeDeleted)
+		viewModel.images.observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
+	}
+
 	fun showBottomSheetMenu() {
 		val menuDialog = EditorMenuFragment().apply {
 			setOnActivityResultListener { pickImagesLauncher.launch(arrayOf("image/*")) }
 			setOnTakePictureListener { takePictureOrRequestPermission() }
 		}
-		showDialog(menuDialog, TAG)
+		showDialog(menuDialog, MENU_DIALOG_TAG)
 	}
 
 	fun navigateUp() {
@@ -225,8 +244,21 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener {
 			}.show()
 	}
 
+	private fun deleteImage(image: ImageEntity) {
+		viewModel.note.value.images -= image
+		val images = listOf(image)
+		val result = ImageStorageManager.deleteImages(requireContext(), images)
+		printDebug(IMAGE_STORE_MANAGER, result)
+
+		if (image.id != 0) {
+			viewModel.deleteImages(images)
+		}
+	}
+
 	companion object {
 		const val NOTE = "note"
-		private const val TAG = "MENU_DIALOG"
+		private const val MENU_DIALOG_TAG = "MENU_DIALOG"
+		private const val ALT_TEXT_DIALOG_TAG = "ALT_TEXT_DIALOG"
+		private const val IMAGE_STORE_MANAGER = "ImageStoreManager"
 	}
 }

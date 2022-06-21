@@ -9,7 +9,10 @@ class InsertImageUseCase @Inject constructor(private val imageDao: ImageDao) {
 }
 
 class UpdateImageUseCase @Inject constructor(private val imageDao: ImageDao) {
-	suspend operator fun invoke(image: ImageEntity) = imageDao.updateImage(image)
+	suspend operator fun invoke(image: ImageEntity, description: String) {
+		val updatedImage = image.copy(description = description)
+		imageDao.updateImage(updatedImage)
+	}
 }
 
 class GetImagesUseCase @Inject constructor(private val imageDao: ImageDao) {

@@ -12,7 +12,7 @@
 	<net.azurewebsites.noties.ui.views.PannableHost
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		tools:context=".ui.media.FullScreenImageFragment">
+		tools:context=".ui.gallery.FullScreenImageFragment">
 
 		<net.azurewebsites.noties.ui.views.PhotoImageView
 			android:id="@+id/image"

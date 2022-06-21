@@ -15,7 +15,7 @@
 		android:supportsRtl="true">
 
 		<activity
-			android:name="net.azurewebsites.noties.ui.media.GalleryActivity"
+			android:name="net.azurewebsites.noties.ui.gallery.GalleryActivity"
 			android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|layoutDirection|fontScale"
 			android:exported="false"
 			android:theme="@style/Theme.Noties.Gallery"

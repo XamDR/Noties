@@ -1,4 +1,4 @@
-package net.azurewebsites.noties.ui.media
+package net.azurewebsites.noties.ui.gallery
 
 import android.content.Intent
 import android.os.Bundle

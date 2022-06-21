@@ -1,4 +1,4 @@
-package net.azurewebsites.noties.ui.media
+package net.azurewebsites.noties.ui.image
 
 import androidx.core.os.bundleOf
 import androidx.databinding.ViewDataBinding
@@ -8,9 +8,8 @@ import net.azurewebsites.noties.BR
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.ui.helpers.tryNavigate
-import net.azurewebsites.noties.ui.image.BitmapCache
 
-open class BaseMediaItemViewHolder(private val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root) {
+open class BaseImageItemViewHolder(private val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root) {
 
 	fun bind(image: ImageEntity) {
 		binding.apply {

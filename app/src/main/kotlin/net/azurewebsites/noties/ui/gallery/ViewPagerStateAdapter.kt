@@ -1,4 +1,4 @@
-package net.azurewebsites.noties.ui.media
+package net.azurewebsites.noties.ui.gallery
 
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
