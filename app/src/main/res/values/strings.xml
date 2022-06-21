@@ -109,11 +109,12 @@
 	<string name="image_saved">Picture saved</string>
 	<string name="error_take_picture">No photo was taken.</string>
 	<string name="permission_denied">Permission denied.</string>
-	<string name="gif_icon">Gif icon</string>
+	<string name="image_attachment">Image attached to the note.</string>
 
 	<!-- Attachment context menu -->
 	<string name="copy_item">Copy item</string>
 	<string name="add_alt_text">Add alt text</string>
+	<string name="update_alt_text">Edit alt text</string>
 	<string name="delete_item">Delete item</string>
 	<string name="delete_all_items">Delete all items</string>
 	<string name="delete_all_items_question">Are you sure you want to delete all the images attached to the note?</string>

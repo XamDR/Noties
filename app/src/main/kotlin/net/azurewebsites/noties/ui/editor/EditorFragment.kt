@@ -130,7 +130,9 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener, Im
 
 	override fun addAltText(position: Int) {
 		val image = viewModel.note.value.images[position]
-		val imageDescriptionDialog = ImageDescriptionDialogFragment.newInstance(image)
+		val imageDescriptionDialog = ImageDescriptionDialogFragment.newInstance(image).apply {
+			setOnAltTextAddedListener { context?.showToast(R.string.alt_text_updated) }
+		}
 		showDialog(imageDescriptionDialog, ALT_TEXT_DIALOG_TAG)
 	}
 

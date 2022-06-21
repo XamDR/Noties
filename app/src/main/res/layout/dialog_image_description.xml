@@ -29,7 +29,8 @@
 			android:inputType="textMultiLine|textCapSentences"
 			android:minHeight="48dp"
 			android:scrollbars="none"
-			android:text="@={vm.description}"
+			android:text="@{vm.description}"
+			android:afterTextChanged="@{vm::updateImageAltText}"
 			android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
 			android:textColorHint="@color/hint_selector"
 			tools:text="This image contains…" />

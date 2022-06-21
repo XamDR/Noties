@@ -53,21 +53,25 @@ class ImageAdapter(
 	}
 
 	override fun getItemViewType(position: Int): Int {
-		val mediaItem = getItem(position)
+		val image = getItem(position)
 		return when {
-			mediaItem.mimeType?.startsWith("image") == true ->
+			image.mimeType?.startsWith("image") == true ->
 				if (currentList.isSingleton()) SINGLE_IMAGE else MULTIPLE_IMAGES
 			else -> -1
 		}
 	}
 
 	private fun showContextMenu(menu: Menu, position: Int) {
+		val image = getItem(position)
 		menu.run {
 			add(R.string.copy_item).setOnMenuItemClickListener {
 				listener.copyImage(position); true
 			}
-			add(R.string.add_alt_text).setOnMenuItemClickListener {
-				listener.addAltText(position); true
+			if (image.id != 0) {
+				add(if (image.description.isNullOrEmpty()) R.string.add_alt_text
+					else R.string.update_alt_text).setOnMenuItemClickListener {
+						listener.addAltText(position); true
+					}
 			}
 			add(R.string.delete_item).setOnMenuItemClickListener {
 				listener.deleteImage(position); true
