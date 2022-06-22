@@ -155,24 +155,12 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 
 	override fun shareContent() {
 		if (viewModel.note.value.isNonEmpty()) {
-			val shareIntent = Intent()
-			if (viewModel.note.value.images.isEmpty()) {
-				shareIntent.apply {
-					action = Intent.ACTION_SEND
-					putExtra(Intent.EXTRA_TEXT, viewModel.text)
-					type = "text/plain"
-				}
+			if (viewModel.uris.isEmpty()) {
+				shareText(viewModel.text)
 			}
 			else {
-				shareIntent.apply {
-					action = Intent.ACTION_SEND_MULTIPLE
-					putExtra(Intent.EXTRA_TEXT, viewModel.text)
-					putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(viewModel.uris))
-					type = "image/*"
-					addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-				}
+				shareImagesAndText(viewModel.uris, viewModel.text)
 			}
-			startActivity(Intent.createChooser(shareIntent, getString(R.string.chooser_dialog_title)))
 		}
 		else {
 			context?.showToast(R.string.empty_note_share)
@@ -308,6 +296,26 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 			.setPositiveButton(R.string.continue_button) { _, _ ->
 				requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 			}.show()
+	}
+
+	private fun shareText(text: String) {
+		val shareIntent = Intent().apply {
+			action = Intent.ACTION_SEND
+			putExtra(Intent.EXTRA_TEXT, text)
+			type = MIME_TYPE_TEXT
+		}
+		startActivity(Intent.createChooser(shareIntent, getString(R.string.chooser_dialog_title)))
+	}
+
+	private fun shareImagesAndText(images: List<Uri?>, text: String) {
+		val shareIntent = Intent().apply {
+			action = Intent.ACTION_SEND_MULTIPLE
+			putExtra(Intent.EXTRA_TEXT, text)
+			putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(images))
+			type = MIME_TYPE_IMAGE
+			addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+		}
+		startActivity(Intent.createChooser(shareIntent, getString(R.string.chooser_dialog_title)))
 	}
 
 	private fun deleteAllImages() {
