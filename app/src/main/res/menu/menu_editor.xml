@@ -23,9 +23,9 @@
 		android:title="@string/open_file"
 		app:showAsAction="never"/>
 
-	<item
-		android:id="@+id/create_file"
-		android:orderInCategory="15"
-		android:title="@string/save_file"
-		app:showAsAction="never"/>
+<!--	<item-->
+<!--		android:id="@+id/create_file"-->
+<!--		android:orderInCategory="15"-->
+<!--		android:title="@string/save_file"-->
+<!--		app:showAsAction="never"/>-->
 </menu>

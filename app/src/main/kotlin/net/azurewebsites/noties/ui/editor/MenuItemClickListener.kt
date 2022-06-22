@@ -12,6 +12,9 @@ class MenuItemClickListener(private val listener: ToolbarItemMenuListener) : Too
 		R.id.delete_images -> {
 			listener.showDeleteImagesDialog(); true
 		}
+		R.id.open_file -> {
+			listener.openTextFile(); true
+		}
 		else -> false
 	}
 }

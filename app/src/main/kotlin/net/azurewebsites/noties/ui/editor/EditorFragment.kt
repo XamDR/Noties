@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
@@ -36,9 +37,11 @@ import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.image.*
 import net.azurewebsites.noties.ui.notes.NotesFragment
 import net.azurewebsites.noties.ui.urls.JsoupHelper
+import java.io.FileNotFoundException
 
 @AndroidEntryPoint
-class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener, ImageItemContextMenuListener, ToolbarItemMenuListener {
+class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
+	ImageItemContextMenuListener, ToolbarItemMenuListener, OpenFileListener {
 
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
@@ -71,6 +74,10 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener, Im
 
 	private lateinit var tempUri: Uri
 	private val menuItemClickListener = MenuItemClickListener(this)
+	private val openFileLauncher = registerForActivityResult(
+		ActivityResultContracts.OpenDocument(),
+		OpenFileCallback(this)
+	)
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -179,9 +186,28 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener, Im
 		showDialog(deleteImagesDialog, DELETE_IMAGES_DIALOG_TAG)
 	}
 
+	override fun openTextFile() = openFileLauncher.launch(arrayOf(MIME_TYPE_TEXT))
+
+	override fun readFileContent(uri: Uri?) {
+		try {
+			if (uri != null) {
+				val inputStream = requireContext().contentResolver.openInputStream(uri)
+				val file = DocumentFile.fromSingleUri(requireContext(), uri)
+				inputStream?.bufferedReader()?.use { reader ->
+					viewModel.updateNoteTitleAndText(file?.simpleName, reader.readText())
+				}
+				editorContentAdapter.notifyItemChanged(0)
+			}
+		}
+		catch (e: FileNotFoundException) {
+			printError(TAG, e.message)
+			context?.showToast(R.string.error_open_file)
+		}
+	}
+
 	fun showBottomSheetMenu() {
 		val menuDialog = EditorMenuFragment().apply {
-			setOnActivityResultListener { pickImagesLauncher.launch(arrayOf("image/*")) }
+			setOnActivityResultListener { pickImagesLauncher.launch(arrayOf(MIME_TYPE_IMAGE)) }
 			setOnTakePictureListener { takePictureOrRequestPermission() }
 		}
 		showDialog(menuDialog, MENU_DIALOG_TAG)
@@ -316,5 +342,8 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener, Im
 		private const val DELETE_IMAGES_DIALOG_TAG = "DELETE_IMAGES"
 		private const val IMAGE_STORE_MANAGER = "ImageStoreManager"
 		const val REQUEST_KEY = "deletion"
+		private const val MIME_TYPE_IMAGE = "image/*"
+		private const val MIME_TYPE_TEXT = "text/plain"
+		private const val TAG = "IO"
 	}
 }

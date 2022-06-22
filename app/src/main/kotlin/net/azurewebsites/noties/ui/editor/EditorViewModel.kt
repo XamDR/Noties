@@ -55,6 +55,11 @@ class EditorViewModel @Inject constructor(
 	private val state: MutableStateFlow<AltTextState> = MutableStateFlow(AltTextState.EmptyDescription)
 	val altTextState = state.asLiveData()
 
+	fun updateNoteTitleAndText(title: String?, text: String) {
+		val value = note.value
+		note.update { value.clone(entity = value.entity.copy(title = title, text = text)) }
+	}
+
 	suspend fun addImages(context: Context, uris: List<Uri>) {
 		for (uri in uris) {
 			val newUri = copyUri(context, uri)
