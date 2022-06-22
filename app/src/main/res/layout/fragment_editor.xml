@@ -33,7 +33,7 @@
 				android:id="@+id/editor_toolbar"
 				android:layout_width="match_parent"
 				android:layout_height="?attr/actionBarSize"
-				app:menu="@menu/menu_text_editor"
+				app:menu="@menu/menu_editor"
 				app:navigationContentDescription="@string/toolbar_back_button_description"
 				app:navigationIcon="?attr/homeAsUpIndicator"
 				app:navigationOnClick="@{() -> fragment.navigateUp()}">

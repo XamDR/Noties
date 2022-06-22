@@ -12,6 +12,12 @@
 		app:showAsAction="ifRoom"/>
 
 	<item
+		android:id="@+id/delete_images"
+		android:orderInCategory="5"
+		android:title="@string/delete_all_images"
+		app:showAsAction="never"/>
+
+	<item
 		android:id="@+id/open_file"
 		android:orderInCategory="10"
 		android:title="@string/open_file"
