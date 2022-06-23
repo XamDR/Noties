@@ -27,6 +27,7 @@ import androidx.appcompat.view.ActionMode
 import androidx.core.content.getSystemService
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
+import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -186,3 +187,6 @@ fun Context.copyUriToClipboard(@StringRes label: Int, uri: Uri, @StringRes copie
 	manager.setPrimaryClip(clip)
 	this.showToast(copiedMsg)
 }
+
+val DocumentFile.simpleName: String?
+	get() = this.name?.substringBeforeLast(".")

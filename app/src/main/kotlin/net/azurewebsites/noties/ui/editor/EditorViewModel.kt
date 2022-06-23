@@ -43,13 +43,22 @@ class EditorViewModel @Inject constructor(
 
 	val tempNote = MutableStateFlow(Note())
 
+	val text get() = note.value.entity.text
+
 	val images get() = note.map { it.images }.asLiveData()
+
+	val uris get() = note.value.images.map { it.uri }
 
 	private val _description = MutableStateFlow(String.Empty)
 	val description = _description.asStateFlow()
 
 	private val state: MutableStateFlow<AltTextState> = MutableStateFlow(AltTextState.EmptyDescription)
 	val altTextState = state.asLiveData()
+
+	fun updateNoteTitleAndText(title: String?, text: String) {
+		val value = note.value
+		note.update { value.clone(entity = value.entity.copy(title = title, text = text)) }
+	}
 
 	suspend fun addImages(context: Context, uris: List<Uri>) {
 		for (uri in uris) {
@@ -110,6 +119,9 @@ class EditorViewModel @Inject constructor(
 				}
 			}
 		}
+		else {
+			return Result.EmptyNote
+		}
 		return null
 	}
 
@@ -130,14 +142,14 @@ class EditorViewModel @Inject constructor(
 	private suspend fun insertNote(note: Note): Result {
 		return withContext(viewModelScope.coroutineContext) {
 			insertNoteWithImagesUseCase(note.entity, note.images)
-			Result.SuccesfulInsert
+			Result.NoteSaved
 		}
 	}
 
 	private suspend fun updateNote(note: Note): Result {
 		return withContext(viewModelScope.coroutineContext) {
 			updateNoteUseCase(note.entity, note.images)
-			Result.SuccesfulUpdate
+			Result.NoteUpdated
 		}
 	}
 

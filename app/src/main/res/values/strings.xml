@@ -116,8 +116,8 @@
 	<string name="add_alt_text">Add alt text</string>
 	<string name="update_alt_text">Edit alt text</string>
 	<string name="delete_item">Delete item</string>
-	<string name="delete_all_items">Delete all items</string>
-	<string name="delete_all_items_question">Are you sure you want to delete all the images attached to the note?</string>
+	<string name="delete_all_images">Delete all images</string>
+	<string name="delete_all_images_question">Are you sure you want to delete all the images attached to this note?</string>
 	<string name="image_item">Image</string>
 	<string name="image_copied_msg">Image copied to clipboard</string>
 	<string name="alt_text">Alternative text</string>

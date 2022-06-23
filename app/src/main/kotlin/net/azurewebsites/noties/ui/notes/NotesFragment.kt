@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionPredicates
@@ -23,6 +24,7 @@ import net.azurewebsites.noties.core.NoteEntity
 import net.azurewebsites.noties.core.NotebookEntity
 import net.azurewebsites.noties.databinding.FragmentNotesBinding
 import net.azurewebsites.noties.ui.MainActivity
+import net.azurewebsites.noties.ui.editor.EditorFragment
 import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.image.ImageStorageManager
 import net.azurewebsites.noties.ui.notebooks.NotebooksFragment
@@ -97,6 +99,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	override fun onStart() {
 		super.onStart()
 		setupAdapterListeners()
+		getNoteToBeDeleted()
 	}
 
 	override fun moveNoteToTrash(note: NoteEntity) {
@@ -187,6 +190,22 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 		noteAdapter.setOnDeleteNotesListener { notes -> showDeleteNotesDialog(notes) }
 		noteAdapter.setOnLockNotesListener { notes ->
 			viewModel.toggleLockedStatusForNotes(notes) { selectionObserver.actionMode?.finish() }
+		}
+	}
+
+	private fun getNoteToBeDeleted() {
+		setFragmentResultListener(EditorFragment.REQUEST_KEY) { _, bundle ->
+			val noteToBeDeleted = bundle.getParcelable<Note>(EditorFragment.NOTE)
+			deleteEmptyNote(noteToBeDeleted)
+		}
+	}
+
+	private fun deleteEmptyNote(note: Note?) {
+		if (note != null) {
+			viewModel.deleteNotes(listOf(note)) {
+				ImageStorageManager.deleteImages(requireContext(), note.images)
+				binding.root.showSnackbar(R.string.empty_note_deleted)
+			}
 		}
 	}
 

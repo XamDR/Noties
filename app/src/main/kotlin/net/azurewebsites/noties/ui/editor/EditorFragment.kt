@@ -17,8 +17,11 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -34,9 +37,11 @@ import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.image.*
 import net.azurewebsites.noties.ui.notes.NotesFragment
 import net.azurewebsites.noties.ui.urls.JsoupHelper
+import java.io.FileNotFoundException
 
 @AndroidEntryPoint
-class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener, ImageItemContextMenuListener {
+class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
+	ImageItemContextMenuListener, ToolbarItemMenuListener, OpenFileListener {
 
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
@@ -68,6 +73,11 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener, Im
 	) { success -> takePictureCallback(success) }
 
 	private lateinit var tempUri: Uri
+	private val menuItemClickListener = MenuItemClickListener(this)
+	private val openFileLauncher = registerForActivityResult(
+		ActivityResultContracts.OpenDocument(),
+		OpenFileCallback(this)
+	)
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -101,6 +111,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener, Im
 		checkIfNoteIsProtected()
 		initTransition()
 		onBackPressed()
+		binding.editorToolbar.setOnMenuItemClickListener(menuItemClickListener)
 		binding.content.adapter = ConcatAdapter(editorImageAdapter, editorContentAdapter)
 		viewModel.images.observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
 	}
@@ -142,9 +153,49 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener, Im
 		viewModel.images.observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
 	}
 
+	override fun shareContent() {
+		if (viewModel.note.value.isNonEmpty()) {
+			if (viewModel.uris.isEmpty()) {
+				shareText(viewModel.text)
+			}
+			else {
+				shareImagesAndText(viewModel.uris, viewModel.text)
+			}
+		}
+		else {
+			context?.showToast(R.string.empty_note_share)
+		}
+	}
+
+	override fun showDeleteImagesDialog() {
+		val deleteImagesDialog = DeleteImagesDialogFragment().apply {
+			setOnDeleteImagesListener { deleteAllImages() }
+		}
+		showDialog(deleteImagesDialog, DELETE_IMAGES_DIALOG_TAG)
+	}
+
+	override fun openTextFile() = openFileLauncher.launch(arrayOf(MIME_TYPE_TEXT))
+
+	override fun readFileContent(uri: Uri?) {
+		try {
+			if (uri != null) {
+				val inputStream = requireContext().contentResolver.openInputStream(uri)
+				val file = DocumentFile.fromSingleUri(requireContext(), uri)
+				inputStream?.bufferedReader()?.use { reader ->
+					viewModel.updateNoteTitleAndText(file?.simpleName, reader.readText())
+				}
+				editorContentAdapter.notifyItemChanged(0)
+			}
+		}
+		catch (e: FileNotFoundException) {
+			printError(TAG, e.message)
+			context?.showToast(R.string.error_open_file)
+		}
+	}
+
 	fun showBottomSheetMenu() {
 		val menuDialog = EditorMenuFragment().apply {
-			setOnActivityResultListener { pickImagesLauncher.launch(arrayOf("image/*")) }
+			setOnActivityResultListener { pickImagesLauncher.launch(arrayOf(MIME_TYPE_IMAGE)) }
 			setOnTakePictureListener { takePictureOrRequestPermission() }
 		}
 		showDialog(menuDialog, MENU_DIALOG_TAG)
@@ -175,8 +226,9 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener, Im
 		requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
 			viewLifecycleOwner.lifecycleScope.launch {
 				when (viewModel.insertorUpdateNote(notebookId)) {
-					Result.SuccesfulInsert -> context?.showToast(R.string.note_saved)
-					Result.SuccesfulUpdate -> context?.showToast(R.string.note_updated)
+					Result.NoteSaved -> context?.showToast(R.string.note_saved)
+					Result.NoteUpdated -> context?.showToast(R.string.note_updated)
+					Result.EmptyNote -> setNoteToBeDeleted(viewModel.note.value)
 					else -> {}
 				}
 				findNavController().popBackStack()
@@ -246,6 +298,31 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener, Im
 			}.show()
 	}
 
+	private fun shareText(text: String) {
+		val shareIntent = Intent().apply {
+			action = Intent.ACTION_SEND
+			putExtra(Intent.EXTRA_TEXT, text)
+			type = MIME_TYPE_TEXT
+		}
+		startActivity(Intent.createChooser(shareIntent, getString(R.string.chooser_dialog_title)))
+	}
+
+	private fun shareImagesAndText(images: List<Uri?>, text: String) {
+		val shareIntent = Intent().apply {
+			action = Intent.ACTION_SEND_MULTIPLE
+			putExtra(Intent.EXTRA_TEXT, text)
+			putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(images))
+			type = MIME_TYPE_IMAGE
+			addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+		}
+		startActivity(Intent.createChooser(shareIntent, getString(R.string.chooser_dialog_title)))
+	}
+
+	private fun deleteAllImages() {
+		viewModel.note.value.images.forEach { deleteImage(it) }
+		viewModel.images.observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
+	}
+
 	private fun deleteImage(image: ImageEntity) {
 		viewModel.note.value.images -= image
 		val images = listOf(image)
@@ -257,10 +334,24 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener, Im
 		}
 	}
 
+	private fun setNoteToBeDeleted(note: Note) {
+		if (note.entity.id != 0L) {
+			setFragmentResult(
+				REQUEST_KEY,
+				bundleOf(NOTE to note)
+			)
+		}
+	}
+
 	companion object {
 		const val NOTE = "note"
 		private const val MENU_DIALOG_TAG = "MENU_DIALOG"
 		private const val ALT_TEXT_DIALOG_TAG = "ALT_TEXT_DIALOG"
+		private const val DELETE_IMAGES_DIALOG_TAG = "DELETE_IMAGES"
 		private const val IMAGE_STORE_MANAGER = "ImageStoreManager"
+		const val REQUEST_KEY = "deletion"
+		private const val MIME_TYPE_IMAGE = "image/*"
+		private const val MIME_TYPE_TEXT = "text/plain"
+		private const val TAG = "IO"
 	}
 }
