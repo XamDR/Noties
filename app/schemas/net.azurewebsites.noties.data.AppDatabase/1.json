@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "7e7740020651bbf64d9305717cee8e9b",
+    "identityHash": "8f643154e8bb908accd599af845721c5",
     "entities": [
       {
         "tableName": "Notebooks",
@@ -92,7 +92,7 @@
       },
       {
         "tableName": "Notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `text` TEXT NOT NULL, `date_modification` TEXT NOT NULL, `color` INTEGER NOT NULL, `urls` TEXT NOT NULL, `is_protected` INTEGER NOT NULL, `is_trashed` INTEGER NOT NULL, `notebook_id` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `text` TEXT NOT NULL, `date_modification` TEXT NOT NULL, `color` INTEGER NOT NULL, `urls` TEXT NOT NULL, `is_protected` INTEGER NOT NULL, `is_trashed` INTEGER NOT NULL, `is_todo_list` INTEGER NOT NULL, `notebook_id` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -143,6 +143,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "isTodoList",
+            "columnName": "is_todo_list",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "notebookId",
             "columnName": "notebook_id",
             "affinity": "INTEGER",
@@ -162,7 +168,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7e7740020651bbf64d9305717cee8e9b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8f643154e8bb908accd599af845721c5')"
     ]
   }
 }

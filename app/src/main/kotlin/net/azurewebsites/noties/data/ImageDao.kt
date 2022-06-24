@@ -18,4 +18,7 @@ interface ImageDao {
 
 	@Delete
 	suspend fun deleteImages(images: List<ImageEntity>)
+
+	@Query("DELETE FROM Images WHERE note_id IN (SELECT id FROM Notes WHERE is_trashed = 1)")
+	suspend fun deleteImagesForTrashedNotes()
 }

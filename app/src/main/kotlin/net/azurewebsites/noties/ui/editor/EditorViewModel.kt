@@ -102,6 +102,7 @@ class EditorViewModel @Inject constructor(
 					title = note.value.entity.title,
 					text = note.value.entity.text,
 					images = note.value.images,
+					isProtected = note.value.entity.isProtected,
 					notebookId = notebookId
 				)
 				return insertNote(newNote)
@@ -112,6 +113,7 @@ class EditorViewModel @Inject constructor(
 						title = note.value.entity.title,
 						text = note.value.entity.text,
 						images = note.value.images,
+						isProtected = note.value.entity.isProtected,
 						notebookId = note.value.entity.notebookId,
 						id = note.value.entity.id
 					)
@@ -125,7 +127,13 @@ class EditorViewModel @Inject constructor(
 		return null
 	}
 
-	private fun createNote(title: String?, text: String, images: List<ImageEntity>, notebookId: Int, id: Long = 0): Note {
+	private fun createNote(
+		title: String?,
+		text: String,
+		images: List<ImageEntity>,
+		notebookId: Int,
+		isProtected: Boolean,
+		id: Long = 0): Note {
 		return Note(
 			entity = NoteEntity(
 				id = id,
@@ -133,6 +141,7 @@ class EditorViewModel @Inject constructor(
 				text = text,
 				dateModification = ZonedDateTime.now(),
 				urls = extractUrls(text),
+				isProtected = isProtected,
 				notebookId = notebookId
 			),
 			images = images
@@ -154,10 +163,10 @@ class EditorViewModel @Inject constructor(
 	}
 
 	private suspend fun copyUri(context: Context, uri: Uri): Uri {
-		val extension = context.getUriExtension(uri) ?: "jpeg"
+		val extension = context.getUriExtension(uri) ?: DEFAULT_IMAGE_EXTENSION
 		val fileName = buildString {
 			append("IMG_")
-			append(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(LocalDateTime.now()))
+			append(DateTimeFormatter.ofPattern(PATTERN).format(LocalDateTime.now()))
 			append("_${(0..999).random()}.$extension")
 		}
 		val fullPath = ImageStorageManager.saveImage(context, uri, fileName)
@@ -167,5 +176,7 @@ class EditorViewModel @Inject constructor(
 
 	private companion object {
 		private const val AUTHORITY = "net.azurewebsites.noties"
+		private const val DEFAULT_IMAGE_EXTENSION = "jpeg"
+		private const val PATTERN = "yyyyMMdd_HHmmss"
 	}
 }
