@@ -18,7 +18,11 @@ data class NoteEntity(
 	@ColumnInfo(name = "urls") val urls: List<String> = emptyList(),
 	@ColumnInfo(name = "is_protected") val isProtected: Boolean = false,
 	@ColumnInfo(name = "is_trashed") val isTrashed: Boolean = false,
+	@ColumnInfo(name = "is_todo_list") val isTodoList: Boolean = false,
 	@ColumnInfo(name = "notebook_id") val notebookId: Int = 0) : Parcelable {
 
 	fun getUrlCount() = urls.size
+
+	fun toTodoList() = if (text.isEmpty()) listOf(Todo())
+		else text.split('\n').map { Todo(content = it) }
 }

@@ -24,9 +24,8 @@ class DeleteNotebookAndMoveNotesToTrashUseCase @Inject constructor(
 
 	suspend operator fun invoke(notebook: Notebook) {
 		for (note in notebook.notes) {
-			val trashedNote = note.copy(notebookId = -1, isTrashed = true)
+			val trashedNote = note.copy(isTrashed = true)
 			noteDao.updateNote(trashedNote)
-			notebookDao.incrementNotebookNoteCount(notebookId = -1)
 		}
 		notebookDao.deleteNotebooks(listOf(notebook.entity))
 	}

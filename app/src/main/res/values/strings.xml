@@ -41,6 +41,8 @@
 	<string name="notebooks_fragment_label">Notebooks</string>
 	<string name="empty_notebooks_message">No notebooks here</string>
 	<string name="create_notebook">Create notebook</string>
+	<string name="personal_notebook">Personal</string>
+	<string name="work_notebook">Work</string>
 	<string name="view_notebooks">View notebooks</string>
 	<string name="search_notebooks">Search your notebooks</string>
 	<string name="add_notebook">Create new notebook</string>

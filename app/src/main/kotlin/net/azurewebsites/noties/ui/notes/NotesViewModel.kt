@@ -44,8 +44,8 @@ class NotesViewModel @Inject constructor(
 		}
 	}
 
-	fun restoreNote(note: NoteEntity, notebookId: Int) {
-		viewModelScope.launch { restoreNoteUseCase(note, notebookId) }
+	fun restoreNote(note: NoteEntity) {
+		viewModelScope.launch { restoreNoteUseCase(note) }
 	}
 
 	fun deleteNotes(notes: List<Note>, action: () -> Unit) {

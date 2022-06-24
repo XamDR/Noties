@@ -41,8 +41,7 @@ class RecycleBinViewModel @Inject constructor(
 	fun restoreNotes(notes: List<Note>) {
 		viewModelScope.launch {
 			for (note in notes) {
-				// How to get the previous notebookId, current one == -1
-				restoreNoteUseCase(note.entity, 0)
+				restoreNoteUseCase(note.entity)
 			}
 		}
 	}

@@ -149,7 +149,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 
 	private fun showUndoSnackbar(note: NoteEntity) {
 		binding.root.showSnackbar(R.string.deleted_note, action = R.string.undo) {
-			viewModel.restoreNote(note, notebook.id)
+			viewModel.restoreNote(note)
 			submitList(notebook.id)
 		}
 	}

@@ -12,11 +12,11 @@ interface NoteDao {
 	suspend fun insertNote(note: NoteEntity): Long
 
 	@Transaction
-	@Query("SELECT * FROM Notes WHERE notebook_id = :notebookId")
+	@Query("SELECT * FROM Notes WHERE notebook_id = :notebookId AND is_trashed <> 1")
 	fun getNotes(notebookId: Int): Flow<List<Note>>
 
 	@Transaction
-	@Query("SELECT * FROM Notes WHERE notebook_id <> -1")
+	@Query("SELECT * FROM Notes WHERE is_trashed <> 1")
 	fun getAllNotes(): Flow<List<Note>>
 
 	@Update
@@ -26,13 +26,13 @@ interface NoteDao {
 	suspend fun deleteNote(note: NoteEntity)
 
 	@Transaction
-	@Query("SELECT * FROM Notes WHERE notebook_id = -1")
+	@Query("SELECT * FROM Notes WHERE is_trashed = 1")
 	fun getTrashedNotes(): Flow<List<Note>>
 
 	@Transaction
-	@Query("SELECT * FROM Notes WHERE notebook_id = -1")
+	@Query("SELECT * FROM Notes WHERE is_trashed = 1")
 	suspend fun getTrashedNotesSync(): List<Note>
 
-	@Query("DELETE FROM Notes WHERE notebook_id = -1")
-	suspend fun emptyTrash(): Int
+	@Query("DELETE FROM Notes WHERE is_trashed = 1")
+	suspend fun deleteTrashedNotes(): Int
 }

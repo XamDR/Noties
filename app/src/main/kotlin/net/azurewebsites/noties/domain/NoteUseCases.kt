@@ -50,7 +50,9 @@ class DeleteNotesUseCase @Inject constructor(
 		for (note in notes) {
 			imageDao.deleteImages(note.images)
 			noteDao.deleteNote(note.entity)
-			notebookDao.decrementNotebookNoteCount(note.entity.notebookId)
+			if (!note.entity.isTrashed) {
+				notebookDao.decrementNotebookNoteCount(note.entity.notebookId)
+			}
 		}
 	}
 }
@@ -60,10 +62,9 @@ class MoveNoteToTrashUseCase @Inject constructor(
 	private val notebookDao: NotebookDao) {
 
 	suspend operator fun invoke(note: NoteEntity) {
-		notebookDao.decrementNotebookNoteCount(note.notebookId)
-		val trashedNote = note.copy(notebookId = -1, isTrashed = true)
+		val trashedNote = note.copy(isTrashed = true)
 		noteDao.updateNote(trashedNote)
-		notebookDao.incrementNotebookNoteCount(notebookId = -1)
+		notebookDao.decrementNotebookNoteCount(trashedNote.notebookId)
 	}
 }
 
@@ -71,11 +72,10 @@ class RestoreNoteUseCase @Inject constructor(
 	private val noteDao: NoteDao,
 	private val notebookDao: NotebookDao) {
 
-	suspend operator fun invoke(note: NoteEntity, notebookId: Int) {
-		notebookDao.decrementNotebookNoteCount(notebookId = -1)
-		val restoredNote = note.copy(notebookId = notebookId, isTrashed = false)
+	suspend operator fun invoke(note: NoteEntity) {
+		val restoredNote = note.copy(isTrashed = false)
 		noteDao.updateNote(restoredNote)
-		notebookDao.incrementNotebookNoteCount(notebookId)
+		notebookDao.incrementNotebookNoteCount(restoredNote.notebookId)
 	}
 }
 
@@ -89,13 +89,11 @@ class GetTrashedNotesSyncUseCase @Inject constructor(private val noteDao: NoteDa
 
 class EmptyTrashUseCase @Inject constructor(
 	private val noteDao: NoteDao,
-	private val notebookDao: NotebookDao) {
+	private val imageDao: ImageDao) {
 
-	suspend operator fun invoke() {
-		val numDeletedRows = noteDao.emptyTrash()
-		repeat(numDeletedRows) {
-			notebookDao.decrementNotebookNoteCount(notebookId = -1)
-		}
+	suspend operator fun invoke(): Int {
+		imageDao.deleteImagesForTrashedNotes()
+		return noteDao.deleteTrashedNotes()
 	}
 }
 

@@ -12,7 +12,7 @@ interface NotebookDao {
 	suspend fun insertNotebook(notebook: NotebookEntity)
 
 	@Transaction
-	@Query("SELECT * FROM Notebooks WHERE id <> -1 ORDER BY name")
+	@Query("SELECT * FROM Notebooks ORDER BY name")
 	fun getNotebooks(): Flow<List<Notebook>>
 
 	@Update
