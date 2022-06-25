@@ -18,11 +18,11 @@ class SortNotesDialogFragment : DialogFragment() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		checkedItem = when (preferenceStorage.sortMode) {
-			SortMode.Content.name -> 0
-			SortMode.LastEdit.name -> 1
-			SortMode.Title.name -> 2
-			else -> -1
+		val sortMode = SortMode.valueOf(preferenceStorage.sortMode)
+		checkedItem = when (sortMode) {
+			SortMode.Content -> 0
+			SortMode.LastEdit -> 1
+			SortMode.Title -> 2
 		}
 	}
 

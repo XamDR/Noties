@@ -44,7 +44,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	private val notebook by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelable(NotebooksFragment.NOTEBOOK) ?: NotebookEntity()
 	}
-	private val menuProvider = NotesMenuProvider(this)
+	private lateinit var menuProvider: NotesMenuProvider
 	private lateinit var selectionTracker: SelectionTracker<Note>
 	private lateinit var actionModeCallback: RecyclerViewActionModeCallback
 	private lateinit var selectionObserver: SelectionObserver
@@ -52,6 +52,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
 		(context as MainActivity).setOnFabClickListener { navigateToEditor() }
+		menuProvider = NotesMenuProvider(this, preferenceStorage)
 		actionModeCallback = RecyclerViewActionModeCallback(noteAdapter)
 	}
 
@@ -129,8 +130,19 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 		showDialog(sortNotesDialog, SORT_NOTES)
 	}
 
-	override fun changeNotesLayout() {
-
+	override fun changeNotesLayout(layoutType: LayoutType) {
+		val layoutManager = binding.recyclerView.layoutManager as StaggeredGridLayoutManager
+		when (layoutType) {
+			LayoutType.Linear -> {
+				layoutManager.spanCount = 2
+				preferenceStorage.layoutType = LayoutType.Grid.name
+			}
+			LayoutType.Grid -> {
+				layoutManager.spanCount = 1
+				preferenceStorage.layoutType = LayoutType.Linear.name
+			}
+		}
+		requireActivity().invalidateMenu()
 	}
 
 	private fun navigateToEditor() {
@@ -139,9 +151,13 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	}
 
 	private fun setupRecyclerView() {
+		val layoutType = LayoutType.valueOf(preferenceStorage.layoutType)
 		binding.recyclerView.apply {
 			adapter = noteAdapter
-			(layoutManager as StaggeredGridLayoutManager).spanCount = 1
+			(layoutManager as StaggeredGridLayoutManager).spanCount = when (layoutType) {
+				LayoutType.Linear -> 1
+				LayoutType.Grid -> 2
+			}
 			addItemTouchHelper(ItemTouchHelper(SwipeToDeleteCallback(noteAdapter)))
 		}
 		postponeEnterTransition()

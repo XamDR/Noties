@@ -6,7 +6,7 @@ enum class SortMode {
 	Title;
 }
 
-//enum class LayoutType {
-//	Linear,
-//	Grid;
-//}
+enum class LayoutType {
+	Linear,
+	Grid;
+}
