@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 	private val binding by lazy(LazyThreadSafetyMode.NONE) { ActivityMainBinding.inflate(layoutInflater) }
 	private val navController by lazy(LazyThreadSafetyMode.NONE) { findNavController(R.id.nav_host_fragment) }
 	private val viewModel by viewModels<NotebooksViewModel>()
-	@Inject lateinit var userPreferences: PreferenceStorage
+	@Inject lateinit var preferenceStorage: PreferenceStorage
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		installSplashScreen()
@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		)
 		navController.graph = navController.navInflater.inflate(R.navigation.nav_graph).apply {
 			setStartDestination(
-				if (userPreferences.isOnboardingCompleted) R.id.nav_notes else R.id.nav_welcome
+				if (preferenceStorage.isOnboardingCompleted) R.id.nav_notes else R.id.nav_welcome
 			)
 		}
 		binding.toolbar.setupWithNavController(navController, appBarConfiguration)

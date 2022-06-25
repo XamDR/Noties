@@ -34,16 +34,17 @@ import net.azurewebsites.noties.ui.urls.UrlsDialogFragment
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeListener {
+class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeListener, NotesMenuListener {
 
 	private var _binding: FragmentNotesBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<NotesViewModel>()
 	private val noteAdapter = NoteAdapter(this)
-	@Inject lateinit var userPreferences: PreferenceStorage
+	@Inject lateinit var preferenceStorage: PreferenceStorage
 	private val notebook by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelable(NotebooksFragment.NOTEBOOK) ?: NotebookEntity()
 	}
+	private lateinit var menuProvider: NotesMenuProvider
 	private lateinit var selectionTracker: SelectionTracker<Note>
 	private lateinit var actionModeCallback: RecyclerViewActionModeCallback
 	private lateinit var selectionObserver: SelectionObserver
@@ -51,6 +52,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
 		(context as MainActivity).setOnFabClickListener { navigateToEditor() }
+		menuProvider = NotesMenuProvider(this, preferenceStorage)
 		actionModeCallback = RecyclerViewActionModeCallback(noteAdapter)
 	}
 
@@ -65,7 +67,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 							  container: ViewGroup?,
 							  savedInstanceState: Bundle?): View {
 		_binding = FragmentNotesBinding.inflate(inflater, container, false)
-		addMenuProvider(NotesMenuProvider(), viewLifecycleOwner)
+		addMenuProvider(menuProvider, viewLifecycleOwner)
 		return binding.root
 	}
 
@@ -111,14 +113,36 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 			setOnNotesDeletedListener {
 				selectionObserver.actionMode?.finish()
 				for (note in notes) {
-					ImageStorageManager.deleteImages(
-						this@NotesFragment.requireContext(),
-						note.images
-					)
+					ImageStorageManager.deleteImages(this@NotesFragment.requireContext(), note.images)
 				}
 			}
 		}
 		showDialog(deleteNotesDialog, DELETE_NOTES)
+	}
+
+	override fun showSortNotesDialog() {
+		val sortNotesDialog = SortNotesDialogFragment().apply {
+			setOnSortNotesListener {
+				mode -> submitList(notebook.id, mode)
+				preferenceStorage.sortMode = mode.name
+			}
+		}
+		showDialog(sortNotesDialog, SORT_NOTES)
+	}
+
+	override fun changeNotesLayout(layoutType: LayoutType) {
+		val layoutManager = binding.recyclerView.layoutManager as StaggeredGridLayoutManager
+		when (layoutType) {
+			LayoutType.Linear -> {
+				layoutManager.spanCount = 2
+				preferenceStorage.layoutType = LayoutType.Grid.name
+			}
+			LayoutType.Grid -> {
+				layoutManager.spanCount = 1
+				preferenceStorage.layoutType = LayoutType.Linear.name
+			}
+		}
+		requireActivity().invalidateMenu()
 	}
 
 	private fun navigateToEditor() {
@@ -127,9 +151,13 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	}
 
 	private fun setupRecyclerView() {
+		val layoutType = LayoutType.valueOf(preferenceStorage.layoutType)
 		binding.recyclerView.apply {
 			adapter = noteAdapter
-			(layoutManager as StaggeredGridLayoutManager).spanCount = 1
+			(layoutManager as StaggeredGridLayoutManager).spanCount = when (layoutType) {
+				LayoutType.Linear -> 1
+				LayoutType.Grid -> 2
+			}
 			addItemTouchHelper(ItemTouchHelper(SwipeToDeleteCallback(noteAdapter)))
 		}
 		postponeEnterTransition()
@@ -137,11 +165,11 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 
 	private fun submitListAndUpdateToolbar() {
 		supportActionBar?.title = notebook.name.ifEmpty { getString(R.string.notes_fragment_label) }
-		submitList(notebook.id)
+		submitList(notebook.id, SortMode.valueOf(preferenceStorage.sortMode))
 	}
 
-	private fun submitList(notebookId: Int) {
-		viewModel.sortNotes(notebookId, SortMode.LastEdit).observe(viewLifecycleOwner) {
+	private fun submitList(notebookId: Int, mode: SortMode) {
+		viewModel.sortNotes(notebookId, mode).observe(viewLifecycleOwner) {
 			noteAdapter.submitList(it)
 			binding.root.doOnPreDraw { startPostponedEnterTransition() }
 		}
@@ -150,7 +178,6 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	private fun showUndoSnackbar(note: NoteEntity) {
 		binding.root.showSnackbar(R.string.deleted_note, action = R.string.undo) {
 			viewModel.restoreNote(note)
-			submitList(notebook.id)
 		}
 	}
 
@@ -215,5 +242,6 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 		private const val SELECTION_ID = "note_selection"
 		private const val ACTION_MODE = "action_mode"
 		private const val DELETE_NOTES = "DELETE_NOTES_DIALOG"
+		private const val SORT_NOTES = "SORT_NOTES_DIALOG"
 	}
 }

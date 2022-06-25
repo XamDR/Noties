@@ -47,7 +47,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<EditorViewModel>()
 	private val notebookId by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getInt(NotesFragment.ID, 1)
+		requireArguments().getInt(NotesFragment.ID, 0)
 	}
 	private val pickImagesLauncher = registerForActivityResult(
 		ActivityResultContracts.OpenMultipleDocuments(),
@@ -345,11 +345,11 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 
 	companion object {
 		const val NOTE = "note"
+		const val REQUEST_KEY = "deletion"
 		private const val MENU_DIALOG_TAG = "MENU_DIALOG"
 		private const val ALT_TEXT_DIALOG_TAG = "ALT_TEXT_DIALOG"
 		private const val DELETE_IMAGES_DIALOG_TAG = "DELETE_IMAGES"
 		private const val IMAGE_STORE_MANAGER = "ImageStoreManager"
-		const val REQUEST_KEY = "deletion"
 		private const val MIME_TYPE_IMAGE = "image/*"
 		private const val MIME_TYPE_TEXT = "text/plain"
 		private const val TAG = "IO"

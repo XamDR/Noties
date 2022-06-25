@@ -7,7 +7,6 @@ import android.widget.EditText
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.BindingAdapter
 import net.azurewebsites.noties.ui.views.LinedEditText
-import net.azurewebsites.noties.util.EditorStyle
 
 @BindingAdapter("navigationOnClick")
 fun bindNavigationListener(toolbar: Toolbar, listener: View.OnClickListener) {
@@ -24,11 +23,15 @@ fun bindTextSize(editText: EditText, size: Float) {
 	editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, size)
 }
 
+enum class EditorStyle {
+	Blank,
+	Stripped;
+}
+
 @BindingAdapter("hasGridLines")
 fun bindHasGridLines(editText: LinedEditText, value: String) {
-	when (EditorStyle.from(value)) {
+	when (EditorStyle.valueOf(value)) {
 		EditorStyle.Blank -> editText.hasGridLines = false
-		EditorStyle.Striped -> editText.hasGridLines = true
-		else -> throw Exception("Unknown editor style.")
+		EditorStyle.Stripped -> editText.hasGridLines = true
 	}
 }

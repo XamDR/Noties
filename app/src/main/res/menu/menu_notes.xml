@@ -5,7 +5,7 @@
 	tools:context=".ui.notes.NotesFragment">
 
 	<item
-		android:id="@+id/search"
+		android:id="@+id/search_notes"
 		android:icon="@drawable/ic_search"
 		android:orderInCategory="0"
 		android:title="@string/search_notes"
@@ -13,16 +13,16 @@
 		app:showAsAction="always|collapseActionView" />
 
 	<item
-		android:id="@+id/change_layout"
+		android:id="@+id/change_notes_layout"
 		android:icon="@drawable/ic_view_grid_layout"
 		android:orderInCategory="5"
 		android:title="@string/change_layout"
-		app:showAsAction="ifRoom" />
+		app:showAsAction="always" />
 
 	<item
-		android:id="@+id/sort"
+		android:id="@+id/sort_notes"
 		android:icon="@drawable/ic_sort"
 		android:orderInCategory="10"
-		android:title="@string/sort"
+		android:title="@string/sort_notes"
 		app:showAsAction="ifRoom" />
 </menu>
