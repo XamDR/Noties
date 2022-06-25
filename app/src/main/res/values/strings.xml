@@ -22,7 +22,7 @@
 	<string name="deleted_note">Deleted note</string>
 	<string name="undo">Undo</string>
 	<string name="search_notes">Search your notes</string>
-	<string name="sort">Sort</string>
+	<string name="sort_notes">Sort notes…</string>
 	<string name="sort_by_content">By content</string>
 	<string name="sort_by_last_edit">By last edit</string>
 	<string name="sort_by_title">By title</string>

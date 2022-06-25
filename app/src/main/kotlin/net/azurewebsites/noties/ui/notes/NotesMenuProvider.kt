@@ -6,12 +6,15 @@ import android.view.MenuItem
 import androidx.core.view.MenuProvider
 import net.azurewebsites.noties.R
 
-class NotesMenuProvider : MenuProvider {
+class NotesMenuProvider(private val listener: NotesMenuListener) : MenuProvider {
 	override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
 		menuInflater.inflate(R.menu.menu_notes, menu)
 	}
 
-	override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-		TODO("Not yet implemented")
+	override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
+		R.id.sort_notes -> {
+			listener.showSortNotesDialog(); true
+		}
+		else -> false
 	}
 }

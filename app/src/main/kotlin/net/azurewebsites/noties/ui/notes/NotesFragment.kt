@@ -34,7 +34,7 @@ import net.azurewebsites.noties.ui.urls.UrlsDialogFragment
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeListener {
+class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeListener, NotesMenuListener {
 
 	private var _binding: FragmentNotesBinding? = null
 	private val binding get() = _binding!!
@@ -44,6 +44,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	private val notebook by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelable(NotebooksFragment.NOTEBOOK) ?: NotebookEntity()
 	}
+	private val menuProvider = NotesMenuProvider(this)
 	private lateinit var selectionTracker: SelectionTracker<Note>
 	private lateinit var actionModeCallback: RecyclerViewActionModeCallback
 	private lateinit var selectionObserver: SelectionObserver
@@ -65,7 +66,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 							  container: ViewGroup?,
 							  savedInstanceState: Bundle?): View {
 		_binding = FragmentNotesBinding.inflate(inflater, container, false)
-		addMenuProvider(NotesMenuProvider(), viewLifecycleOwner)
+		addMenuProvider(menuProvider, viewLifecycleOwner)
 		return binding.root
 	}
 
@@ -111,14 +112,21 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 			setOnNotesDeletedListener {
 				selectionObserver.actionMode?.finish()
 				for (note in notes) {
-					ImageStorageManager.deleteImages(
-						this@NotesFragment.requireContext(),
-						note.images
-					)
+					ImageStorageManager.deleteImages(this@NotesFragment.requireContext(), note.images)
 				}
 			}
 		}
 		showDialog(deleteNotesDialog, DELETE_NOTES)
+	}
+
+	override fun showSortNotesDialog() {
+		val sortNotesDialog = SortNotesDialogFragment().apply {
+			setOnSortNotesListener {
+				mode -> submitList(notebook.id, mode)
+				// We need to save this mode to preferences
+			}
+		}
+		showDialog(sortNotesDialog, SORT_NOTES)
 	}
 
 	private fun navigateToEditor() {
@@ -137,11 +145,11 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 
 	private fun submitListAndUpdateToolbar() {
 		supportActionBar?.title = notebook.name.ifEmpty { getString(R.string.notes_fragment_label) }
-		submitList(notebook.id)
+		submitList(notebook.id, SortMode.LastEdit)
 	}
 
-	private fun submitList(notebookId: Int) {
-		viewModel.sortNotes(notebookId, SortMode.LastEdit).observe(viewLifecycleOwner) {
+	private fun submitList(notebookId: Int, mode: SortMode) {
+		viewModel.sortNotes(notebookId, mode).observe(viewLifecycleOwner) {
 			noteAdapter.submitList(it)
 			binding.root.doOnPreDraw { startPostponedEnterTransition() }
 		}
@@ -150,7 +158,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	private fun showUndoSnackbar(note: NoteEntity) {
 		binding.root.showSnackbar(R.string.deleted_note, action = R.string.undo) {
 			viewModel.restoreNote(note)
-			submitList(notebook.id)
+//			submitList(notebook.id, SortMode.LastEdit)
 		}
 	}
 
@@ -215,5 +223,6 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 		private const val SELECTION_ID = "note_selection"
 		private const val ACTION_MODE = "action_mode"
 		private const val DELETE_NOTES = "DELETE_NOTES_DIALOG"
+		private const val SORT_NOTES = "SORT_NOTES_DIALOG"
 	}
 }
