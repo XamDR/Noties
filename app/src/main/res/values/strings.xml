@@ -81,8 +81,6 @@
 	<string name="play">This image is a thumbnail of a video.</string>
 	<string name="empty_note_share">The note does not have content to share.</string>
 	<string name="open_url">Open</string>
-	<string name="edit_url">Edit</string>
-	<string name="copy_url">Copy</string>
 	<string name="label_link">Link</string>
 	<string name="url_copied_msg">Link copied to clipboard</string>
 	<string name="open_file">Open text file</string>

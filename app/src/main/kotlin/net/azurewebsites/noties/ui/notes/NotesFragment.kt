@@ -129,6 +129,10 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 		showDialog(sortNotesDialog, SORT_NOTES)
 	}
 
+	override fun changeNotesLayout() {
+
+	}
+
 	private fun navigateToEditor() {
 		val args = bundleOf(ID to notebook.id)
 		findNavController().tryNavigate(R.id.action_notes_to_editor, args)
