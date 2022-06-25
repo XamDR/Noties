@@ -1,7 +1,6 @@
 package net.azurewebsites.noties.ui.settings
 
 import android.content.SharedPreferences
-import androidx.annotation.WorkerThread
 import androidx.core.content.edit
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -11,7 +10,6 @@ class BooleanPreference(
 	private val name: String,
 	private val defaultValue: Boolean) : ReadWriteProperty<Any, Boolean> {
 
-	@WorkerThread
 	override fun getValue(thisRef: Any, property: KProperty<*>) =
 		preferences.value.getBoolean(name, defaultValue)
 
@@ -25,7 +23,6 @@ class StringPreference(
 	private val name: String,
 	private val defaultValue: String) : ReadWriteProperty<Any, String> {
 
-	@WorkerThread
 	override fun getValue(thisRef: Any, property: KProperty<*>) =
 		preferences.value.getString(name, defaultValue) ?: defaultValue
 

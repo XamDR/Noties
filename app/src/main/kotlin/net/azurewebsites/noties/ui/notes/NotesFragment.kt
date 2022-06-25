@@ -40,7 +40,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<NotesViewModel>()
 	private val noteAdapter = NoteAdapter(this)
-	@Inject lateinit var userPreferences: PreferenceStorage
+	@Inject lateinit var preferenceStorage: PreferenceStorage
 	private val notebook by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelable(NotebooksFragment.NOTEBOOK) ?: NotebookEntity()
 	}
@@ -123,7 +123,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 		val sortNotesDialog = SortNotesDialogFragment().apply {
 			setOnSortNotesListener {
 				mode -> submitList(notebook.id, mode)
-				// We need to save this mode to preferences
+				preferenceStorage.sortMode = mode.name
 			}
 		}
 		showDialog(sortNotesDialog, SORT_NOTES)
@@ -145,7 +145,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 
 	private fun submitListAndUpdateToolbar() {
 		supportActionBar?.title = notebook.name.ifEmpty { getString(R.string.notes_fragment_label) }
-		submitList(notebook.id, SortMode.LastEdit)
+		submitList(notebook.id, SortMode.valueOf(preferenceStorage.sortMode))
 	}
 
 	private fun submitList(notebookId: Int, mode: SortMode) {
@@ -158,7 +158,6 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	private fun showUndoSnackbar(note: NoteEntity) {
 		binding.root.showSnackbar(R.string.deleted_note, action = R.string.undo) {
 			viewModel.restoreNote(note)
-//			submitList(notebook.id, SortMode.LastEdit)
 		}
 	}
 
