@@ -109,7 +109,7 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 
 	fun deleteNotes() = onDeleteNotesCallback(getSelectedNotes())
 
-	fun toggleLockedStatusForNotes() = onLockNotesCallback(getSelectedNotes())
+	fun toggleLockedValueForNotes() = onLockNotesCallback(getSelectedNotes())
 
 	fun selectAllNotes() {
 		for (note in currentList) {
@@ -121,7 +121,7 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 
 	fun restoreNotes() = onRestoreNotesCallback(getSelectedNotes())
 
-	fun pinNotes() = onPinNotesCallback(getSelectedNotes())
+	fun togglePinnedValueForNotes() = onPinNotesCallback(getSelectedNotes())
 
 	private fun editNote(holder: RecyclerView.ViewHolder, position: Int) {
 		val note = getItem(position)

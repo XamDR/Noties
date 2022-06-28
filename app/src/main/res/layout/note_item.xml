@@ -112,10 +112,10 @@
 			<ImageView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginTop="16dp"
+				android:layout_marginTop="8dp"
 				android:layout_marginEnd="8dp"
 				android:contentDescription="@string/pin_note"
-				android:src="@drawable/ic_pinned_note"
+				android:src="@drawable/ic_pin_note"
 				android:visibility="@{note.entity.pinned ? View.VISIBLE : View.GONE}"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintTop_toTopOf="parent" />

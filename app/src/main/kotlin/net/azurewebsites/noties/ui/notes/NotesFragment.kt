@@ -1,10 +1,12 @@
 package net.azurewebsites.noties.ui.notes
 
+import android.app.KeyguardManager
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
@@ -204,24 +206,29 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	private fun showActionMode() {
 		selectionObserver.actionMode = startActionMode(actionModeCallback)
 		val numSelectedItems = selectionTracker.selection.size()
-		val title = resources.getQuantityString(
-			R.plurals.notes_selected,
-			numSelectedItems,
-			numSelectedItems
-		)
-		selectionObserver.actionMode?.title = title
+		selectionObserver.actionMode?.title = numSelectedItems.toString()
 	}
 
 	private fun setupAdapterListeners() {
 		noteAdapter.setOnShowUrlsListener { urls -> showUrlsDialog(urls) }
 		noteAdapter.setOnDeleteNotesListener { notes -> showDeleteNotesDialog(notes) }
-		noteAdapter.setOnLockNotesListener { notes ->
-			viewModel.toggleLockedStatusForNotes(notes) { selectionObserver.actionMode?.finish() }
+		noteAdapter.setOnLockNotesListener { notes -> toggleLockValueForNotes(notes) }
+		noteAdapter.setOnPinNotesListener { notes -> togglePinnedValueForNotes(notes) }
+	}
+
+	private fun toggleLockValueForNotes(notes: List<Note>) {
+		val keyguardManager = context?.getSystemService<KeyguardManager>() ?: return
+		if (keyguardManager.isDeviceSecure) {
+			viewModel.toggleLockedValueForNotes(notes) { selectionObserver.actionMode?.finish() }
 		}
-		noteAdapter.setOnPinNotesListener { notes ->
-			viewModel.pinNotes(notes) { selectionObserver.actionMode?.finish() }
-			submitList(notebook.id, SortMode.valueOf(preferenceStorage.sortMode))
+		else {
+			binding.root.showSnackbar(R.string.device_not_secured)
 		}
+	}
+
+	private fun togglePinnedValueForNotes(notes: List<Note>) {
+		viewModel.togglePinnedValueForNotes(notes) { selectionObserver.actionMode?.finish() }
+		submitList(notebook.id, SortMode.valueOf(preferenceStorage.sortMode))
 	}
 
 	private fun getNoteToBeDeleted() {

@@ -64,8 +64,10 @@
 	<string name="delete_notes">Delete notes</string>
 	<string name="pin_note">Pin note</string>
 	<string name="unpin_note">Unpin note</string>
+	<string name="pinned_note">Note pinned</string>
 	<string name="lock_note">Lock note</string>
 	<string name="unlock_note">Unlock note</string>
+	<string name="device_not_secured">It is not possible to lock the note. The device is not secured with a PIN, pattern or password.</string>
 	<string name="select_all">Select all</string>
 	<string name="delete_notes_question"><![CDATA[Are you sure you want to <b>delete permanently</b> the selected notes?]]></string>
 	<string name="delete_notes_title">Delete notes</string>
@@ -173,10 +175,10 @@
 		<item quantity="other">%d notes</item>
 	</plurals>
 
-	<plurals name="notes_selected">
-		<item quantity="one">%d selected</item>
-		<item quantity="other">%d selected</item>
-	</plurals>
+<!--	<plurals name="notes_selected">-->
+<!--		<item quantity="one">%d selected</item>-->
+<!--		<item quantity="other">%d selected</item>-->
+<!--	</plurals>-->
 
 	<plurals name="notes_deleted">
 		<item quantity="one">Deleted %d note</item>

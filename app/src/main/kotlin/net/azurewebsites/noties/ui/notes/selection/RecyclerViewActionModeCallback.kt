@@ -30,6 +30,18 @@ class RecyclerViewActionModeCallback(private val adapter: NoteAdapter) : ActionM
 				setTitle(R.string.unlock_note)
 			}
 		}
+		if (adapter.getSelectedNotes().any { !it.entity.isPinned }) {
+			mode.menu.findItem(R.id.pin_note).apply {
+				setIcon(R.drawable.ic_pin_note)
+				setTitle(R.string.pin_note)
+			}
+		}
+		else {
+			mode.menu.findItem(R.id.pin_note).apply {
+				setIcon(R.drawable.ic_unpin_note)
+				setTitle(R.string.unpin_note)
+			}
+		}
 		return true
 	}
 
@@ -41,10 +53,10 @@ class RecyclerViewActionModeCallback(private val adapter: NoteAdapter) : ActionM
 			adapter.deleteNotes(); true
 		}
 		R.id.pin_note -> {
-			adapter.pinNotes(); true
+			adapter.togglePinnedValueForNotes(); true
 		}
 		R.id.lock_note -> {
-			adapter.toggleLockedStatusForNotes(); true
+			adapter.toggleLockedValueForNotes(); true
 		}
 		else -> false
 	}

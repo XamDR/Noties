@@ -21,7 +21,8 @@ class NotesViewModel @Inject constructor(
 	private val restoreNoteUseCase: RestoreNoteUseCase,
 	private val lockNotesUseCase: LockNotesUseCase,
 	private val unlockNotesUseCase: UnlockNotesUseCase,
-	private val pinNotesUseCase: PinNotesUseCase) : ViewModel() {
+	private val pinNotesUseCase: PinNotesUseCase,
+	private val unpinNotesUseCase: UnpinNotesUseCase) : ViewModel() {
 
 	fun sortNotes(notebookId: Int, sortMode: SortMode): LiveData<List<Note>> {
 		val sortedNotes = when (sortMode) {
@@ -65,21 +66,30 @@ class NotesViewModel @Inject constructor(
 		}
 	}
 
-	fun toggleLockedStatusForNotes(notes: List<Note>, action: () -> Unit) {
+	fun toggleLockedValueForNotes(notes: List<Note>, action: () -> Unit) {
+		val entities = notes.map { it.entity }
+
 		viewModelScope.launch {
-			if (notes.map { it.entity }.any { !it.isProtected }) {
-				lockNotesUseCase(notes.map { it.entity })
+			if (entities.any { !it.isProtected }) {
+				lockNotesUseCase(entities)
 			}
 			else {
-				unlockNotesUseCase(notes.map { it.entity })
+				unlockNotesUseCase(entities)
 			}
 			action()
 		}
 	}
 
-	fun pinNotes(notes: List<Note>, action: () -> Unit) {
+	fun togglePinnedValueForNotes(notes: List<Note>, action: () -> Unit) {
+		val entities = notes.map { it.entity }
+
 		viewModelScope.launch {
-			pinNotesUseCase(notes.map { it.entity })
+			if (entities.any { !it.isPinned }) {
+				pinNotesUseCase(entities)
+			}
+			else {
+				unpinNotesUseCase(entities)
+			}
 			action()
 		}
 	}
