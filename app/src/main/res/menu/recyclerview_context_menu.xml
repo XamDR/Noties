@@ -11,6 +11,11 @@
 		android:title="@string/lock_note"
 		android:icon="@drawable/ic_lock_note" />
 	<item
+		android:id="@+id/pin_note"
+		android:orderInCategory="3"
+		android:title="@string/pin_note"
+		android:icon="@drawable/ic_pinned_note" />
+	<item
 		android:id="@+id/select_all"
 		android:orderInCategory="5"
 		android:title="@string/select_all"

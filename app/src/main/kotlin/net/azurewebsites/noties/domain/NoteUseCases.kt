@@ -3,9 +3,9 @@ package net.azurewebsites.noties.domain
 import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.core.NoteEntity
-import net.azurewebsites.noties.data.NotebookDao
 import net.azurewebsites.noties.data.ImageDao
 import net.azurewebsites.noties.data.NoteDao
+import net.azurewebsites.noties.data.NotebookDao
 import javax.inject.Inject
 
 class InsertNoteWithImagesUseCase @Inject constructor(
@@ -113,6 +113,17 @@ class UnlockNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
 		for (note in notes) {
 			val updatedNote = note.copy(isProtected = false)
 			noteDao.updateNote(updatedNote)
+		}
+	}
+}
+
+class PinNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
+	suspend operator fun invoke(notes: List<NoteEntity>) {
+		for (note in notes) {
+			if (!note.isPinned) {
+				val updatedNote = note.copy(isPinned = true)
+				noteDao.updateNote(updatedNote)
+			}
 		}
 	}
 }

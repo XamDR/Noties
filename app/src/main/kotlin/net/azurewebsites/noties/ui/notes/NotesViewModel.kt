@@ -20,18 +20,28 @@ class NotesViewModel @Inject constructor(
 	private val deleteNotesUseCase: DeleteNotesUseCase,
 	private val restoreNoteUseCase: RestoreNoteUseCase,
 	private val lockNotesUseCase: LockNotesUseCase,
-	private val unlockNotesUseCase: UnlockNotesUseCase) : ViewModel() {
+	private val unlockNotesUseCase: UnlockNotesUseCase,
+	private val pinNotesUseCase: PinNotesUseCase) : ViewModel() {
 
 	fun sortNotes(notebookId: Int, sortMode: SortMode): LiveData<List<Note>> {
 		val sortedNotes = when (sortMode) {
-			SortMode.Content -> getNotesByFolderId(notebookId).map {
-				result -> result.sortedBy { it.entity.text }
+			SortMode.Content -> getNotesByFolderId(notebookId).map { result ->
+				result.sortedWith(
+					compareByDescending<Note> { it.entity.isPinned }
+					.thenBy { it.entity.text }
+				)
 			}
-			SortMode.LastEdit -> getNotesByFolderId(notebookId).map {
-				result -> result.sortedByDescending { it.entity.dateModification }
+			SortMode.LastEdit -> getNotesByFolderId(notebookId).map { result ->
+				result.sortedWith(
+					compareByDescending<Note> { it.entity.isPinned }
+					.thenByDescending { it.entity.dateModification }
+				)
 			}
-			SortMode.Title -> getNotesByFolderId(notebookId).map {
-				result -> result.sortedBy { it.entity.title }
+			SortMode.Title -> getNotesByFolderId(notebookId).map { result ->
+				result.sortedWith(
+					compareByDescending<Note> { it.entity.isPinned }
+					.thenBy { it.entity.title }
+				)
 			}
 		}
 		return sortedNotes.asLiveData()
@@ -63,6 +73,13 @@ class NotesViewModel @Inject constructor(
 			else {
 				unlockNotesUseCase(notes.map { it.entity })
 			}
+			action()
+		}
+	}
+
+	fun pinNotes(notes: List<Note>, action: () -> Unit) {
+		viewModelScope.launch {
+			pinNotesUseCase(notes.map { it.entity })
 			action()
 		}
 	}

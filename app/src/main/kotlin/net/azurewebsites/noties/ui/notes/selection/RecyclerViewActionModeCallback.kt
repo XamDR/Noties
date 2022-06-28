@@ -40,6 +40,9 @@ class RecyclerViewActionModeCallback(private val adapter: NoteAdapter) : ActionM
 		R.id.delete_notes -> {
 			adapter.deleteNotes(); true
 		}
+		R.id.pin_note -> {
+			adapter.pinNotes(); true
+		}
 		R.id.lock_note -> {
 			adapter.toggleLockedStatusForNotes(); true
 		}

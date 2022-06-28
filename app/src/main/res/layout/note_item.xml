@@ -4,9 +4,9 @@
 	xmlns:tools="http://schemas.android.com/tools">
 
 	<data>
-		<import type="net.azurewebsites.noties.ui.helpers.Converter"/>
-		<import type="android.view.View"/>
-		<import type="android.text.TextUtils"/>
+		<import type="net.azurewebsites.noties.ui.helpers.Converter" />
+		<import type="android.view.View" />
+		<import type="android.text.TextUtils" />
 		<variable
 			name="note"
 			type="net.azurewebsites.noties.core.Note" />
@@ -15,10 +15,10 @@
 	<com.google.android.material.card.MaterialCardView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		app:cardElevation="0dp"
 		app:cardCornerRadius="5dp"
-		app:strokeWidth="2dp"
-		app:strokeColor="@color/stroke_color">
+		app:cardElevation="0dp"
+		app:strokeColor="@color/stroke_color"
+		app:strokeWidth="2dp">
 
 		<androidx.constraintlayout.widget.ConstraintLayout
 			android:layout_width="match_parent"
@@ -32,21 +32,21 @@
 				android:contentDescription="@string/user_image"
 				android:scaleType="centerCrop"
 				android:visibility="@{note.previewImage == null ? View.GONE : View.VISIBLE}"
-				app:source="@{note.previewImage}"
-				app:width="@{400}"
 				app:height="@{400}"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
 				app:layout_constraintTop_toTopOf="parent"
-				tools:src="@drawable/ic_android"/>
+				app:source="@{note.previewImage}"
+				app:width="@{400}"
+				tools:src="@drawable/ic_android" />
 
 			<TextView
 				android:id="@+id/title"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
-				android:layout_marginStart="10dp"
-				android:layout_marginTop="10dp"
-				android:layout_marginEnd="10dp"
+				android:layout_marginStart="8dp"
+				android:layout_marginTop="8dp"
+				android:layout_marginEnd="8dp"
 				android:ellipsize="end"
 				android:maxLines="1"
 				android:text="@{note.entity.title}"
@@ -63,13 +63,14 @@
 				android:id="@+id/content"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
-				android:layout_marginStart="10dp"
-				android:layout_marginTop="10dp"
-				android:layout_marginEnd="10dp"
+				android:layout_marginStart="8dp"
+				android:layout_marginTop="8dp"
+				android:layout_marginEnd="8dp"
 				android:ellipsize="end"
 				android:maxLines="3"
 				android:text="@{note.entity.text}"
 				android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+				android:visibility="@{TextUtils.isEmpty(note.entity.text) ? View.GONE : View.VISIBLE}"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
 				app:layout_constraintTop_toBottomOf="@id/title"
@@ -79,9 +80,9 @@
 				android:id="@+id/url"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginStart="10dp"
-				android:layout_marginTop="10dp"
-				android:layout_marginBottom="10dp"
+				android:layout_marginStart="8dp"
+				android:layout_marginTop="8dp"
+				android:layout_marginBottom="8dp"
 				android:text='@{@plurals/number_urls(note.entity.urlCount, note.entity.urlCount)}'
 				android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
 				android:visibility="@{note.entity.urlCount == 0 ? View.GONE : View.VISIBLE}"
@@ -97,9 +98,9 @@
 				android:id="@+id/date_modified"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginTop="10dp"
-				android:layout_marginEnd="10dp"
-				android:layout_marginBottom="10dp"
+				android:layout_marginTop="8dp"
+				android:layout_marginEnd="8dp"
+				android:layout_marginBottom="8dp"
 				android:text="@{Converter.displayCurrentDateTime(note.entity.dateModification)}"
 				android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
 				android:textStyle="italic"
@@ -107,6 +108,17 @@
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintTop_toBottomOf="@id/content"
 				tools:text="13 dic. 2021 23:46" />
+
+			<ImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="16dp"
+				android:layout_marginEnd="8dp"
+				android:contentDescription="@string/pin_note"
+				android:src="@drawable/ic_pinned_note"
+				android:visibility="@{note.entity.pinned ? View.VISIBLE : View.GONE}"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintTop_toTopOf="parent" />
 		</androidx.constraintlayout.widget.ConstraintLayout>
 	</com.google.android.material.card.MaterialCardView>
 </layout>

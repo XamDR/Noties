@@ -218,6 +218,10 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 		noteAdapter.setOnLockNotesListener { notes ->
 			viewModel.toggleLockedStatusForNotes(notes) { selectionObserver.actionMode?.finish() }
 		}
+		noteAdapter.setOnPinNotesListener { notes ->
+			viewModel.pinNotes(notes) { selectionObserver.actionMode?.finish() }
+			submitList(notebook.id, SortMode.valueOf(preferenceStorage.sortMode))
+		}
 	}
 
 	private fun getNoteToBeDeleted() {

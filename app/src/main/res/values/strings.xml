@@ -4,7 +4,6 @@
 	<string name="ok_button">OK</string>
 	<string name="yes_button">Yes</string>
 	<string name="cancel_button">Cancel</string>
-	<string name="start_button">Start</string>
 	<string name="stop_button">stop</string>
 	<string name="not_now_button">Not now</string>
 	<string name="continue_button">Continue</string>
@@ -30,8 +29,6 @@
 	<string name="set_linear_layout">Linear</string>
 	<string name="set_grid_layout">Grid</string>
 	<string name="empty_note_deleted">Empty note deleted</string>
-	<string name="lock_note">Lock note</string>
-	<string name="unlock_note">Unlock note</string>
 	<string name="error_no_auth">Error. The device is not secured with a PIN, pattern or password.</string>
 	<string name="confirme_device_credential_title">Protected note</string>
 	<string name="confirme_device_credential_desc">To continue, please unlock your device to see the contents of this note.</string>
@@ -55,14 +52,20 @@
 	<string name="delete_notes_warning">The notes inside this notebook have been moved to the trash.</string>
 
 	<!-- RecycleBin Fragment -->
+	<string name="recycle_bin_fragment_label">Trash</string>
+	<string name="empty_recycle_bin">Empty Recycle Bin</string>
 	<string name="empty_trash_message">Recycle Bin is empty</string>
 	<string name="empty_trash_question">Empty Recycle Bin?</string>
 	<string name="empty_trash_message_warning">All the notes will be permanently deleted.</string>
 	<string name="delete_forever">Delete forever</string>
 	<string name="restore_note">Restore notes</string>
 
-	<!-- Contextual Action Bar -->
+	<!-- Notes Contextual Action Bar -->
 	<string name="delete_notes">Delete notes</string>
+	<string name="pin_note">Pin note</string>
+	<string name="unpin_note">Unpin note</string>
+	<string name="lock_note">Lock note</string>
+	<string name="unlock_note">Unlock note</string>
 	<string name="select_all">Select all</string>
 	<string name="delete_notes_question"><![CDATA[Are you sure you want to <b>delete permanently</b> the selected notes?]]></string>
 	<string name="delete_notes_title">Delete notes</string>
@@ -163,8 +166,6 @@
 	<string name="error_play_audio">Error playing audio file</string>
 	<string name="error_record_speech">Error recording speech</string>
 	<string name="recording_finished">Recording finished</string>
-	<string name="recycle_bin_fragment_label">Trash</string>
-	<string name="empty_recycle_bin">Empty Recycle Bin</string>
 
 	<!-- Plurals -->
 	<plurals name="note_count">
