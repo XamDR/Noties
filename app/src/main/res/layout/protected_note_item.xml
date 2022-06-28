@@ -5,6 +5,7 @@
 
 	<data>
 		<import type="net.azurewebsites.noties.ui.helpers.Converter"/>
+		<import type="android.view.View" />
 		<variable
 			name="note"
 			type="net.azurewebsites.noties.core.Note" />
@@ -15,13 +16,25 @@
 		android:layout_height="wrap_content"
 		app:cardElevation="0dp"
 		app:cardCornerRadius="5dp"
-		app:strokeWidth="1dp"
+		app:strokeWidth="2dp"
 		app:strokeColor="@color/stroke_color">
 
 		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical">
+
+			<ImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="8dp"
+				android:layout_marginEnd="8dp"
+				android:layout_marginBottom="-8dp"
+				android:layout_gravity="end"
+				android:contentDescription="@string/pin_note"
+				android:src="@drawable/ic_pin_note"
+				android:visibility="@{note.entity.pinned ? View.VISIBLE : View.GONE}"
+				tools:visibility="gone"/>
 
 			<TextView
 				android:id="@+id/placeholder_content"
@@ -32,7 +45,7 @@
 				android:maxLines="3"
 				android:padding="16dp"
 				android:text="@string/demo_content"
-				app:drawableEndCompat="@drawable/ic_lock_note" />
+				app:drawableStartCompat="@drawable/ic_lock_note" />
 
 			<TextView
 				android:layout_width="wrap_content"

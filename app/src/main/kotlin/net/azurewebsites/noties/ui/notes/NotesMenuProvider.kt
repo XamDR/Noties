@@ -30,11 +30,13 @@ class NotesMenuProvider(
 		super.onPrepareMenu(menu)
 		val item = menu.findItem(R.id.change_notes_layout)
 		val layoutType = LayoutType.valueOf(preferenceStorage.layoutType)
-		item.setIcon(
-			when (layoutType) {
-				LayoutType.Linear -> R.drawable.ic_view_grid_layout
-				LayoutType.Grid -> R.drawable.ic_view_linear_layout
-			}
-		)
+		item.setIcon(when (layoutType) {
+			LayoutType.Linear -> R.drawable.ic_view_grid_layout
+			LayoutType.Grid -> R.drawable.ic_view_linear_layout
+		})
+		item.setTitle(when (layoutType) {
+			LayoutType.Linear -> R.string.set_grid_layout
+			LayoutType.Grid -> R.string.set_linear_layout
+		})
 	}
 }

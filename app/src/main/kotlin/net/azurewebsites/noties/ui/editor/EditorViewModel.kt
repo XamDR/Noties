@@ -103,6 +103,7 @@ class EditorViewModel @Inject constructor(
 					text = note.value.entity.text,
 					images = note.value.images,
 					isProtected = note.value.entity.isProtected,
+					isPinned = note.value.entity.isPinned,
 					notebookId = notebookId
 				)
 				return insertNote(newNote)
@@ -114,6 +115,7 @@ class EditorViewModel @Inject constructor(
 						text = note.value.entity.text,
 						images = note.value.images,
 						isProtected = note.value.entity.isProtected,
+						isPinned = note.value.entity.isPinned,
 						notebookId = note.value.entity.notebookId,
 						id = note.value.entity.id
 					)
@@ -133,6 +135,7 @@ class EditorViewModel @Inject constructor(
 		images: List<ImageEntity>,
 		notebookId: Int,
 		isProtected: Boolean,
+		isPinned: Boolean,
 		id: Long = 0): Note {
 		return Note(
 			entity = NoteEntity(
@@ -142,6 +145,7 @@ class EditorViewModel @Inject constructor(
 				dateModification = ZonedDateTime.now(),
 				urls = extractUrls(text),
 				isProtected = isProtected,
+				isPinned = isPinned,
 				notebookId = notebookId
 			),
 			images = images

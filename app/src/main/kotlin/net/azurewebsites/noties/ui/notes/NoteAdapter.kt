@@ -109,7 +109,7 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 
 	fun deleteNotes() = onDeleteNotesCallback(getSelectedNotes())
 
-	fun toggleLockedStatusForNotes() = onLockNotesCallback(getSelectedNotes())
+	fun toggleLockedValueForNotes() = onLockNotesCallback(getSelectedNotes())
 
 	fun selectAllNotes() {
 		for (note in currentList) {
@@ -120,6 +120,8 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 	}
 
 	fun restoreNotes() = onRestoreNotesCallback(getSelectedNotes())
+
+	fun togglePinnedValueForNotes() = onPinNotesCallback(getSelectedNotes())
 
 	private fun editNote(holder: RecyclerView.ViewHolder, position: Int) {
 		val note = getItem(position)
@@ -158,6 +160,10 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 		onRestoreNotesCallback = callback
 	}
 
+	fun setOnPinNotesListener(callback: (notes: List<Note>) -> Unit) {
+		onPinNotesCallback = callback
+	}
+
 	private var onShowUrlsCallback: (urls: List<String>) -> Unit = {}
 
 	private var onDeleteNotesCallback: (notes: List<Note>) -> Unit = {}
@@ -165,6 +171,8 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 	private var onLockNotesCallback: (notes: List<Note>) -> Unit = {}
 
 	private var onRestoreNotesCallback: (notes: List<Note>) -> Unit = {}
+
+	private var onPinNotesCallback: (notes: List<Note>) -> Unit = {}
 
 	private class NoteAdapterCallback : DiffUtil.ItemCallback<Note>() {
 

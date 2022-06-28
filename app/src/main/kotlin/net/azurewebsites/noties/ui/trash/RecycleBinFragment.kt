@@ -125,12 +125,7 @@ class RecycleBinFragment : Fragment(), SwipeToDeleteListener, RecycleBinMenuList
 	private fun showActionMode() {
 		selectionObserver.actionMode = startActionMode(actionModeCallback)
 		val numSelectedItems = selectionTracker.selection.size()
-		val title = resources.getQuantityString(
-			R.plurals.notes_selected,
-			numSelectedItems,
-			numSelectedItems
-		)
-		selectionObserver.actionMode?.title = title
+		selectionObserver.actionMode?.title = numSelectedItems.toString()
 	}
 
 	private fun setupAdapterListeners() {
