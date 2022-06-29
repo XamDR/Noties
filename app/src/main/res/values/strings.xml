@@ -142,8 +142,8 @@
 	<string name="mode_night_auto_battery">Set by Battery Saver</string>
 	<string name="editor">Editor</string>
 	<string name="editor_style">Paper Style</string>
-	<string name="blank_paper_style">Blank paper</string>
-	<string name="striped_paper_style">Striped paper</string>
+	<string name="blank_style">Blank paper</string>
+	<string name="striped_style">Striped paper</string>
 	<string name="font_size">Font Size</string>
 	<string name="enable_links">Detect hyperlinks</string>
 	<string name="summary_on">Enabled</string>
@@ -174,11 +174,6 @@
 		<item quantity="one">%d note</item>
 		<item quantity="other">%d notes</item>
 	</plurals>
-
-<!--	<plurals name="notes_selected">-->
-<!--		<item quantity="one">%d selected</item>-->
-<!--		<item quantity="other">%d selected</item>-->
-<!--	</plurals>-->
 
 	<plurals name="notes_deleted">
 		<item quantity="one">Deleted %d note</item>

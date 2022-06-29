@@ -25,13 +25,13 @@ fun bindTextSize(editText: EditText, size: Float) {
 
 enum class EditorStyle {
 	Blank,
-	Stripped;
+	Striped;
 }
 
 @BindingAdapter("hasGridLines")
 fun bindHasGridLines(editText: LinedEditText, value: String) {
 	when (EditorStyle.valueOf(value)) {
 		EditorStyle.Blank -> editText.hasGridLines = false
-		EditorStyle.Stripped -> editText.hasGridLines = true
+		EditorStyle.Striped -> editText.hasGridLines = true
 	}
 }

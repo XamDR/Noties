@@ -4,7 +4,6 @@
 	xmlns:tools="http://schemas.android.com/tools">
 
 	<data>
-		<import type="androidx.preference.PreferenceManager"/>
 		<import type="net.azurewebsites.noties.ui.helpers.Converter"/>
 		<variable
 			name="vm"
@@ -60,7 +59,6 @@
 						android:paddingTop="8dp"
 						android:text="@={vm.note.entity.title}"
 						android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-						android:textSize='@{PreferenceManager.getDefaultSharedPreferences(context).getInt("font_size", 16)}'
 						android:textCursorDrawable="@drawable/cursor_color"
 						tools:text="Lorem Ipsum" />
 				</com.google.android.material.textfield.TextInputLayout>
