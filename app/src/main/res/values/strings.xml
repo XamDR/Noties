@@ -148,6 +148,10 @@
 	<string name="enable_links">Detect hyperlinks</string>
 	<string name="summary_on">Enabled</string>
 	<string name="summary_off">Disabled</string>
+	<string name="color_item">Color item</string>
+	<string name="app_color">App Color</string>
+	<string name="color_chosen">Color chosen</string>
+
 
 	<!-- Gallery Activity -->
 	<string name="share_image">Share image</string>

@@ -13,6 +13,14 @@
 			app:dialogTitle="@string/app_theme_title"
 			app:useSimpleSummaryProvider="true"
 			app:icon="@drawable/ic_app_theme"/>
+
+		<net.azurewebsites.noties.ui.settings.preferences.ColorPreference
+			app:defaultValue="-14776091"
+			app:key="app_color"
+			app:title="@string/app_color"
+			app:dialogTitle="@string/app_color"
+			app:useSimpleSummaryProvider="true"
+			app:icon="@drawable/ic_note_palette"/>
 	</PreferenceCategory>
 
 	<PreferenceCategory

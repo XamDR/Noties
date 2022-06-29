@@ -14,7 +14,7 @@
 	<net.azurewebsites.noties.ui.views.LinedEditText
 		android:id="@+id/editor"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
+		android:layout_height="wrap_content"
 		android:autoLink='@{PreferenceManager.getDefaultSharedPreferences(context).getBoolean("auto_link", true)}'
 		android:background="@null"
 		android:gravity="top|start"

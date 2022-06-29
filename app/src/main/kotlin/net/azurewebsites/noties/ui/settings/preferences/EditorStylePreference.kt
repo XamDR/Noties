@@ -23,7 +23,7 @@ class EditorStylePreference(context: Context, attrs: AttributeSet?) : DialogPref
 		notifyChanged()
 	}
 
-	override fun getDialogLayoutResource() = R.layout.editor_style_preference_dialog
+	override fun getDialogLayoutResource() = R.layout.preference_dialog_editor_style
 
 	companion object {
 		const val BLANK = "Blank"

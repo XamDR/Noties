@@ -10,10 +10,7 @@ import androidx.preference.PreferenceDialogFragmentCompat
 import androidx.preference.PreferenceFragmentCompat
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.ui.helpers.setNightMode
-import net.azurewebsites.noties.ui.settings.preferences.EditorStylePreference
-import net.azurewebsites.noties.ui.settings.preferences.EditorStylePreferenceDialog
-import net.azurewebsites.noties.ui.settings.preferences.FontSizePreference
-import net.azurewebsites.noties.ui.settings.preferences.FontSizePreferenceDialog
+import net.azurewebsites.noties.ui.settings.preferences.*
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -29,7 +26,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 	override fun onDisplayPreferenceDialog(preference: Preference) {
 		if (parentFragmentManager.findFragmentByTag(FONT_SIZE_TAG) != null ||
-			parentFragmentManager.findFragmentByTag(EDITOR_STYLE_TAG) != null) return
+			parentFragmentManager.findFragmentByTag(EDITOR_STYLE_TAG) != null ||
+			parentFragmentManager.findFragmentByTag(COLOR_TAG) != null) return
 
 		when (preference) {
 			is FontSizePreference -> {
@@ -39,6 +37,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
 			is EditorStylePreference -> {
 				val dialog = EditorStylePreferenceDialog.newInstance(preference.key)
 				showDialog(dialog, EDITOR_STYLE_TAG)
+			}
+			is ColorPreference -> {
+				val dialog = ColorPreferenceDialog.newInstance(preference.key)
+				showDialog(dialog, COLOR_TAG)
 			}
 			else -> super.onDisplayPreferenceDialog(preference)
 		}
@@ -73,5 +75,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
 	companion object {
 		private const val EDITOR_STYLE_TAG = "EditorStyleDialog"
 		private const val FONT_SIZE_TAG = "FontSizeDialog"
+		private const val COLOR_TAG = "ColorDialog"
 	}
 }
