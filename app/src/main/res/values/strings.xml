@@ -40,7 +40,7 @@
 	<string name="create_notebook">Create notebook</string>
 	<string name="personal_notebook">Personal</string>
 	<string name="work_notebook">Work</string>
-	<string name="view_notebooks">View notebooks</string>
+	<string name="all_notebooks">All notebooks</string>
 	<string name="search_notebooks">Search your notebooks</string>
 	<string name="add_notebook">Create new notebook</string>
 	<string name="more_options">More options</string>

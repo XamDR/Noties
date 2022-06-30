@@ -14,9 +14,10 @@ import net.azurewebsites.noties.ui.settings.preferences.*
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
-	private val themeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+	private val uiListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
 		when (key) {
 			"app_theme" -> context?.setNightMode()
+			"app_color" -> requireActivity().recreate()
 		}
 	}
 
@@ -55,12 +56,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 	override fun onPause() {
 		super.onPause()
-		preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(themeListener)
+		preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(uiListener)
 	}
 
 	override fun onResume() {
 		super.onResume()
-		preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(themeListener)
+		preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(uiListener)
 	}
 
 	// We need to suppress the deprecation of the method setTargetFragment

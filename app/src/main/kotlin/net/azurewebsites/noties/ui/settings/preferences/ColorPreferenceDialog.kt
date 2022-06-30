@@ -4,15 +4,18 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.preference.PreferenceDialogFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.ui.helpers.ColorAdapter
+import net.azurewebsites.noties.ui.helpers.getIntArray
 
 class ColorPreferenceDialog : PreferenceDialogFragmentCompat() {
 
 	private lateinit var colors: List<Int>
 	private lateinit var recyclerView: RecyclerView
+	private lateinit var colorAdapter: ColorAdapter
 	private var color = 0
 
 	override fun onPrepareDialogBuilder(builder: AlertDialog.Builder) {
@@ -22,21 +25,26 @@ class ColorPreferenceDialog : PreferenceDialogFragmentCompat() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		context?.resources?.getIntArray(R.array.colors)?.toList()?.let { colors = it }
+		colors = requireContext().getIntArray(R.array.colors).toList()
+		colorAdapter = ColorAdapter(colors).apply {
+			setOnColorSelectedListener { position -> closeDialog(position) }
+		}
 	}
 
 	override fun onBindDialogView(view: View) {
 		super.onBindDialogView(view)
 		recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view).apply {
-			adapter = ColorAdapter(colors)
+			adapter = colorAdapter
 		}
 		if (preference is ColorPreference) {
 			val value = (preference as ColorPreference).getPersistedInt()
 			val position = colors.indexOf(value)
+			colorAdapter.selectedPosition = position
 		}
 	}
 
-	private fun closeDialog() {
+	private fun closeDialog(position: Int) {
+		color = colors[position]
 		onClick(dialog as DialogInterface, DialogInterface.BUTTON_POSITIVE)
 		dismiss()
 	}
@@ -52,13 +60,8 @@ class ColorPreferenceDialog : PreferenceDialogFragmentCompat() {
 	}
 
 	companion object {
-		fun newInstance(key: String): ColorPreferenceDialog {
-			val fragment = ColorPreferenceDialog()
-			val bundle = Bundle().apply {
-				putString(ARG_KEY, key)
-			}
-			fragment.arguments = bundle
-			return fragment
+		fun newInstance(key: String) = ColorPreferenceDialog().apply {
+			arguments = bundleOf(ARG_KEY to key)
 		}
 	}
 }

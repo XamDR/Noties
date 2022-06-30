@@ -15,10 +15,7 @@ import android.webkit.MimeTypeMap
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.AttrRes
-import androidx.annotation.IdRes
-import androidx.annotation.StringRes
-import androidx.annotation.TransitionRes
+import androidx.annotation.*
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -190,3 +187,5 @@ fun Context.copyUriToClipboard(@StringRes label: Int, uri: Uri, @StringRes copie
 
 val DocumentFile.simpleName: String?
 	get() = this.name?.substringBeforeLast(".")
+
+fun Context.getIntArray(@ArrayRes resId: Int) = this.resources.getIntArray(resId)

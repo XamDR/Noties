@@ -6,6 +6,7 @@ import android.widget.ImageView
 import androidx.preference.DialogPreference
 import androidx.preference.PreferenceViewHolder
 import net.azurewebsites.noties.R
+import net.azurewebsites.noties.ui.helpers.getIntArray
 
 class ColorPreference(context: Context, attrs: AttributeSet?) : DialogPreference(context, attrs) {
 
@@ -13,7 +14,7 @@ class ColorPreference(context: Context, attrs: AttributeSet?) : DialogPreference
 		widgetLayoutResource = R.layout.color_item
 	}
 
-	private val defaultValue = context.resources.getIntArray(R.array.colors)[0]
+	private val defaultValue = context.getIntArray(R.array.colors)[0]
 
 	fun getPersistedInt(): Int = super.getPersistedInt(defaultValue)
 
