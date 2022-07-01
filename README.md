@@ -1,5 +1,5 @@
 # Noties
-A free and open-source note taking app inspired by Google Keep made with Modern Android Development (MAD) skills.
+A free and open-source note taking app inspired by Google Keep made with Modern Android Development (MAD) skills. (Under development)
 
 ## Jetpack Libraries:
 - Dagger-Hilt
