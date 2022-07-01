@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.WindowCompat.getInsetsController
 import androidx.core.view.WindowInsetsCompat
@@ -12,18 +11,16 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.databinding.FragmentFullScreenImageBinding
+import net.azurewebsites.noties.ui.helpers.supportActionBar
 
 class FullScreenImageFragment : Fragment() {
 
 	private var _binding: FragmentFullScreenImageBinding? = null
 	private val binding get() = _binding!!
-	private var image: ImageEntity? = null
-	private var fullScreen = false
-
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		image = arguments?.getParcelable("media_item")
+	private val image by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getParcelable(KEY) ?: ImageEntity()
 	}
+	private var fullScreen = false
 
 	override fun onCreateView(inflater: LayoutInflater,
 	                          container: ViewGroup?,
@@ -68,17 +65,19 @@ class FullScreenImageFragment : Fragment() {
 	private fun toggleActionBarVisibility(view: View) {
 		view.setOnSystemUiVisibilityChangeListener { visibility ->
 			if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
-				(activity as? AppCompatActivity)?.supportActionBar?.show()
+				supportActionBar?.show()
 			}
 			else {
-				(activity as? AppCompatActivity)?.supportActionBar?.hide()
+				supportActionBar?.hide()
 			}
 		}
 	}
 
 	companion object {
+		private const val KEY = "image"
+
 		fun newInstance(image: ImageEntity) = FullScreenImageFragment().apply {
-			arguments = bundleOf("media_item" to image)
+			arguments = bundleOf(KEY to image)
 		}
 	}
 }

@@ -7,13 +7,14 @@ import androidx.recyclerview.widget.RecyclerView
 import net.azurewebsites.noties.BR
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.ImageEntity
+import net.azurewebsites.noties.ui.gallery.GalleryActivity
 import net.azurewebsites.noties.ui.helpers.tryNavigate
 
 open class BaseImageItemViewHolder(private val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root) {
 
 	fun bind(image: ImageEntity) {
 		binding.apply {
-			setVariable(BR.mediaItem, image)
+			setVariable(BR.imageItem, image)
 			executePendingBindings()
 		}
 	}
@@ -21,8 +22,8 @@ open class BaseImageItemViewHolder(private val binding: ViewDataBinding) : Recyc
 	fun showMediaItemFullScreen(images: List<ImageEntity>, position: Int = 0) {
 		BitmapCache.Instance.clear()
 		val args = bundleOf(
-			"items" to ArrayList(images),
-			"pos" to position
+			GalleryActivity.IMAGES to ArrayList(images),
+			GalleryActivity.POSITION to position
 		)
 		itemView.findNavController().tryNavigate(R.id.action_editor_gallery, args)
 	}

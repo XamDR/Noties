@@ -16,7 +16,7 @@
 		app:showAsAction="never"/>
 
 	<item
-		android:id="@+id/print"
+		android:id="@+id/print_image"
 		android:orderInCategory="4"
 		android:title="@string/print_image"
 		app:showAsAction="never"/>
