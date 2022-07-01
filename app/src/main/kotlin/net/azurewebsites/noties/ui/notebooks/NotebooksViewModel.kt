@@ -34,7 +34,7 @@ class NotebooksViewModel @Inject constructor(
 	private var _shouldNavigate = savedState.get<Boolean>(KEY) ?: false
 		set(value) {
 			field = value
-			savedState.set(KEY, value)
+			savedState[KEY] = value
 		}
 	val shouldNavigate get() = _shouldNavigate
 
