@@ -78,6 +78,11 @@ class LinedEditText @JvmOverloads constructor(
 		return super.onKeyPreIme(keyCode, event)
 	}
 
+	// Disable spell checking, but keep IME suggestions.
+	override fun isSuggestionsEnabled(): Boolean {
+		return false
+	}
+
 	private var emptyContentCallback: () -> Unit = {}
 
 	private var callback: (linkText: String) -> Unit = {}

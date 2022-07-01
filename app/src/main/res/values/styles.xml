@@ -31,4 +31,9 @@
 	<style name="MyCustomNavTextStyle">
 		<item name="android:fontFamily">@font/jetbrains_mono</item>
 	</style>
+
+	<style name="ShapeAppearance.Circular" parent="">
+		<item name="cornerFamily">rounded</item>
+		<item name="cornerSize">50%</item>
+	</style>
 </resources>

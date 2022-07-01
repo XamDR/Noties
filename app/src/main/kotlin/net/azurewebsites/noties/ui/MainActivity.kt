@@ -116,8 +116,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 				.setIcon(R.drawable.ic_notebook)
 				.setOnMenuItemClickListener { filterNotesByNotebook(notebook.entity); true }
 		}
-		item.subMenu.add(R.id.group_notebooks, R.id.nav_notebooks, 1000, getString(R.string.view_notebooks))
-			.setIcon(R.drawable.ic_edit_notebooks)
+		item.subMenu.add(R.id.group_notebooks, R.id.nav_notebooks, 1000, getString(R.string.all_notebooks))
+			.setIcon(R.drawable.ic_add_item)
 	}
 
 	private fun filterNotesByNotebook(notebook: NotebookEntity) {

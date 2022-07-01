@@ -28,8 +28,8 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_marginTop="8dp"
-				android:layout_marginEnd="8dp"
-				android:layout_marginBottom="-8dp"
+				android:layout_marginEnd="12dp"
+				android:layout_marginBottom="-16dp"
 				android:layout_gravity="end"
 				android:contentDescription="@string/pin_note"
 				android:src="@drawable/ic_pin_note"
@@ -45,13 +45,13 @@
 				android:maxLines="3"
 				android:padding="16dp"
 				android:text="@string/demo_content"
-				app:drawableStartCompat="@drawable/ic_lock_note" />
+				app:drawableEndCompat="@drawable/ic_lock_note" />
 
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="end"
-				android:layout_marginEnd="8dp"
+				android:layout_marginEnd="16dp"
 				android:layout_marginBottom="8dp"
 				android:text="@{Converter.displayCurrentDateTime(note.entity.dateModification)}"
 				android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
