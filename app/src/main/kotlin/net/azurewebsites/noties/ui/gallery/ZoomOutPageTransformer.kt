@@ -5,7 +5,6 @@ import androidx.viewpager2.widget.ViewPager2
 import kotlin.math.abs
 
 // Based on https://developer.android.com/training/animation/screen-slide-2#zoom-out
-
 /**
  * Custom [ViewPager2.PageTransformer] that shrinks and fades pages when scrolling between adjacent pages.
  */

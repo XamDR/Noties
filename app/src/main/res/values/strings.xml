@@ -158,7 +158,7 @@
 	<string name="set_image_as">Set image as</string>
 	<string name="print_image">Print</string>
 	<string name="print_image_job_name">Image %d</string>
-	<string name="error_print_image">Error. Image not found.</string>
+	<string name="error_print_image">Error. Image could not be printed.</string>
 	<string name="init_print_dialog">Preparing image…</string>
 
 	<!-- Record Audio -->

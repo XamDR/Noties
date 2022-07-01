@@ -5,7 +5,7 @@
 
 	<data>
 		<variable
-			name="mediaItem"
+			name="imageItem"
 			type="net.azurewebsites.noties.core.ImageEntity"/>
 	</data>
 
@@ -14,9 +14,9 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:adjustViewBounds="true"
-		android:contentDescription="@{mediaItem.description ?? @string/image_attachment}"
+		android:contentDescription="@{imageItem.description ?? @string/image_attachment}"
 		android:scaleType="fitCenter"
-		app:source="@{mediaItem.uri}"
+		app:source="@{imageItem.uri}"
 		app:width="@{800}"
 		app:height="@{800}"
 		tools:src="@drawable/ic_android"/>
