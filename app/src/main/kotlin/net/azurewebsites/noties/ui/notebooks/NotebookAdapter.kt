@@ -1,7 +1,9 @@
 package net.azurewebsites.noties.ui.notebooks
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +15,7 @@ import net.azurewebsites.noties.core.NotebookEntity
 import net.azurewebsites.noties.databinding.NotebookItemBinding
 import net.azurewebsites.noties.ui.helpers.setOnSingleClickListener
 
-class NotebookAdapter(private val listener: EditNotebookNameListener) :
+class NotebookAdapter(private val listener: NotebookItemPopupMenuListener) :
 	ListAdapter<Notebook, NotebookAdapter.NotebookViewHolder>(NotebookCallback()) {
 
 	inner class NotebookViewHolder(private val binding: NotebookItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -21,7 +23,7 @@ class NotebookAdapter(private val listener: EditNotebookNameListener) :
 		init {
 			binding.moreOptions.setOnSingleClickListener {
 				if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
-					showEditNotebookNameDialog(bindingAdapterPosition)
+					showPopupMenu(it, bindingAdapterPosition)
 				}
 			}
 		}
@@ -52,9 +54,24 @@ class NotebookAdapter(private val listener: EditNotebookNameListener) :
 		).apply { dividerColor = MaterialColors.getColor(recyclerView, R.attr.colorPrimary) })
 	}
 
-	private fun showEditNotebookNameDialog(position: Int) {
+	private fun showPopupMenu(view: View, position: Int) {
 		val notebook = getItem(position)
-		listener.showEditNotebookNameDialog(notebook.entity)
+		PopupMenu(view.context, view).apply {
+			inflate(R.menu.menu_notebook_item)
+			menu.findItem(R.id.delete_notebook).isVisible = notebook.entity.id != 1
+			setOnMenuItemClickListener { menuItem ->
+				when (menuItem.itemId) {
+					R.id.edit_notebook_name -> {
+						listener.showEditNotebookNameDialog(notebook.entity); true
+					}
+					R.id.delete_notebook -> {
+						listener.deleteNotebook(notebook); true
+					}
+					else -> false
+				}
+			}
+			show()
+		}
 	}
 
 	class NotebookCallback : DiffUtil.ItemCallback<Notebook>() {

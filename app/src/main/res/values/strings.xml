@@ -45,9 +45,9 @@
 	<string name="new_notebook">New notebook</string>
 	<string name="notebook_name">Notebook name</string>
 	<string name="error_message_notebook_duplicate">The notebook already exists</string>
-	<string name="edit_notebook_name">Edit notebook name</string>
+	<string name="edit_notebook_name">Edit name</string>
 	<string name="delete_notebook">Delete notebook</string>
-	<string name="delete_notes_warning">The notes inside this notebook have been moved to the trash.</string>
+	<string name="delete_notes_message">The notes inside this notebook have been moved to the trash.</string>
 
 	<!-- RecycleBin Fragment -->
 	<string name="recycle_bin_fragment_label">Trash</string>

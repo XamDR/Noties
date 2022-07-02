@@ -11,14 +11,16 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
+import net.azurewebsites.noties.core.Notebook
 import net.azurewebsites.noties.core.NotebookEntity
 import net.azurewebsites.noties.databinding.FragmentNotebooksBinding
 import net.azurewebsites.noties.ui.helpers.addMenuProvider
 import net.azurewebsites.noties.ui.helpers.showDialog
+import net.azurewebsites.noties.ui.helpers.showSnackbar
 import net.azurewebsites.noties.ui.helpers.tryNavigate
 
 @AndroidEntryPoint
-class NotebooksFragment : Fragment(), NotebookToolbarItemListener, EditNotebookNameListener {
+class NotebooksFragment : Fragment(), NotebookToolbarItemListener, NotebookItemPopupMenuListener {
 
 	private var _binding: FragmentNotebooksBinding? = null
 	private val binding get() = _binding!!
@@ -55,6 +57,12 @@ class NotebooksFragment : Fragment(), NotebookToolbarItemListener, EditNotebookN
 		val uiState = NotebookUiState(id = notebook.id, name = notebook.name, operation = Operation.Update)
 		val notebookDialog = NotebookDialogFragment.newInstance(uiState)
 		showDialog(notebookDialog, TAG)
+	}
+
+	override fun deleteNotebook(notebook: Notebook) {
+		viewModel.deleteNotebookAndNotes(notebook) {
+			binding.root.showSnackbar(R.string.delete_notes_message)
+		}
 	}
 
 	private fun onBackPressed() {
