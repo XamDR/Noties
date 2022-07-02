@@ -5,12 +5,13 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.NotebookEntity
 import net.azurewebsites.noties.databinding.DialogFragmentNotebookBinding
+import net.azurewebsites.noties.ui.MainActivity
 import net.azurewebsites.noties.ui.helpers.getPositiveButton
 import net.azurewebsites.noties.ui.helpers.showSoftKeyboard
 import net.azurewebsites.noties.ui.helpers.toEditable
@@ -20,7 +21,7 @@ class NotebookDialogFragment : DialogFragment() {
 
 	private var _binding: DialogFragmentNotebookBinding? = null
 	private val binding get() = _binding!!
-	private val viewModel by viewModels<NotebooksViewModel>({ requireParentFragment() })
+	private val viewModel by activityViewModels<NotebooksViewModel>()
 	private val notebookUiState by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelable(KEY) ?: NotebookUiState()
 	}
@@ -42,7 +43,7 @@ class NotebookDialogFragment : DialogFragment() {
 		return MaterialAlertDialogBuilder(requireContext(), R.style.MyThemeOverlay_MaterialAlertDialog)
 			.setTitle(if (notebookUiState.operation == Operation.Insert) R.string.new_notebook else R.string.edit_notebook_name)
 			.setView(binding.root)
-			.setNegativeButton(R.string.cancel_button) { _, _ -> viewModel.reset() }
+			.setNegativeButton(R.string.cancel_button) { _, _ -> cleanup() }
 			.setPositiveButton(R.string.save_button, null)
 			.create().apply {
 				setOnShowListener {
@@ -109,7 +110,12 @@ class NotebookDialogFragment : DialogFragment() {
 			}
 		}
 		requireDialog().dismiss()
+		cleanup()
+	}
+
+	private fun cleanup() {
 		viewModel.reset()
+		(requireActivity() as MainActivity).unlockDrawerLayout()
 	}
 
 	companion object {

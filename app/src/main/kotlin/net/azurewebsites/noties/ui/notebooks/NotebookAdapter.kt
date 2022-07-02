@@ -13,7 +13,7 @@ import net.azurewebsites.noties.core.NotebookEntity
 import net.azurewebsites.noties.databinding.NotebookItemBinding
 import net.azurewebsites.noties.ui.helpers.setOnSingleClickListener
 
-class NotebookAdapter(private val listener: NotebookItemContextMenuListener) :
+class NotebookAdapter(private val listener: EditNotebookNameListener) :
 	ListAdapter<Notebook, NotebookAdapter.NotebookViewHolder>(NotebookCallback()) {
 
 	inner class NotebookViewHolder(private val binding: NotebookItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -21,7 +21,7 @@ class NotebookAdapter(private val listener: NotebookItemContextMenuListener) :
 		init {
 			binding.moreOptions.setOnSingleClickListener {
 				if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
-					showContexMenuDialog(bindingAdapterPosition)
+					showEditNotebookNameDialog(bindingAdapterPosition)
 				}
 			}
 		}
@@ -52,9 +52,9 @@ class NotebookAdapter(private val listener: NotebookItemContextMenuListener) :
 		).apply { dividerColor = MaterialColors.getColor(recyclerView, R.attr.colorPrimary) })
 	}
 
-	private fun showContexMenuDialog(position: Int) {
+	private fun showEditNotebookNameDialog(position: Int) {
 		val notebook = getItem(position)
-		listener.showContextMenu(notebook)
+		listener.showEditNotebookNameDialog(notebook.entity)
 	}
 
 	class NotebookCallback : DiffUtil.ItemCallback<Notebook>() {

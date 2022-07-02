@@ -2,6 +2,7 @@ package net.azurewebsites.noties.ui
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.ImageView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -10,6 +11,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
 import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.ui.AppBarConfiguration
@@ -25,15 +27,14 @@ import net.azurewebsites.noties.databinding.ActivityMainBinding
 import net.azurewebsites.noties.ui.helpers.findNavController
 import net.azurewebsites.noties.ui.helpers.setNightMode
 import net.azurewebsites.noties.ui.helpers.tryNavigate
-import net.azurewebsites.noties.ui.notebooks.NotebooksFragment
-import net.azurewebsites.noties.ui.notebooks.NotebooksViewModel
+import net.azurewebsites.noties.ui.notebooks.*
 import net.azurewebsites.noties.ui.notes.FabScrollingBehavior
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener,
-	NavigationView.OnNavigationItemSelectedListener {
+	NavigationView.OnNavigationItemSelectedListener, NotebookToolbarItemListener {
 
 	private val binding by lazy(LazyThreadSafetyMode.NONE) { ActivityMainBinding.inflate(layoutInflater) }
 	private val navController by lazy(LazyThreadSafetyMode.NONE) { findNavController(R.id.nav_host_fragment) }
@@ -89,8 +90,21 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 			R.id.nav_all_notes -> {
 				navigateToNotes(NotebookEntity()); true
 			}
+			R.id.create_notebook -> {
+				showCreateNotebookDialog(); true
+			}
 			else -> NavigationUI.onNavDestinationSelected(item, navController)
 		}
+	}
+
+	override fun showCreateNotebookDialog() {
+		binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN)
+		val notebookDialog = NotebookDialogFragment.newInstance(NotebookUiState())
+		notebookDialog.show(supportFragmentManager, NotebooksFragment.TAG)
+	}
+
+	fun unlockDrawerLayout() {
+		binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
 	}
 
 	private fun setupNavigation() {
@@ -116,13 +130,23 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 				.setIcon(R.drawable.ic_notebook)
 				.setOnMenuItemClickListener { filterNotesByNotebook(notebook.entity); true }
 		}
-		item.subMenu.add(R.id.group_notebooks, R.id.nav_notebooks, 1000, getString(R.string.all_notebooks))
+		item.subMenu.add(R.id.group_notebooks, R.id.create_notebook, 1000, getString(R.string.create_notebook))
 			.setIcon(R.drawable.ic_add_item)
+		binding.navView.menu.findItem(R.id.create_notebook).setActionView(R.layout.menu_edit_notebooks)
+		navigateToNotebooks()
 	}
 
 	private fun filterNotesByNotebook(notebook: NotebookEntity) {
 		binding.drawerLayout.closeDrawer(GravityCompat.START, true)
 		navigateToNotes(notebook)
+	}
+
+	private fun navigateToNotebooks() {
+		val view = binding.navView.menu.findItem(R.id.create_notebook).actionView
+		view.findViewById<ImageView>(R.id.edit_notebooks).setOnClickListener {
+			binding.drawerLayout.closeDrawer(GravityCompat.START, true)
+			navController.navigate(R.id.nav_notebooks)
+		}
 	}
 
 	private fun navigateToNotes(notebook: NotebookEntity) {

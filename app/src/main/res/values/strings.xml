@@ -37,6 +37,7 @@
 	<!-- Notebooks Fragment -->
 	<string name="notebooks_fragment_label">Notebooks</string>
 	<string name="empty_notebooks_message">No notebooks here</string>
+	<string name="edit_notebooks">Edit notebooks</string>
 	<string name="create_notebook">Create notebook</string>
 	<string name="personal_notebook">Personal</string>
 	<string name="work_notebook">Work</string>
