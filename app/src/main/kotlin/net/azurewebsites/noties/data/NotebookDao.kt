@@ -12,7 +12,7 @@ interface NotebookDao {
 	suspend fun insertNotebook(notebook: NotebookEntity)
 
 	@Transaction
-	@Query("SELECT * FROM Notebooks ORDER BY name")
+	@Query("SELECT * FROM Notebooks ORDER BY (id <> 1), name")
 	fun getNotebooks(): Flow<List<Notebook>>
 
 	@Update
@@ -26,4 +26,7 @@ interface NotebookDao {
 
 	@Query("UPDATE Notebooks SET note_count = note_count - 1 WHERE id = :notebookId")
 	suspend fun decrementNotebookNoteCount(notebookId: Int)
+
+	@Query("SELECT EXISTS (SELECT id FROM Notebooks WHERE id = :id LIMIT 1)")
+	suspend fun getIfNotebookIdExists(id: Int): Boolean
 }

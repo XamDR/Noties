@@ -73,7 +73,9 @@ class RestoreNoteUseCase @Inject constructor(
 	private val notebookDao: NotebookDao) {
 
 	suspend operator fun invoke(note: NoteEntity) {
-		val restoredNote = note.copy(isTrashed = false)
+		val idExists = notebookDao.getIfNotebookIdExists(note.notebookId)
+		val restoredNote = if (idExists) note.copy(isTrashed = false)
+		else note.copy(isTrashed = false, notebookId = 1)
 		noteDao.updateNote(restoredNote)
 		notebookDao.incrementNotebookNoteCount(restoredNote.notebookId)
 	}
