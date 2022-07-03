@@ -1,7 +1,10 @@
 package net.azurewebsites.noties.ui.notebooks
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
+import androidx.appcompat.widget.wrap
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +16,7 @@ import net.azurewebsites.noties.core.NotebookEntity
 import net.azurewebsites.noties.databinding.NotebookItemBinding
 import net.azurewebsites.noties.ui.helpers.setOnSingleClickListener
 
-class NotebookAdapter(private val listener: NotebookItemContextMenuListener) :
+class NotebookAdapter(private val listener: NotebookItemPopupMenuListener) :
 	ListAdapter<Notebook, NotebookAdapter.NotebookViewHolder>(NotebookCallback()) {
 
 	inner class NotebookViewHolder(private val binding: NotebookItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -21,7 +24,7 @@ class NotebookAdapter(private val listener: NotebookItemContextMenuListener) :
 		init {
 			binding.moreOptions.setOnSingleClickListener {
 				if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
-					showContexMenuDialog(bindingAdapterPosition)
+					showPopupMenu(it, bindingAdapterPosition)
 				}
 			}
 		}
@@ -52,9 +55,25 @@ class NotebookAdapter(private val listener: NotebookItemContextMenuListener) :
 		).apply { dividerColor = MaterialColors.getColor(recyclerView, R.attr.colorPrimary) })
 	}
 
-	private fun showContexMenuDialog(position: Int) {
+	private fun showPopupMenu(view: View, position: Int) {
 		val notebook = getItem(position)
-		listener.showContextMenu(notebook)
+		PopupMenu(view.context, view).apply {
+			inflate(R.menu.menu_notebook_item)
+			menu.findItem(R.id.delete_notebook).isVisible = notebook.entity.id != 1
+			setOnMenuItemClickListener { menuItem ->
+				when (menuItem.itemId) {
+					R.id.edit_notebook_name -> {
+						listener.showEditNotebookNameDialog(notebook.entity); true
+					}
+					R.id.delete_notebook -> {
+						listener.deleteNotebook(notebook); true
+					}
+					else -> false
+				}
+			}
+			wrap().setForceShowIcon(true) // Force the Popup to show icons
+			show()
+		}
 	}
 
 	class NotebookCallback : DiffUtil.ItemCallback<Notebook>() {

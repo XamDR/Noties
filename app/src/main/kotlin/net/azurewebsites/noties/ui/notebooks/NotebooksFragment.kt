@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
@@ -20,11 +20,11 @@ import net.azurewebsites.noties.ui.helpers.showSnackbar
 import net.azurewebsites.noties.ui.helpers.tryNavigate
 
 @AndroidEntryPoint
-class NotebooksFragment : Fragment(), NotebookToolbarItemListener, NotebookItemContextMenuListener {
+class NotebooksFragment : Fragment(), NotebookToolbarItemListener, NotebookItemPopupMenuListener {
 
 	private var _binding: FragmentNotebooksBinding? = null
 	private val binding get() = _binding!!
-	private val viewModel by viewModels<NotebooksViewModel>()
+	private val viewModel by activityViewModels<NotebooksViewModel>()
 	private val notebookAdapter = NotebookAdapter(this)
 	private val menuProvider = NotebooksMenuProvider(this)
 
@@ -53,11 +53,16 @@ class NotebooksFragment : Fragment(), NotebookToolbarItemListener, NotebookItemC
 		showDialog(notebookDialog, TAG)
 	}
 
-	override fun showContextMenu(notebook: Notebook) {
-		val itemMenuDialog = NotebookItemMenuDialogFragment.newInstance(notebook).apply {
-			setShowSnackbarListener { binding.root.showSnackbar(R.string.delete_notes_warning) }
+	override fun showEditNotebookNameDialog(notebook: NotebookEntity) {
+		val uiState = NotebookUiState(id = notebook.id, name = notebook.name, operation = Operation.Update)
+		val notebookDialog = NotebookDialogFragment.newInstance(uiState)
+		showDialog(notebookDialog, TAG)
+	}
+
+	override fun deleteNotebook(notebook: Notebook) {
+		viewModel.deleteNotebookAndNotes(notebook) {
+			binding.root.showSnackbar(R.string.delete_notes_message)
 		}
-		showDialog(itemMenuDialog, MENU_TAG)
 	}
 
 	private fun onBackPressed() {
@@ -77,7 +82,6 @@ class NotebooksFragment : Fragment(), NotebookToolbarItemListener, NotebookItemC
 
 	companion object {
 		const val NOTEBOOK = "notebook"
-		private const val TAG = "NOTEBOOK_DIALOG"
-		private const val MENU_TAG = "NOTEBOOK_ITEM_MENU_DIALOG"
+		const val TAG = "NOTEBOOK_DIALOG"
 	}
 }

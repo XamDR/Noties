@@ -37,19 +37,17 @@
 	<!-- Notebooks Fragment -->
 	<string name="notebooks_fragment_label">Notebooks</string>
 	<string name="empty_notebooks_message">No notebooks here</string>
+	<string name="edit_notebooks">Edit notebooks</string>
 	<string name="create_notebook">Create notebook</string>
-	<string name="personal_notebook">Personal</string>
-	<string name="work_notebook">Work</string>
-	<string name="all_notebooks">All notebooks</string>
+	<string name="general_notebook">General</string>
 	<string name="search_notebooks">Search your notebooks</string>
-	<string name="add_notebook">Create new notebook</string>
 	<string name="more_options">More options</string>
 	<string name="new_notebook">New notebook</string>
 	<string name="notebook_name">Notebook name</string>
 	<string name="error_message_notebook_duplicate">The notebook already exists</string>
-	<string name="edit_notebook_name">Edit notebook name</string>
+	<string name="edit_notebook_name">Edit name</string>
 	<string name="delete_notebook">Delete notebook</string>
-	<string name="delete_notes_warning">The notes inside this notebook have been moved to the trash.</string>
+	<string name="delete_notes_message">The notes inside this notebook have been moved to the trash.</string>
 
 	<!-- RecycleBin Fragment -->
 	<string name="recycle_bin_fragment_label">Trash</string>

@@ -6,8 +6,8 @@
 
 	<item
 		android:id="@+id/add_new_notebook"
-		android:icon="@drawable/ic_create_new_notebook"
-		android:orderInCategory="5"
-		android:title="@string/add_notebook"
-		app:showAsAction="ifRoom" />
+		android:icon="@drawable/ic_create_notebook"
+		android:orderInCategory="0"
+		android:title="@string/create_notebook"
+		app:showAsAction="always" />
 </menu>

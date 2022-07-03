@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<item
+		android:id="@+id/edit_notebook_name"
+		android:icon="@drawable/ic_edit_notebooks"
+		android:title="@string/edit_notebook_name" />
+
+	<item
+		android:id="@+id/delete_notebook"
+		android:icon="@drawable/ic_delete"
+		android:title="@string/delete_notebook" />
+</menu>
