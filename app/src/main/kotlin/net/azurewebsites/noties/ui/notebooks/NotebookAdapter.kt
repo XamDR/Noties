@@ -3,7 +3,8 @@ package net.azurewebsites.noties.ui.notebooks
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
+import androidx.appcompat.widget.PopupMenu
+import androidx.appcompat.widget.wrap
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -70,6 +71,7 @@ class NotebookAdapter(private val listener: NotebookItemPopupMenuListener) :
 					else -> false
 				}
 			}
+			wrap().setForceShowIcon(true) // Force the Popup to show icons
 			show()
 		}
 	}
