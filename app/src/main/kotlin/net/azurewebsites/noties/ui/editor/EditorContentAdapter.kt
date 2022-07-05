@@ -6,11 +6,12 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import net.azurewebsites.noties.R
+import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.FragmentEditorContentBinding
 import net.azurewebsites.noties.ui.helpers.showSoftKeyboard
 
 class EditorContentAdapter(
-	private val viewModel: EditorViewModel,
+	private val note: Note,
 	private val listener: LinkClickedListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 	inner class EditorViewHolder(private val binding: FragmentEditorContentBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -20,7 +21,7 @@ class EditorContentAdapter(
 		}
 
 		init {
-			if (viewModel.note.value.entity.id == 0L) {
+			if (note.entity.id == 0L) {
 				binding.editor.post { binding.editor.showSoftKeyboard() }
 			}
 			binding.editor.setOnLinkClickedListener { url -> listener.onLinkClicked(url) }
@@ -31,8 +32,8 @@ class EditorContentAdapter(
 			)
 		}
 
-		fun bind(viewModel: EditorViewModel) {
-			binding.vm = viewModel
+		fun bind(note: Note) {
+			binding.note = note
 		}
 	}
 
@@ -50,7 +51,7 @@ class EditorContentAdapter(
 
 	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 		if (holder is EditorViewHolder) {
-			holder.bind(viewModel)
+			holder.bind(note)
 		}
 	}
 

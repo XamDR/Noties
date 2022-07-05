@@ -7,8 +7,8 @@
 		<import type="androidx.preference.PreferenceManager"/>
 		<import type="net.azurewebsites.noties.ui.settings.preferences.EditorStylePreference"/>
 		<variable
-			name="vm"
-			type="net.azurewebsites.noties.ui.editor.EditorViewModel" />
+			name="note"
+			type="net.azurewebsites.noties.core.Note" />
 	</data>
 
 	<net.azurewebsites.noties.ui.views.LinedEditText
@@ -29,7 +29,7 @@
 		android:paddingBottom="8dp"
 		android:scrollbars="none"
 		android:scrollHorizontally="false"
-		android:text="@={vm.note.entity.text}"
+		android:text="@={note.entity.text}"
 		android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
 		android:textCursorDrawable="@drawable/cursor_color"
 		android:textSize='@{PreferenceManager.getDefaultSharedPreferences(context).getInt("font_size", 16)}'

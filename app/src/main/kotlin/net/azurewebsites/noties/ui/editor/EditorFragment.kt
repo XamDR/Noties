@@ -82,10 +82,10 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		if (savedInstanceState == null) {
-			viewModel.note.value = note
-			viewModel.tempNote.value = viewModel.note.value.clone()
+			viewModel.note = note
+			viewModel.tempNote = viewModel.note.clone()
 		}
-		editorContentAdapter = EditorContentAdapter(viewModel, this).apply {
+		editorContentAdapter = EditorContentAdapter(viewModel.note, this).apply {
 			setOnContentReceivedListener { uri -> addImages(listOf(uri)) }
 		}
 	}
@@ -94,9 +94,8 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 							  container: ViewGroup?,
 							  savedInstanceState: Bundle?): View {
 		_binding = FragmentEditorBinding.inflate(inflater, container, false).apply {
-			vm = viewModel
 			fragment = this@EditorFragment
-			lifecycleOwner = viewLifecycleOwner
+			vm = viewModel
 		}
 		return binding.root
 	}
@@ -113,14 +112,19 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		onBackPressed()
 		binding.editorToolbar.setOnMenuItemClickListener(menuItemClickListener)
 		binding.content.adapter = ConcatAdapter(editorImageAdapter, editorContentAdapter)
-		viewModel.images.observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
+		editorImageAdapter.submitList(viewModel.note.images)
 	}
 
 	override fun addImages(uris: List<Uri>) {
 		viewLifecycleOwner.lifecycleScope.launch {
 			viewModel.addImages(requireContext(), uris)
-			viewModel.images.observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
+			editorImageAdapter.submitList(viewModel.note.images)
 		}
+	}
+
+	override fun onSaveInstanceState(outState: Bundle) {
+		super.onSaveInstanceState(outState)
+		viewModel.saveState()
 	}
 
 	override fun onLinkClicked(url: String) {
@@ -133,14 +137,14 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	override fun copyImage(position: Int) {
-		val uri = viewModel.note.value.images[position].uri
+		val uri = viewModel.note.images[position].uri
 		if (uri != null) {
 			requireContext().copyUriToClipboard(R.string.image_item, uri, R.string.image_copied_msg)
 		}
 	}
 
 	override fun addAltText(position: Int) {
-		val image = viewModel.note.value.images[position]
+		val image = viewModel.note.images[position]
 		val imageDescriptionDialog = ImageDescriptionDialogFragment.newInstance(image).apply {
 			setOnAltTextAddedListener { context?.showToast(R.string.alt_text_updated) }
 		}
@@ -148,18 +152,21 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	override fun deleteImage(position: Int) {
-		val imageToBeDeleted = viewModel.note.value.images[position]
+		val imageToBeDeleted = viewModel.note.images[position]
 		deleteImage(imageToBeDeleted)
-		viewModel.images.observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
+		editorImageAdapter.submitList(viewModel.note.images)
 	}
 
 	override fun shareContent() {
-		if (viewModel.note.value.isNonEmpty()) {
-			if (viewModel.uris.isEmpty()) {
-				shareText(viewModel.text)
+		if (viewModel.note.isNonEmpty()) {
+			if (viewModel.note.images.isEmpty()) {
+				shareText(viewModel.note.entity.text)
 			}
 			else {
-				shareImagesAndText(viewModel.uris, viewModel.text)
+				shareImagesAndText(
+					viewModel.note.images.map { it.uri },
+					viewModel.note.entity.text
+				)
 			}
 		}
 		else {
@@ -182,7 +189,8 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 				val inputStream = requireContext().contentResolver.openInputStream(uri)
 				val file = DocumentFile.fromSingleUri(requireContext(), uri)
 				inputStream?.bufferedReader()?.use { reader ->
-					viewModel.updateNoteTitleAndText(file?.simpleName, reader.readText())
+					binding.noteTitle.setText(file?.simpleName)
+					viewModel.note.entity.text = reader.readText()
 				}
 				editorContentAdapter.notifyItemChanged(0)
 			}
@@ -228,7 +236,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 				when (viewModel.insertorUpdateNote(notebookId)) {
 					Result.NoteSaved -> context?.showToast(R.string.note_saved)
 					Result.NoteUpdated -> context?.showToast(R.string.note_updated)
-					Result.EmptyNote -> setNoteToBeDeleted(viewModel.note.value)
+					Result.EmptyNote -> setNoteToBeDeleted(viewModel.note)
 					else -> {}
 				}
 				findNavController().popBackStack()
@@ -319,12 +327,12 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	private fun deleteAllImages() {
-		viewModel.note.value.images.forEach { deleteImage(it) }
-		viewModel.images.observe(viewLifecycleOwner) { editorImageAdapter.submitList(it) }
+		viewModel.note.images.forEach { deleteImage(it) }
+		editorImageAdapter.submitList(viewModel.note.images)
 	}
 
 	private fun deleteImage(image: ImageEntity) {
-		viewModel.note.value.images -= image
+		viewModel.note.images -= image
 		val images = listOf(image)
 		val result = ImageStorageManager.deleteImages(requireContext(), images)
 		printDebug(IMAGE_STORE_MANAGER, result)
