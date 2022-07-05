@@ -148,7 +148,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	}
 
 	private fun navigateToEditor() {
-		val args = bundleOf(ID to notebook.id)
+		val args = bundleOf(ID to if (notebook.id == 0) 1 else notebook.id)
 		findNavController().tryNavigate(R.id.action_notes_to_editor, args)
 	}
 

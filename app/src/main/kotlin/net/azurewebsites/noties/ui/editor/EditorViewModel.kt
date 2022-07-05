@@ -42,7 +42,7 @@ class EditorViewModel @Inject constructor(
 
 	var note = savedState[NOTE] ?: Note()
 
-	var tempNote = Note()
+	private val tempNote = savedState[TEMP_NOTE] ?: note.clone()
 
 	private val _description = MutableStateFlow(String.Empty)
 	val description = _description.asStateFlow()
@@ -121,10 +121,11 @@ class EditorViewModel @Inject constructor(
 
 	fun saveState() {
 		savedState[NOTE] = note
+		savedState[TEMP_NOTE] = tempNote
 	}
 
 	private fun createNote(
-		title: String?,
+		title: String,
 		text: String,
 		images: List<ImageEntity>,
 		notebookId: Int,
@@ -177,5 +178,6 @@ class EditorViewModel @Inject constructor(
 		private const val DEFAULT_IMAGE_EXTENSION = "jpeg"
 		private const val PATTERN = "yyyyMMdd_HHmmss"
 		private const val NOTE = "note"
+		private const val TEMP_NOTE = "temp_note"
 	}
 }

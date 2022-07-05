@@ -186,6 +186,6 @@ fun Context.copyUriToClipboard(@StringRes label: Int, uri: Uri, @StringRes copie
 }
 
 val DocumentFile.simpleName: String?
-	get() = this.name?.substringBeforeLast(".")
+	get() = this.name?.substringBeforeLast('.')
 
 fun Context.getIntArray(@ArrayRes resId: Int) = this.resources.getIntArray(resId)

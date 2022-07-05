@@ -11,7 +11,7 @@ import java.time.ZonedDateTime
 @Entity(tableName = "Notes")
 data class NoteEntity(
 	@PrimaryKey(autoGenerate = true) val id: Long = 0,
-	var title: String? = null,
+	var title: String = String.Empty,
 	var text: String = String.Empty,
 	@ColumnInfo(name = "date_modification") val dateModification: ZonedDateTime = ZonedDateTime.now(),
 	@ColumnInfo(name = "color") val color: Int = 0,

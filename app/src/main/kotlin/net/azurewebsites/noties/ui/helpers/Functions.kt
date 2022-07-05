@@ -39,7 +39,7 @@ fun readUriContent(context: Context, uri: Uri?): NoteEntity? {
 			val file = DocumentFile.fromSingleUri(context, uri)
 			inputStream?.bufferedReader()?.use {
 				return NoteEntity(
-					title = file?.name?.substringBeforeLast('.'),
+					title = file?.simpleName ?: String.Empty,
 					text = it.readText(),
 					dateModification = ZonedDateTime.now(),
 					urls = extractUrls(it.readText())
