@@ -4,13 +4,13 @@ import android.content.Context
 import android.net.Uri
 import android.text.Editable
 import androidx.core.content.FileProvider
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,17 +37,12 @@ class EditorViewModel @Inject constructor(
 	private val insertNoteWithImagesUseCase: InsertNoteWithImagesUseCase,
 	private val updateNoteUseCase: UpdateNoteUseCase,
 	private val updateImageUseCase: UpdateImageUseCase,
-	private val deleteImagesUseCase: DeleteImagesUseCase) : ViewModel() {
+	private val deleteImagesUseCase: DeleteImagesUseCase,
+	private val savedState: SavedStateHandle) : ViewModel() {
 
-	val note = MutableStateFlow(Note())
+	var note = savedState[NOTE] ?: Note()
 
-	val tempNote = MutableStateFlow(Note())
-
-	val text get() = note.value.entity.text
-
-	val images get() = note.map { it.images }.asLiveData()
-
-	val uris get() = note.value.images.map { it.uri }
+	var tempNote = Note()
 
 	private val _description = MutableStateFlow(String.Empty)
 	val description = _description.asStateFlow()
@@ -55,20 +50,15 @@ class EditorViewModel @Inject constructor(
 	private val state: MutableStateFlow<AltTextState> = MutableStateFlow(AltTextState.EmptyDescription)
 	val altTextState = state.asLiveData()
 
-	fun updateNoteTitleAndText(title: String?, text: String) {
-		val value = note.value
-		note.update { value.clone(entity = value.entity.copy(title = title, text = text)) }
-	}
-
 	suspend fun addImages(context: Context, uris: List<Uri>) {
 		for (uri in uris) {
 			val newUri = copyUri(context, uri)
 			val image = ImageEntity(
 				uri = newUri,
 				mimeType = context.getUriMimeType(newUri),
-				noteId = note.value.entity.id
+				noteId = note.entity.id
 			)
-			note.value.images += image
+			note.images += image
 		}
 	}
 
@@ -96,28 +86,28 @@ class EditorViewModel @Inject constructor(
 	}
 
 	suspend fun insertorUpdateNote(notebookId: Int): Result? {
-		if (note.value.isNonEmpty()) {
-			if (note.value.entity.id == 0L) {
+		if (note.isNonEmpty()) {
+			if (note.entity.id == 0L) {
 				val newNote = createNote(
-					title = note.value.entity.title,
-					text = note.value.entity.text,
-					images = note.value.images,
-					isProtected = note.value.entity.isProtected,
-					isPinned = note.value.entity.isPinned,
+					title = note.entity.title,
+					text = note.entity.text,
+					images = note.images,
+					isProtected = note.entity.isProtected,
+					isPinned = note.entity.isPinned,
 					notebookId = notebookId
 				)
 				return insertNote(newNote)
 			}
 			else {
-				if (note.value != tempNote.value) {
+				if (note != tempNote) {
 					val updatedNote = createNote(
-						title = note.value.entity.title,
-						text = note.value.entity.text,
-						images = note.value.images,
-						isProtected = note.value.entity.isProtected,
-						isPinned = note.value.entity.isPinned,
-						notebookId = note.value.entity.notebookId,
-						id = note.value.entity.id
+						title = note.entity.title,
+						text = note.entity.text,
+						images = note.images,
+						isProtected = note.entity.isProtected,
+						isPinned = note.entity.isPinned,
+						notebookId = note.entity.notebookId,
+						id = note.entity.id
 					)
 					return updateNote(updatedNote)
 				}
@@ -127,6 +117,10 @@ class EditorViewModel @Inject constructor(
 			return Result.EmptyNote
 		}
 		return null
+	}
+
+	fun saveState() {
+		savedState[NOTE] = note
 	}
 
 	private fun createNote(
@@ -182,5 +176,6 @@ class EditorViewModel @Inject constructor(
 		private const val AUTHORITY = "net.azurewebsites.noties"
 		private const val DEFAULT_IMAGE_EXTENSION = "jpeg"
 		private const val PATTERN = "yyyyMMdd_HHmmss"
+		private const val NOTE = "note"
 	}
 }
