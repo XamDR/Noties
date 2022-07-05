@@ -47,7 +47,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<EditorViewModel>()
 	private val notebookId by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getInt(NotesFragment.ID, 0)
+		requireArguments().getInt(NotesFragment.ID, 1)
 	}
 	private val pickImagesLauncher = registerForActivityResult(
 		ActivityResultContracts.OpenMultipleDocuments(),
@@ -83,7 +83,6 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		super.onCreate(savedInstanceState)
 		if (savedInstanceState == null) {
 			viewModel.note = note
-			viewModel.tempNote = viewModel.note.clone()
 		}
 		editorContentAdapter = EditorContentAdapter(viewModel.note, this).apply {
 			setOnContentReceivedListener { uri -> addImages(listOf(uri)) }

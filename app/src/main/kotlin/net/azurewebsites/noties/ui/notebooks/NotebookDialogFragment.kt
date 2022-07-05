@@ -1,6 +1,7 @@
 package net.azurewebsites.noties.ui.notebooks
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
@@ -40,7 +41,7 @@ class NotebookDialogFragment : DialogFragment() {
 			vm = viewModel
 			lifecycleOwner = this@NotebookDialogFragment
 		}
-		return MaterialAlertDialogBuilder(requireContext(), R.style.MyThemeOverlay_MaterialAlertDialog)
+		return MaterialAlertDialogBuilder(requireContext())
 			.setTitle(if (notebookUiState.operation == Operation.Insert) R.string.new_notebook else R.string.edit_notebook_name)
 			.setView(binding.root)
 			.setNegativeButton(R.string.cancel_button) { _, _ -> cleanup() }
@@ -93,6 +94,11 @@ class NotebookDialogFragment : DialogFragment() {
 				}
 			}
 		}
+	}
+
+	override fun onDismiss(dialog: DialogInterface) {
+		super.onDismiss(dialog)
+		cleanup()
 	}
 
 	private fun createOrUpdateNotebook(notebookUiState: NotebookUiState) {
