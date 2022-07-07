@@ -58,6 +58,9 @@ class RecyclerViewActionModeCallback(private val adapter: NoteAdapter) : ActionM
 		R.id.lock_note -> {
 			adapter.toggleLockedValueForNotes(); true
 		}
+		R.id.move_note -> {
+			adapter.moveNotes(); true
+		}
 		else -> false
 	}
 

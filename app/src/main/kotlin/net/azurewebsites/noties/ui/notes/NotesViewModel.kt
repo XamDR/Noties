@@ -22,7 +22,8 @@ class NotesViewModel @Inject constructor(
 	private val lockNotesUseCase: LockNotesUseCase,
 	private val unlockNotesUseCase: UnlockNotesUseCase,
 	private val pinNotesUseCase: PinNotesUseCase,
-	private val unpinNotesUseCase: UnpinNotesUseCase) : ViewModel() {
+	private val unpinNotesUseCase: UnpinNotesUseCase,
+	private val moveNotesUseCase: MoveNotesUseCase) : ViewModel() {
 
 	fun sortNotes(notebookId: Int, sortMode: SortMode): LiveData<List<Note>> {
 		val sortedNotes = when (sortMode) {
@@ -90,6 +91,13 @@ class NotesViewModel @Inject constructor(
 			else {
 				unpinNotesUseCase(entities)
 			}
+			action()
+		}
+	}
+
+	fun moveNotes(notes: List<Note>, notebookId: Int, action: () -> Unit) {
+		viewModelScope.launch {
+			moveNotesUseCase(notes.map { it.entity }, notebookId)
 			action()
 		}
 	}

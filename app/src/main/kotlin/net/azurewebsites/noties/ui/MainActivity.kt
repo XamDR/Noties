@@ -103,6 +103,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		notebookDialog.show(supportFragmentManager, NotebooksFragment.TAG)
 	}
 
+	suspend fun getNotebooks() = viewModel.getNotebooks()
+
 	fun unlockDrawerLayout() {
 		binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
 	}

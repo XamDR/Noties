@@ -123,6 +123,8 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 
 	fun togglePinnedValueForNotes() = onPinNotesCallback(getSelectedNotes())
 
+	fun moveNotes() = onMoveNotesCallback(getSelectedNotes())
+
 	private fun editNote(holder: RecyclerView.ViewHolder, position: Int) {
 		val note = getItem(position)
 		if (!note.entity.isTrashed) {
@@ -164,6 +166,10 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 		onPinNotesCallback = callback
 	}
 
+	fun setOnMoveNotesListener(callback: (notes: List<Note>) -> Unit) {
+		onMoveNotesCallback = callback
+	}
+
 	private var onShowUrlsCallback: (urls: List<String>) -> Unit = {}
 
 	private var onDeleteNotesCallback: (notes: List<Note>) -> Unit = {}
@@ -174,6 +180,8 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 
 	private var onPinNotesCallback: (notes: List<Note>) -> Unit = {}
 
+	private var onMoveNotesCallback: (notes: List<Note>) -> Unit = {}
+
 	private class NoteAdapterCallback : DiffUtil.ItemCallback<Note>() {
 
 		override fun areItemsTheSame(oldNote: Note, newNote: Note) = oldNote.entity.id == newNote.entity.id
@@ -183,6 +191,6 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 
 	private companion object {
 		private const val NOTE_LINEAR_LAYOUT = R.layout.note_item
-		private const val NOTE_PROTECTED = 0
+		private const val NOTE_PROTECTED = R.layout.protected_note_item
 	}
 }

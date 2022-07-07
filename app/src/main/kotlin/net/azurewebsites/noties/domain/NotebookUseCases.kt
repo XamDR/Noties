@@ -30,3 +30,7 @@ class DeleteNotebookAndMoveNotesToTrashUseCase @Inject constructor(
 		notebookDao.deleteNotebooks(listOf(notebook.entity))
 	}
 }
+
+class GetNotebooksUseCaseAsync @Inject constructor(private val notebookDao: NotebookDao) {
+	suspend operator fun invoke() = notebookDao.getNotebooksAsyc()
+}

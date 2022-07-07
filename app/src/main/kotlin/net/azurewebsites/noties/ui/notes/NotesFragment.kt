@@ -12,6 +12,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.transition.MaterialElevationScale
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.core.NoteEntity
@@ -214,6 +216,9 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 		noteAdapter.setOnDeleteNotesListener { notes -> showDeleteNotesDialog(notes) }
 		noteAdapter.setOnLockNotesListener { notes -> toggleLockValueForNotes(notes) }
 		noteAdapter.setOnPinNotesListener { notes -> togglePinnedValueForNotes(notes) }
+		noteAdapter.setOnMoveNotesListener { notes ->
+			showMoveNotesDialog(notes)
+		}
 	}
 
 	private fun toggleLockValueForNotes(notes: List<Note>) {
@@ -229,6 +234,16 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	private fun togglePinnedValueForNotes(notes: List<Note>) {
 		viewModel.togglePinnedValueForNotes(notes) { selectionObserver.actionMode?.finish() }
 		submitList(notebook.id, SortMode.valueOf(preferenceStorage.sortMode))
+	}
+
+	private fun showMoveNotesDialog(notes: List<Note>) {
+		viewLifecycleOwner.lifecycleScope.launch {
+			val notebooks = (requireActivity() as MainActivity).getNotebooks()
+			val moveNotesDialog = MoveNotesDialogFragment.newInstance(notes, notebooks).apply {
+				setOnNotesMovedListener { selectionObserver.actionMode?.finish() }
+			}
+			showDialog(moveNotesDialog, MOVE_NOTES)
+		}
 	}
 
 	private fun getNoteToBeDeleted() {
@@ -254,5 +269,6 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 		private const val ACTION_MODE = "action_mode"
 		private const val DELETE_NOTES = "DELETE_NOTES_DIALOG"
 		private const val SORT_NOTES = "SORT_NOTES_DIALOG"
+		private const val MOVE_NOTES = "MOVE_NOTES_DIALOG"
 	}
 }
