@@ -61,9 +61,11 @@
 			android:layout_height="match_parent"
 			android:layout_gravity="start"
 			android:background="?attr/colorSurfaceVariant"
-			app:itemTextAppearance="@style/MyCustomNavTextStyle"
+			android:theme="@style/ThemeOverlay.NavigationView"
 			app:headerLayout="@layout/nav_header_main"
-			app:menu="@menu/activity_main_drawer"
-			tools:ignore="PrivateResource" />
+			app:itemShapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Nav"
+			app:itemShapeFillColor="@color/navigation_view_selector"
+			app:itemTextAppearance="@style/MyCustomNavTextStyle"
+			app:menu="@menu/activity_main_drawer" />
 	</androidx.drawerlayout.widget.DrawerLayout>
 </layout>
