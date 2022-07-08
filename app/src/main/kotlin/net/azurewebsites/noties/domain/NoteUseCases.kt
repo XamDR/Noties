@@ -138,3 +138,19 @@ class UnpinNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
 		}
 	}
 }
+
+class MoveNotesUseCase @Inject constructor(
+	private val noteDao: NoteDao,
+	private val notebookDao: NotebookDao) {
+
+	suspend operator fun invoke(notes: List<NoteEntity>, notebookId: Int) {
+		for (note in notes) {
+			if (note.notebookId != notebookId) {
+				notebookDao.decrementNotebookNoteCount(note.notebookId)
+				val updatedNote = note.copy(notebookId = notebookId)
+				noteDao.updateNote(updatedNote)
+				notebookDao.incrementNotebookNoteCount(notebookId)
+			}
+		}
+	}
+}

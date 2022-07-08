@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		navController.addOnDestinationChangedListener(this)
 		binding.navView.setNavigationItemSelectedListener(this)
 		viewModel.notebooks.observe(this) { updateNavDrawer(it) }
+		setDefaultCheckedItem()
 	}
 
 	override fun onStop() {
@@ -103,6 +104,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		notebookDialog.show(supportFragmentManager, NotebooksFragment.TAG)
 	}
 
+	suspend fun getNotebooks() = viewModel.getNotebooks()
+
 	fun unlockDrawerLayout() {
 		binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
 	}
@@ -126,9 +129,12 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		if (item.subMenu.isNotEmpty()) item.subMenu.clear()
 
 		for (notebook in notebooks) {
-			item.subMenu.add(R.id.group_notebooks, 1, 1, notebook.entity.name)
-				.setIcon(R.drawable.ic_notebook)
-				.setOnMenuItemClickListener { filterNotesByNotebook(notebook.entity); true }
+			item.subMenu.add(R.id.group_notebooks, 1, 1, notebook.entity.name).apply {
+				setIcon(R.drawable.ic_notebook)
+				isCheckable = true
+				isChecked = this.title == binding.toolbar.title
+				setOnMenuItemClickListener { filterNotesByNotebook(notebook.entity, item); true }
+			}
 		}
 		item.subMenu.add(R.id.group_notebooks, R.id.create_notebook, 1000, getString(R.string.create_notebook))
 			.setIcon(R.drawable.ic_add_item)
@@ -136,7 +142,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		navigateToNotebooks()
 	}
 
-	private fun filterNotesByNotebook(notebook: NotebookEntity) {
+	private fun filterNotesByNotebook(notebook: NotebookEntity, item: MenuItem) {
+		binding.navView.setCheckedItem(item)
 		binding.drawerLayout.closeDrawer(GravityCompat.START, true)
 		navigateToNotes(notebook)
 	}
@@ -156,6 +163,13 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 			R.id.nav_notes -> navController.tryNavigate(R.id.action_notes_to_self, args)
 			R.id.nav_notebooks -> navController.tryNavigate(R.id.action_notebooks_to_notes, args)
 			else -> throw Exception("There is no route from $currentDestinationId to ${R.id.nav_notes}")
+		}
+	}
+
+	private fun setDefaultCheckedItem() {
+		val allNotesItem = binding.navView.menu.getItem(0)
+		if (allNotesItem.title == binding.toolbar.title) {
+			binding.navView.setCheckedItem(allNotesItem)
 		}
 	}
 

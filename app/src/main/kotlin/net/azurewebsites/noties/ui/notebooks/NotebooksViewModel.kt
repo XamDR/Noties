@@ -20,6 +20,7 @@ class NotebooksViewModel @Inject constructor(
 	private val createNotebookUseCase: CreateNotebookUseCase,
 	private val updateNotebookUseCase: UpdateNotebookUseCase,
 	private val deleteNotebookAndMoveNotesToTrashUseCase: DeleteNotebookAndMoveNotesToTrashUseCase,
+	private val getNotebooksUseCaseAsync: GetNotebooksUseCaseAsync,
 	private val savedState: SavedStateHandle) : ViewModel() {
 
 	init {
@@ -69,6 +70,10 @@ class NotebooksViewModel @Inject constructor(
 		else {
 			nameState.update { InputNameState.EmptyName }
 		}
+	}
+
+	suspend fun getNotebooks(): List<NotebookEntity> {
+		return getNotebooksUseCaseAsync()
 	}
 
 	fun createNotebook(notebook: NotebookEntity) {

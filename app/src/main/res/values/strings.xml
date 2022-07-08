@@ -8,6 +8,7 @@
 	<string name="not_now_button">Not now</string>
 	<string name="continue_button">Continue</string>
 	<string name="save_button">Save</string>
+	<string name="move_button">Move</string>
 
 	<!-- Welcome Fragment -->
 	<string name="onboarding_message">EzNotes is a note taking app that will help you to take notes, make to-do lists and add attachments like images or audios.</string>
@@ -66,6 +67,8 @@
 	<string name="lock_note">Lock note</string>
 	<string name="unlock_note">Unlock note</string>
 	<string name="device_not_secured">It is not possible to lock the note. The device is not secured with a PIN, pattern or password.</string>
+	<string name="move_note">Move notes…</string>
+	<string name="move_notes_title">Move notes to</string>
 	<string name="select_all">Select all</string>
 	<string name="delete_notes_question"><![CDATA[Are you sure you want to <b>delete permanently</b> the selected notes?]]></string>
 	<string name="delete_notes_title">Delete notes</string>
