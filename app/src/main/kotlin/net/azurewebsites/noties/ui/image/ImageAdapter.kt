@@ -53,12 +53,7 @@ class ImageAdapter(
 	}
 
 	override fun getItemViewType(position: Int): Int {
-		val image = getItem(position)
-		return when {
-			image.mimeType?.startsWith("image") == true ->
-				if (currentList.isSingleton()) SINGLE_IMAGE else MULTIPLE_IMAGES
-			else -> -1
-		}
+		return if (itemCount.mod(2) != 0 && position == 0) SINGLE_IMAGE else MULTIPLE_IMAGES
 	}
 
 	private fun showContextMenu(menu: Menu, position: Int) {
@@ -86,7 +81,7 @@ class ImageAdapter(
 		override fun areContentsTheSame(oldItem: ImageEntity, newItem: ImageEntity) = oldItem == newItem
 	}
 
-	companion object {
+	private companion object {
 		private const val SINGLE_IMAGE = R.layout.single_image_item
 		private const val MULTIPLE_IMAGES = R.layout.image_item
 		private const val TAG = "IMAGE_ITEM"
