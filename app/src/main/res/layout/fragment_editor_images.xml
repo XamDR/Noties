@@ -7,8 +7,9 @@
 		android:id="@+id/images"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:scrollbars="horizontal"
-		app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+		android:orientation="vertical"
+		android:scrollbars="none"
+		app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+		app:spanCount="@integer/span_count"
 		tools:listitem="@layout/single_image_item" />
 </layout>
