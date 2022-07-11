@@ -4,17 +4,19 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Note
-import net.azurewebsites.noties.databinding.FragmentEditorContentBinding
+import net.azurewebsites.noties.databinding.FragmentEditorTextBinding
+import net.azurewebsites.noties.ui.helpers.SpanSizeLookupOwner
 import net.azurewebsites.noties.ui.helpers.showSoftKeyboard
 
-class EditorContentAdapter(
+class EditorTextAdapter(
 	private val note: Note,
-	private val listener: LinkClickedListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+	private val listener: LinkClickedListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), SpanSizeLookupOwner {
 
-	inner class EditorViewHolder(private val binding: FragmentEditorContentBinding) : RecyclerView.ViewHolder(binding.root) {
+	inner class EditorViewHolder(private val binding: FragmentEditorTextBinding) : RecyclerView.ViewHolder(binding.root) {
 
 		private val contentReceiverListener = ImageContentReceiverListener { uri, _ ->
 			onContentReceivedCallback(uri)
@@ -39,7 +41,7 @@ class EditorContentAdapter(
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when(viewType) {
 		EDITOR -> {
-			val binding = FragmentEditorContentBinding.inflate(
+			val binding = FragmentEditorTextBinding.inflate(
 				LayoutInflater.from(parent.context),
 				parent,
 				false
@@ -66,6 +68,10 @@ class EditorContentAdapter(
 	private var onContentReceivedCallback: (uri: Uri) -> Unit = {}
 
 	private companion object {
-		private const val EDITOR = R.layout.fragment_editor_content
+		private const val EDITOR = R.layout.fragment_editor_text
+	}
+
+	override fun getSpanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
+		override fun getSpanSize(position: Int) = EditorFragment.SPAN_COUNT
 	}
 }

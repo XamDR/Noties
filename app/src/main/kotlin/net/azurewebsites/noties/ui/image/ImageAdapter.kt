@@ -4,16 +4,20 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.databinding.ImageItemBinding
 import net.azurewebsites.noties.databinding.SingleImageItemBinding
+import net.azurewebsites.noties.ui.editor.EditorFragment
+import net.azurewebsites.noties.ui.helpers.SpanSizeLookupOwner
 import net.azurewebsites.noties.ui.helpers.printDebug
 import net.azurewebsites.noties.ui.helpers.setOnClickListener
 
 class ImageAdapter(
-	private val listener: ImageItemContextMenuListener) : ListAdapter<ImageEntity, BaseImageItemViewHolder>(ImageAdapterCallback()) {
+	private val listener: ImageItemContextMenuListener) : ListAdapter<ImageEntity, BaseImageItemViewHolder>(ImageAdapterCallback()),
+																	SpanSizeLookupOwner {
 
 	inner class ImageItemViewHolder(binding: ImageItemBinding) : BaseImageItemViewHolder(binding) {
 		init {
@@ -85,5 +89,11 @@ class ImageAdapter(
 		private const val SINGLE_IMAGE = R.layout.single_image_item
 		private const val MULTIPLE_IMAGES = R.layout.image_item
 		private const val TAG = "IMAGE_ITEM"
+	}
+
+	override fun getSpanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
+		override fun getSpanSize(position: Int) =
+			if (itemCount.mod(EditorFragment.SPAN_COUNT) != 0 && position == 0) EditorFragment.SPAN_COUNT
+			else 1
 	}
 }
