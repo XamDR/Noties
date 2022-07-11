@@ -16,8 +16,9 @@ import net.azurewebsites.noties.ui.helpers.printDebug
 import net.azurewebsites.noties.ui.helpers.setOnClickListener
 
 class ImageAdapter(
-	private val listener: ImageItemContextMenuListener) : ListAdapter<ImageEntity, BaseImageItemViewHolder>(ImageAdapterCallback()),
-																	SpanSizeLookupOwner {
+	private val listener: ImageItemContextMenuListener
+	) : ListAdapter<ImageEntity, BaseImageItemViewHolder>(ImageAdapterCallback()),
+		SpanSizeLookupOwner {
 
 	inner class ImageItemViewHolder(binding: ImageItemBinding) : BaseImageItemViewHolder(binding) {
 		init {
@@ -56,8 +57,14 @@ class ImageAdapter(
 		printDebug(TAG, image)
 	}
 
-	override fun getItemViewType(position: Int): Int {
-		return if (itemCount.mod(2) != 0 && position == 0) SINGLE_IMAGE else MULTIPLE_IMAGES
+	override fun getItemViewType(position: Int) =
+		if (itemCount.mod(EditorFragment.SPAN_COUNT) != 0 && position == 0) SINGLE_IMAGE
+		else MULTIPLE_IMAGES
+
+	override fun getSpanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
+		override fun getSpanSize(position: Int) =
+			if (itemCount.mod(EditorFragment.SPAN_COUNT) != 0 && position == 0) EditorFragment.SPAN_COUNT
+			else 1
 	}
 
 	private fun showContextMenu(menu: Menu, position: Int) {
@@ -89,11 +96,5 @@ class ImageAdapter(
 		private const val SINGLE_IMAGE = R.layout.single_image_item
 		private const val MULTIPLE_IMAGES = R.layout.image_item
 		private const val TAG = "IMAGE_ITEM"
-	}
-
-	override fun getSpanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
-		override fun getSpanSize(position: Int) =
-			if (itemCount.mod(EditorFragment.SPAN_COUNT) != 0 && position == 0) EditorFragment.SPAN_COUNT
-			else 1
 	}
 }
