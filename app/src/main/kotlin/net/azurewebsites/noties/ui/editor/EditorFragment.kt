@@ -26,6 +26,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.transition.MaterialContainerTransform
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -53,8 +54,8 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		ActivityResultContracts.OpenMultipleDocuments(),
 		PickImagesCallback(this)
 	)
-	private val editorImageAdapter = EditorImageAdapter(ImageAdapter(this))
-	private lateinit var editorContentAdapter: EditorContentAdapter
+	private val imageAdapter = ImageAdapter(this)
+	private lateinit var editorTextAdapter: EditorTextAdapter
 	private val note by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelable(NOTE) ?: Note()
 	}
@@ -84,7 +85,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		if (savedInstanceState == null) {
 			viewModel.note = note
 		}
-		editorContentAdapter = EditorContentAdapter(viewModel.note, this).apply {
+		editorTextAdapter = EditorTextAdapter(viewModel.note, this).apply {
 			setOnContentReceivedListener { uri -> addImages(listOf(uri)) }
 		}
 	}
@@ -110,14 +111,14 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		initTransition()
 		onBackPressed()
 		binding.editorToolbar.setOnMenuItemClickListener(menuItemClickListener)
-		binding.content.adapter = ConcatAdapter(editorImageAdapter, editorContentAdapter)
-		editorImageAdapter.submitList(viewModel.note.images)
+		setupRecyclerView()
+		imageAdapter.submitList(viewModel.note.images)
 	}
 
 	override fun addImages(uris: List<Uri>) {
 		viewLifecycleOwner.lifecycleScope.launch {
 			viewModel.addImages(requireContext(), uris)
-			editorImageAdapter.submitList(viewModel.note.images)
+			imageAdapter.submitList(viewModel.note.images)
 		}
 	}
 
@@ -153,7 +154,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	override fun deleteImage(position: Int) {
 		val imageToBeDeleted = viewModel.note.images[position]
 		deleteImage(imageToBeDeleted)
-		editorImageAdapter.submitList(viewModel.note.images)
+		imageAdapter.submitList(viewModel.note.images)
 	}
 
 	override fun shareContent() {
@@ -191,7 +192,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 					binding.noteTitle.setText(file?.simpleName)
 					viewModel.note.entity.text = reader.readText()
 				}
-				editorContentAdapter.notifyItemChanged(0)
+				editorTextAdapter.notifyItemChanged(0)
 			}
 		}
 		catch (e: FileNotFoundException) {
@@ -226,6 +227,15 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 			endView = binding.root
 			endContainerColor = requireContext().getThemeColor(R.attr.colorSurface)
 			scrimColor = Color.TRANSPARENT
+		}
+	}
+
+	private fun setupRecyclerView() {
+		val concatAdapter = ConcatAdapter(imageAdapter, editorTextAdapter)
+		binding.content.apply {
+			adapter = concatAdapter
+			(layoutManager as GridLayoutManager).spanSizeLookup =
+				ConcatSpanSizeLookup(SPAN_COUNT) { concatAdapter.adapters }
 		}
 	}
 
@@ -327,7 +337,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 
 	private fun deleteAllImages() {
 		viewModel.note.images.forEach { deleteImage(it) }
-		editorImageAdapter.submitList(viewModel.note.images)
+		imageAdapter.submitList(viewModel.note.images)
 	}
 
 	private fun deleteImage(image: ImageEntity) {
@@ -353,6 +363,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	companion object {
 		const val NOTE = "note"
 		const val REQUEST_KEY = "deletion"
+		const val SPAN_COUNT = 2
 		private const val MENU_DIALOG_TAG = "MENU_DIALOG"
 		private const val ALT_TEXT_DIALOG_TAG = "ALT_TEXT_DIALOG"
 		private const val DELETE_IMAGES_DIALOG_TAG = "DELETE_IMAGES"
