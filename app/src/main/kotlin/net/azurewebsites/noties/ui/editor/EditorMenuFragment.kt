@@ -26,13 +26,18 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 		_binding = null
 	}
 
-	fun invokeCallback() {
+	fun invokeActivityResultCallback() {
 		onActivityResultCallback()
 		dismiss()
 	}
 
 	fun invokeTakePictureCallback() {
 		onTakePictureCallback()
+		dismiss()
+	}
+
+	fun invokeMakeTodoListCallback() {
+		onMakeTodoListCallback()
 		dismiss()
 	}
 
@@ -44,7 +49,13 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 		onTakePictureCallback = callback
 	}
 
+	fun setOnMakeTodoListListener(callback: () -> Unit) {
+		onMakeTodoListCallback = callback
+	}
+
 	private var onActivityResultCallback: () -> Unit = {}
 
 	private var onTakePictureCallback: () -> Unit = {}
+
+	private var onMakeTodoListCallback: () -> Unit = {}
 }

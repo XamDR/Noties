@@ -21,7 +21,10 @@ data class Note(
 		images: List<ImageEntity> = this.images
 	) = Note(entity, images)
 
-	fun getPreviewImage() = images.firstOrNull { it.mimeType?.startsWith("image") == true }?.uri
+	fun getPreviewImage() = images.firstOrNull()?.uri
 
 	fun isNonEmpty() = entity.text.isNotEmpty() || images.isNotEmpty()
+
+	fun toTodoList() = if (entity.text.isEmpty()) listOf(DataItem.TodoItem())
+		else entity.text.split('\n').map { DataItem.TodoItem(content = it) }
 }

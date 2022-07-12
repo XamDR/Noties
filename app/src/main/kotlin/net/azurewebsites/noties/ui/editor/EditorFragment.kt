@@ -27,18 +27,23 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import com.google.android.material.transition.MaterialContainerTransform
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import net.azurewebsites.noties.R
+import net.azurewebsites.noties.core.DataItem
 import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.FragmentEditorBinding
+import net.azurewebsites.noties.ui.editor.todolist.DragDropCallback
+import net.azurewebsites.noties.ui.editor.todolist.TodoItemAdapter
 import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.image.*
 import net.azurewebsites.noties.ui.notes.NotesFragment
 import net.azurewebsites.noties.ui.urls.JsoupHelper
 import java.io.FileNotFoundException
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
@@ -56,6 +61,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	)
 	private val imageAdapter = ImageAdapter(this)
 	private lateinit var editorTextAdapter: EditorTextAdapter
+	private lateinit var concatAdapter: ConcatAdapter
 	private val note by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelable(NOTE) ?: Note()
 	}
@@ -79,6 +85,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		ActivityResultContracts.OpenDocument(),
 		OpenFileCallback(this)
 	)
+	private val itemTouchHelper = ItemTouchHelper(DragDropCallback())
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -88,6 +95,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		editorTextAdapter = EditorTextAdapter(viewModel.note, this).apply {
 			setOnContentReceivedListener { uri -> addImages(listOf(uri)) }
 		}
+		concatAdapter = ConcatAdapter(imageAdapter, editorTextAdapter)
 	}
 
 	override fun onCreateView(inflater: LayoutInflater,
@@ -205,6 +213,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		val menuDialog = EditorMenuFragment().apply {
 			setOnActivityResultListener { pickImagesLauncher.launch(arrayOf(MIME_TYPE_IMAGE)) }
 			setOnTakePictureListener { takePictureOrRequestPermission() }
+			setOnMakeTodoListListener { makeTodoList() }
 		}
 		showDialog(menuDialog, MENU_DIALOG_TAG)
 	}
@@ -231,11 +240,11 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	private fun setupRecyclerView() {
-		val concatAdapter = ConcatAdapter(imageAdapter, editorTextAdapter)
 		binding.content.apply {
 			adapter = concatAdapter
 			(layoutManager as GridLayoutManager).spanSizeLookup =
 				ConcatSpanSizeLookup(SPAN_COUNT) { concatAdapter.adapters }
+			addItemTouchHelper(itemTouchHelper)
 		}
 	}
 
@@ -357,6 +366,17 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 				REQUEST_KEY,
 				bundleOf(NOTE to note)
 			)
+		}
+	}
+
+	private fun makeTodoList() {
+		if (concatAdapter.removeAdapter(editorTextAdapter)) {
+			val todoList = viewModel.note.toTodoList()
+			val todoItemAdapter = TodoItemAdapter(
+				(todoList + DataItem.Footer).toMutableList(),
+				itemTouchHelper
+			)
+			concatAdapter.addAdapter(todoItemAdapter)
 		}
 	}
 

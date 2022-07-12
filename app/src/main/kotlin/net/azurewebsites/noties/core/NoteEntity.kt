@@ -23,7 +23,4 @@ data class NoteEntity(
 	@ColumnInfo(name = "notebook_id") val notebookId: Int = 0) : Parcelable {
 
 	fun getUrlCount() = urls.size
-
-	fun toTodoList() = if (text.isEmpty()) listOf(Todo())
-		else text.split('\n').map { Todo(content = it) }
 }
