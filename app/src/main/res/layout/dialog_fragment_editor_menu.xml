@@ -8,78 +8,68 @@
 			type="net.azurewebsites.noties.ui.editor.EditorMenuFragment" />
 	</data>
 
-	<androidx.constraintlayout.widget.ConstraintLayout
+	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:padding="10dp"
+		android:orientation="vertical"
+		android:padding="8dp"
 		app:behavior_hideable="true"
 		app:behavior_peekHeight="0dp"
 		app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
 		<com.google.android.material.textview.MaterialTextView
 			android:id="@+id/attach_media"
-			android:layout_width="0dp"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_margin="10dp"
-			android:drawablePadding="10dp"
+			android:layout_margin="8dp"
+			android:drawablePadding="8dp"
 			android:foreground="?attr/selectableItemBackground"
-			android:onClick="@{() -> fragment.invokeCallback()}"
-			android:padding="2dp"
+			android:gravity="center_vertical"
+			android:onClick="@{() -> fragment.invokeActivityResultCallback()}"
+			android:padding="8dp"
 			android:text="@string/attach_images"
 			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-			app:drawableStartCompat="@drawable/ic_attach_image"
-			app:layout_constraintBottom_toTopOf="@id/take_picture"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toTopOf="parent" />
+			app:drawableStartCompat="@drawable/ic_attach_image" />
 
 		<com.google.android.material.textview.MaterialTextView
 			android:id="@+id/take_picture"
-			android:layout_width="0dp"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_margin="10dp"
-			android:drawablePadding="10dp"
+			android:layout_margin="8dp"
+			android:drawablePadding="8dp"
 			android:foreground="?attr/selectableItemBackground"
+			android:gravity="center_vertical"
 			android:onClick="@{() -> fragment.invokeTakePictureCallback()}"
-			android:padding="2dp"
+			android:padding="8dp"
 			android:text="@string/take_picture"
 			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-			app:drawableStartCompat="@drawable/ic_take_picture"
-			app:layout_constraintBottom_toTopOf="@id/talk_to_write"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/attach_media" />
-
-		<com.google.android.material.textview.MaterialTextView
-			android:id="@+id/talk_to_write"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_margin="10dp"
-			android:drawablePadding="10dp"
-			android:foreground="?attr/selectableItemBackground"
-			android:padding="2dp"
-			android:text="@string/talk_to_write"
-			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-			app:drawableStartCompat="@drawable/ic_talk_to_write"
-			app:layout_constraintBottom_toTopOf="@id/add_todo_list"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/take_picture" />
+			app:drawableStartCompat="@drawable/ic_take_picture" />
 
 		<com.google.android.material.textview.MaterialTextView
 			android:id="@+id/add_todo_list"
-			android:layout_width="0dp"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_margin="10dp"
-			android:drawablePadding="10dp"
+			android:layout_margin="8dp"
+			android:drawablePadding="8dp"
 			android:foreground="?attr/selectableItemBackground"
-			android:padding="2dp"
+			android:gravity="center_vertical"
+			android:onClick="@{() -> fragment.invokeMakeTodoListCallback()}"
+			android:padding="8dp"
 			android:text="@string/add_todo_list"
 			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-			app:drawableStartCompat="@drawable/ic_add_todo_list"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/talk_to_write" />
-	</androidx.constraintlayout.widget.ConstraintLayout>
+			app:drawableStartCompat="@drawable/ic_add_todo_list" />
+
+		<com.google.android.material.textview.MaterialTextView
+			android:id="@+id/talk_to_write"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="8dp"
+			android:drawablePadding="8dp"
+			android:foreground="?attr/selectableItemBackground"
+			android:gravity="center_vertical"
+			android:padding="8dp"
+			android:text="@string/talk_to_write"
+			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+			app:drawableStartCompat="@drawable/ic_talk_to_write" />
+	</LinearLayout>
 </layout>
