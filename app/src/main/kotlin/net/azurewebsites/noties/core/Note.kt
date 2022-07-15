@@ -25,6 +25,20 @@ data class Note(
 
 	fun isNonEmpty() = entity.text.isNotEmpty() || images.isNotEmpty()
 
-	fun toTodoList() = if (entity.text.isEmpty()) listOf(DataItem.TodoItem())
-		else entity.text.split('\n').map { DataItem.TodoItem(content = it) }
+	fun toTodoList(): List<DataItem.TodoItem> {
+		return if (entity.text.isEmpty()) listOf(DataItem.TodoItem())
+		else entity.text.split(LINE_BREAK).map {
+			if (it.startsWith(PREFIX_DONE)) {
+				DataItem.TodoItem(content = it.removePrefix(PREFIX_DONE), done = true)
+			}
+			else DataItem.TodoItem(content = it.removePrefix(PREFIX_NOT_DONE))
+		}
+	}
+
+	companion object {
+		const val LINE_BREAK = "\n"
+		// These prefixes are based on the extended Markdown syntax for task lists.
+		const val PREFIX_NOT_DONE = "- [ ] "
+		const val PREFIX_DONE = "- [x] "
+	}
 }

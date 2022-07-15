@@ -1,19 +1,24 @@
-package net.azurewebsites.noties.ui.editor.todolist
+package net.azurewebsites.noties.ui.editor.todos
 
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.DataItem
 import net.azurewebsites.noties.databinding.TodoItemBinding
 import net.azurewebsites.noties.databinding.TodoItemFooterBinding
+import net.azurewebsites.noties.ui.editor.EditorFragment
+import net.azurewebsites.noties.ui.helpers.SpanSizeLookupOwner
+import net.azurewebsites.noties.ui.helpers.strikethrough
 
 class TodoItemAdapter(
-	private val todoList: MutableList<DataItem>,
-	private val itemTouchHelper: ItemTouchHelper) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+	val todoList: MutableList<DataItem>,
+	private val itemTouchHelper: ItemTouchHelper) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), SpanSizeLookupOwner {
 
 	inner class TodoItemViewHolder(private val binding: TodoItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -25,7 +30,16 @@ class TodoItemAdapter(
 		fun bind(todoItem: DataItem.TodoItem) {
 			binding.apply {
 				this.item = todoItem
+				this.viewHolder = this@TodoItemViewHolder
 				executePendingBindings()
+			}
+		}
+
+		fun setItemDoneStatus(view: View) {
+			val isDone = (view as CompoundButton).isChecked
+			binding.todoItem.apply {
+				strikethrough(isDone)
+				isEnabled = !isDone
 			}
 		}
 	}
@@ -62,6 +76,10 @@ class TodoItemAdapter(
 	override fun getItemViewType(position: Int) = when (todoList[position]) {
 		is DataItem.TodoItem -> TODO_ITEM
 		is DataItem.Footer -> FOOTER
+	}
+
+	override fun getSpanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
+		override fun getSpanSize(position: Int) = EditorFragment.SPAN_COUNT
 	}
 
 	fun moveItem(from: Int, to: Int) {

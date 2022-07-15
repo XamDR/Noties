@@ -6,6 +6,9 @@
 		<variable
 			name="item"
 			type="net.azurewebsites.noties.core.DataItem.TodoItem" />
+		<variable
+			name="viewHolder"
+			type="net.azurewebsites.noties.ui.editor.todos.TodoItemAdapter.TodoItemViewHolder" />
 	</data>
 
 	<androidx.constraintlayout.widget.ConstraintLayout
@@ -21,15 +24,16 @@
 			android:padding="4dp"
 			android:src="@drawable/ic_drag_item"
 			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintEnd_toStartOf="@id/checkbox"
+			app:layout_constraintEnd_toStartOf="@id/check_item"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toTopOf="parent" />
 
 		<com.google.android.material.checkbox.MaterialCheckBox
-			android:id="@+id/checkbox"
+			android:id="@+id/check_item"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:checked="@={item.done}"
+			android:onClick="@{viewHolder::setItemDoneStatus}"
 			android:text=""
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintStart_toEndOf="@id/drag_item"
@@ -40,6 +44,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:background="@null"
+			android:enabled="@{!item.done}"
 			android:hint="@string/placeholder"
 			android:imeOptions="flagNoFullscreen"
 			android:importantForAutofill="no"
@@ -53,8 +58,9 @@
 			android:textCursorDrawable="@drawable/cursor_color"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toStartOf="@id/remove_item"
-			app:layout_constraintStart_toEndOf="@id/checkbox"
-			app:layout_constraintTop_toTopOf="parent" />
+			app:layout_constraintStart_toEndOf="@id/check_item"
+			app:layout_constraintTop_toTopOf="parent"
+			app:strikethrough="@{item.done}"/>
 
 		<ImageButton
 			android:id="@+id/remove_item"

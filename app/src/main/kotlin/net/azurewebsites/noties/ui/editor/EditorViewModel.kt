@@ -14,11 +14,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.azurewebsites.noties.core.DataItem
 import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.core.NoteEntity
 import net.azurewebsites.noties.domain.DeleteImagesUseCase
-import net.azurewebsites.noties.domain.InsertNoteWithImagesUseCase
+import net.azurewebsites.noties.domain.InsertNoteUseCase
 import net.azurewebsites.noties.domain.UpdateImageUseCase
 import net.azurewebsites.noties.domain.UpdateNoteUseCase
 import net.azurewebsites.noties.ui.helpers.extractUrls
@@ -34,7 +35,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditorViewModel @Inject constructor(
-	private val insertNoteWithImagesUseCase: InsertNoteWithImagesUseCase,
+	private val insertNoteUseCase: InsertNoteUseCase,
 	private val updateNoteUseCase: UpdateNoteUseCase,
 	private val updateImageUseCase: UpdateImageUseCase,
 	private val deleteImagesUseCase: DeleteImagesUseCase,
@@ -85,8 +86,11 @@ class EditorViewModel @Inject constructor(
 		}
 	}
 
-	suspend fun insertorUpdateNote(notebookId: Int): Result? {
+	suspend fun insertorUpdateNote(notebookId: Int, todoList: List<DataItem>): Result? {
 		if (note.isNonEmpty()) {
+			if (note.entity.isTodoList) {
+				convertTodoListToText(todoList)
+			}
 			if (note.entity.id == 0L) {
 				val newNote = createNote(
 					title = note.entity.title,
@@ -94,6 +98,7 @@ class EditorViewModel @Inject constructor(
 					images = note.images,
 					isProtected = note.entity.isProtected,
 					isPinned = note.entity.isPinned,
+					isTodoList = note.entity.isTodoList,
 					notebookId = notebookId
 				)
 				return insertNote(newNote)
@@ -106,6 +111,7 @@ class EditorViewModel @Inject constructor(
 						images = note.images,
 						isProtected = note.entity.isProtected,
 						isPinned = note.entity.isPinned,
+						isTodoList = note.entity.isTodoList,
 						notebookId = note.entity.notebookId,
 						id = note.entity.id
 					)
@@ -124,6 +130,11 @@ class EditorViewModel @Inject constructor(
 		savedState[TEMP_NOTE] = tempNote
 	}
 
+	fun setTextFromTodoList(todoList: List<DataItem>) {
+		val todoItems = todoList.filterIsInstance<DataItem.TodoItem>()
+		note.entity.text = todoItems.joinToString(Note.LINE_BREAK) { it.content }
+	}
+
 	private fun createNote(
 		title: String,
 		text: String,
@@ -131,6 +142,7 @@ class EditorViewModel @Inject constructor(
 		notebookId: Int,
 		isProtected: Boolean,
 		isPinned: Boolean,
+		isTodoList: Boolean,
 		id: Long = 0): Note {
 		return Note(
 			entity = NoteEntity(
@@ -141,6 +153,7 @@ class EditorViewModel @Inject constructor(
 				urls = extractUrls(text),
 				isProtected = isProtected,
 				isPinned = isPinned,
+				isTodoList = isTodoList,
 				notebookId = notebookId
 			),
 			images = images
@@ -149,7 +162,7 @@ class EditorViewModel @Inject constructor(
 
 	private suspend fun insertNote(note: Note): Result {
 		return withContext(viewModelScope.coroutineContext) {
-			insertNoteWithImagesUseCase(note.entity, note.images)
+			insertNoteUseCase(note.entity, note.images)
 			Result.NoteSaved
 		}
 	}
@@ -158,6 +171,20 @@ class EditorViewModel @Inject constructor(
 		return withContext(viewModelScope.coroutineContext) {
 			updateNoteUseCase(note.entity, note.images)
 			Result.NoteUpdated
+		}
+	}
+
+	private fun convertTodoListToText(todoList: List<DataItem>) {
+		val todoItems = todoList.filterIsInstance<DataItem.TodoItem>()
+		note.entity.text = todoItems.joinToString(Note.LINE_BREAK) {
+			if (it.done) {
+				if (it.content.startsWith(Note.PREFIX_DONE)) it.content
+				else "${Note.PREFIX_DONE}${it.content}"
+			}
+			else {
+				if (it.content.startsWith(Note.PREFIX_NOT_DONE)) it.content
+				else "${Note.PREFIX_NOT_DONE}${it.content}"
+			}
 		}
 	}
 

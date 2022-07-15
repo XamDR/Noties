@@ -67,7 +67,7 @@
 				android:layout_marginTop="8dp"
 				android:layout_marginEnd="16dp"
 				android:ellipsize="end"
-				android:maxLines="3"
+				android:maxLines="5"
 				android:text="@{note.entity.text}"
 				android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
 				android:visibility="@{TextUtils.isEmpty(note.entity.text) ? View.GONE : View.VISIBLE}"

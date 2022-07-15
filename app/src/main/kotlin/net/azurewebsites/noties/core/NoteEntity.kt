@@ -19,7 +19,7 @@ data class NoteEntity(
 	@ColumnInfo(name = "is_protected") val isProtected: Boolean = false,
 	@ColumnInfo(name = "is_trashed") val isTrashed: Boolean = false,
 	@ColumnInfo(name = "is_pinned") val isPinned: Boolean = false,
-	@ColumnInfo(name = "is_todo_list") val isTodoList: Boolean = false,
+	@ColumnInfo(name = "is_todo_list") var isTodoList: Boolean = false,
 	@ColumnInfo(name = "notebook_id") val notebookId: Int = 0) : Parcelable {
 
 	fun getUrlCount() = urls.size

@@ -5,10 +5,12 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.BlurMaskFilter
 import android.graphics.Color
+import android.graphics.Paint
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
@@ -21,6 +23,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.ActionMode
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.getSystemService
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
@@ -189,3 +192,16 @@ val DocumentFile.simpleName: String?
 	get() = this.name?.substringBeforeLast('.')
 
 fun Context.getIntArray(@ArrayRes resId: Int) = this.resources.getIntArray(resId)
+
+fun Toolbar.findItem(@IdRes resId: Int): MenuItem {
+	return this.menu.findItem(resId)
+}
+
+fun TextView.strikethrough(shouldStrike: Boolean) {
+	paintFlags = if (shouldStrike) {
+		paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+	}
+	else {
+		paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+	}
+}

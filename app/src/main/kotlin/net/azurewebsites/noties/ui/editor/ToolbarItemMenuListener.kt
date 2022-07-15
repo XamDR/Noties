@@ -4,4 +4,5 @@ interface ToolbarItemMenuListener {
 	fun shareContent()
 	fun showDeleteImagesDialog()
 	fun openTextFile()
+	fun hideTodoList()
 }

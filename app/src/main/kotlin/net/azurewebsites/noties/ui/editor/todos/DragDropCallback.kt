@@ -1,4 +1,4 @@
-package net.azurewebsites.noties.ui.editor.todolist
+package net.azurewebsites.noties.ui.editor.todos
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_DRAG
