@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import net.azurewebsites.noties.databinding.DialogFragmentEditorMenuBinding
 
@@ -11,12 +12,14 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 
 	private var _binding: DialogFragmentEditorMenuBinding? = null
 	private val binding get() = _binding!!
+	private val viewModel by viewModels<EditorViewModel>({ requireParentFragment() })
 
 	override fun onCreateView(inflater: LayoutInflater,
 							  container: ViewGroup?,
 							  savedInstanceState: Bundle?): View {
 		_binding = DialogFragmentEditorMenuBinding.inflate(inflater, container, false).apply {
 			fragment = this@EditorMenuFragment
+			vm = viewModel
 		}
 		return binding.root
 	}

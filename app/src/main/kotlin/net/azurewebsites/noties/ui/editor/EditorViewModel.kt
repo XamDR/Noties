@@ -86,11 +86,8 @@ class EditorViewModel @Inject constructor(
 		}
 	}
 
-	suspend fun insertorUpdateNote(notebookId: Int, todoList: List<DataItem>): Result? {
+	suspend fun insertorUpdateNote(notebookId: Int): Result? {
 		if (note.isNonEmpty()) {
-			if (note.entity.isTodoList) {
-				convertTodoListToText(todoList)
-			}
 			if (note.entity.id == 0L) {
 				val newNote = createNote(
 					title = note.entity.title,
@@ -128,6 +125,20 @@ class EditorViewModel @Inject constructor(
 	fun saveState() {
 		savedState[NOTE] = note
 		savedState[TEMP_NOTE] = tempNote
+	}
+
+	fun convertTodoListToText(todoList: List<DataItem>) {
+		val todoItems = todoList.filterIsInstance<DataItem.TodoItem>()
+		note.entity.text = todoItems.joinToString(Note.LINE_BREAK) {
+			if (it.done) {
+				if (it.content.startsWith(Note.PREFIX_DONE)) it.content
+				else "${Note.PREFIX_DONE}${it.content}"
+			}
+			else {
+				if (it.content.startsWith(Note.PREFIX_NOT_DONE)) it.content
+				else "${Note.PREFIX_NOT_DONE}${it.content}"
+			}
+		}
 	}
 
 	fun setTextFromTodoList(todoList: List<DataItem>) {
@@ -171,20 +182,6 @@ class EditorViewModel @Inject constructor(
 		return withContext(viewModelScope.coroutineContext) {
 			updateNoteUseCase(note.entity, note.images)
 			Result.NoteUpdated
-		}
-	}
-
-	private fun convertTodoListToText(todoList: List<DataItem>) {
-		val todoItems = todoList.filterIsInstance<DataItem.TodoItem>()
-		note.entity.text = todoItems.joinToString(Note.LINE_BREAK) {
-			if (it.done) {
-				if (it.content.startsWith(Note.PREFIX_DONE)) it.content
-				else "${Note.PREFIX_DONE}${it.content}"
-			}
-			else {
-				if (it.content.startsWith(Note.PREFIX_NOT_DONE)) it.content
-				else "${Note.PREFIX_NOT_DONE}${it.content}"
-			}
 		}
 	}
 

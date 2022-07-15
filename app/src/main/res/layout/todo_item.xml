@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools">
 
 	<data>
 		<variable
@@ -44,7 +45,6 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:background="@null"
-			android:enabled="@{!item.done}"
 			android:hint="@string/placeholder"
 			android:imeOptions="flagNoFullscreen"
 			android:importantForAutofill="no"
@@ -60,6 +60,7 @@
 			app:layout_constraintEnd_toStartOf="@id/remove_item"
 			app:layout_constraintStart_toEndOf="@id/check_item"
 			app:layout_constraintTop_toTopOf="parent"
+			app:layout_goneMarginEnd="48dp"
 			app:strikethrough="@{item.done}"/>
 
 		<ImageButton
@@ -70,9 +71,11 @@
 			android:contentDescription="@string/remove_item"
 			android:padding="4dp"
 			android:src="@drawable/ic_remove_item"
+			android:visibility="gone"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toEndOf="@id/todo_item"
-			app:layout_constraintTop_toTopOf="parent" />
+			app:layout_constraintTop_toTopOf="parent"
+			tools:visibility="visible"/>
 	</androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

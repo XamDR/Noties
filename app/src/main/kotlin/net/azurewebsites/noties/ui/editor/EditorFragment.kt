@@ -120,6 +120,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		imageAdapter.submitList(viewModel.note.images)
 		if (viewModel.note.entity.isTodoList) {
 			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = true
+			binding.editorToolbar.findItem(R.id.open_file).isVisible = false
 		}
 	}
 
@@ -216,6 +217,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 			initializeTextAdapter()
 			concatAdapter.addAdapter(textAdapter)
 			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = false
+			binding.editorToolbar.findItem(R.id.open_file).isVisible = true
 		}
 	}
 
@@ -261,7 +263,10 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	private fun onBackPressed() {
 		requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
 			viewLifecycleOwner.lifecycleScope.launch {
-				when (viewModel.insertorUpdateNote(notebookId, todoItemAdapter.todoList)) {
+				if (viewModel.note.entity.isTodoList) {
+					viewModel.convertTodoListToText(todoItemAdapter.todoList)
+				}
+				when (viewModel.insertorUpdateNote(notebookId)) {
 					Result.NoteSaved -> context?.showToast(R.string.note_saved)
 					Result.NoteUpdated -> context?.showToast(R.string.note_updated)
 					Result.EmptyNote -> setNoteToBeDeleted(viewModel.note)
@@ -385,6 +390,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 			concatAdapter.addAdapter(todoItemAdapter)
 			viewModel.note.entity.isTodoList = true
 			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = true
+			binding.editorToolbar.findItem(R.id.open_file).isVisible = false
 		}
 	}
 

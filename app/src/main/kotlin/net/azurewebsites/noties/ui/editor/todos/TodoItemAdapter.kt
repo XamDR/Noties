@@ -1,10 +1,10 @@
 package net.azurewebsites.noties.ui.editor.todos
 
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
+import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +14,8 @@ import net.azurewebsites.noties.databinding.TodoItemBinding
 import net.azurewebsites.noties.databinding.TodoItemFooterBinding
 import net.azurewebsites.noties.ui.editor.EditorFragment
 import net.azurewebsites.noties.ui.helpers.SpanSizeLookupOwner
+import net.azurewebsites.noties.ui.helpers.printDebug
+import net.azurewebsites.noties.ui.helpers.showSoftKeyboard
 import net.azurewebsites.noties.ui.helpers.strikethrough
 
 class TodoItemAdapter(
@@ -23,14 +25,15 @@ class TodoItemAdapter(
 	inner class TodoItemViewHolder(private val binding: TodoItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
 		init {
+			binding.viewHolder = this
 			startDragging(binding.dragItem, this, itemTouchHelper)
 			binding.removeItem.setOnClickListener { removeItem(bindingAdapterPosition) }
+			setupEditText()
 		}
 
 		fun bind(todoItem: DataItem.TodoItem) {
 			binding.apply {
 				this.item = todoItem
-				this.viewHolder = this@TodoItemViewHolder
 				executePendingBindings()
 			}
 		}
@@ -39,7 +42,14 @@ class TodoItemAdapter(
 			val isDone = (view as CompoundButton).isChecked
 			binding.todoItem.apply {
 				strikethrough(isDone)
-				isEnabled = !isDone
+			}
+		}
+
+		private fun setupEditText() {
+			binding.todoItem.apply {
+				setOnFocusChangeListener { _, hasFocus -> binding.removeItem.isVisible = hasFocus }
+				setOnEditorActionListener(TodoItemActionListener())
+				post { if (text.isEmpty()) showSoftKeyboard() }
 			}
 		}
 	}
@@ -109,6 +119,21 @@ class TodoItemAdapter(
 			}
 			view.performClick()
 			false
+		}
+	}
+
+	private inner class TodoItemActionListener : TextView.OnEditorActionListener {
+		override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+			if (event != null) {
+				printDebug("ENTER", "ENTER key pressed!")
+			}
+			if (actionId == EditorInfo.IME_NULL) {
+				if (event?.action == KeyEvent.ACTION_DOWN) {
+					addItem()
+					return true
+				}
+			}
+			return false
 		}
 	}
 
