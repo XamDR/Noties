@@ -10,7 +10,7 @@
 		<variable
 			name="note"
 			type="net.azurewebsites.noties.core.Note" />
-		<import type="net.azurewebsites.noties.ui.helpers.SpannableConverter" />
+		<import type="net.azurewebsites.noties.ui.editor.todos.SpannableConverter" />
 	</data>
 
 	<com.google.android.material.card.MaterialCardView

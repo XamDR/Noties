@@ -1,4 +1,4 @@
-package net.azurewebsites.noties.ui.helpers
+package net.azurewebsites.noties.ui.editor.todos
 
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
