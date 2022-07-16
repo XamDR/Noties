@@ -129,7 +129,7 @@ class EditorViewModel @Inject constructor(
 
 	fun convertTodoListToText(todoList: List<DataItem>) {
 		val todoItems = todoList.filterIsInstance<DataItem.TodoItem>()
-		note.entity.text = todoItems.joinToString(Note.LINE_BREAK) {
+		note.entity.text = todoItems.joinToString(Note.NEWLINE) {
 			if (it.done) {
 				if (it.content.startsWith(Note.PREFIX_DONE)) it.content
 				else "${Note.PREFIX_DONE}${it.content}"
@@ -143,7 +143,7 @@ class EditorViewModel @Inject constructor(
 
 	fun setTextFromTodoList(todoList: List<DataItem>) {
 		val todoItems = todoList.filterIsInstance<DataItem.TodoItem>()
-		note.entity.text = todoItems.joinToString(Note.LINE_BREAK) { it.content }
+		note.entity.text = todoItems.joinToString(Note.NEWLINE) { it.content }
 	}
 
 	private fun createNote(

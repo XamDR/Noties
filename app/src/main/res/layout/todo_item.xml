@@ -40,13 +40,13 @@
 			app:layout_constraintStart_toEndOf="@id/drag_item"
 			app:layout_constraintTop_toTopOf="parent" />
 
-		<EditText
+		<net.azurewebsites.noties.ui.views.MultiLineActionEditText
 			android:id="@+id/todo_item"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:background="@null"
 			android:hint="@string/placeholder"
-			android:imeOptions="flagNoFullscreen"
+			android:imeOptions="actionDone|flagNoFullscreen"
 			android:importantForAutofill="no"
 			android:inputType="textMultiLine|textCapSentences"
 			android:minHeight="48dp"

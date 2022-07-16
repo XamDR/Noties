@@ -1,5 +1,6 @@
 package net.azurewebsites.noties.ui.editor.todos
 
+import android.text.TextUtils
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
@@ -14,7 +15,6 @@ import net.azurewebsites.noties.databinding.TodoItemBinding
 import net.azurewebsites.noties.databinding.TodoItemFooterBinding
 import net.azurewebsites.noties.ui.editor.EditorFragment
 import net.azurewebsites.noties.ui.helpers.SpanSizeLookupOwner
-import net.azurewebsites.noties.ui.helpers.printDebug
 import net.azurewebsites.noties.ui.helpers.showSoftKeyboard
 import net.azurewebsites.noties.ui.helpers.strikethrough
 
@@ -49,7 +49,7 @@ class TodoItemAdapter(
 			binding.todoItem.apply {
 				setOnFocusChangeListener { _, hasFocus -> binding.removeItem.isVisible = hasFocus }
 				setOnEditorActionListener(TodoItemActionListener())
-				post { if (text.isEmpty()) showSoftKeyboard() }
+				post { if (TextUtils.isEmpty(text)) showSoftKeyboard() }
 			}
 		}
 	}
@@ -124,14 +124,9 @@ class TodoItemAdapter(
 
 	private inner class TodoItemActionListener : TextView.OnEditorActionListener {
 		override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
-			if (event != null) {
-				printDebug("ENTER", "ENTER key pressed!")
-			}
-			if (actionId == EditorInfo.IME_NULL) {
-				if (event?.action == KeyEvent.ACTION_DOWN) {
-					addItem()
-					return true
-				}
+			if (actionId == EditorInfo.IME_ACTION_DONE) {
+				addItem()
+				return true
 			}
 			return false
 		}
