@@ -10,10 +10,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.SpannedString
-import android.text.style.BulletSpan
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -207,15 +203,5 @@ fun TextView.strikethrough(shouldStrike: Boolean) {
 	}
 	else {
 		paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-	}
-}
-
-fun List<SpannedString>.toBulletedList(): CharSequence {
-	return SpannableString(this.joinToString("\n")).apply {
-		this@toBulletedList.foldIndexed(0) { index, acc, span ->
-			val end = acc + span.length + if (index != this@toBulletedList.size - 1) 1 else 0
-			this.setSpan(BulletSpan(16), acc, end, Spanned.SPAN_PARAGRAPH)
-			end
-		}
 	}
 }
