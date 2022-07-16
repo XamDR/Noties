@@ -27,6 +27,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import com.google.android.material.transition.MaterialContainerTransform
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -34,6 +35,9 @@ import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.FragmentEditorBinding
+import net.azurewebsites.noties.core.DataItem
+import net.azurewebsites.noties.ui.editor.todos.DragDropCallback
+import net.azurewebsites.noties.ui.editor.todos.TodoItemAdapter
 import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.image.*
 import net.azurewebsites.noties.ui.notes.NotesFragment
@@ -55,7 +59,9 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		PickImagesCallback(this)
 	)
 	private val imageAdapter = ImageAdapter(this)
-	private lateinit var editorTextAdapter: EditorTextAdapter
+	private lateinit var textAdapter: EditorTextAdapter
+	private lateinit var todoItemAdapter: TodoItemAdapter
+	private lateinit var concatAdapter: ConcatAdapter
 	private val note by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelable(NOTE) ?: Note()
 	}
@@ -79,15 +85,14 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		ActivityResultContracts.OpenDocument(),
 		OpenFileCallback(this)
 	)
+	private val itemTouchHelper = ItemTouchHelper(DragDropCallback())
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		if (savedInstanceState == null) {
 			viewModel.note = note
 		}
-		editorTextAdapter = EditorTextAdapter(viewModel.note, this).apply {
-			setOnContentReceivedListener { uri -> addImages(listOf(uri)) }
-		}
+		initializeAdapters()
 	}
 
 	override fun onCreateView(inflater: LayoutInflater,
@@ -113,6 +118,10 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		binding.editorToolbar.setOnMenuItemClickListener(menuItemClickListener)
 		setupRecyclerView()
 		imageAdapter.submitList(viewModel.note.images)
+		if (viewModel.note.entity.isTodoList) {
+			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = true
+			binding.editorToolbar.findItem(R.id.open_file).isVisible = false
+		}
 	}
 
 	override fun addImages(uris: List<Uri>) {
@@ -192,7 +201,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 					binding.noteTitle.setText(file?.simpleName)
 					viewModel.note.entity.text = reader.readText()
 				}
-				editorTextAdapter.notifyItemChanged(0)
+				textAdapter.notifyItemChanged(0)
 			}
 		}
 		catch (e: FileNotFoundException) {
@@ -201,10 +210,22 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		}
 	}
 
+	override fun hideTodoList() {
+		if (concatAdapter.removeAdapter(todoItemAdapter)) {
+			viewModel.setTextFromTodoList(todoItemAdapter.todoList)
+			viewModel.note.entity.isTodoList = false
+			initializeTextAdapter()
+			concatAdapter.addAdapter(textAdapter)
+			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = false
+			binding.editorToolbar.findItem(R.id.open_file).isVisible = true
+		}
+	}
+
 	fun showBottomSheetMenu() {
 		val menuDialog = EditorMenuFragment().apply {
 			setOnActivityResultListener { pickImagesLauncher.launch(arrayOf(MIME_TYPE_IMAGE)) }
 			setOnTakePictureListener { takePictureOrRequestPermission() }
+			setOnMakeTodoListListener { makeTodoList() }
 		}
 		showDialog(menuDialog, MENU_DIALOG_TAG)
 	}
@@ -231,17 +252,20 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	private fun setupRecyclerView() {
-		val concatAdapter = ConcatAdapter(imageAdapter, editorTextAdapter)
 		binding.content.apply {
 			adapter = concatAdapter
 			(layoutManager as GridLayoutManager).spanSizeLookup =
 				ConcatSpanSizeLookup(SPAN_COUNT) { concatAdapter.adapters }
+			addItemTouchHelper(itemTouchHelper)
 		}
 	}
 
 	private fun onBackPressed() {
 		requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
 			viewLifecycleOwner.lifecycleScope.launch {
+				if (viewModel.note.entity.isTodoList) {
+					viewModel.convertTodoListToText(todoItemAdapter.todoList)
+				}
 				when (viewModel.insertorUpdateNote(notebookId)) {
 					Result.NoteSaved -> context?.showToast(R.string.note_saved)
 					Result.NoteUpdated -> context?.showToast(R.string.note_updated)
@@ -358,6 +382,41 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 				bundleOf(NOTE to note)
 			)
 		}
+	}
+
+	private fun makeTodoList() {
+		if (concatAdapter.removeAdapter(textAdapter)) {
+			initializeTodoItemAdapter()
+			concatAdapter.addAdapter(todoItemAdapter)
+			viewModel.note.entity.isTodoList = true
+			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = true
+			binding.editorToolbar.findItem(R.id.open_file).isVisible = false
+		}
+	}
+
+	private fun initializeAdapters() {
+		concatAdapter = if (viewModel.note.entity.isTodoList) {
+			initializeTodoItemAdapter()
+			ConcatAdapter(imageAdapter, todoItemAdapter)
+		}
+		else {
+			initializeTextAdapter()
+			ConcatAdapter(imageAdapter, textAdapter)
+		}
+	}
+
+	private fun initializeTextAdapter() {
+		textAdapter = EditorTextAdapter(viewModel.note, this).apply {
+			setOnContentReceivedListener { uri -> addImages(listOf(uri)) }
+		}
+	}
+
+	private fun initializeTodoItemAdapter() {
+		val todoList = viewModel.note.toTodoList()
+		todoItemAdapter = TodoItemAdapter(
+			(todoList + DataItem.Footer).toMutableList(),
+			itemTouchHelper
+		)
 	}
 
 	companion object {

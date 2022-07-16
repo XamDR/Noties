@@ -1,9 +1,11 @@
 package net.azurewebsites.noties.ui.editor
 
+import android.graphics.Paint
 import android.text.util.Linkify
 import android.util.TypedValue
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.BindingAdapter
 import net.azurewebsites.noties.ui.views.LinedEditText
@@ -33,5 +35,15 @@ fun bindHasGridLines(editText: LinedEditText, value: String) {
 	when (EditorStyle.valueOf(value)) {
 		EditorStyle.Blank -> editText.hasGridLines = false
 		EditorStyle.Striped -> editText.hasGridLines = true
+	}
+}
+
+@BindingAdapter("strikethrough")
+fun strikethrough(view: TextView, shouldStrike: Boolean) {
+	view.paintFlags = if (shouldStrike) {
+		view.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+	}
+	else {
+		view.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
 	}
 }

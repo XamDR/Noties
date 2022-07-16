@@ -15,6 +15,9 @@ class MenuItemClickListener(private val listener: ToolbarItemMenuListener) : Too
 		R.id.open_file -> {
 			listener.openTextFile(); true
 		}
+		R.id.hide_todos -> {
+			listener.hideTodoList(); true
+		}
 		else -> false
 	}
 }

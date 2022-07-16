@@ -21,7 +21,24 @@ data class Note(
 		images: List<ImageEntity> = this.images
 	) = Note(entity, images)
 
-	fun getPreviewImage() = images.firstOrNull { it.mimeType?.startsWith("image") == true }?.uri
+	fun getPreviewImage() = images.firstOrNull()?.uri
 
 	fun isNonEmpty() = entity.text.isNotEmpty() || images.isNotEmpty()
+
+	fun toTodoList(): List<DataItem.TodoItem> {
+		return if (entity.text.isEmpty()) listOf(DataItem.TodoItem())
+		else entity.text.split(NEWLINE).map {
+			if (it.startsWith(PREFIX_DONE)) {
+				DataItem.TodoItem(content = it.removePrefix(PREFIX_DONE), done = true)
+			}
+			else DataItem.TodoItem(content = it.removePrefix(PREFIX_NOT_DONE))
+		}
+	}
+
+	companion object {
+		const val NEWLINE = "\n"
+		// These prefixes are based on the extended Markdown syntax for task lists.
+		const val PREFIX_NOT_DONE = "- [ ] "
+		const val PREFIX_DONE = "- [x] "
+	}
 }

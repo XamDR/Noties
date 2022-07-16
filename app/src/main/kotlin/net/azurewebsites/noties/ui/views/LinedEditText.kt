@@ -73,15 +73,13 @@ class LinedEditText @JvmOverloads constructor(
 	override fun onKeyPreIme(keyCode: Int, event: KeyEvent?): Boolean {
 		if (keyCode == KeyEvent.KEYCODE_BACK && TextUtils.isEmpty(text)) {
 			emptyContentCallback.invoke()
-			return false
+			return true
 		}
 		return super.onKeyPreIme(keyCode, event)
 	}
 
 	// Disable spell checking, but keep IME suggestions.
-	override fun isSuggestionsEnabled(): Boolean {
-		return false
-	}
+	override fun isSuggestionsEnabled() = false
 
 	private var emptyContentCallback: () -> Unit = {}
 

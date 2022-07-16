@@ -102,6 +102,10 @@
 	<string name="stt_prompt">Speak now!</string>
 	<string name="error_stt">Error. Your device does not support speech to text functionality.</string>
 	<string name="chooser_dialog_title">Share the content of your note</string>
+	<string name="drag_item">Drag todo item</string>
+	<string name="remove_item">Remove todo item</string>
+	<string name="new_todo_item">Todo item</string>
+	<string name="hide_checkboxes">Hide checkboxes</string>
 
 	<!-- Add attachment Fragment -->
 	<string name="text_editor_menu_fragment_label">Text editor menu attachments</string>

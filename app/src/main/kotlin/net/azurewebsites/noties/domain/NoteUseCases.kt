@@ -8,7 +8,7 @@ import net.azurewebsites.noties.data.NoteDao
 import net.azurewebsites.noties.data.NotebookDao
 import javax.inject.Inject
 
-class InsertNoteWithImagesUseCase @Inject constructor(
+class InsertNoteUseCase @Inject constructor(
 	private val notebookDao: NotebookDao,
 	private val noteDao: NoteDao,
 	private val imageDao: ImageDao) {
