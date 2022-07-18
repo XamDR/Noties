@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Note(
-	@Embedded val entity: NoteEntity = NoteEntity(),
+	@Embedded var entity: NoteEntity = NoteEntity(),
 	@Relation(
 		parentColumn = "id",
 		entityColumn = "note_id"

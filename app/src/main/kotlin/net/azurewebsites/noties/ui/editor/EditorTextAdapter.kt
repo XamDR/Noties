@@ -1,6 +1,7 @@
 package net.azurewebsites.noties.ui.editor
 
 import android.net.Uri
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
@@ -24,6 +25,7 @@ class EditorTextAdapter(
 		}
 
 		init {
+			binding.viewHolder = this
 			if (note.entity.id == 0L) {
 				binding.editor.post { binding.editor.showSoftKeyboard() }
 			}
@@ -37,6 +39,10 @@ class EditorTextAdapter(
 
 		fun bind(note: Note) {
 			binding.note = note
+		}
+
+		fun afterTextChanged(s: Editable) {
+			note.entity = note.entity.copy(text = s.toString())
 		}
 	}
 

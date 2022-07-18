@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.DataItem
+import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.TodoItemBinding
 import net.azurewebsites.noties.databinding.TodoItemFooterBinding
 import net.azurewebsites.noties.ui.editor.EditorFragment
@@ -19,7 +20,7 @@ import net.azurewebsites.noties.ui.helpers.showSoftKeyboard
 import net.azurewebsites.noties.ui.helpers.strikethrough
 
 class TodoItemAdapter(
-	val todoList: MutableList<DataItem>,
+	private val todoList: MutableList<DataItem>,
 	private val itemTouchHelper: ItemTouchHelper) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), SpanSizeLookupOwner {
 
 	inner class TodoItemViewHolder(private val binding: TodoItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -97,6 +98,25 @@ class TodoItemAdapter(
 		todoList.removeAt(from)
 		todoList.add(to, fromItem)
 		notifyItemMoved(from, to)
+	}
+
+	fun convertItemsToString(): String {
+		val todoItems = todoList.filterIsInstance<DataItem.TodoItem>()
+		return todoItems.joinToString(Note.NEWLINE) {
+			if (it.done) {
+				if (it.content.startsWith(Note.PREFIX_DONE)) it.content
+				else "${Note.PREFIX_DONE}${it.content}"
+			}
+			else {
+				if (it.content.startsWith(Note.PREFIX_NOT_DONE)) it.content
+				else "${Note.PREFIX_NOT_DONE}${it.content}"
+			}
+		}
+	}
+
+	fun joinToString(): String {
+		val todoItems = todoList.filterIsInstance<DataItem.TodoItem>()
+		return todoItems.joinToString(Note.NEWLINE) { it.content }
 	}
 
 	private fun addItem() {

@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +44,7 @@ import net.azurewebsites.noties.ui.image.*
 import net.azurewebsites.noties.ui.notes.NotesFragment
 import net.azurewebsites.noties.ui.urls.JsoupHelper
 import java.io.FileNotFoundException
+import java.time.ZonedDateTime
 
 @AndroidEntryPoint
 class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
@@ -117,23 +119,27 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		onBackPressed()
 		binding.editorToolbar.setOnMenuItemClickListener(menuItemClickListener)
 		setupRecyclerView()
-		imageAdapter.submitList(viewModel.note.images)
+		if (viewModel.note.images.isNotEmpty()) {
+			imageAdapter.submitList(viewModel.note.images)
+			binding.editorToolbar.findItem(R.id.delete_images).isVisible = true
+		}
 		if (viewModel.note.entity.isTodoList) {
 			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = true
 			binding.editorToolbar.findItem(R.id.open_file).isVisible = false
 		}
 	}
 
+	override fun onSaveInstanceState(outState: Bundle) {
+		super.onSaveInstanceState(outState)
+		viewModel.saveState()
+	}
+
 	override fun addImages(uris: List<Uri>) {
 		viewLifecycleOwner.lifecycleScope.launch {
 			viewModel.addImages(requireContext(), uris)
 			imageAdapter.submitList(viewModel.note.images)
+			binding.editorToolbar.findItem(R.id.delete_images).isVisible = true
 		}
-	}
-
-	override fun onSaveInstanceState(outState: Bundle) {
-		super.onSaveInstanceState(outState)
-		viewModel.saveState()
 	}
 
 	override fun onLinkClicked(url: String) {
@@ -164,6 +170,9 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		val imageToBeDeleted = viewModel.note.images[position]
 		deleteImage(imageToBeDeleted)
 		imageAdapter.submitList(viewModel.note.images)
+		if (viewModel.note.images.isEmpty()) {
+			binding.editorToolbar.findItem(R.id.delete_images).isVisible = false
+		}
 	}
 
 	override fun shareContent() {
@@ -199,7 +208,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 				val file = DocumentFile.fromSingleUri(requireContext(), uri)
 				inputStream?.bufferedReader()?.use { reader ->
 					binding.noteTitle.setText(file?.simpleName)
-					viewModel.note.entity.text = reader.readText()
+					viewModel.note.entity = viewModel.note.entity.copy(text = reader.readText())
 				}
 				textAdapter.notifyItemChanged(0)
 			}
@@ -212,8 +221,10 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 
 	override fun hideTodoList() {
 		if (concatAdapter.removeAdapter(todoItemAdapter)) {
-			viewModel.setTextFromTodoList(todoItemAdapter.todoList)
-			viewModel.note.entity.isTodoList = false
+			viewModel.note.entity = viewModel.note.entity.copy(
+				text = todoItemAdapter.joinToString(),
+				isTodoList = false
+			)
 			initializeTextAdapter()
 			concatAdapter.addAdapter(textAdapter)
 			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = false
@@ -233,6 +244,10 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	fun navigateUp() {
 		binding.root.hideSoftKeyboard()
 		requireActivity().onBackPressed()
+	}
+
+	fun afterTextChanged(s: Editable) {
+		viewModel.note.entity = viewModel.note.entity.copy(title = s.toString())
 	}
 
 	private fun checkIfNoteIsProtected() {
@@ -262,18 +277,32 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 
 	private fun onBackPressed() {
 		requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-			viewLifecycleOwner.lifecycleScope.launch {
-				if (viewModel.note.entity.isTodoList) {
-					viewModel.convertTodoListToText(todoItemAdapter.todoList)
-				}
-				when (viewModel.insertorUpdateNote(notebookId)) {
-					Result.NoteSaved -> context?.showToast(R.string.note_saved)
-					Result.NoteUpdated -> context?.showToast(R.string.note_updated)
-					Result.EmptyNote -> setNoteToBeDeleted(viewModel.note)
-					else -> {}
-				}
-				findNavController().popBackStack()
+			insertOrUpdateNote(viewModel.note, viewModel.tempNote, notebookId)
+			findNavController().popBackStack()
+		}
+	}
+
+	private fun insertOrUpdateNote(note: Note, tempNote: Note, notebookId: Int) {
+		if (note.isNonEmpty()) {
+			if (note.entity.isTodoList) {
+				note.entity = note.entity.copy(text = todoItemAdapter.convertItemsToString())
 			}
+			if (note != tempNote) {
+				note.entity = note.entity.copy(
+					dateModification = ZonedDateTime.now(),
+					urls = extractUrls(note.entity.text)
+				)
+				if (note.entity.id == 0L) {
+					note.entity = note.entity.copy(notebookId = notebookId)
+					viewModel.insertNote(note) { context?.showToast(R.string.note_saved) }
+				}
+				else {
+					viewModel.updateNote(note) { context?.showToast(R.string.note_updated) }
+				}
+			}
+		}
+		else if (note.entity.id != 0L) {
+			setNoteToBeDeleted(note)
 		}
 	}
 
@@ -362,6 +391,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	private fun deleteAllImages() {
 		viewModel.note.images.forEach { deleteImage(it) }
 		imageAdapter.submitList(viewModel.note.images)
+		binding.editorToolbar.findItem(R.id.delete_images).isVisible = false
 	}
 
 	private fun deleteImage(image: ImageEntity) {
@@ -388,7 +418,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		if (concatAdapter.removeAdapter(textAdapter)) {
 			initializeTodoItemAdapter()
 			concatAdapter.addAdapter(todoItemAdapter)
-			viewModel.note.entity.isTodoList = true
+			viewModel.note.entity = viewModel.note.entity.copy(isTodoList = true)
 			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = true
 			binding.editorToolbar.findItem(R.id.open_file).isVisible = false
 		}

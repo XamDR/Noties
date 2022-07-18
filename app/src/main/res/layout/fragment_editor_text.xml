@@ -9,12 +9,16 @@
 		<variable
 			name="note"
 			type="net.azurewebsites.noties.core.Note" />
+		<variable
+			name="viewHolder"
+			type="net.azurewebsites.noties.ui.editor.EditorTextAdapter.EditorTextViewHolder" />
 	</data>
 
 	<net.azurewebsites.noties.ui.views.LinedEditText
 		android:id="@+id/editor"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:afterTextChanged="@{viewHolder::afterTextChanged}"
 		android:autoLink='@{PreferenceManager.getDefaultSharedPreferences(context).getBoolean("auto_link", true)}'
 		android:background="@null"
 		android:gravity="top|start"
@@ -29,7 +33,7 @@
 		android:paddingBottom="8dp"
 		android:scrollbars="none"
 		android:scrollHorizontally="false"
-		android:text="@={note.entity.text}"
+		android:text="@{note.entity.text}"
 		android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
 		android:textCursorDrawable="@drawable/cursor_color"
 		android:textSize='@{PreferenceManager.getDefaultSharedPreferences(context).getInt("font_size", 16)}'
