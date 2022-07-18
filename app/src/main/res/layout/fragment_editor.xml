@@ -6,11 +6,11 @@
 	<data>
 		<import type="net.azurewebsites.noties.ui.helpers.Converter"/>
 		<variable
-			name="vm"
-			type="net.azurewebsites.noties.ui.editor.EditorViewModel" />
-		<variable
 			name="fragment"
-			type="net.azurewebsites.noties.ui.editor.EditorFragment" />
+			type="net.azurewebsites.noties.ui.editor.EditorFragment"/>
+		<variable
+			name="vm"
+			type="net.azurewebsites.noties.ui.editor.EditorViewModel"/>
 	</data>
 
 	<androidx.constraintlayout.widget.ConstraintLayout

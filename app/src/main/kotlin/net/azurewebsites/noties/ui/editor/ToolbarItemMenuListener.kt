@@ -5,4 +5,8 @@ interface ToolbarItemMenuListener {
 	fun showDeleteImagesDialog()
 	fun openTextFile()
 	fun hideTodoList()
+	fun lockNote()
+	fun unlockNote()
+	fun pinNote()
+	fun unpinNote()
 }

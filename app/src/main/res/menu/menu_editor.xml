@@ -5,11 +5,24 @@
 	tools:context=".ui.editor.EditorFragment">
 
 	<item
-		android:id="@+id/share_content"
-		android:icon="@drawable/ic_share_content"
+		android:id="@+id/lock_note"
+		android:icon="@drawable/ic_lock_note"
 		android:orderInCategory="0"
-		android:title="@string/share_content"
+		android:title="@string/lock_note"
 		app:showAsAction="ifRoom"/>
+
+	<item
+		android:id="@+id/pin_note"
+		android:icon="@drawable/ic_pin_note"
+		android:orderInCategory="2"
+		android:title="@string/pin_note"
+		app:showAsAction="ifRoom"/>
+
+	<item
+		android:id="@+id/share_content"
+		android:orderInCategory="4"
+		android:title="@string/share_content"
+		app:showAsAction="never"/>
 
 	<item
 		android:id="@+id/delete_images"

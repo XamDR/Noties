@@ -33,10 +33,10 @@ import com.google.android.material.transition.MaterialContainerTransform
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import net.azurewebsites.noties.R
+import net.azurewebsites.noties.core.DataItem
 import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.FragmentEditorBinding
-import net.azurewebsites.noties.core.DataItem
 import net.azurewebsites.noties.ui.editor.todos.DragDropCallback
 import net.azurewebsites.noties.ui.editor.todos.TodoItemAdapter
 import net.azurewebsites.noties.ui.helpers.*
@@ -56,17 +56,14 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	private val notebookId by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getInt(NotesFragment.ID, 1)
 	}
-	private val pickImagesLauncher = registerForActivityResult(
-		ActivityResultContracts.OpenMultipleDocuments(),
-		PickImagesCallback(this)
-	)
 	private val imageAdapter = ImageAdapter(this)
 	private lateinit var textAdapter: EditorTextAdapter
 	private lateinit var todoItemAdapter: TodoItemAdapter
 	private lateinit var concatAdapter: ConcatAdapter
-	private val note by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getParcelable(NOTE) ?: Note()
-	}
+	private val pickImagesLauncher = registerForActivityResult(
+		ActivityResultContracts.OpenMultipleDocuments(),
+		PickImagesCallback(this)
+	)
 	private val deviceCredentialLauncher = registerForActivityResult(
 		ActivityResultContracts.StartActivityForResult()
 	) { result -> activityResultCallback(result) }
@@ -82,7 +79,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	) { success -> takePictureCallback(success) }
 
 	private lateinit var tempUri: Uri
-	private val menuItemClickListener = MenuItemClickListener(this)
+	private lateinit var menuItemClickListener: MenuItemClickListener
 	private val openFileLauncher = registerForActivityResult(
 		ActivityResultContracts.OpenDocument(),
 		OpenFileCallback(this)
@@ -91,10 +88,9 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		if (savedInstanceState == null) {
-			viewModel.note = note
-		}
+		menuItemClickListener = MenuItemClickListener(this, viewModel.note)
 		initializeAdapters()
+		addChildHeadlessFragments()
 	}
 
 	override fun onCreateView(inflater: LayoutInflater,
@@ -119,14 +115,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		onBackPressed()
 		binding.editorToolbar.setOnMenuItemClickListener(menuItemClickListener)
 		setupRecyclerView()
-		if (viewModel.note.images.isNotEmpty()) {
-			imageAdapter.submitList(viewModel.note.images)
-			binding.editorToolbar.findItem(R.id.delete_images).isVisible = true
-		}
-		if (viewModel.note.entity.isTodoList) {
-			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = true
-			binding.editorToolbar.findItem(R.id.open_file).isVisible = false
-		}
+		updateToolbarUI()
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
@@ -136,7 +125,8 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 
 	override fun addImages(uris: List<Uri>) {
 		viewLifecycleOwner.lifecycleScope.launch {
-			viewModel.addImages(requireContext(), uris)
+			val fragment = childFragmentManager.findFragmentByTag(ADD_IMAGES_TAG) as AddImagesFragment
+			fragment.addImages(uris)
 			imageAdapter.submitList(viewModel.note.images)
 			binding.editorToolbar.findItem(R.id.delete_images).isVisible = true
 		}
@@ -176,20 +166,28 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	override fun shareContent() {
-		if (viewModel.note.isNonEmpty()) {
-			if (viewModel.note.images.isEmpty()) {
-				shareText(viewModel.note.entity.text)
-			}
-			else {
-				shareImagesAndText(
-					viewModel.note.images.map { it.uri },
-					viewModel.note.entity.text
-				)
-			}
-		}
-		else {
-			context?.showToast(R.string.empty_note_share)
-		}
+		val fragment = childFragmentManager.findFragmentByTag(SHARE_CONTENT_TAG) as ShareContentFragment
+		fragment.shareContent()
+	}
+
+	override fun lockNote() {
+		viewModel.updateNote(viewModel.entity.copy(isProtected = true))
+		binding.root.showSnackbar(R.string.note_locked)
+	}
+
+	override fun unlockNote() {
+		viewModel.updateNote(viewModel.entity.copy(isProtected = false))
+		binding.root.showSnackbar(R.string.note_unlocked)
+	}
+
+	override fun pinNote() {
+		viewModel.updateNote(viewModel.entity.copy(isPinned = true))
+		binding.root.showSnackbar(R.string.note_pinned)
+	}
+
+	override fun unpinNote() {
+		viewModel.updateNote(viewModel.entity.copy(isPinned = false))
+		binding.root.showSnackbar(R.string.note_unpinned)
 	}
 
 	override fun showDeleteImagesDialog() {
@@ -208,23 +206,23 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 				val file = DocumentFile.fromSingleUri(requireContext(), uri)
 				inputStream?.bufferedReader()?.use { reader ->
 					binding.noteTitle.setText(file?.simpleName)
-					viewModel.note.entity = viewModel.note.entity.copy(text = reader.readText())
+					viewModel.updateNote(viewModel.entity.copy(text = reader.readText()))
 				}
 				textAdapter.notifyItemChanged(0)
 			}
 		}
 		catch (e: FileNotFoundException) {
-			printError(TAG, e.message)
+			printError(IO, e.message)
 			context?.showToast(R.string.error_open_file)
 		}
 	}
 
 	override fun hideTodoList() {
 		if (concatAdapter.removeAdapter(todoItemAdapter)) {
-			viewModel.note.entity = viewModel.note.entity.copy(
+			viewModel.updateNote(viewModel.entity.copy(
 				text = todoItemAdapter.joinToString(),
 				isTodoList = false
-			)
+			))
 			initializeTextAdapter()
 			concatAdapter.addAdapter(textAdapter)
 			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = false
@@ -247,11 +245,11 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	fun afterTextChanged(s: Editable) {
-		viewModel.note.entity = viewModel.note.entity.copy(title = s.toString())
+		viewModel.updateNote(viewModel.entity.copy(title = s.toString()))
 	}
 
 	private fun checkIfNoteIsProtected() {
-		if (note.entity.isProtected) {
+		if (viewModel.entity.isProtected) {
 			binding.root.isVisible = false
 			requestConfirmeDeviceCredential()
 		}
@@ -272,6 +270,23 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 			(layoutManager as GridLayoutManager).spanSizeLookup =
 				ConcatSpanSizeLookup(SPAN_COUNT) { concatAdapter.adapters }
 			addItemTouchHelper(itemTouchHelper)
+		}
+	}
+
+	private fun updateToolbarUI() {
+		if (viewModel.note.images.isNotEmpty()) {
+			imageAdapter.submitList(viewModel.note.images)
+			binding.editorToolbar.findItem(R.id.delete_images).isVisible = true
+		}
+		if (viewModel.entity.isTodoList) {
+			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = true
+			binding.editorToolbar.findItem(R.id.open_file).isVisible = false
+		}
+		if (viewModel.entity.isProtected) {
+			binding.editorToolbar.findItem(R.id.lock_note).setIcon(R.drawable.ic_unlock_note)
+		}
+		if (viewModel.entity.isPinned) {
+			binding.editorToolbar.findItem(R.id.pin_note).setIcon(R.drawable.ic_unpin_note)
 		}
 	}
 
@@ -368,26 +383,6 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 			}.show()
 	}
 
-	private fun shareText(text: String) {
-		val shareIntent = Intent().apply {
-			action = Intent.ACTION_SEND
-			putExtra(Intent.EXTRA_TEXT, text)
-			type = MIME_TYPE_TEXT
-		}
-		startActivity(Intent.createChooser(shareIntent, getString(R.string.chooser_dialog_title)))
-	}
-
-	private fun shareImagesAndText(images: List<Uri?>, text: String) {
-		val shareIntent = Intent().apply {
-			action = Intent.ACTION_SEND_MULTIPLE
-			putExtra(Intent.EXTRA_TEXT, text)
-			putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(images))
-			type = MIME_TYPE_IMAGE
-			addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-		}
-		startActivity(Intent.createChooser(shareIntent, getString(R.string.chooser_dialog_title)))
-	}
-
 	private fun deleteAllImages() {
 		viewModel.note.images.forEach { deleteImage(it) }
 		imageAdapter.submitList(viewModel.note.images)
@@ -409,7 +404,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		if (note.entity.id != 0L) {
 			setFragmentResult(
 				REQUEST_KEY,
-				bundleOf(NOTE to note)
+				bundleOf(EditorViewModel.NOTE to note)
 			)
 		}
 	}
@@ -418,14 +413,24 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		if (concatAdapter.removeAdapter(textAdapter)) {
 			initializeTodoItemAdapter()
 			concatAdapter.addAdapter(todoItemAdapter)
-			viewModel.note.entity = viewModel.note.entity.copy(isTodoList = true)
+			viewModel.updateNote(viewModel.entity.copy(isTodoList = true))
 			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = true
 			binding.editorToolbar.findItem(R.id.open_file).isVisible = false
 		}
 	}
 
+	private fun addChildHeadlessFragments() {
+		if (childFragmentManager.findFragmentByTag(ADD_IMAGES_TAG) == null &&
+			childFragmentManager.findFragmentByTag(SHARE_CONTENT_TAG) == null) {
+			childFragmentManager.beginTransaction()
+				.add(AddImagesFragment(), ADD_IMAGES_TAG)
+				.add(ShareContentFragment(), SHARE_CONTENT_TAG)
+				.commit()
+		}
+	}
+
 	private fun initializeAdapters() {
-		concatAdapter = if (viewModel.note.entity.isTodoList) {
+		concatAdapter = if (viewModel.entity.isTodoList) {
 			initializeTodoItemAdapter()
 			ConcatAdapter(imageAdapter, todoItemAdapter)
 		}
@@ -450,15 +455,16 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	companion object {
-		const val NOTE = "note"
 		const val REQUEST_KEY = "deletion"
 		const val SPAN_COUNT = 2
+		const val MIME_TYPE_IMAGE = "image/*"
+		const val MIME_TYPE_TEXT = "text/plain"
 		private const val MENU_DIALOG_TAG = "MENU_DIALOG"
 		private const val ALT_TEXT_DIALOG_TAG = "ALT_TEXT_DIALOG"
 		private const val DELETE_IMAGES_DIALOG_TAG = "DELETE_IMAGES"
+		private const val ADD_IMAGES_TAG = "ADD_IMAGES"
+		private const val SHARE_CONTENT_TAG = "SHARE_CONTENT"
 		private const val IMAGE_STORE_MANAGER = "ImageStoreManager"
-		private const val MIME_TYPE_IMAGE = "image/*"
-		private const val MIME_TYPE_TEXT = "text/plain"
-		private const val TAG = "IO"
+		private const val IO = "IO"
 	}
 }
