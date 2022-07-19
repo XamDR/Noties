@@ -4,13 +4,13 @@
 	xmlns:tools="http://schemas.android.com/tools">
 
 	<data>
-		<import type="net.azurewebsites.noties.ui.helpers.Converter"/>
+		<import type="net.azurewebsites.noties.ui.helpers.Converter" />
 		<variable
 			name="fragment"
-			type="net.azurewebsites.noties.ui.editor.EditorFragment"/>
+			type="net.azurewebsites.noties.ui.editor.EditorFragment" />
 		<variable
 			name="vm"
-			type="net.azurewebsites.noties.ui.editor.EditorViewModel"/>
+			type="net.azurewebsites.noties.ui.editor.EditorViewModel" />
 	</data>
 
 	<androidx.constraintlayout.widget.ConstraintLayout
@@ -20,16 +20,17 @@
 
 		<com.google.android.material.appbar.AppBarLayout
 			android:id="@+id/app_bar"
-			android:layout_width="match_parent"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:background="@android:color/transparent"
 			android:stateListAnimator="@null"
+			app:layout_constraintBottom_toTopOf="@id/content"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toTopOf="parent">
 
 			<androidx.appcompat.widget.Toolbar
-				android:id="@+id/editor_toolbar"
+				android:id="@+id/top_toolbar"
 				android:layout_width="match_parent"
 				android:layout_height="?attr/actionBarSize"
 				app:menu="@menu/menu_editor"
@@ -40,8 +41,8 @@
 				<com.google.android.material.textfield.TextInputLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:theme="@style/ThemeOverlay.AppTheme.TextInputEditText.Outlined"
 					android:paddingTop="8dp"
+					android:theme="@style/ThemeOverlay.AppTheme.TextInputEditText.Outlined"
 					app:boxBackgroundMode="none"
 					app:endIconContentDescription="@string/clear_note_title_text"
 					app:endIconMode="clear_text"
@@ -81,47 +82,25 @@
 			app:spanCount="@integer/span_count"
 			tools:listitem="@layout/single_image_item" />
 
-		<LinearLayout
+		<com.google.android.material.bottomappbar.BottomAppBar
 			android:id="@+id/bottom_toolbar"
-			android:layout_width="match_parent"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:orientation="horizontal"
-			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toBottomOf="@id/content"
-			app:layout_constraintBottom_toBottomOf="parent">
-
-			<ImageButton
-				android:id="@+id/add"
-				android:layout_width="@dimen/bottom_app_bar_item_height"
-				android:layout_height="@dimen/bottom_app_bar_item_height"
-				android:layout_marginStart="8dp"
-				android:background="?selectableItemBackgroundBorderless"
-				android:contentDescription="@string/add_attachment"
-				android:onClick="@{() -> fragment.showBottomSheetMenu()}"
-				android:src="@drawable/ic_add_attachment"/>
+			app:menu="@menu/menu_editor_bottom"
+			app:title="@string/app_name"
+			tools:ignore="BottomAppBar">
 
 			<TextView
-				android:id="@+id/note_update_date"
-				android:layout_width="0dp"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_gravity="center"
-				android:layout_marginStart="8dp"
-				android:layout_marginEnd="8dp"
-				android:layout_weight="1"
-				android:gravity="center"
+				android:padding="4dp"
 				android:text="@{@string/note_modified_date(Converter.displayCurrentDateTime(vm.note.entity.dateModification))}"
-				android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+				android:textAppearance="@style/TextAppearance.Material3.BodySmall"
 				tools:text="Última edición: 14/12/2021 22:20" />
-
-			<ImageButton
-				android:id="@+id/note_color"
-				android:layout_width="@dimen/bottom_app_bar_item_height"
-				android:layout_height="@dimen/bottom_app_bar_item_height"
-				android:layout_marginEnd="8dp"
-				android:background="?selectableItemBackgroundBorderless"
-				android:contentDescription="@string/pick_note_color"
-				android:src="@drawable/ic_note_palette" />
-		</LinearLayout>
+		</com.google.android.material.bottomappbar.BottomAppBar>
 	</androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

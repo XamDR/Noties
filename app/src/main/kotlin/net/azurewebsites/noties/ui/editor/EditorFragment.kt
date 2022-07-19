@@ -48,7 +48,7 @@ import java.time.ZonedDateTime
 
 @AndroidEntryPoint
 class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
-	ImageItemContextMenuListener, ToolbarItemMenuListener, OpenFileListener {
+	ImageItemContextMenuListener, ToolbarItemMenuListener, BottomToolbarMenuListener, OpenFileListener {
 
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
@@ -80,6 +80,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 
 	private lateinit var tempUri: Uri
 	private lateinit var menuItemClickListener: MenuItemClickListener
+	private val bottomMenuItemClickListener = BottomMenuItemClickListener(this)
 	private val openFileLauncher = registerForActivityResult(
 		ActivityResultContracts.OpenDocument(),
 		OpenFileCallback(this)
@@ -113,9 +114,10 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		checkIfNoteIsProtected()
 		initTransition()
 		onBackPressed()
-		binding.editorToolbar.setOnMenuItemClickListener(menuItemClickListener)
+		binding.topToolbar.setOnMenuItemClickListener(menuItemClickListener)
+		binding.bottomToolbar.setOnMenuItemClickListener(bottomMenuItemClickListener)
 		setupRecyclerView()
-		updateToolbarUI()
+		updateToolbarsUI()
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
@@ -128,7 +130,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 			val fragment = childFragmentManager.findFragmentByTag(ADD_IMAGES_TAG) as AddImagesFragment
 			fragment.addImages(uris)
 			imageAdapter.submitList(viewModel.note.images)
-			binding.editorToolbar.findItem(R.id.delete_images).isVisible = true
+			binding.bottomToolbar.findItem(R.id.delete_images).isVisible = true
 		}
 	}
 
@@ -161,7 +163,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		deleteImage(imageToBeDeleted)
 		imageAdapter.submitList(viewModel.note.images)
 		if (viewModel.note.images.isEmpty()) {
-			binding.editorToolbar.findItem(R.id.delete_images).isVisible = false
+			binding.bottomToolbar.findItem(R.id.delete_images).isVisible = false
 		}
 	}
 
@@ -225,12 +227,12 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 			))
 			initializeTextAdapter()
 			concatAdapter.addAdapter(textAdapter)
-			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = false
-			binding.editorToolbar.findItem(R.id.open_file).isVisible = true
+			binding.bottomToolbar.findItem(R.id.hide_todos).isVisible = false
+			binding.bottomToolbar.findItem(R.id.open_file).isVisible = true
 		}
 	}
 
-	fun showBottomSheetMenu() {
+	override fun showBottomSheetMenu() {
 		val menuDialog = EditorMenuFragment().apply {
 			setOnActivityResultListener { pickImagesLauncher.launch(arrayOf(MIME_TYPE_IMAGE)) }
 			setOnTakePictureListener { takePictureOrRequestPermission() }
@@ -273,20 +275,20 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		}
 	}
 
-	private fun updateToolbarUI() {
+	private fun updateToolbarsUI() {
 		if (viewModel.note.images.isNotEmpty()) {
 			imageAdapter.submitList(viewModel.note.images)
-			binding.editorToolbar.findItem(R.id.delete_images).isVisible = true
+			binding.bottomToolbar.findItem(R.id.delete_images).isVisible = true
 		}
 		if (viewModel.entity.isTodoList) {
-			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = true
-			binding.editorToolbar.findItem(R.id.open_file).isVisible = false
+			binding.bottomToolbar.findItem(R.id.hide_todos).isVisible = true
+			binding.bottomToolbar.findItem(R.id.open_file).isVisible = false
 		}
 		if (viewModel.entity.isProtected) {
-			binding.editorToolbar.findItem(R.id.lock_note).setIcon(R.drawable.ic_unlock_note)
+			binding.topToolbar.findItem(R.id.lock_note).setIcon(R.drawable.ic_unlock_note)
 		}
 		if (viewModel.entity.isPinned) {
-			binding.editorToolbar.findItem(R.id.pin_note).setIcon(R.drawable.ic_unpin_note)
+			binding.topToolbar.findItem(R.id.pin_note).setIcon(R.drawable.ic_unpin_note)
 		}
 	}
 
@@ -386,7 +388,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	private fun deleteAllImages() {
 		viewModel.note.images.forEach { deleteImage(it) }
 		imageAdapter.submitList(viewModel.note.images)
-		binding.editorToolbar.findItem(R.id.delete_images).isVisible = false
+		binding.bottomToolbar.findItem(R.id.delete_images).isVisible = false
 	}
 
 	private fun deleteImage(image: ImageEntity) {
@@ -414,8 +416,8 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 			initializeTodoItemAdapter()
 			concatAdapter.addAdapter(todoItemAdapter)
 			viewModel.updateNote(viewModel.entity.copy(isTodoList = true))
-			binding.editorToolbar.findItem(R.id.hide_todos).isVisible = true
-			binding.editorToolbar.findItem(R.id.open_file).isVisible = false
+			binding.bottomToolbar.findItem(R.id.hide_todos).isVisible = true
+			binding.bottomToolbar.findItem(R.id.open_file).isVisible = false
 		}
 	}
 

@@ -10,18 +10,6 @@ class MenuItemClickListener(
 	private val note: Note) : Toolbar.OnMenuItemClickListener {
 
 	override fun onMenuItemClick(item: MenuItem) = when (item.itemId) {
-		R.id.share_content -> {
-			listener.shareContent(); true
-		}
-		R.id.delete_images -> {
-			listener.showDeleteImagesDialog(); true
-		}
-		R.id.open_file -> {
-			listener.openTextFile(); true
-		}
-		R.id.hide_todos -> {
-			listener.hideTodoList(); true
-		}
 		R.id.lock_note -> {
 			toggleNoteLockedStatus(item); true
 		}
