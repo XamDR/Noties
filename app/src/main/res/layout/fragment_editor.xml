@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools">
 
 	<data>
-		<import type="net.azurewebsites.noties.ui.helpers.Converter" />
+		<import type="net.azurewebsites.noties.ui.helpers.DateTimeConverter" />
 		<variable
 			name="fragment"
 			type="net.azurewebsites.noties.ui.editor.EditorFragment" />
@@ -13,94 +13,95 @@
 			type="net.azurewebsites.noties.ui.editor.EditorViewModel" />
 	</data>
 
-	<androidx.constraintlayout.widget.ConstraintLayout
+	<androidx.coordinatorlayout.widget.CoordinatorLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		tools:context=".ui.editor.EditorFragment">
 
-		<com.google.android.material.appbar.AppBarLayout
-			android:id="@+id/app_bar"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:background="@android:color/transparent"
-			android:stateListAnimator="@null"
-			app:layout_constraintBottom_toTopOf="@id/content"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toTopOf="parent">
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
 
-			<androidx.appcompat.widget.Toolbar
-				android:id="@+id/top_toolbar"
-				android:layout_width="match_parent"
-				android:layout_height="?attr/actionBarSize"
-				app:menu="@menu/menu_editor"
-				app:navigationContentDescription="@string/toolbar_back_button_description"
-				app:navigationIcon="?attr/homeAsUpIndicator"
-				app:navigationOnClick="@{() -> fragment.navigateUp()}">
+			<com.google.android.material.appbar.AppBarLayout
+				android:id="@+id/app_bar"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:background="@android:color/transparent"
+				android:stateListAnimator="@null"
+				app:layout_constraintBottom_toTopOf="@id/content"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toTopOf="parent">
 
-				<com.google.android.material.textfield.TextInputLayout
+				<androidx.appcompat.widget.Toolbar
+					android:id="@+id/top_toolbar"
 					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:paddingTop="8dp"
-					android:theme="@style/ThemeOverlay.AppTheme.TextInputEditText.Outlined"
-					app:boxBackgroundMode="none"
-					app:endIconContentDescription="@string/clear_note_title_text"
-					app:endIconMode="clear_text"
-					app:endIconTint="?attr/colorOnSurface"
-					app:hintEnabled="false">
+					android:layout_height="?attr/actionBarSize"
+					app:menu="@menu/menu_editor"
+					app:navigationContentDescription="@string/toolbar_back_button_description"
+					app:navigationIcon="?attr/homeAsUpIndicator"
+					app:navigationOnClick="@{() -> fragment.navigateUp()}">
 
-					<com.google.android.material.textfield.TextInputEditText
-						android:id="@+id/note_title"
+					<com.google.android.material.textfield.TextInputLayout
 						android:layout_width="match_parent"
-						android:layout_height="@dimen/textInputEditTextSize"
-						android:afterTextChanged="@{fragment::afterTextChanged}"
-						android:hint="@string/note_title"
-						android:imeOptions="flagNoFullscreen"
-						android:inputType="textCapSentences"
-						android:maxLines="1"
+						android:layout_height="wrap_content"
 						android:paddingTop="8dp"
-						android:text="@{vm.note.entity.title}"
-						android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-						android:textCursorDrawable="@drawable/cursor_color"
-						tools:text="Lorem Ipsum" />
-				</com.google.android.material.textfield.TextInputLayout>
-			</androidx.appcompat.widget.Toolbar>
-		</com.google.android.material.appbar.AppBarLayout>
+						android:theme="@style/ThemeOverlay.AppTheme.TextInputEditText.Outlined"
+						app:boxBackgroundMode="none"
+						app:endIconContentDescription="@string/clear_note_title_text"
+						app:endIconMode="clear_text"
+						app:endIconTint="?attr/colorOnSurface"
+						app:hintEnabled="false">
 
-		<androidx.recyclerview.widget.RecyclerView
-			android:id="@+id/content"
-			android:layout_width="0dp"
-			android:layout_height="0dp"
-			android:contentDescription="@string/editor_content"
-			android:orientation="vertical"
-			android:scrollbars="none"
-			app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-			app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/app_bar"
-			app:spanCount="@integer/span_count"
-			tools:listitem="@layout/single_image_item" />
+						<com.google.android.material.textfield.TextInputEditText
+							android:id="@+id/note_title"
+							android:layout_width="match_parent"
+							android:layout_height="@dimen/textInputEditTextSize"
+							android:afterTextChanged="@{fragment::afterTextChanged}"
+							android:hint="@string/note_title"
+							android:imeOptions="flagNoFullscreen"
+							android:inputType="textCapSentences"
+							android:maxLines="1"
+							android:paddingTop="8dp"
+							android:text="@{vm.note.entity.title}"
+							android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+							android:textCursorDrawable="@drawable/cursor_color"
+							tools:text="Lorem Ipsum" />
+					</com.google.android.material.textfield.TextInputLayout>
+				</androidx.appcompat.widget.Toolbar>
+			</com.google.android.material.appbar.AppBarLayout>
+
+			<androidx.recyclerview.widget.RecyclerView
+				android:id="@+id/content"
+				android:layout_width="0dp"
+				android:layout_height="0dp"
+				android:contentDescription="@string/editor_content"
+				android:orientation="vertical"
+				android:scrollbars="none"
+				app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+				app:layout_constraintBottom_toBottomOf="parent"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toBottomOf="@id/app_bar"
+				app:spanCount="@integer/span_count"
+				tools:listitem="@layout/single_image_item" />
+		</androidx.constraintlayout.widget.ConstraintLayout>
 
 		<com.google.android.material.bottomappbar.BottomAppBar
 			android:id="@+id/bottom_toolbar"
-			android:layout_width="0dp"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/content"
-			app:menu="@menu/menu_editor_bottom"
-			app:title="@string/app_name"
-			tools:ignore="BottomAppBar">
+			android:layout_gravity="bottom"
+			app:hideOnScroll="true"
+			app:menu="@menu/menu_editor_bottom">
 
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:padding="4dp"
-				android:text="@{@string/note_modified_date(Converter.displayCurrentDateTime(vm.note.entity.dateModification))}"
+				android:text="@{@string/note_modified_date(DateTimeConverter.formatCurrentDateTime(vm.note.entity.dateModification))}"
 				android:textAppearance="@style/TextAppearance.Material3.BodySmall"
 				tools:text="Última edición: 14/12/2021 22:20" />
 		</com.google.android.material.bottomappbar.BottomAppBar>
-	</androidx.constraintlayout.widget.ConstraintLayout>
+	</androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools">
 
 	<data>
-		<import type="net.azurewebsites.noties.ui.helpers.Converter" />
+		<import type="net.azurewebsites.noties.ui.helpers.DateTimeConverter" />
 		<import type="android.view.View" />
 		<import type="android.text.TextUtils" />
 		<variable
@@ -102,7 +102,7 @@
 				android:layout_marginTop="8dp"
 				android:layout_marginEnd="16dp"
 				android:layout_marginBottom="8dp"
-				android:text="@{Converter.displayCurrentDateTime(note.entity.dateModification)}"
+				android:text="@{DateTimeConverter.formatCurrentDateTime(note.entity.dateModification)}"
 				android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
 				android:textStyle="italic"
 				app:layout_constraintBottom_toBottomOf="parent"
