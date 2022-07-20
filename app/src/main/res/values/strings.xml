@@ -83,6 +83,7 @@
 	<string name="note_modified_date">Last edit: %s</string>
 	<string name="add_attachment">Add attachment</string>
 	<string name="pick_note_color">Pick color for note</string>
+	<string name="color">Color</string>
 	<string name="share_content">Share content</string>
 	<string name="play">This image is a thumbnail of a video.</string>
 	<string name="empty_note_share">The note does not have content to share.</string>

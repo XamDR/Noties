@@ -8,10 +8,10 @@ class BottomMenuItemClickListener(private val listener: BottomToolbarMenuListene
 
 	override fun onMenuItemClick(item: MenuItem) = when (item.itemId) {
 		R.id.add -> {
-			listener.showBottomSheetMenu(); true
+			listener.showBottomSheetMenuDialog(); true
 		}
 		R.id.note_color -> {
-			true
+			listener.showBottomSheetColorDialog(); true
 		}
 		R.id.share_content -> {
 			listener.shareContent(); true

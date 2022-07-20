@@ -205,3 +205,8 @@ fun TextView.strikethrough(shouldStrike: Boolean) {
 		paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
 	}
 }
+
+fun Int.toColorInt(): Int {
+	val hex = Integer.toHexString(this)
+	return Color.parseColor("#$hex")
+}

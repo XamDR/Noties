@@ -232,7 +232,14 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		}
 	}
 
-	override fun showBottomSheetMenu() {
+	override fun showBottomSheetColorDialog() {
+		val colorDialog = EditorColorFragment().apply {
+			setOnColorSelectedListener { color -> binding.root.setBackgroundColor(color.toColorInt()) }
+		}
+		showDialog(colorDialog, COLOR_DIALOG_TAG)
+	}
+
+	override fun showBottomSheetMenuDialog() {
 		val menuDialog = EditorMenuFragment().apply {
 			setOnActivityResultListener { pickImagesLauncher.launch(arrayOf(MIME_TYPE_IMAGE)) }
 			setOnTakePictureListener { takePictureOrRequestPermission() }
@@ -462,6 +469,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		const val MIME_TYPE_IMAGE = "image/*"
 		const val MIME_TYPE_TEXT = "text/plain"
 		private const val MENU_DIALOG_TAG = "MENU_DIALOG"
+		private const val COLOR_DIALOG_TAG = "COLOR_DIALOG"
 		private const val ALT_TEXT_DIALOG_TAG = "ALT_TEXT_DIALOG"
 		private const val DELETE_IMAGES_DIALOG_TAG = "DELETE_IMAGES"
 		private const val ADD_IMAGES_TAG = "ADD_IMAGES"

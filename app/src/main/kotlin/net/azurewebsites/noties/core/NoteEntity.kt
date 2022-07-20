@@ -14,7 +14,7 @@ data class NoteEntity(
 	val title: String = String.Empty,
 	val text: String = String.Empty,
 	@ColumnInfo(name = "date_modification") val dateModification: ZonedDateTime = ZonedDateTime.now(),
-	@ColumnInfo(name = "color") val color: Int = 0,
+	@ColumnInfo(name = "color") val color: Int? = null,
 	@ColumnInfo(name = "urls") val urls: List<String> = emptyList(),
 	@ColumnInfo(name = "is_protected") val isProtected: Boolean = false,
 	@ColumnInfo(name = "is_trashed") val isTrashed: Boolean = false,

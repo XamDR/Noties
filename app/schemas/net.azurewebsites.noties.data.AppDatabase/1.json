@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "91109dbe25e5af79859fddf836a6457b",
+    "identityHash": "6d2bc5bf8e7c758c8809ddcc359478a2",
     "entities": [
       {
         "tableName": "Notebooks",
@@ -92,7 +92,7 @@
       },
       {
         "tableName": "Notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `date_modification` TEXT NOT NULL, `color` INTEGER NOT NULL, `urls` TEXT NOT NULL, `is_protected` INTEGER NOT NULL, `is_trashed` INTEGER NOT NULL, `is_pinned` INTEGER NOT NULL, `is_todo_list` INTEGER NOT NULL, `notebook_id` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `date_modification` TEXT NOT NULL, `color` INTEGER, `urls` TEXT NOT NULL, `is_protected` INTEGER NOT NULL, `is_trashed` INTEGER NOT NULL, `is_pinned` INTEGER NOT NULL, `is_todo_list` INTEGER NOT NULL, `notebook_id` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -122,7 +122,7 @@
             "fieldPath": "color",
             "columnName": "color",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "urls",
@@ -174,7 +174,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '91109dbe25e5af79859fddf836a6457b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6d2bc5bf8e7c758c8809ddcc359478a2')"
     ]
   }
 }
