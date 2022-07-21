@@ -1,11 +1,13 @@
 package net.azurewebsites.noties.ui.editor
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.color.MaterialColors
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.DialogFragmentColorBinding
 import net.azurewebsites.noties.ui.helpers.ColorAdapter
@@ -18,11 +20,11 @@ class EditorColorFragment : BottomSheetDialogFragment() {
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<EditorViewModel>({ requireParentFragment() })
 	private lateinit var colorAdapter: ColorAdapter
-	private lateinit var colors: List<Int>
+	private val colors = mutableListOf<Int?>(null)
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		colors = requireContext().getIntArray(R.array.colors).toList()
+		colors.addAll(requireContext().getIntArray(R.array.colors_editor).toList())
 		colorAdapter = ColorAdapter(colors).apply {
 			setOnColorSelectedListener { position -> setEditorBackgroundColor(position) }
 		}
@@ -31,7 +33,9 @@ class EditorColorFragment : BottomSheetDialogFragment() {
 	override fun onCreateView(inflater: LayoutInflater,
 	                          container: ViewGroup?,
 	                          savedInstanceState: Bundle?): View {
-		_binding = DialogFragmentColorBinding.inflate(inflater, container, false)
+		_binding = DialogFragmentColorBinding.inflate(inflater, container, false).apply {
+			vm = viewModel
+		}
 		return binding.root
 	}
 
@@ -43,18 +47,30 @@ class EditorColorFragment : BottomSheetDialogFragment() {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		binding.list.adapter = colorAdapter
+		colorAdapter.selectedPosition = colors.indexOf(viewModel.entity.color)
 	}
 
+	@SuppressLint("NotifyDataSetChanged")
 	private fun setEditorBackgroundColor(position: Int) {
 		val selectedColor = colors[position]
 		viewModel.updateNote(viewModel.entity.copy(color = selectedColor))
-		binding.root.setBackgroundColor(selectedColor.toColorInt()) // This makes the imageView invisible lol
+		if (selectedColor != null) {
+			binding.root.setBackgroundColor(selectedColor.toColorInt())
+		}
+		else {
+			val defaultColor = MaterialColors.getColor(binding.root, R.attr.colorSurface)
+			binding.root.setBackgroundColor(defaultColor)
+		}
+		colorAdapter.apply {
+			selectedPosition = colors.indexOf(viewModel.entity.color)
+			notifyDataSetChanged() // I don't like this, but it works
+		}
 		onColorSelectedCallback(selectedColor)
 	}
 
-	fun setOnColorSelectedListener(callback: (color: Int) -> Unit) {
+	fun setOnColorSelectedListener(callback: (color: Int?) -> Unit) {
 		onColorSelectedCallback = callback
 	}
 
-	private var onColorSelectedCallback: (color: Int) -> Unit = {}
+	private var onColorSelectedCallback: (color: Int?) -> Unit = {}
 }

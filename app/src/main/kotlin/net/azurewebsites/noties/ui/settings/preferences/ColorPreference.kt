@@ -11,7 +11,7 @@ import net.azurewebsites.noties.ui.helpers.getIntArray
 class ColorPreference(context: Context, attrs: AttributeSet?) : DialogPreference(context, attrs) {
 
 	init {
-		widgetLayoutResource = R.layout.color_item
+		widgetLayoutResource = R.layout.preference_color_layout
 	}
 
 	private val defaultValue = context.getIntArray(R.array.colors)[0]
@@ -25,7 +25,7 @@ class ColorPreference(context: Context, attrs: AttributeSet?) : DialogPreference
 
 	override fun onBindViewHolder(holder: PreferenceViewHolder) {
 		super.onBindViewHolder(holder)
-		val imageView = holder.findViewById(R.id.color) as ImageView
+		val imageView = holder.findViewById(R.id.color_view) as ImageView
 		imageView.setBackgroundColor(getPersistedInt())
 	}
 

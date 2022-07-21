@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.core.DataItem
+import net.azurewebsites.noties.core.Todo
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.TodoItemBinding
 import net.azurewebsites.noties.databinding.TodoItemFooterBinding
@@ -20,7 +20,7 @@ import net.azurewebsites.noties.ui.helpers.showSoftKeyboard
 import net.azurewebsites.noties.ui.helpers.strikethrough
 
 class TodoItemAdapter(
-	private val todoList: MutableList<DataItem>,
+	private val todoList: MutableList<Todo>,
 	private val itemTouchHelper: ItemTouchHelper) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), SpanSizeLookupOwner {
 
 	inner class TodoItemViewHolder(private val binding: TodoItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -32,7 +32,7 @@ class TodoItemAdapter(
 			setupEditText()
 		}
 
-		fun bind(todoItem: DataItem.TodoItem) {
+		fun bind(todoItem: Todo.TodoItem) {
 			binding.apply {
 				this.item = todoItem
 				executePendingBindings()
@@ -77,7 +77,7 @@ class TodoItemAdapter(
 		when (holder) {
 			is TodoItemViewHolder -> {
 				val todoItem = todoList[position]
-				holder.bind(todoItem as DataItem.TodoItem)
+				holder.bind(todoItem as Todo.TodoItem)
 			}
 		}
 	}
@@ -85,8 +85,8 @@ class TodoItemAdapter(
 	override fun getItemCount() = todoList.size
 
 	override fun getItemViewType(position: Int) = when (todoList[position]) {
-		is DataItem.TodoItem -> TODO_ITEM
-		is DataItem.Footer -> FOOTER
+		is Todo.TodoItem -> TODO_ITEM
+		is Todo.Footer -> FOOTER
 	}
 
 	override fun getSpanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
@@ -101,7 +101,7 @@ class TodoItemAdapter(
 	}
 
 	fun convertItemsToString(): String {
-		val todoItems = todoList.filterIsInstance<DataItem.TodoItem>()
+		val todoItems = todoList.filterIsInstance<Todo.TodoItem>()
 		return todoItems.joinToString(Note.NEWLINE) {
 			if (it.done) {
 				if (it.content.startsWith(Note.PREFIX_DONE)) it.content
@@ -115,12 +115,12 @@ class TodoItemAdapter(
 	}
 
 	fun joinToString(): String {
-		val todoItems = todoList.filterIsInstance<DataItem.TodoItem>()
+		val todoItems = todoList.filterIsInstance<Todo.TodoItem>()
 		return todoItems.joinToString(Note.NEWLINE) { it.content }
 	}
 
 	private fun addItem() {
-		todoList.add(todoList.size - 1, DataItem.TodoItem())
+		todoList.add(todoList.size - 1, Todo.TodoItem())
 		notifyItemInserted(todoList.size - 1)
 	}
 

@@ -5,7 +5,8 @@
 	android:layout_width="wrap_content"
 	android:layout_height="wrap_content"
 	android:layout_margin="8dp"
-	android:padding="8dp">
+	android:background="@drawable/color_item_border"
+	android:padding="2dp">
 
 	<com.google.android.material.imageview.ShapeableImageView
 		android:id="@+id/color"
