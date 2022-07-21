@@ -29,14 +29,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
-import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialContainerTransform
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import net.azurewebsites.noties.R
-import net.azurewebsites.noties.core.Todo
 import net.azurewebsites.noties.core.ImageEntity
 import net.azurewebsites.noties.core.Note
+import net.azurewebsites.noties.core.Todo
 import net.azurewebsites.noties.databinding.FragmentEditorBinding
 import net.azurewebsites.noties.ui.editor.todos.DragDropCallback
 import net.azurewebsites.noties.ui.editor.todos.TodoItemAdapter
@@ -235,15 +234,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 
 	override fun showBottomSheetColorDialog() {
 		val colorDialog = EditorColorFragment().apply {
-			setOnColorSelectedListener { color ->
-				if (color != null) {
-					binding.root.setBackgroundColor(color.toColorInt())
-				}
-				else {
-					val defaultColor = MaterialColors.getColor(binding.root, R.attr.colorSurface)
-					binding.root.setBackgroundColor(defaultColor)
-				}
-			}
+			setOnColorSelectedListener { color -> binding.root.setBackgroundColor(color) }
 		}
 		showDialog(colorDialog, COLOR_DIALOG_TAG)
 	}

@@ -45,6 +45,7 @@ import com.google.android.material.behavior.SwipeDismissBehavior
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import net.azurewebsites.noties.R
 
 fun FragmentActivity.findNavController(@IdRes id: Int) =
 	(this.supportFragmentManager.findFragmentById(id) as NavHostFragment).navController
@@ -209,4 +210,18 @@ fun TextView.strikethrough(shouldStrike: Boolean) {
 fun Int.toColorInt(): Int {
 	val hex = Integer.toHexString(this)
 	return Color.parseColor("#$hex")
+}
+
+/**
+ * Sets the background color for this view or uses the colorSurface value
+ * if the color provided is null.
+ */
+fun View.setBackgroundColor(@ColorInt color: Int?) {
+	if (color == null) {
+		val defaultColor = MaterialColors.getColor(this, R.attr.colorSurface)
+		this.setBackgroundColor(defaultColor)
+	}
+	else {
+		this.setBackgroundColor(color)
+	}
 }

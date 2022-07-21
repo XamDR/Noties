@@ -7,12 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.color.MaterialColors
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.DialogFragmentColorBinding
 import net.azurewebsites.noties.ui.helpers.ColorAdapter
 import net.azurewebsites.noties.ui.helpers.getIntArray
-import net.azurewebsites.noties.ui.helpers.toColorInt
+import net.azurewebsites.noties.ui.helpers.setBackgroundColor
 
 class EditorColorFragment : BottomSheetDialogFragment() {
 
@@ -48,19 +47,14 @@ class EditorColorFragment : BottomSheetDialogFragment() {
 		super.onViewCreated(view, savedInstanceState)
 		binding.list.adapter = colorAdapter
 		colorAdapter.selectedPosition = colors.indexOf(viewModel.entity.color)
+		binding.list.smoothScrollToPosition(colorAdapter.selectedPosition)
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
 	private fun setEditorBackgroundColor(position: Int) {
 		val selectedColor = colors[position]
 		viewModel.updateNote(viewModel.entity.copy(color = selectedColor))
-		if (selectedColor != null) {
-			binding.root.setBackgroundColor(selectedColor.toColorInt())
-		}
-		else {
-			val defaultColor = MaterialColors.getColor(binding.root, R.attr.colorSurface)
-			binding.root.setBackgroundColor(defaultColor)
-		}
+		binding.root.setBackgroundColor(selectedColor)
 		colorAdapter.apply {
 			selectedPosition = colors.indexOf(viewModel.entity.color)
 			notifyDataSetChanged() // I don't like this, but it works
