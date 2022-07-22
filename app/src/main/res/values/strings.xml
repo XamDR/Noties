@@ -120,6 +120,7 @@
 	<string name="take_video">Record a video</string>
 	<string name="talk_to_write">Talk to write</string>
 	<string name="add_todo_list">Add to-do list</string>
+	<string name="add_reminder">Add reminder</string>
 	<string name="user_image">Image added by the user</string>
 	<string name="image_saved">Picture saved</string>
 	<string name="error_take_picture">No photo was taken.</string>

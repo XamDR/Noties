@@ -65,7 +65,7 @@
 			app:drawableStartCompat="@drawable/ic_add_todo_list" />
 
 		<com.google.android.material.textview.MaterialTextView
-			android:id="@+id/talk_to_write"
+			android:id="@+id/add_reminder"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_margin="8dp"
@@ -73,8 +73,8 @@
 			android:foreground="?attr/selectableItemBackground"
 			android:gravity="center_vertical"
 			android:padding="8dp"
-			android:text="@string/talk_to_write"
+			android:text="@string/add_reminder"
 			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-			app:drawableStartCompat="@drawable/ic_talk_to_write" />
+			app:drawableStartCompat="@drawable/ic_add_reminder" />
 	</LinearLayout>
 </layout>

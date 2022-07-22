@@ -16,6 +16,18 @@ class MenuItemClickListener(
 		R.id.pin_note -> {
 			toggleNotePinnedStatus(item); true
 		}
+		R.id.share_content -> {
+			listener.shareContent(); true
+		}
+		R.id.open_file -> {
+			listener.openTextFile(); true
+		}
+		R.id.delete_images -> {
+			listener.showDeleteImagesDialog(); true
+		}
+		R.id.hide_todos -> {
+			listener.hideTodoList(); true
+		}
 		else -> false
 	}
 

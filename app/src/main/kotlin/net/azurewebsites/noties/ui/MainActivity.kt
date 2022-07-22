@@ -64,6 +64,13 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		navController.removeOnDestinationChangedListener(this)
 	}
 
+	override fun onPostCreate(savedInstanceState: Bundle?) {
+		super.onPostCreate(savedInstanceState)
+		navController.currentDestination?.label?.let {
+			if (it.isNotEmpty()) binding.toolbar.title = it
+		}
+	}
+
 	override fun onDestinationChanged(
 		controller: NavController,
 		destination: NavDestination,

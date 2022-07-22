@@ -9,12 +9,40 @@
 		android:icon="@drawable/ic_lock_note"
 		android:orderInCategory="0"
 		android:title="@string/lock_note"
-		app:showAsAction="ifRoom"/>
+		app:showAsAction="always"/>
 
 	<item
 		android:id="@+id/pin_note"
 		android:icon="@drawable/ic_pin_note"
 		android:orderInCategory="2"
 		android:title="@string/pin_note"
-		app:showAsAction="ifRoom"/>
+		app:showAsAction="always"
+		tools:ignore="AlwaysShowAction" />
+
+	<item
+		android:id="@+id/share_content"
+		android:orderInCategory="4"
+		android:icon="@drawable/ic_share_content"
+		android:title="@string/share_content"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/open_file"
+		android:orderInCategory="6"
+		android:title="@string/open_file"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/delete_images"
+		android:orderInCategory="8"
+		android:title="@string/delete_all_images"
+		android:visible="false"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/hide_todos"
+		android:orderInCategory="10"
+		android:title="@string/hide_checkboxes"
+		android:visible="false"
+		app:showAsAction="never"/>
 </menu>
