@@ -91,6 +91,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		menuItemClickListener = MenuItemClickListener(this, viewModel.note)
 		initializeAdapters()
 		addChildHeadlessFragments()
+		window.setStatusBarColor(viewModel.entity.color)
 	}
 
 	override fun onCreateView(inflater: LayoutInflater,
@@ -307,6 +308,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
 			insertOrUpdateNote(viewModel.note, viewModel.tempNote, notebookId)
 			findNavController().popBackStack()
+			window.setStatusBarColor(null)
 		}
 	}
 

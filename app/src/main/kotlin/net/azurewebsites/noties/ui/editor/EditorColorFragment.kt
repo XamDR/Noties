@@ -9,9 +9,7 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.DialogFragmentColorBinding
-import net.azurewebsites.noties.ui.helpers.ColorAdapter
-import net.azurewebsites.noties.ui.helpers.getIntArray
-import net.azurewebsites.noties.ui.helpers.setBackgroundColor
+import net.azurewebsites.noties.ui.helpers.*
 
 class EditorColorFragment : BottomSheetDialogFragment() {
 
@@ -55,6 +53,7 @@ class EditorColorFragment : BottomSheetDialogFragment() {
 		val selectedColor = colors[position]
 		viewModel.updateNote(viewModel.entity.copy(color = selectedColor))
 		binding.root.setBackgroundColor(selectedColor)
+		window.setStatusBarColor(selectedColor)
 		colorAdapter.apply {
 			selectedPosition = colors.indexOf(viewModel.entity.color)
 			notifyDataSetChanged() // I don't like this, but it works

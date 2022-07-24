@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.view.MenuItem
 import android.view.View
+import android.view.Window
 import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
 import android.widget.Button
@@ -223,5 +224,18 @@ fun View.setBackgroundColor(@ColorInt color: Int?) {
 	}
 	else {
 		this.setBackgroundColor(color)
+	}
+}
+
+val Fragment.window: Window
+	get() = requireActivity().window
+
+fun Window.setStatusBarColor(@ColorInt color: Int?) {
+	if (color == null) {
+		val defaultColor = MaterialColors.getColor(this.context, R.attr.colorSurface, String.Empty)
+		this.statusBarColor = defaultColor
+	}
+	else {
+		this.statusBarColor = color
 	}
 }
