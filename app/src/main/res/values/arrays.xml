@@ -35,4 +35,16 @@
 		<item>@color/brown_600</item>
 		<item>@color/gray_700</item>
 	</integer-array>
+
+	<integer-array name="colors_editor">
+		<item>@color/blue_600_alpha_80</item>
+		<item>@color/red_600_alpha_80</item>
+		<item>@color/pink_600_alpha_80</item>
+		<item>@color/purple_600_alpha_80</item>
+		<item>@color/teal_600_alpha_80</item>
+		<item>@color/green_600_alpha_80</item>
+		<item>@color/yellow_A200_alpha_80</item>
+		<item>@color/brown_600_alpha_80</item>
+		<item>@color/gray_700_alpha_80</item>
+	</integer-array>
 </resources>

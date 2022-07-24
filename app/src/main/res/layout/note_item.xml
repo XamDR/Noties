@@ -4,18 +4,19 @@
 	xmlns:tools="http://schemas.android.com/tools">
 
 	<data>
-		<import type="net.azurewebsites.noties.ui.helpers.Converter" />
+		<import type="net.azurewebsites.noties.ui.helpers.DateTimeConverter" />
 		<import type="android.view.View" />
 		<import type="android.text.TextUtils" />
 		<variable
 			name="note"
 			type="net.azurewebsites.noties.core.Note" />
-		<import type="net.azurewebsites.noties.ui.helpers.SpannableConverter" />
+		<import type="net.azurewebsites.noties.ui.editor.todos.SpannableConverter" />
 	</data>
 
 	<com.google.android.material.card.MaterialCardView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		app:backgroundColor="@{note.entity.color}"
 		app:cardCornerRadius="5dp"
 		app:cardElevation="0dp"
 		app:strokeColor="@color/stroke_color"
@@ -51,7 +52,7 @@
 				android:ellipsize="end"
 				android:maxLines="1"
 				android:text="@{note.entity.title}"
-				android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+				android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
 				android:textStyle="bold"
 				android:visibility="@{TextUtils.isEmpty(note.entity.title) ? View.GONE : View.VISIBLE}"
 				app:layout_constraintEnd_toEndOf="parent"
@@ -70,7 +71,7 @@
 				android:ellipsize="end"
 				android:maxLines="4"
 				android:text="@{note.entity.isTodoList ? SpannableConverter.convertToSpannable(note.entity.text) : note.entity.text}"
-				android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+				android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
 				android:visibility="@{TextUtils.isEmpty(note.entity.text) ? View.GONE : View.VISIBLE}"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
@@ -85,7 +86,7 @@
 				android:layout_marginTop="8dp"
 				android:layout_marginBottom="8dp"
 				android:text='@{@plurals/number_urls(note.entity.urlCount, note.entity.urlCount)}'
-				android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+				android:textAppearance="@style/TextAppearance.Material3.BodySmall"
 				android:visibility="@{note.entity.urlCount == 0 ? View.GONE : View.VISIBLE}"
 				app:chipIcon="@drawable/ic_link"
 				app:chipStartPadding="8dp"
@@ -102,8 +103,8 @@
 				android:layout_marginTop="8dp"
 				android:layout_marginEnd="16dp"
 				android:layout_marginBottom="8dp"
-				android:text="@{Converter.displayCurrentDateTime(note.entity.dateModification)}"
-				android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+				android:text="@{DateTimeConverter.formatCurrentDateTime(note.entity.dateModification)}"
+				android:textAppearance="@style/TextAppearance.Material3.BodySmall"
 				android:textStyle="italic"
 				app:layout_constraintBottom_toBottomOf="parent"
 				app:layout_constraintEnd_toEndOf="parent"

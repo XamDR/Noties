@@ -4,32 +4,34 @@
 	xmlns:tools="http://schemas.android.com/tools">
 
 	<data>
-		<import type="net.azurewebsites.noties.ui.helpers.Converter"/>
-		<variable
-			name="vm"
-			type="net.azurewebsites.noties.ui.editor.EditorViewModel" />
+		<import type="net.azurewebsites.noties.ui.helpers.DateTimeConverter" />
 		<variable
 			name="fragment"
 			type="net.azurewebsites.noties.ui.editor.EditorFragment" />
+		<variable
+			name="vm"
+			type="net.azurewebsites.noties.ui.editor.EditorViewModel" />
 	</data>
 
 	<androidx.constraintlayout.widget.ConstraintLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
+		app:backgroundColor="@{vm.entity.color}"
 		tools:context=".ui.editor.EditorFragment">
 
 		<com.google.android.material.appbar.AppBarLayout
 			android:id="@+id/app_bar"
-			android:layout_width="match_parent"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:background="@android:color/transparent"
 			android:stateListAnimator="@null"
+			app:layout_constraintBottom_toTopOf="@id/content"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toTopOf="parent">
 
 			<androidx.appcompat.widget.Toolbar
-				android:id="@+id/editor_toolbar"
+				android:id="@+id/top_toolbar"
 				android:layout_width="match_parent"
 				android:layout_height="?attr/actionBarSize"
 				app:menu="@menu/menu_editor"
@@ -40,8 +42,8 @@
 				<com.google.android.material.textfield.TextInputLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:theme="@style/ThemeOverlay.AppTheme.TextInputEditText.Outlined"
 					android:paddingTop="8dp"
+					android:theme="@style/ThemeOverlay.AppTheme.TextInputEditText.Outlined"
 					app:boxBackgroundMode="none"
 					app:endIconContentDescription="@string/clear_note_title_text"
 					app:endIconMode="clear_text"
@@ -52,12 +54,13 @@
 						android:id="@+id/note_title"
 						android:layout_width="match_parent"
 						android:layout_height="@dimen/textInputEditTextSize"
+						android:afterTextChanged="@{fragment::afterTextChanged}"
 						android:hint="@string/note_title"
 						android:imeOptions="flagNoFullscreen"
 						android:inputType="textCapSentences"
 						android:maxLines="1"
 						android:paddingTop="8dp"
-						android:text="@={vm.note.entity.title}"
+						android:text="@{vm.note.entity.title}"
 						android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
 						android:textCursorDrawable="@drawable/cursor_color"
 						tools:text="Lorem Ipsum" />
@@ -97,7 +100,7 @@
 				android:layout_marginStart="8dp"
 				android:background="?selectableItemBackgroundBorderless"
 				android:contentDescription="@string/add_attachment"
-				android:onClick="@{() -> fragment.showBottomSheetMenu()}"
+				android:onClick="@{() -> fragment.showBottomSheetMenuDialog()}"
 				android:src="@drawable/ic_add_attachment"/>
 
 			<TextView
@@ -105,12 +108,12 @@
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center"
-				android:layout_marginStart="8dp"
-				android:layout_marginEnd="8dp"
+				android:layout_marginStart="4dp"
+				android:layout_marginEnd="4dp"
 				android:layout_weight="1"
 				android:gravity="center"
-				android:text="@{@string/note_modified_date(Converter.displayCurrentDateTime(vm.note.entity.dateModification))}"
-				android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+				android:text="@{@string/note_modified_date(DateTimeConverter.formatCurrentDateTime(vm.note.entity.dateModification))}"
+				android:textAppearance="@style/TextAppearance.Material3.BodySmall"
 				tools:text="Última edición: 14/12/2021 22:20" />
 
 			<ImageButton
@@ -120,6 +123,7 @@
 				android:layout_marginEnd="8dp"
 				android:background="?selectableItemBackgroundBorderless"
 				android:contentDescription="@string/pick_note_color"
+				android:onClick="@{() -> fragment.showBottomSheetColorDialog()}"
 				android:src="@drawable/ic_note_palette" />
 		</LinearLayout>
 	</androidx.constraintlayout.widget.ConstraintLayout>

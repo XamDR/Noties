@@ -63,7 +63,6 @@
 	<string name="delete_notes">Delete notes</string>
 	<string name="pin_note">Pin note</string>
 	<string name="unpin_note">Unpin note</string>
-	<string name="pinned_note">Note pinned</string>
 	<string name="lock_note">Lock note</string>
 	<string name="unlock_note">Unlock note</string>
 	<string name="device_not_secured">It is not possible to lock the note. The device is not secured with a PIN, pattern or password.</string>
@@ -84,6 +83,7 @@
 	<string name="note_modified_date">Last edit: %s</string>
 	<string name="add_attachment">Add attachment</string>
 	<string name="pick_note_color">Pick color for note</string>
+	<string name="color">Color</string>
 	<string name="share_content">Share content</string>
 	<string name="play">This image is a thumbnail of a video.</string>
 	<string name="empty_note_share">The note does not have content to share.</string>
@@ -106,6 +106,10 @@
 	<string name="remove_item">Remove todo item</string>
 	<string name="new_todo_item">Todo item</string>
 	<string name="hide_checkboxes">Hide checkboxes</string>
+	<string name="note_locked">Note locked</string>
+	<string name="note_unlocked">Note unlocked</string>
+	<string name="note_pinned">Note will be pinned</string>
+	<string name="note_unpinned">Note will be unpinned</string>
 
 	<!-- Add attachment Fragment -->
 	<string name="text_editor_menu_fragment_label">Text editor menu attachments</string>
@@ -116,6 +120,7 @@
 	<string name="take_video">Record a video</string>
 	<string name="talk_to_write">Talk to write</string>
 	<string name="add_todo_list">Add to-do list</string>
+	<string name="add_reminder">Add reminder</string>
 	<string name="user_image">Image added by the user</string>
 	<string name="image_saved">Picture saved</string>
 	<string name="error_take_picture">No photo was taken.</string>

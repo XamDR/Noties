@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Note(
-	@Embedded val entity: NoteEntity = NoteEntity(),
+	@Embedded var entity: NoteEntity = NoteEntity(),
 	@Relation(
 		parentColumn = "id",
 		entityColumn = "note_id"
@@ -25,13 +25,13 @@ data class Note(
 
 	fun isNonEmpty() = entity.text.isNotEmpty() || images.isNotEmpty()
 
-	fun toTodoList(): List<DataItem.TodoItem> {
-		return if (entity.text.isEmpty()) listOf(DataItem.TodoItem())
+	fun toTodoList(): List<Todo.TodoItem> {
+		return if (entity.text.isEmpty()) listOf(Todo.TodoItem())
 		else entity.text.split(NEWLINE).map {
 			if (it.startsWith(PREFIX_DONE)) {
-				DataItem.TodoItem(content = it.removePrefix(PREFIX_DONE), done = true)
+				Todo.TodoItem(content = it.removePrefix(PREFIX_DONE), done = true)
 			}
-			else DataItem.TodoItem(content = it.removePrefix(PREFIX_NOT_DONE))
+			else Todo.TodoItem(content = it.removePrefix(PREFIX_NOT_DONE))
 		}
 	}
 

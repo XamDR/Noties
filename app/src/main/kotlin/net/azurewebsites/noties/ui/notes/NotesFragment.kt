@@ -29,6 +29,7 @@ import net.azurewebsites.noties.core.NotebookEntity
 import net.azurewebsites.noties.databinding.FragmentNotesBinding
 import net.azurewebsites.noties.ui.MainActivity
 import net.azurewebsites.noties.ui.editor.EditorFragment
+import net.azurewebsites.noties.ui.editor.EditorViewModel
 import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.image.ImageStorageManager
 import net.azurewebsites.noties.ui.notebooks.NotebooksFragment
@@ -248,7 +249,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 
 	private fun getNoteToBeDeleted() {
 		setFragmentResultListener(EditorFragment.REQUEST_KEY) { _, bundle ->
-			val noteToBeDeleted = bundle.getParcelable<Note>(EditorFragment.NOTE)
+			val noteToBeDeleted = bundle.getParcelable<Note>(EditorViewModel.NOTE)
 			deleteEmptyNote(noteToBeDeleted)
 		}
 	}

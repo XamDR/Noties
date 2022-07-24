@@ -17,7 +17,7 @@ import net.azurewebsites.noties.R
 import net.azurewebsites.noties.core.Note
 import net.azurewebsites.noties.databinding.NoteItemBinding
 import net.azurewebsites.noties.databinding.ProtectedNoteItemBinding
-import net.azurewebsites.noties.ui.editor.EditorFragment
+import net.azurewebsites.noties.ui.editor.EditorViewModel
 import net.azurewebsites.noties.ui.helpers.blur
 import net.azurewebsites.noties.ui.helpers.setOnClickListener
 import net.azurewebsites.noties.ui.helpers.tryNavigate
@@ -128,7 +128,7 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 	private fun editNote(holder: RecyclerView.ViewHolder, position: Int) {
 		val note = getItem(position)
 		if (!note.entity.isTrashed) {
-			val args = bundleOf(EditorFragment.NOTE to note)
+			val args = bundleOf(EditorViewModel.NOTE to note)
 			val extras = FragmentNavigatorExtras(holder.itemView to note.entity.id.toString())
 			holder.itemView.findNavController().tryNavigate(
 				resId = R.id.action_notes_to_editor,

@@ -73,7 +73,7 @@ class LinedEditText @JvmOverloads constructor(
 	override fun onKeyPreIme(keyCode: Int, event: KeyEvent?): Boolean {
 		if (keyCode == KeyEvent.KEYCODE_BACK && TextUtils.isEmpty(text)) {
 			emptyContentCallback.invoke()
-			return true
+			return false
 		}
 		return super.onKeyPreIme(keyCode, event)
 	}

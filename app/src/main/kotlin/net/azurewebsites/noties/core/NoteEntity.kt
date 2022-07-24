@@ -11,15 +11,15 @@ import java.time.ZonedDateTime
 @Entity(tableName = "Notes")
 data class NoteEntity(
 	@PrimaryKey(autoGenerate = true) val id: Long = 0,
-	var title: String = String.Empty,
-	var text: String = String.Empty,
+	val title: String = String.Empty,
+	val text: String = String.Empty,
 	@ColumnInfo(name = "date_modification") val dateModification: ZonedDateTime = ZonedDateTime.now(),
-	@ColumnInfo(name = "color") val color: Int = 0,
+	@ColumnInfo(name = "color") val color: Int? = null,
 	@ColumnInfo(name = "urls") val urls: List<String> = emptyList(),
 	@ColumnInfo(name = "is_protected") val isProtected: Boolean = false,
 	@ColumnInfo(name = "is_trashed") val isTrashed: Boolean = false,
 	@ColumnInfo(name = "is_pinned") val isPinned: Boolean = false,
-	@ColumnInfo(name = "is_todo_list") var isTodoList: Boolean = false,
+	@ColumnInfo(name = "is_todo_list") val isTodoList: Boolean = false,
 	@ColumnInfo(name = "notebook_id") val notebookId: Int = 0) : Parcelable {
 
 	fun getUrlCount() = urls.size

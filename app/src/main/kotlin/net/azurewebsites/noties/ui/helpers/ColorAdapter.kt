@@ -6,9 +6,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
 import net.azurewebsites.noties.R
 
-class ColorAdapter(private val colors: List<Int>) : RecyclerView.Adapter<ColorAdapter.ColorViewHolder>() {
+class ColorAdapter(private val colors: List<Int?>) : RecyclerView.Adapter<ColorAdapter.ColorViewHolder>() {
 
 	var selectedPosition = 0
 
@@ -19,12 +20,21 @@ class ColorAdapter(private val colors: List<Int>) : RecyclerView.Adapter<ColorAd
 			imageView = view.findViewById(R.id.color)
 		}
 
-		fun bind(color: Int) {
-			imageView.setBackgroundColor(color)
+		fun bind(color: Int?) {
+			if (color != null) {
+				imageView.setBackgroundColor(color)
+			}
+			else {
+				val defaultColor = MaterialColors.getColor(itemView, R.attr.colorSurface)
+				imageView.setBackgroundColor(defaultColor)
+			}
 		}
 
 		fun setImageResource(@DrawableRes resId: Int) {
 			imageView.setImageResource(resId)
+			if (bindingAdapterPosition == 0 && imageView.drawable == null) {
+				imageView.setImageResource(R.drawable.ic_color_reset)
+			}
 		}
 	}
 
@@ -38,9 +48,7 @@ class ColorAdapter(private val colors: List<Int>) : RecyclerView.Adapter<ColorAd
 	override fun onBindViewHolder(holder: ColorViewHolder, position: Int) {
 		val color = colors[position]
 		holder.bind(color)
-		if (selectedPosition == position) {
-			holder.setImageResource(R.drawable.ic_check)
-		}
+		holder.setImageResource(if (selectedPosition == position) R.drawable.ic_check else 0)
 	}
 
 	override fun getItemCount() = colors.size

@@ -8,19 +8,7 @@ import androidx.documentfile.provider.DocumentFile
 import net.azurewebsites.noties.core.NoteEntity
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-
-object Converter {
-	@JvmStatic fun displayCurrentDateTime(currentDateTime: ZonedDateTime): String {
-		val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.systemDefault())
-		return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT).format(
-			ZonedDateTime.parse(formatter.format(currentDateTime), formatter)
-		)
-	}
-}
 
 fun printDebug(tag: String, msg: Any?) = Log.d(tag, msg.toString())
 

@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools">
 
 	<data>
-		<import type="net.azurewebsites.noties.ui.helpers.Converter"/>
+		<import type="net.azurewebsites.noties.ui.helpers.DateTimeConverter" />
 		<import type="android.view.View" />
 		<variable
 			name="note"
@@ -53,8 +53,8 @@
 				android:layout_gravity="end"
 				android:layout_marginEnd="16dp"
 				android:layout_marginBottom="8dp"
-				android:text="@{Converter.displayCurrentDateTime(note.entity.dateModification)}"
-				android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+				android:text="@{DateTimeConverter.formatCurrentDateTime(note.entity.dateModification)}"
+				android:textAppearance="@style/TextAppearance.Material3.BodySmall"
 				android:textStyle="italic"
 				tools:text="13 dic. 2021 23:46" />
 		</LinearLayout>

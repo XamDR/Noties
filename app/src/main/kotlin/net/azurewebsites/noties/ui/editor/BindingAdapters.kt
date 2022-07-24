@@ -8,6 +8,9 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.BindingAdapter
+import com.google.android.material.color.MaterialColors
+import net.azurewebsites.noties.R
+import net.azurewebsites.noties.ui.helpers.toColorInt
 import net.azurewebsites.noties.ui.views.LinedEditText
 
 @BindingAdapter("navigationOnClick")
@@ -45,5 +48,16 @@ fun strikethrough(view: TextView, shouldStrike: Boolean) {
 	}
 	else {
 		view.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+	}
+}
+
+@BindingAdapter("backgroundColor")
+fun bindBackgroundCOlor(view: View, color: Int?) {
+	if (color != null) {
+		view.setBackgroundColor(color.toColorInt())
+	}
+	else {
+		val defaultColor = MaterialColors.getColor(view, R.attr.colorSurface)
+		view.setBackgroundColor(defaultColor)
 	}
 }
