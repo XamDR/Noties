@@ -29,7 +29,7 @@ fun readUriContent(context: Context, uri: Uri?): NoteEntity? {
 				return NoteEntity(
 					title = file?.simpleName ?: String.Empty,
 					text = it.readText(),
-					dateModification = ZonedDateTime.now(),
+					modificationDate = ZonedDateTime.now(),
 					urls = extractUrls(it.readText())
 				)
 			}

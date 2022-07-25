@@ -113,7 +113,7 @@
 				android:layout_marginEnd="4dp"
 				android:layout_weight="1"
 				android:gravity="center"
-				android:text="@{@string/note_modified_date(DateTimeConverter.formatCurrentDateTime(vm.note.entity.dateModification))}"
+				android:text="@{@string/note_modified_date(DateTimeConverter.formatCurrentDateTime(vm.note.entity.modificationDate))}"
 				android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
 				tools:text="Última edición: 14/12/2021 22:20" />
 

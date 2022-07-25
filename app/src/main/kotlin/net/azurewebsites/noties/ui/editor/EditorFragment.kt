@@ -319,7 +319,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 			}
 			if (note != tempNote) {
 				note.entity = note.entity.copy(
-					dateModification = ZonedDateTime.now(),
+					modificationDate = ZonedDateTime.now(),
 					urls = extractUrls(note.entity.text)
 				)
 				if (note.entity.id == 0L) {
