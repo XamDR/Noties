@@ -45,24 +45,4 @@
 	<color name="md_theme_dark_inverseOnSurface">#1B1B1D</color>
 	<color name="md_theme_dark_inverseSurface">#E4E2E6</color>
 	<color name="md_theme_dark_primaryInverse">#005AC3</color>
-
-	<color name="blue_600">#FF1E88E5</color>
-	<color name="red_600">#FFE53935</color>
-	<color name="pink_600">#FFD81B60</color>
-	<color name="purple_600">#FF8E24AA</color>
-	<color name="teal_600">#FF00897B</color>
-	<color name="green_600">#FF43A047</color>
-	<color name="yellow_A200">#FFFFFF00</color>
-	<color name="brown_600">#FF6D4C41</color>
-	<color name="gray_700">#FF616161</color>
-
-	<color name="blue_600_alpha_80">#CC1E88E5</color>
-	<color name="red_600_alpha_80">#CCE53935</color>
-	<color name="pink_600_alpha_80">#CCD81B60</color>
-	<color name="purple_600_alpha_80">#CC8E24AA</color>
-	<color name="teal_600_alpha_80">#CC00897B</color>
-	<color name="green_600_alpha_80">#CC43A047</color>
-	<color name="yellow_A200_alpha_80">#CCFFFF00</color>
-	<color name="brown_600_alpha_80">#CC6D4C41</color>
-	<color name="gray_700_alpha_80">#CC616161</color>
 </resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<color name="blue_600">#FF1E88E5</color>
+	<color name="red_600">#FFE53935</color>
+	<color name="pink_600">#FFD81B60</color>
+	<color name="purple_600">#FF8E24AA</color>
+	<color name="teal_600">#FF00897B</color>
+	<color name="green_600">#FF43A047</color>
+	<color name="yellow_200">#FFFFFF00</color>
+	<color name="brown_600">#FF6D4C41</color>
+	<color name="gray_700">#FF616161</color>
+</resources>

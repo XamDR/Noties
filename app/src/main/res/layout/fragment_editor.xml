@@ -17,6 +17,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		app:backgroundColor="@{vm.entity.color}"
+		tools:background="@color/blue_600_alpha_60"
 		tools:context=".ui.editor.EditorFragment">
 
 		<com.google.android.material.appbar.AppBarLayout
@@ -81,7 +82,7 @@
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toBottomOf="@id/app_bar"
 			app:spanCount="@integer/span_count"
-			tools:listitem="@layout/single_image_item" />
+			tools:listitem="@layout/fragment_editor_text" />
 
 		<LinearLayout
 			android:id="@+id/bottom_toolbar"
@@ -113,7 +114,7 @@
 				android:layout_weight="1"
 				android:gravity="center"
 				android:text="@{@string/note_modified_date(DateTimeConverter.formatCurrentDateTime(vm.note.entity.dateModification))}"
-				android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+				android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
 				tools:text="Última edición: 14/12/2021 22:20" />
 
 			<ImageButton

@@ -20,7 +20,8 @@
 		app:cardCornerRadius="5dp"
 		app:cardElevation="0dp"
 		app:strokeColor="@color/stroke_color"
-		app:strokeWidth="2dp">
+		app:strokeWidth="2dp"
+		tools:cardBackgroundColor="@color/blue_600_alpha_60">
 
 		<androidx.constraintlayout.widget.ConstraintLayout
 			android:layout_width="match_parent"
@@ -104,7 +105,7 @@
 				android:layout_marginEnd="16dp"
 				android:layout_marginBottom="8dp"
 				android:text="@{DateTimeConverter.formatCurrentDateTime(note.entity.dateModification)}"
-				android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+				android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
 				android:textStyle="italic"
 				app:layout_constraintBottom_toBottomOf="parent"
 				app:layout_constraintEnd_toEndOf="parent"
