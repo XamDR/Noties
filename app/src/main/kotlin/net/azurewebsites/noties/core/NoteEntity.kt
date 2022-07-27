@@ -20,7 +20,7 @@ data class NoteEntity(
 	@ColumnInfo(name = "is_trashed") val isTrashed: Boolean = false,
 	@ColumnInfo(name = "is_pinned") val isPinned: Boolean = false,
 	@ColumnInfo(name = "is_todo_list") val isTodoList: Boolean = false,
-	@ColumnInfo(name = "reminder_date") val reminderDate: ZonedDateTime = ZonedDateTime.now(),
+	@ColumnInfo(name = "reminder_date") val reminderDate: ZonedDateTime? = null,
 	@ColumnInfo(name = "notebook_id") val notebookId: Int = 0) : Parcelable {
 
 	fun getUrlCount() = urls.size

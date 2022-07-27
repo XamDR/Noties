@@ -44,6 +44,11 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 		dismiss()
 	}
 
+	fun invokeShowDateTimePickerCallback() {
+		onShowDateTimePickerCallback()
+		dismiss()
+	}
+
 	fun setOnActivityResultListener(callback: () -> Unit) {
 		onActivityResultCallback = callback
 	}
@@ -56,9 +61,15 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 		onMakeTodoListCallback = callback
 	}
 
+	fun setOnShowDateTimePickerListener(callback: () -> Unit) {
+		onShowDateTimePickerCallback = callback
+	}
+
 	private var onActivityResultCallback: () -> Unit = {}
 
 	private var onTakePictureCallback: () -> Unit = {}
 
 	private var onMakeTodoListCallback: () -> Unit = {}
+
+	private var onShowDateTimePickerCallback: () -> Unit = {}
 }

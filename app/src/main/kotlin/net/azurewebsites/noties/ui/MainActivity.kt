@@ -199,4 +199,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 	}
 
 	private var onFabClickCallback: () -> Unit = {}
+
+	companion object {
+		const val CHANNEL_ID = "NOTIES_CHANNEL"
+	}
 }

@@ -140,6 +140,26 @@
 	<string name="image_desc">Write the image description</string>
 	<string name="alt_text_updated">Image description updated</string>
 
+	<!-- DateTime Picker Fragment -->
+	<string name="date">Date:</string>
+	<string name="time">Time:</string>
+	<string name="today">Today</string>
+	<string name="tomorrow">Tomorrow</string>
+	<string name="next_week">Next week</string>
+	<string name="select_date">Select a date…</string>
+	<string name="five_minutes">5 minutes</string>
+	<string name="ten_minutes">10 minutes</string>
+	<string name="fifteen_minutes">15 minutes</string>
+	<string name="thirty_minutes">30 minutes</string>
+	<string name="one_hour">1 hour</string>
+	<string name="select_time">Select a time…</string>
+
+	<!-- Notifications -->
+	<string name="create_notification">Create notification</string>
+	<string name="channel_name">MyChannel</string>
+	<string name="channel_description">My description</string>
+	<string name="notification_text">Esta es una notificación</string>
+
 	<!-- Settings Fragment -->
 	<string name="settings_fragment_label">Settings</string>
 	<string name="about_header">About EzNotes</string>
@@ -162,7 +182,6 @@
 	<string name="color_item">Color item</string>
 	<string name="app_color">App Color</string>
 	<string name="color_chosen">Color chosen</string>
-
 
 	<!-- Gallery Activity -->
 	<string name="share_image">Share image</string>

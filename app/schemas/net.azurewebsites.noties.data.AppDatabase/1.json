@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0c9aa7ab303699fc74fffe705d1ca091",
+    "identityHash": "115c670b9b92fd3c502b24671880b356",
     "entities": [
       {
         "tableName": "Notebooks",
@@ -92,7 +92,7 @@
       },
       {
         "tableName": "Notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `modification_date` TEXT NOT NULL, `color` INTEGER, `urls` TEXT NOT NULL, `is_protected` INTEGER NOT NULL, `is_trashed` INTEGER NOT NULL, `is_pinned` INTEGER NOT NULL, `is_todo_list` INTEGER NOT NULL, `reminder_date` TEXT NOT NULL, `notebook_id` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `modification_date` TEXT NOT NULL, `color` INTEGER, `urls` TEXT NOT NULL, `is_protected` INTEGER NOT NULL, `is_trashed` INTEGER NOT NULL, `is_pinned` INTEGER NOT NULL, `is_todo_list` INTEGER NOT NULL, `reminder_date` TEXT, `notebook_id` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -158,7 +158,7 @@
             "fieldPath": "reminderDate",
             "columnName": "reminder_date",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "notebookId",
@@ -180,7 +180,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0c9aa7ab303699fc74fffe705d1ca091')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '115c670b9b92fd3c502b24671880b356')"
     ]
   }
 }
