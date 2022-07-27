@@ -1,14 +1,13 @@
 package net.azurewebsites.noties.ui.reminders
 
-import android.app.*
+import android.app.DatePickerDialog
+import android.app.Dialog
+import android.app.TimePickerDialog
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.widget.DatePicker
 import android.widget.TimePicker
-import androidx.core.app.AlarmManagerCompat
-import androidx.core.content.getSystemService
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -75,24 +74,8 @@ class DateTimePickerDialogFragment : DialogFragment(), DatePickerDialog.OnDateSe
 			printDebug(TAG, selectedDateTime)
 			viewModel.updateNote(viewModel.entity.copy(reminderDate = selectedDateTime))
 			val delay = selectedDateTime.toInstant().toEpochMilli()
-			val notification = NotificationHelper.buildNotification(requireContext(), delay)
-			setAlarmManager(requireContext(), notification, delay)
+			AlarmManagerHelper.setAlarmManager(requireContext(), delay)
 		}
-	}
-
-	private fun setAlarmManager(context: Context, notification: Notification, delay: Long) {
-		val intent = Intent(context, AlarmReceiver::class.java).apply {
-			putExtra(AlarmReceiver.NOTIFICATION_ID, 1)
-			putExtra(AlarmReceiver.NOTIFICATION, notification)
-		}
-		val pendingIntent = PendingIntent.getBroadcast(
-			context,
-			NotificationHelper.REQUEST_CODE,
-			intent,
-			PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-		)
-		val alarmManager = context.getSystemService<AlarmManager>() ?: return
-		AlarmManagerCompat.setExactAndAllowWhileIdle(alarmManager, AlarmManager.RTC_WAKEUP, delay, pendingIntent)
 	}
 
 	private fun onItemClick() {
