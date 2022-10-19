@@ -45,6 +45,7 @@
 				android:maxLines="3"
 				android:padding="16dp"
 				android:text="@string/demo_content"
+				android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
 				app:drawableEndCompat="@drawable/ic_lock_note" />
 
 			<TextView
@@ -54,7 +55,7 @@
 				android:layout_marginEnd="16dp"
 				android:layout_marginBottom="8dp"
 				android:text="@{DateTimeConverter.formatCurrentDateTime(note.entity.modificationDate)}"
-				android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+				android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
 				android:textStyle="italic"
 				tools:text="13 dic. 2021 23:46" />
 		</LinearLayout>

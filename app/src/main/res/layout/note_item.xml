@@ -53,7 +53,7 @@
 				android:ellipsize="end"
 				android:maxLines="1"
 				android:text="@{note.entity.title}"
-				android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+				android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
 				android:textStyle="bold"
 				android:visibility="@{TextUtils.isEmpty(note.entity.title) ? View.GONE : View.VISIBLE}"
 				app:layout_constraintEnd_toEndOf="parent"
@@ -70,6 +70,7 @@
 				android:layout_marginTop="8dp"
 				android:layout_marginEnd="16dp"
 				android:ellipsize="end"
+				android:justificationMode="inter_word"
 				android:maxLines="4"
 				android:text="@{note.entity.isTodoList ? SpannableConverter.convertToSpannable(note.entity.text) : note.entity.text}"
 				android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
@@ -77,7 +78,8 @@
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
 				app:layout_constraintTop_toBottomOf="@id/title"
-				tools:text="@string/demo_content" />
+				tools:text="@string/demo_content"
+				tools:targetApi="o" />
 
 			<com.google.android.material.chip.Chip
 				android:id="@+id/url"

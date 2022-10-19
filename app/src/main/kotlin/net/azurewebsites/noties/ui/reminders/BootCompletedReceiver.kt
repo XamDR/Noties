@@ -31,7 +31,7 @@ class BootCompletedReceiver : BroadcastReceiver() {
 					val reminderDate = note.entity.reminderDate
 					if (reminderDate != null) {
 						val delay = reminderDate.toInstant().toEpochMilli()
-						AlarmManagerHelper.setAlarmManager(context, delay)
+						AlarmManagerHelper.setAlarmManager(context, delay, note)
 					}
 				}
 			}

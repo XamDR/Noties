@@ -15,10 +15,7 @@ import net.azurewebsites.noties.R
 import net.azurewebsites.noties.databinding.DialogFragmentDatetimePickerBinding
 import net.azurewebsites.noties.ui.editor.EditorViewModel
 import net.azurewebsites.noties.ui.helpers.printDebug
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.*
 
 class DateTimePickerDialogFragment : DialogFragment(), DatePickerDialog.OnDateSetListener,
 	TimePickerDialog.OnTimeSetListener {
@@ -61,11 +58,17 @@ class DateTimePickerDialogFragment : DialogFragment(), DatePickerDialog.OnDateSe
 	}
 
 	override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-
+		selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+		helper.dates[helper.dates.size - 1] = ReminderDate.CustomDate(getString(R.string.select_date), value = selectedDate)
+		dateAdapter.notifyDataSetChanged()
+		binding.spinnerDate.setSelection(helper.dates.size - 1)
 	}
 
 	override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-
+		selectedTime = LocalTime.of(hourOfDay, minute)
+		helper.times[helper.times.size - 1] = ReminderTime.CustomTime(getString(R.string.select_time), value = selectedTime)
+		timeAdapter.notifyDataSetChanged()
+		binding.spinnerTime.setSelection(helper.times.size - 1)
 	}
 
 	private fun scheduleNotification() {
@@ -74,7 +77,7 @@ class DateTimePickerDialogFragment : DialogFragment(), DatePickerDialog.OnDateSe
 			printDebug(TAG, selectedDateTime)
 			viewModel.updateNote(viewModel.entity.copy(reminderDate = selectedDateTime))
 			val delay = selectedDateTime.toInstant().toEpochMilli()
-			AlarmManagerHelper.setAlarmManager(requireContext(), delay)
+			AlarmManagerHelper.setAlarmManager(requireContext(), delay, viewModel.note)
 		}
 	}
 
