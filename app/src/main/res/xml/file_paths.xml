@@ -2,5 +2,5 @@
 <paths>
 	<files-path name="images" path="images/" />
 	<files-path name="audios" path="audios/" />
-	<external-path name="EzNotes" path="Pictures/EzNotes" />
+	<external-path name="Noties" path="Pictures/Noties" />
 </paths>

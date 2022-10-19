@@ -14,7 +14,7 @@ class ColorPreference(context: Context, attrs: AttributeSet?) : DialogPreference
 		widgetLayoutResource = R.layout.preference_color_layout
 	}
 
-	private val defaultValue = context.getIntArray(R.array.colors)[0]
+	private val defaultValue = context.getIntArray(R.array.app_colors)[0]
 
 	fun getPersistedInt(): Int = super.getPersistedInt(defaultValue)
 

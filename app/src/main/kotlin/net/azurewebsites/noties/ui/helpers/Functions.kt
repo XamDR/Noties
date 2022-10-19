@@ -29,8 +29,9 @@ fun readUriContent(context: Context, uri: Uri?): NoteEntity? {
 				return NoteEntity(
 					title = file?.simpleName ?: String.Empty,
 					text = it.readText(),
-					dateModification = ZonedDateTime.now(),
-					urls = extractUrls(it.readText())
+					modificationDate = ZonedDateTime.now(),
+					urls = extractUrls(it.readText()),
+					notebookId = 1
 				)
 			}
 		}
@@ -38,7 +39,6 @@ fun readUriContent(context: Context, uri: Uri?): NoteEntity? {
 	}
 	catch (e: FileNotFoundException) {
 		printError("EXCEPTION", e.message)
-//		context.showToast(R.string.error_open_file)
 		return null
 	}
 }

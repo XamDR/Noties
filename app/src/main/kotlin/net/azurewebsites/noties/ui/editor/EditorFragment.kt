@@ -42,6 +42,7 @@ import net.azurewebsites.noties.ui.editor.todos.TodoItemAdapter
 import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.image.*
 import net.azurewebsites.noties.ui.notes.NotesFragment
+import net.azurewebsites.noties.ui.reminders.DateTimePickerDialogFragment
 import net.azurewebsites.noties.ui.urls.JsoupHelper
 import java.io.FileNotFoundException
 import java.time.ZonedDateTime
@@ -243,6 +244,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 			setOnActivityResultListener { pickImagesLauncher.launch(arrayOf(MIME_TYPE_IMAGE)) }
 			setOnTakePictureListener { takePictureOrRequestPermission() }
 			setOnMakeTodoListListener { makeTodoList() }
+			setOnShowDateTimePickerListener { showDateTimePickerDialog() }
 		}
 		showDialog(menuDialog, MENU_DIALOG_TAG)
 	}
@@ -319,7 +321,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 			}
 			if (note != tempNote) {
 				note.entity = note.entity.copy(
-					dateModification = ZonedDateTime.now(),
+					modificationDate = ZonedDateTime.now(),
 					urls = extractUrls(note.entity.text)
 				)
 				if (note.entity.id == 0L) {
@@ -434,6 +436,11 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		}
 	}
 
+	private fun showDateTimePickerDialog() {
+		val dateTimePickerDialog = DateTimePickerDialogFragment()
+		showDialog(dateTimePickerDialog, DATE_TIME_PICKER_DIALOG_TAG)
+	}
+
 	private fun addChildHeadlessFragments() {
 		if (childFragmentManager.findFragmentByTag(ADD_IMAGES_TAG) == null &&
 			childFragmentManager.findFragmentByTag(SHARE_CONTENT_TAG) == null) {
@@ -476,6 +483,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		const val MIME_TYPE_TEXT = "text/plain"
 		private const val MENU_DIALOG_TAG = "MENU_DIALOG"
 		private const val COLOR_DIALOG_TAG = "COLOR_DIALOG"
+		private const val DATE_TIME_PICKER_DIALOG_TAG = "DATE_TIME_PICKER"
 		private const val ALT_TEXT_DIALOG_TAG = "ALT_TEXT_DIALOG"
 		private const val DELETE_IMAGES_DIALOG_TAG = "DELETE_IMAGES"
 		private const val ADD_IMAGES_TAG = "ADD_IMAGES"

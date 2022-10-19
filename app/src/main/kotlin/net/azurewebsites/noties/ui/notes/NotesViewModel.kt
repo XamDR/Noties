@@ -36,7 +36,7 @@ class NotesViewModel @Inject constructor(
 			SortMode.LastEdit -> getNotesByFolderId(notebookId).map { result ->
 				result.sortedWith(
 					compareByDescending<Note> { it.entity.isPinned }
-					.thenByDescending { it.entity.dateModification }
+					.thenByDescending { it.entity.modificationDate }
 				)
 			}
 			SortMode.Title -> getNotesByFolderId(notebookId).map { result ->

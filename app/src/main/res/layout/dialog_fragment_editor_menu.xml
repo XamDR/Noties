@@ -72,6 +72,7 @@
 			android:drawablePadding="8dp"
 			android:foreground="?attr/selectableItemBackground"
 			android:gravity="center_vertical"
+			android:onClick="@{() -> fragment.invokeShowDateTimePickerCallback()}"
 			android:padding="8dp"
 			android:text="@string/add_reminder"
 			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"

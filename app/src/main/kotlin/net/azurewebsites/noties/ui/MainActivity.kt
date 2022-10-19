@@ -1,5 +1,6 @@
 package net.azurewebsites.noties.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
@@ -21,15 +22,17 @@ import com.google.android.material.appbar.AppBarLayout.LayoutParams
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import net.azurewebsites.noties.R
+import net.azurewebsites.noties.core.Note
+import net.azurewebsites.noties.core.NoteEntity
 import net.azurewebsites.noties.core.Notebook
 import net.azurewebsites.noties.core.NotebookEntity
 import net.azurewebsites.noties.databinding.ActivityMainBinding
-import net.azurewebsites.noties.ui.helpers.findNavController
-import net.azurewebsites.noties.ui.helpers.setNightMode
-import net.azurewebsites.noties.ui.helpers.tryNavigate
+import net.azurewebsites.noties.ui.editor.EditorViewModel
+import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.notebooks.*
 import net.azurewebsites.noties.ui.notes.FabScrollingBehavior
 import net.azurewebsites.noties.ui.settings.PreferenceStorage
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -49,6 +52,34 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		setContentView(binding.root)
 		setSupportActionBar(binding.toolbar)
 		setupNavigation()
+		handleIntent()
+	}
+
+	private fun handleIntent() {
+		if (intent.action == Intent.ACTION_SEND) {
+			if (intent.type == "text/plain") {
+				val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT) ?: return
+				val entity = NoteEntity(
+					text = sharedText,
+					modificationDate = ZonedDateTime.now(),
+					urls = extractUrls(sharedText),
+					notebookId = 1
+				)
+				val args = bundleOf(EditorViewModel.NOTE to Note(entity = entity))
+				navController.tryNavigate(R.id.action_notes_to_editor, args)
+			}
+		}
+		else {
+			val uri = intent.data ?: return
+			val entity = readUriContent(this, uri)
+			if (entity != null) {
+				val args = bundleOf(EditorViewModel.NOTE to Note(entity = entity))
+				navController.tryNavigate(R.id.action_notes_to_editor, args)
+			}
+			else {
+				showToast(R.string.error_open_file)
+			}
+		}
 	}
 
 	override fun onStart() {
@@ -199,4 +230,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 	}
 
 	private var onFabClickCallback: () -> Unit = {}
+
+	companion object {
+		const val CHANNEL_ID = "NOTIES_CHANNEL"
+	}
 }

@@ -35,4 +35,8 @@ interface NoteDao {
 
 	@Query("DELETE FROM Notes WHERE is_trashed = 1")
 	suspend fun deleteTrashedNotes(): Int
+
+	@Transaction
+	@Query("SELECT * FROM notes WHERE reminder_date IS NOT NULL")
+	suspend fun getNotesWithReminderAsync(): List<Note>
 }

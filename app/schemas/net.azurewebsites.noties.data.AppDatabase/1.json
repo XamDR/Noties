@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "6d2bc5bf8e7c758c8809ddcc359478a2",
+    "identityHash": "115c670b9b92fd3c502b24671880b356",
     "entities": [
       {
         "tableName": "Notebooks",
@@ -92,7 +92,7 @@
       },
       {
         "tableName": "Notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `date_modification` TEXT NOT NULL, `color` INTEGER, `urls` TEXT NOT NULL, `is_protected` INTEGER NOT NULL, `is_trashed` INTEGER NOT NULL, `is_pinned` INTEGER NOT NULL, `is_todo_list` INTEGER NOT NULL, `notebook_id` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `modification_date` TEXT NOT NULL, `color` INTEGER, `urls` TEXT NOT NULL, `is_protected` INTEGER NOT NULL, `is_trashed` INTEGER NOT NULL, `is_pinned` INTEGER NOT NULL, `is_todo_list` INTEGER NOT NULL, `reminder_date` TEXT, `notebook_id` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -113,8 +113,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "dateModification",
-            "columnName": "date_modification",
+            "fieldPath": "modificationDate",
+            "columnName": "modification_date",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -155,6 +155,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "reminderDate",
+            "columnName": "reminder_date",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
             "fieldPath": "notebookId",
             "columnName": "notebook_id",
             "affinity": "INTEGER",
@@ -174,7 +180,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6d2bc5bf8e7c758c8809ddcc359478a2')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '115c670b9b92fd3c502b24671880b356')"
     ]
   }
 }

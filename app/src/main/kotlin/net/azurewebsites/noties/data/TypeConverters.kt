@@ -9,15 +9,15 @@ import java.time.format.DateTimeFormatter
 class ZonedDateTimeToStringConverter {
 
 	@TypeConverter
-	fun fromZonedDateTime(dateTime: ZonedDateTime): String {
+	fun fromZonedDateTime(dateTime: ZonedDateTime?): String? {
 		val formatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.systemDefault())
-		return formatter.format(dateTime)
+		return if (dateTime != null) formatter.format(dateTime) else null
 	}
 
 	@TypeConverter
-	fun toZonedDateTime(value: String): ZonedDateTime {
+	fun toZonedDateTime(value: String?): ZonedDateTime? {
 		val formatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.systemDefault())
-		return ZonedDateTime.parse(value, formatter)
+		return if (value != null) ZonedDateTime.parse(value, formatter) else null
 	}
 
 	companion object {

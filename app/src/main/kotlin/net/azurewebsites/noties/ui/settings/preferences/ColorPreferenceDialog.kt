@@ -25,7 +25,7 @@ class ColorPreferenceDialog : PreferenceDialogFragmentCompat() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		colors = requireContext().getIntArray(R.array.colors).toList()
+		colors = requireContext().getIntArray(R.array.app_colors).toList()
 		colorAdapter = ColorAdapter(colors).apply {
 			setOnColorSelectedListener { position -> closeDialog(position) }
 		}

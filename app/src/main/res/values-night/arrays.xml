@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<integer-array name="colors_editor">
+		<item>@color/blue_600_alpha_60</item>
+		<item>@color/red_600_alpha_60</item>
+		<item>@color/pink_600_alpha_80</item>
+		<item>@color/purple_600_alpha_80</item>
+		<item>@color/cyan_600_alpha_55</item>
+		<item>@color/teal_600_alpha_60</item>
+		<item>@color/green_600_alpha_60</item>
+		<item>@color/orange_700_alpha_55</item>
+		<item>@color/brown_600_alpha_80</item>
+		<item>@color/gray_700_alpha_80</item>
+	</integer-array>
+</resources>
