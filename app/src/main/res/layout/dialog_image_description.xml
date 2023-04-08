@@ -1,38 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.textfield.TextInputLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools">
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:padding="16dp"
+	app:boxStrokeColor="@color/text_input_layout_stroke_color"
+	app:counterEnabled="true"
+	app:counterMaxLength="100"
+	app:endIconMode="clear_text"
+	style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-	<data>
-		<variable
-			name="vm"
-			type="net.azurewebsites.noties.ui.editor.EditorViewModel"/>
-	</data>
-
-	<com.google.android.material.textfield.TextInputLayout
+	<com.google.android.material.textfield.TextInputEditText
+		android:id="@+id/image_desc"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:padding="16dp"
-		app:boxStrokeColor="@color/text_input_layout_stroke_color"
-		app:counterEnabled="true"
-		app:counterMaxLength="100"
-		app:endIconMode="clear_text"
-		style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-		<com.google.android.material.textfield.TextInputEditText
-			android:id="@+id/image_desc"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:hint="@string/image_desc"
-			android:imeOptions="flagNoFullscreen"
-			android:importantForAutofill="no"
-			android:inputType="textMultiLine|textCapSentences"
-			android:minHeight="48dp"
-			android:scrollbars="none"
-			android:text="@{vm.description}"
-			android:afterTextChanged="@{vm::updateImageAltText}"
-			android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-			android:textColorHint="@color/hint_selector"
-			tools:text="This image contains…" />
-	</com.google.android.material.textfield.TextInputLayout>
-</layout>
+		android:hint="@string/image_desc"
+		android:imeOptions="flagNoFullscreen"
+		android:importantForAutofill="no"
+		android:inputType="textMultiLine|textCapSentences"
+		android:minHeight="48dp"
+		android:scrollbars="none"
+		android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+		android:textColorHint="@color/hint_selector"
+		tools:text="This image contains…" />
+</com.google.android.material.textfield.TextInputLayout>

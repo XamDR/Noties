@@ -11,7 +11,7 @@
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 
 	<application
-		android:name="net.azurewebsites.noties.App"
+		android:name="io.github.xamdr.noties.App"
 		android:allowBackup="true"
 		android:icon="@mipmap/ic_launcher"
 		android:label="@string/app_name"
@@ -19,14 +19,14 @@
 		android:supportsRtl="true">
 
 		<activity
-			android:name="net.azurewebsites.noties.ui.gallery.GalleryActivity"
+			android:name="io.github.xamdr.noties.ui.gallery.GalleryActivity"
 			android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|layoutDirection|fontScale"
 			android:exported="false"
 			android:theme="@style/Theme.Noties.Gallery"
 			android:windowSoftInputMode="stateAlwaysHidden"/>
 
 		<activity
-			android:name="net.azurewebsites.noties.ui.MainActivity"
+			android:name="io.github.xamdr.noties.ui.MainActivity"
 			android:exported="true"
 			android:theme="@style/Theme.SplashScreen.Noties"
 			android:windowSoftInputMode="adjustResize">
@@ -67,7 +67,7 @@
 
 		<provider
 			android:name="androidx.core.content.FileProvider"
-			android:authorities="net.azurewebsites.noties"
+			android:authorities="io.github.xamdr.noties"
 			android:exported="false"
 			android:grantUriPermissions="true">
 			<meta-data

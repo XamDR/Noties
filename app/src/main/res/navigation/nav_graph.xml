@@ -7,7 +7,7 @@
 
 	<fragment
 		android:id="@+id/nav_welcome"
-		android:name="net.azurewebsites.noties.ui.onboarding.WelcomeFragment"
+		android:name="io.github.xamdr.noties.ui.onboarding.WelcomeFragment"
 		android:label=""
 		tools:layout="@layout/fragment_welcome">
 
@@ -28,7 +28,7 @@
 
 	<fragment
 		android:id="@+id/nav_notes"
-		android:name="net.azurewebsites.noties.ui.notes.NotesFragment"
+		android:name="io.github.xamdr.noties.ui.notes.NotesFragment"
 		android:label=""
 		tools:layout="@layout/fragment_notes">
 
@@ -53,7 +53,7 @@
 
 	<fragment
 		android:id="@+id/nav_notebooks"
-		android:name="net.azurewebsites.noties.ui.notebooks.NotebooksFragment"
+		android:name="io.github.xamdr.noties.ui.notebooks.NotebooksFragment"
 		android:label="@string/notebooks_fragment_label"
 		tools:layout="@layout/fragment_notebooks">
 
@@ -75,7 +75,7 @@
 
 	<fragment
 		android:id="@+id/nav_trash"
-		android:name="net.azurewebsites.noties.ui.trash.RecycleBinFragment"
+		android:name="io.github.xamdr.noties.ui.trash.RecycleBinFragment"
 		android:label="@string/recycle_bin_fragment_label"
 		tools:layout="@layout/fragment_recycle_bin">
 
@@ -90,7 +90,7 @@
 
 	<fragment
 		android:id="@+id/nav_settings"
-		android:name="net.azurewebsites.noties.ui.settings.SettingsFragment"
+		android:name="io.github.xamdr.noties.ui.settings.SettingsFragment"
 		android:label="@string/settings_fragment_label">
 
 		<argument
@@ -104,7 +104,7 @@
 
 	<fragment
 		android:id="@+id/nav_editor"
-		android:name="net.azurewebsites.noties.ui.editor.EditorFragment"
+		android:name="io.github.xamdr.noties.ui.editor.EditorFragment"
 		android:label="@string/editor_fragment_label"
 		tools:layout="@layout/fragment_editor">
 
@@ -123,7 +123,7 @@
 
 	<activity
 		android:id="@+id/nav_gallery"
-		android:name="net.azurewebsites.noties.ui.gallery.GalleryActivity"
+		android:name="io.github.xamdr.noties.ui.gallery.GalleryActivity"
 		android:label="GalleryActivity"
 		tools:layout="@layout/activity_gallery"/>
 </navigation>

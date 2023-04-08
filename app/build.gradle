@@ -11,11 +11,11 @@ def versionMinor = 0
 def versionPatch = 0
 
 android {
-	namespace 'net.azurewebsites.noties'
+	namespace 'io.github.xamdr.noties'
 	compileSdk 33
 
 	defaultConfig {
-		applicationId "net.azurewebsites.noties"
+		applicationId "io.github.xamdr.noties"
 		minSdk 23
 		targetSdk 33
 		versionCode 1
@@ -54,7 +54,7 @@ android {
 		jvmTarget = 11
 	}
 	buildFeatures {
-		dataBinding true
+		viewBinding true
 	}
 	tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 		kotlinOptions.freeCompilerArgs += ["-Xallow-kotlin-package"]

@@ -1,131 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools">
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:background="@color/blue_600_alpha_60"
+	tools:context=".ui.editor.EditorFragment">
 
-	<data>
-		<import type="net.azurewebsites.noties.ui.helpers.DateTimeConverter" />
-		<variable
-			name="fragment"
-			type="net.azurewebsites.noties.ui.editor.EditorFragment" />
-		<variable
-			name="vm"
-			type="net.azurewebsites.noties.ui.editor.EditorViewModel" />
-	</data>
+	<com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/app_bar"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:background="@android:color/transparent"
+		android:stateListAnimator="@null"
+		app:layout_constraintBottom_toTopOf="@id/content"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
 
-	<androidx.constraintlayout.widget.ConstraintLayout
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		app:backgroundColor="@{vm.entity.color}"
-		tools:background="@color/blue_600_alpha_60"
-		tools:context=".ui.editor.EditorFragment">
-
-		<com.google.android.material.appbar.AppBarLayout
-			android:id="@+id/app_bar"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:background="@android:color/transparent"
-			android:stateListAnimator="@null"
-			app:layout_constraintBottom_toTopOf="@id/content"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toTopOf="parent">
-
-			<androidx.appcompat.widget.Toolbar
-				android:id="@+id/top_toolbar"
-				android:layout_width="match_parent"
-				android:layout_height="?attr/actionBarSize"
-				app:menu="@menu/menu_editor"
-				app:navigationContentDescription="@string/toolbar_back_button_description"
-				app:navigationIcon="?attr/homeAsUpIndicator"
-				app:navigationOnClick="@{() -> fragment.navigateUp()}">
-
-				<com.google.android.material.textfield.TextInputLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:paddingTop="8dp"
-					android:theme="@style/ThemeOverlay.AppTheme.TextInputEditText.Outlined"
-					app:boxBackgroundMode="none"
-					app:endIconContentDescription="@string/clear_note_title_text"
-					app:endIconMode="clear_text"
-					app:endIconTint="?attr/colorOnSurface"
-					app:hintEnabled="false">
-
-					<com.google.android.material.textfield.TextInputEditText
-						android:id="@+id/note_title"
-						android:layout_width="match_parent"
-						android:layout_height="@dimen/textInputEditTextSize"
-						android:afterTextChanged="@{fragment::afterTextChanged}"
-						android:hint="@string/note_title"
-						android:imeOptions="flagNoFullscreen"
-						android:inputType="textCapSentences"
-						android:maxLines="1"
-						android:paddingTop="8dp"
-						android:text="@{vm.note.entity.title}"
-						android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-						android:textCursorDrawable="@drawable/cursor_color"
-						tools:text="Lorem Ipsum" />
-				</com.google.android.material.textfield.TextInputLayout>
-			</androidx.appcompat.widget.Toolbar>
-		</com.google.android.material.appbar.AppBarLayout>
-
-		<androidx.recyclerview.widget.RecyclerView
-			android:id="@+id/content"
-			android:layout_width="0dp"
-			android:layout_height="0dp"
-			android:contentDescription="@string/editor_content"
-			android:orientation="vertical"
-			android:scrollbars="none"
-			app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-			app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/app_bar"
-			app:spanCount="@integer/span_count"
-			tools:listitem="@layout/fragment_editor_text" />
-
-		<LinearLayout
-			android:id="@+id/bottom_toolbar"
+		<androidx.appcompat.widget.Toolbar
+			android:id="@+id/top_toolbar"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="horizontal"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/content"
-			app:layout_constraintBottom_toBottomOf="parent">
+			android:layout_height="?attr/actionBarSize"
+			app:menu="@menu/menu_editor"
+			app:navigationContentDescription="@string/toolbar_back_button_description"
+			app:navigationIcon="?attr/homeAsUpIndicator">
 
-			<ImageButton
-				android:id="@+id/add"
-				android:layout_width="@dimen/bottom_app_bar_item_height"
-				android:layout_height="@dimen/bottom_app_bar_item_height"
-				android:layout_marginStart="8dp"
-				android:background="?selectableItemBackgroundBorderless"
-				android:contentDescription="@string/add_attachment"
-				android:onClick="@{() -> fragment.showBottomSheetMenuDialog()}"
-				android:src="@drawable/ic_add_attachment"/>
-
-			<TextView
-				android:id="@+id/note_update_date"
-				android:layout_width="0dp"
+			<com.google.android.material.textfield.TextInputLayout
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_gravity="center"
-				android:layout_marginStart="4dp"
-				android:layout_marginEnd="4dp"
-				android:layout_weight="1"
-				android:gravity="center"
-				android:text="@{@string/note_modified_date(DateTimeConverter.formatCurrentDateTime(vm.note.entity.modificationDate))}"
-				android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-				tools:text="Última edición: 14/12/2021 22:20" />
+				android:paddingTop="8dp"
+				android:theme="@style/ThemeOverlay.AppTheme.TextInputEditText.Outlined"
+				app:boxBackgroundMode="none"
+				app:endIconContentDescription="@string/clear_note_title_text"
+				app:endIconMode="clear_text"
+				app:endIconTint="?attr/colorOnSurface"
+				app:hintEnabled="false">
 
-			<ImageButton
-				android:id="@+id/note_color"
-				android:layout_width="@dimen/bottom_app_bar_item_height"
-				android:layout_height="@dimen/bottom_app_bar_item_height"
-				android:layout_marginEnd="8dp"
-				android:background="?selectableItemBackgroundBorderless"
-				android:contentDescription="@string/pick_note_color"
-				android:onClick="@{() -> fragment.showBottomSheetColorDialog()}"
-				android:src="@drawable/ic_note_palette" />
-		</LinearLayout>
-	</androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+				<com.google.android.material.textfield.TextInputEditText
+					android:id="@+id/note_title"
+					android:layout_width="match_parent"
+					android:layout_height="@dimen/textInputEditTextSize"
+					android:hint="@string/note_title"
+					android:imeOptions="flagNoFullscreen"
+					android:inputType="textCapSentences"
+					android:maxLines="1"
+					android:paddingTop="8dp"
+					android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+					android:textCursorDrawable="@drawable/cursor_color"
+					tools:text="Lorem Ipsum" />
+			</com.google.android.material.textfield.TextInputLayout>
+		</androidx.appcompat.widget.Toolbar>
+	</com.google.android.material.appbar.AppBarLayout>
+
+	<androidx.recyclerview.widget.RecyclerView
+		android:id="@+id/content"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:contentDescription="@string/editor_content"
+		android:orientation="vertical"
+		android:scrollbars="none"
+		app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+		app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/app_bar"
+		app:spanCount="@integer/span_count"
+		tools:listitem="@layout/fragment_editor_text" />
+
+	<LinearLayout
+		android:id="@+id/bottom_toolbar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/content"
+		app:layout_constraintBottom_toBottomOf="parent">
+
+		<ImageButton
+			android:id="@+id/add"
+			android:layout_width="@dimen/bottom_app_bar_item_height"
+			android:layout_height="@dimen/bottom_app_bar_item_height"
+			android:layout_marginStart="8dp"
+			android:background="?selectableItemBackgroundBorderless"
+			android:contentDescription="@string/add_attachment"
+			android:src="@drawable/ic_add_attachment"/>
+
+		<TextView
+			android:id="@+id/note_update_date"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:layout_marginStart="4dp"
+			android:layout_marginEnd="4dp"
+			android:layout_weight="1"
+			android:gravity="center"
+			android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+			tools:text="Última edición: 14/12/2021 22:20" />
+
+		<ImageButton
+			android:id="@+id/note_color"
+			android:layout_width="@dimen/bottom_app_bar_item_height"
+			android:layout_height="@dimen/bottom_app_bar_item_height"
+			android:layout_marginEnd="8dp"
+			android:background="?selectableItemBackgroundBorderless"
+			android:contentDescription="@string/pick_note_color"
+			android:src="@drawable/ic_note_palette" />
+	</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

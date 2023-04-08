@@ -1,59 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
-	xmlns:app="http://schemas.android.com/apk/res-auto">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:minHeight="?android:attr/listPreferredItemHeight"
+	android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+	android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+	android:paddingTop="8dp"
+	android:paddingBottom="8dp">
 
-	<data>
-		<variable
-			name="notebook"
-			type="net.azurewebsites.noties.core.NotebookEntity" />
-	</data>
-
-	<androidx.constraintlayout.widget.ConstraintLayout
-		android:layout_width="match_parent"
+	<TextView
+		android:id="@+id/notebook_name"
+		android:layout_width="0dp"
 		android:layout_height="wrap_content"
-		android:minHeight="?android:attr/listPreferredItemHeight"
-		android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-		android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-		android:paddingTop="8dp"
-		android:paddingBottom="8dp">
+		android:singleLine="true"
+		android:ellipsize="end"
+		android:text="@{notebook.name}"
+		android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintBottom_toTopOf="@id/note_count"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toStartOf="@id/more_options"
+		tools:text="General"/>
 
-		<TextView
-			android:id="@+id/notebook_name"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:singleLine="true"
-			android:ellipsize="end"
-			android:text="@{notebook.name}"
-			android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-			app:layout_constraintTop_toTopOf="parent"
-			app:layout_constraintBottom_toTopOf="@id/note_count"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintEnd_toStartOf="@id/more_options"
-			tools:text="General"/>
+	<TextView
+		android:id="@+id/note_count"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:text="@{@plurals/note_count(notebook.noteCount, notebook.noteCount)}"
+		android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+		app:layout_constraintTop_toBottomOf="@id/notebook_name"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toStartOf="@id/more_options"
+		tools:text="1 Note"/>
 
-		<TextView
-			android:id="@+id/note_count"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:text="@{@plurals/note_count(notebook.noteCount, notebook.noteCount)}"
-			android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-			app:layout_constraintTop_toBottomOf="@id/notebook_name"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintEnd_toStartOf="@id/more_options"
-			tools:text="1 Note"/>
-
-		<ImageButton
-			android:id="@+id/more_options"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:background="?selectableItemBackgroundBorderless"
-			android:contentDescription="@string/more_options"
-			android:minHeight="@dimen/textInputEditTextSize"
-			android:minWidth="@dimen/textInputEditTextSize"
-			android:src="@drawable/ic_more_options"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintBottom_toBottomOf="parent"/>
-	</androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+	<ImageButton
+		android:id="@+id/more_options"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:background="?selectableItemBackgroundBorderless"
+		android:contentDescription="@string/more_options"
+		android:minHeight="@dimen/textInputEditTextSize"
+		android:minWidth="@dimen/textInputEditTextSize"
+		android:src="@drawable/ic_more_options"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintBottom_toBottomOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

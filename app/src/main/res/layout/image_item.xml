@@ -1,23 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools">
-
-	<data>
-		<variable
-			name="imageItem"
-			type="net.azurewebsites.noties.core.ImageEntity"/>
-	</data>
-
-	<ImageView
-		android:id="@+id/image"
-		android:layout_width="200dp"
-		android:layout_height="200dp"
-		android:adjustViewBounds="true"
-		android:contentDescription="@{imageItem.description ?? @string/image_attachment}"
-		android:scaleType="centerCrop"
-		app:source="@{imageItem.uri}"
-		app:width="@{200}"
-		app:height="@{200}"
-		tools:src="@drawable/ic_android"/>
-</layout>
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/image"
+	android:layout_width="200dp"
+	android:layout_height="200dp"
+	android:adjustViewBounds="true"
+	android:scaleType="centerCrop"
+	tools:ignore="ContentDescription"
+	tools:src="@drawable/ic_android" />

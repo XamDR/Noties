@@ -1,81 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="8dp"
+	app:behavior_hideable="true"
+	app:behavior_peekHeight="0dp"
+	app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-	<data>
-		<import type="android.view.View" />
-		<variable
-			name="fragment"
-			type="net.azurewebsites.noties.ui.editor.EditorMenuFragment" />
-		<variable
-			name="vm"
-			type="net.azurewebsites.noties.ui.editor.EditorViewModel" />
-	</data>
-
-	<LinearLayout
+	<com.google.android.material.textview.MaterialTextView
+		android:id="@+id/attach_media"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="vertical"
+		android:layout_margin="8dp"
+		android:drawablePadding="8dp"
+		android:foreground="?attr/selectableItemBackground"
+		android:gravity="center_vertical"
 		android:padding="8dp"
-		app:behavior_hideable="true"
-		app:behavior_peekHeight="0dp"
-		app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+		android:text="@string/attach_images"
+		android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+		app:drawableStartCompat="@drawable/ic_attach_image" />
 
-		<com.google.android.material.textview.MaterialTextView
-			android:id="@+id/attach_media"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_margin="8dp"
-			android:drawablePadding="8dp"
-			android:foreground="?attr/selectableItemBackground"
-			android:gravity="center_vertical"
-			android:onClick="@{() -> fragment.invokeActivityResultCallback()}"
-			android:padding="8dp"
-			android:text="@string/attach_images"
-			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-			app:drawableStartCompat="@drawable/ic_attach_image" />
+	<com.google.android.material.textview.MaterialTextView
+		android:id="@+id/take_picture"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="8dp"
+		android:drawablePadding="8dp"
+		android:foreground="?attr/selectableItemBackground"
+		android:gravity="center_vertical"
+		android:padding="8dp"
+		android:text="@string/take_picture"
+		android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+		app:drawableStartCompat="@drawable/ic_take_picture" />
 
-		<com.google.android.material.textview.MaterialTextView
-			android:id="@+id/take_picture"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_margin="8dp"
-			android:drawablePadding="8dp"
-			android:foreground="?attr/selectableItemBackground"
-			android:gravity="center_vertical"
-			android:onClick="@{() -> fragment.invokeTakePictureCallback()}"
-			android:padding="8dp"
-			android:text="@string/take_picture"
-			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-			app:drawableStartCompat="@drawable/ic_take_picture" />
+	<com.google.android.material.textview.MaterialTextView
+		android:id="@+id/add_todo_list"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="8dp"
+		android:drawablePadding="8dp"
+		android:foreground="?attr/selectableItemBackground"
+		android:gravity="center_vertical"
+		android:padding="8dp"
+		android:text="@string/add_todo_list"
+		android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+		app:drawableStartCompat="@drawable/ic_add_todo_list" />
 
-		<com.google.android.material.textview.MaterialTextView
-			android:id="@+id/add_todo_list"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_margin="8dp"
-			android:drawablePadding="8dp"
-			android:foreground="?attr/selectableItemBackground"
-			android:gravity="center_vertical"
-			android:onClick="@{() -> fragment.invokeMakeTodoListCallback()}"
-			android:padding="8dp"
-			android:text="@string/add_todo_list"
-			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-			android:visibility="@{vm.note.entity.isTodoList ? View.GONE : View.VISIBLE}"
-			app:drawableStartCompat="@drawable/ic_add_todo_list" />
-
-		<com.google.android.material.textview.MaterialTextView
-			android:id="@+id/add_reminder"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_margin="8dp"
-			android:drawablePadding="8dp"
-			android:foreground="?attr/selectableItemBackground"
-			android:gravity="center_vertical"
-			android:onClick="@{() -> fragment.invokeShowDateTimePickerCallback()}"
-			android:padding="8dp"
-			android:text="@string/add_reminder"
-			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-			app:drawableStartCompat="@drawable/ic_add_reminder" />
-	</LinearLayout>
-</layout>
+	<com.google.android.material.textview.MaterialTextView
+		android:id="@+id/add_reminder"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="8dp"
+		android:drawablePadding="8dp"
+		android:foreground="?attr/selectableItemBackground"
+		android:gravity="center_vertical"
+		android:padding="8dp"
+		android:text="@string/add_reminder"
+		android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+		app:drawableStartCompat="@drawable/ic_add_reminder" />
+</LinearLayout>
