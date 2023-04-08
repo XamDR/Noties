@@ -164,18 +164,18 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
 	private fun updateNavDrawer(notebooks: List<Notebook>) {
 		val item = binding.navView.menu.getItem(1)
-		if (item.subMenu.isNotEmpty()) item.subMenu.clear()
+		if (item.subMenu?.isNotEmpty() == true) item?.subMenu?.clear()
 
 		for (notebook in notebooks) {
-			item.subMenu.add(R.id.group_notebooks, 1, 1, notebook.entity.name).apply {
+			item.subMenu?.add(R.id.group_notebooks, 1, 1, notebook.entity.name)?.apply {
 				setIcon(R.drawable.ic_notebook)
 				isCheckable = true
 				isChecked = this.title == binding.toolbar.title
 				setOnMenuItemClickListener { filterNotesByNotebook(notebook.entity, item); true }
 			}
 		}
-		item.subMenu.add(R.id.group_notebooks, R.id.create_notebook, 1000, getString(R.string.create_notebook))
-			.setIcon(R.drawable.ic_add_item)
+		item.subMenu?.add(R.id.group_notebooks, R.id.create_notebook, 1000, getString(R.string.create_notebook))
+			?.setIcon(R.drawable.ic_add_item)
 		binding.navView.menu.findItem(R.id.create_notebook).setActionView(R.layout.menu_edit_notebooks)
 		navigateToNotebooks()
 	}
@@ -188,7 +188,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
 	private fun navigateToNotebooks() {
 		val view = binding.navView.menu.findItem(R.id.create_notebook).actionView
-		view.findViewById<ImageView>(R.id.edit_notebooks).setOnClickListener {
+		view?.findViewById<ImageView>(R.id.edit_notebooks)?.setOnClickListener {
 			binding.drawerLayout.closeDrawer(GravityCompat.START, true)
 			navController.navigate(R.id.nav_notebooks)
 		}

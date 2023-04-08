@@ -43,7 +43,6 @@ import net.azurewebsites.noties.ui.helpers.*
 import net.azurewebsites.noties.ui.image.*
 import net.azurewebsites.noties.ui.notes.NotesFragment
 import net.azurewebsites.noties.ui.reminders.DateTimePickerDialogFragment
-import net.azurewebsites.noties.ui.urls.JsoupHelper
 import java.io.FileNotFoundException
 import java.time.ZonedDateTime
 
@@ -135,11 +134,8 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	override fun onLinkClicked(url: String) {
-		viewLifecycleOwner.lifecycleScope.launch {
-			val urlTitle = JsoupHelper.extractTitle(url) ?: url
-			binding.root.showSnackbar(urlTitle, action = R.string.open_url) {
-				startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-			}
+		binding.root.showSnackbar(url, action = R.string.open_url) {
+			startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
 		}
 	}
 
