@@ -11,7 +11,7 @@
 	<string name="move_button">Move</string>
 
 	<!-- Welcome Fragment -->
-	<string name="onboarding_message">EzNotes is a note taking app that will help you to take notes, make to-do lists and add attachments like images or audios.</string>
+	<string name="onboarding_message">Noties is a note taking app that will help you to take notes, make to-do lists and add attachments like images or audios.</string>
 
 	<!-- Notes Fragment -->
 	<string name="notes_fragment_label">All Notes</string>

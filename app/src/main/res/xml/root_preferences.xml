@@ -14,7 +14,7 @@
 			app:useSimpleSummaryProvider="true"
 			app:icon="@drawable/ic_app_theme"/>
 
-		<net.github.noties.ui.settings.preferences.ColorPreference
+		<io.github.xamdr.noties.ui.settings.preferences.ColorPreference
 			app:defaultValue="-14776091"
 			app:key="app_color"
 			app:title="@string/app_color"
@@ -27,13 +27,13 @@
 		app:title="@string/editor"
 		app:iconSpaceReserved="false">
 
-		<net.github.noties.ui.settings.preferences.FontSizePreference
+		<io.github.xamdr.noties.ui.settings.preferences.FontSizePreference
 			app:key="font_size"
 			app:title="@string/font_size"
 			app:dialogTitle="@string/font_size"
 			app:icon="@drawable/ic_font_size"/>
 
-		<net.github.noties.ui.settings.preferences.EditorStylePreference
+		<io.github.xamdr.noties.ui.settings.preferences.EditorStylePreference
 			app:defaultValue="blank"
 			app:entryValues="@array/editor_style_values"
 			app:key="editor_style"

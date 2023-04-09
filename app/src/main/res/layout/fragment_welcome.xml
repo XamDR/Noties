@@ -43,6 +43,7 @@
 		android:layout_marginEnd="32dp"
 		android:layout_marginBottom="@dimen/margin_bottom_onboarding"
 		android:justificationMode="inter_word"
+		android:minLines="2"
 		android:text="@string/onboarding_message"
 		android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
 		app:layout_constraintBottom_toTopOf="@id/next_button"

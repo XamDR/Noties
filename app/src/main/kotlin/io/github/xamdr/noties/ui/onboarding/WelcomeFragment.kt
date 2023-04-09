@@ -31,9 +31,7 @@ class WelcomeFragment : Fragment() {
 		inflater: LayoutInflater,
 		container: ViewGroup?,
 		savedInstanceState: Bundle?): View {
-		_binding = FragmentWelcomeBinding.inflate(inflater, container, false).apply {
-//			fragment = this@WelcomeFragment
-		}
+		_binding = FragmentWelcomeBinding.inflate(inflater, container, false)
 		return binding.root
 	}
 
@@ -42,7 +40,12 @@ class WelcomeFragment : Fragment() {
 		_binding = null
 	}
 
-	fun navigateToMainScreen() {
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+		super.onViewCreated(view, savedInstanceState)
+		binding.nextButton.setOnClickListener { navigateToMainScreen() }
+	}
+
+	private fun navigateToMainScreen() {
 		findNavController().tryNavigate(R.id.action_welcome_to_notes)
 		preferenceStorage.isOnboardingCompleted = true
 	}
