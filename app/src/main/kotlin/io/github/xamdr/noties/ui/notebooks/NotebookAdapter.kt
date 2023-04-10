@@ -11,13 +11,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.core.Notebook
-import io.github.xamdr.noties.core.NotebookEntity
+import io.github.xamdr.noties.data.entity.NotebookEntityCrossRefLocal
+import io.github.xamdr.noties.data.entity.NotebookEntityLocal
 import io.github.xamdr.noties.databinding.NotebookItemBinding
 import io.github.xamdr.noties.ui.helpers.setOnSingleClickListener
 
 class NotebookAdapter(private val listener: NotebookItemPopupMenuListener) :
-	ListAdapter<Notebook, NotebookAdapter.NotebookViewHolder>(NotebookCallback()) {
+	ListAdapter<NotebookEntityCrossRefLocal, NotebookAdapter.NotebookViewHolder>(NotebookCallback()) {
 
 	inner class NotebookViewHolder(private val binding: NotebookItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -29,11 +29,9 @@ class NotebookAdapter(private val listener: NotebookItemPopupMenuListener) :
 			}
 		}
 
-		fun bind(notebook: NotebookEntity) {
-			binding.apply {
-//				this.notebook = notebook
-//				executePendingBindings()
-			}
+		fun bind(notebook: NotebookEntityLocal) {
+			binding.notebookName.text = notebook.name
+			binding.noteCount.text = notebook.noteCount.toString()
 		}
 	}
 
@@ -76,10 +74,10 @@ class NotebookAdapter(private val listener: NotebookItemPopupMenuListener) :
 		}
 	}
 
-	class NotebookCallback : DiffUtil.ItemCallback<Notebook>() {
+	class NotebookCallback : DiffUtil.ItemCallback<NotebookEntityCrossRefLocal>() {
 
-		override fun areItemsTheSame(oldItem: Notebook, newItem: Notebook) = oldItem.entity.id == newItem.entity.id
+		override fun areItemsTheSame(oldItem: NotebookEntityCrossRefLocal, newItem: NotebookEntityCrossRefLocal) = oldItem.entity.id == newItem.entity.id
 
-		override fun areContentsTheSame(oldItem: Notebook, newItem: Notebook) = oldItem == newItem
+		override fun areContentsTheSame(oldItem: NotebookEntityCrossRefLocal, newItem: NotebookEntityCrossRefLocal) = oldItem == newItem
 	}
 }

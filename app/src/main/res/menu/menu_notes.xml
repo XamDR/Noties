@@ -5,24 +5,28 @@
 	tools:context=".ui.notes.NotesFragment">
 
 	<item
-		android:id="@+id/search_notes"
-		android:icon="@drawable/ic_search"
-		android:orderInCategory="0"
-		android:title="@string/search_notes"
-		app:actionViewClass="androidx.appcompat.widget.SearchView"
-		app:showAsAction="always|collapseActionView" />
+		android:id="@+id/nav_notebooks"
+		android:icon="@drawable/ic_edit_tag"
+		android:orderInCategory="1"
+		android:title="@string/notebooks_fragment_label"
+		app:showAsAction="always"
+		tools:ignore="AlwaysShowAction" />
 
 	<item
 		android:id="@+id/change_notes_layout"
-		android:icon="@drawable/ic_view_grid_layout"
 		android:orderInCategory="5"
 		android:title="@string/change_layout"
-		app:showAsAction="always" />
+		app:showAsAction="never" />
 
 	<item
-		android:id="@+id/sort_notes"
-		android:icon="@drawable/ic_sort"
+		android:id="@+id/nav_trash"
 		android:orderInCategory="10"
-		android:title="@string/sort_notes"
-		app:showAsAction="ifRoom" />
+		android:title="@string/recycle_bin_fragment_label"
+		app:showAsAction="never" />
+
+	<item
+		android:id="@+id/nav_settings"
+		android:orderInCategory="15"
+		android:title="@string/action_settings"
+		app:showAsAction="never" />
 </menu>

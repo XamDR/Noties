@@ -12,7 +12,6 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
@@ -24,9 +23,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.core.Note
 import io.github.xamdr.noties.core.NoteEntity
-import io.github.xamdr.noties.core.NotebookEntity
+import io.github.xamdr.noties.data.entity.NotebookEntityLocal
 import io.github.xamdr.noties.databinding.FragmentNotesBinding
-import io.github.xamdr.noties.ui.MainActivity
 import io.github.xamdr.noties.ui.editor.EditorFragment
 import io.github.xamdr.noties.ui.editor.EditorViewModel
 import io.github.xamdr.noties.ui.helpers.*
@@ -35,7 +33,6 @@ import io.github.xamdr.noties.ui.notebooks.NotebooksFragment
 import io.github.xamdr.noties.ui.notes.selection.*
 import io.github.xamdr.noties.ui.settings.PreferenceStorage
 import io.github.xamdr.noties.ui.urls.UrlsDialogFragment
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -47,7 +44,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	private val noteAdapter = NoteAdapter(this)
 	@Inject lateinit var preferenceStorage: PreferenceStorage
 	private val notebook by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getParcelable(NotebooksFragment.NOTEBOOK) ?: NotebookEntity()
+		requireArguments().getParcelable(NotebooksFragment.NOTEBOOK) ?: NotebookEntityLocal()
 	}
 	private lateinit var menuProvider: NotesMenuProvider
 	private lateinit var selectionTracker: SelectionTracker<Note>
@@ -56,7 +53,6 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
-		(context as MainActivity).setOnFabClickListener { navigateToEditor() }
 		menuProvider = NotesMenuProvider(this, preferenceStorage)
 		actionModeCallback = RecyclerViewActionModeCallback(noteAdapter)
 	}
@@ -239,13 +235,13 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	}
 
 	private fun showMoveNotesDialog(notes: List<Note>) {
-		viewLifecycleOwner.lifecycleScope.launch {
-			val notebooks = (requireActivity() as MainActivity).getNotebooks()
-			val moveNotesDialog = MoveNotesDialogFragment.newInstance(notes, notebooks).apply {
-				setOnNotesMovedListener { selectionObserver.actionMode?.finish() }
-			}
-			showDialog(moveNotesDialog, MOVE_NOTES)
-		}
+//		viewLifecycleOwner.lifecycleScope.launch {
+//			val notebooks = (requireActivity() as MainActivity).getNotebooks()
+//			val moveNotesDialog = MoveNotesDialogFragment.newInstance(notes, notebooks).apply {
+//				setOnNotesMovedListener { selectionObserver.actionMode?.finish() }
+//			}
+//			showDialog(moveNotesDialog, MOVE_NOTES)
+//		}
 	}
 
 	private fun getNoteToBeDeleted() {

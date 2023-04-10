@@ -9,7 +9,8 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.core.Note
-import io.github.xamdr.noties.core.NotebookEntity
+import io.github.xamdr.noties.data.entity.NotebookEntityLocal
+import io.github.xamdr.noties.domain.model.Notebook
 import io.github.xamdr.noties.ui.helpers.getPositiveButton
 
 class MoveNotesDialogFragment : DialogFragment() {
@@ -19,7 +20,7 @@ class MoveNotesDialogFragment : DialogFragment() {
 		requireArguments().getParcelableArrayList<Note>(NOTES_KEY) ?: emptyList()
 	}
 	private val notebooks by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getParcelableArrayList<NotebookEntity>(NOTEBOOKS_KEY) ?: emptyList()
+		requireArguments().getParcelableArrayList<Notebook>(NOTEBOOKS_KEY) ?: emptyList()
 	}
 	private var notebookId = 0
 
@@ -67,7 +68,7 @@ class MoveNotesDialogFragment : DialogFragment() {
 		private const val NOTEBOOKS_KEY = "notebooks"
 
 		fun newInstance(notes: List<Note>,
-		                notebooks: List<NotebookEntity>) = MoveNotesDialogFragment().apply {
+		                notebooks: List<NotebookEntityLocal>) = MoveNotesDialogFragment().apply {
 			arguments = bundleOf(
 				NOTES_KEY to notes,
 				NOTEBOOKS_KEY to notebooks

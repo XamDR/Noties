@@ -7,52 +7,6 @@
 	tools:background="@color/blue_600_alpha_60"
 	tools:context=".ui.editor.EditorFragment">
 
-	<com.google.android.material.appbar.AppBarLayout
-		android:id="@+id/app_bar"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:background="@android:color/transparent"
-		android:stateListAnimator="@null"
-		app:layout_constraintBottom_toTopOf="@id/content"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent">
-
-		<androidx.appcompat.widget.Toolbar
-			android:id="@+id/top_toolbar"
-			android:layout_width="match_parent"
-			android:layout_height="?attr/actionBarSize"
-			app:menu="@menu/menu_editor"
-			app:navigationContentDescription="@string/toolbar_back_button_description"
-			app:navigationIcon="?attr/homeAsUpIndicator">
-
-			<com.google.android.material.textfield.TextInputLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:paddingTop="8dp"
-				android:theme="@style/ThemeOverlay.AppTheme.TextInputEditText.Outlined"
-				app:boxBackgroundMode="none"
-				app:endIconContentDescription="@string/clear_note_title_text"
-				app:endIconMode="clear_text"
-				app:endIconTint="?attr/colorOnSurface"
-				app:hintEnabled="false">
-
-				<com.google.android.material.textfield.TextInputEditText
-					android:id="@+id/note_title"
-					android:layout_width="match_parent"
-					android:layout_height="@dimen/textInputEditTextSize"
-					android:hint="@string/note_title"
-					android:imeOptions="flagNoFullscreen"
-					android:inputType="textCapSentences"
-					android:maxLines="1"
-					android:paddingTop="8dp"
-					android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-					android:textCursorDrawable="@drawable/cursor_color"
-					tools:text="Lorem Ipsum" />
-			</com.google.android.material.textfield.TextInputLayout>
-		</androidx.appcompat.widget.Toolbar>
-	</com.google.android.material.appbar.AppBarLayout>
-
 	<androidx.recyclerview.widget.RecyclerView
 		android:id="@+id/content"
 		android:layout_width="0dp"
@@ -64,7 +18,7 @@
 		app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/app_bar"
+		app:layout_constraintTop_toTopOf="parent"
 		app:spanCount="@integer/span_count"
 		tools:listitem="@layout/fragment_editor_text" />
 

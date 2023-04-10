@@ -7,6 +7,7 @@ import androidx.core.view.MenuProvider
 import io.github.xamdr.noties.R
 
 class NotebooksMenuProvider(private val listener: NotebookToolbarItemListener) : MenuProvider {
+
 	override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
 		menuInflater.inflate(R.menu.menu_notebooks, menu)
 	}
