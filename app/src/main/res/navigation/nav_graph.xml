@@ -15,10 +15,6 @@
 			android:name="ShowToolbar"
 			android:defaultValue="false" />
 
-		<argument
-			android:name="ShowFab"
-			android:defaultValue="false" />
-
 		<action
 			android:id="@+id/action_welcome_to_notes"
 			app:destination="@id/nav_notes"
@@ -34,11 +30,7 @@
 
 		<argument
 			android:name="ShowToolbar"
-			android:defaultValue="true" />
-
-		<argument
-			android:name="ShowFab"
-			android:defaultValue="true" />
+			android:defaultValue="false" />
 
 		<action
 			android:id="@+id/action_notes_to_editor"
@@ -61,10 +53,6 @@
 			android:name="ShowToolbar"
 			android:defaultValue="true" />
 
-		<argument
-			android:name="ShowFab"
-			android:defaultValue="false" />
-
 		<action
 			android:id="@+id/action_notebooks_to_notes"
 			app:destination="@id/nav_notes"
@@ -82,10 +70,6 @@
 		<argument
 			android:name="ShowToolbar"
 			android:defaultValue="true" />
-
-		<argument
-			android:name="ShowFab"
-			android:defaultValue="false" />
 	</fragment>
 
 	<fragment
@@ -96,10 +80,6 @@
 		<argument
 			android:name="ShowToolbar"
 			android:defaultValue="true" />
-
-		<argument
-			android:name="ShowFab"
-			android:defaultValue="false" />
 	</fragment>
 
 	<fragment
@@ -110,11 +90,7 @@
 
 		<argument
 			android:name="ShowToolbar"
-			android:defaultValue="false" />
-
-		<argument
-			android:name="ShowFab"
-			android:defaultValue="false" />
+			android:defaultValue="true" />
 
 		<action
 			android:id="@+id/action_editor_gallery"

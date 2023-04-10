@@ -6,9 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.xamdr.noties.core.Notebook
-import io.github.xamdr.noties.core.NotebookEntity
+import io.github.xamdr.noties.data.entity.NotebookEntityCrossRefLocal
+import io.github.xamdr.noties.data.entity.NotebookEntityLocal
 import io.github.xamdr.noties.domain.*
+import io.github.xamdr.noties.domain.interactor.NotebookInteractor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -72,19 +73,20 @@ class NotebooksViewModel @Inject constructor(
 		}
 	}
 
-	suspend fun getNotebooks(): List<NotebookEntity> {
+	suspend fun getNotebooks(): List<NotebookEntityLocal> {
 		return getNotebooksUseCaseAsync()
 	}
 
-	fun createNotebook(notebook: NotebookEntity) {
-		viewModelScope.launch { createNotebookUseCase(notebook) }
+	fun createNotebook(notebook: io.github.xamdr.noties.domain.model.Notebook) {
+		viewModelScope.launch { createNotebookUseCase(notebook.toEntityLocal()) }
+//		viewModelScope.launch { interactor.createNotebook(notebook) }
 	}
 
-	fun updateNotebook(notebook: NotebookEntity) {
+	fun updateNotebook(notebook: NotebookEntityLocal) {
 		viewModelScope.launch { updateNotebookUseCase(notebook) }
 	}
 
-	fun deleteNotebookAndNotes(notebook: Notebook, action: () -> Unit) {
+	fun deleteNotebookAndNotes(notebook: NotebookEntityCrossRefLocal, action: () -> Unit) {
 		viewModelScope.launch {
 			deleteNotebookAndMoveNotesToTrashUseCase(notebook)
 			names.remove(notebook.entity.name)

@@ -5,9 +5,9 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import io.github.xamdr.noties.core.ImageEntity
 import io.github.xamdr.noties.core.NoteEntity
-import io.github.xamdr.noties.core.NotebookEntity
+import io.github.xamdr.noties.data.entity.NotebookEntityLocal
 
-@Database(entities = [NotebookEntity::class, ImageEntity::class, NoteEntity::class], version = 1)
+@Database(entities = [NotebookEntityLocal::class, ImageEntity::class, NoteEntity::class], version = 1)
 @TypeConverters(
 	ZonedDateTimeToStringConverter::class,
 	StringArrayToStringConverter::class,

@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:transitionGroup="true"
 	tools:context=".ui.notes.NotesFragment">
+
+	<com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/app_bar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<com.google.android.material.search.SearchBar
+			android:id="@+id/search_bar"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize"
+			android:hint="@string/search_notes"
+			app:menu="@menu/menu_notes"/>
+	</com.google.android.material.appbar.AppBarLayout>
 
 	<io.github.xamdr.noties.ui.views.CollectionView
 		android:id="@+id/recycler_view"
@@ -16,6 +29,7 @@
 		android:layout_marginBottom="8dp"
 		android:orientation="vertical"
 		android:scrollbars="none"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior"
 		app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
 		tools:listitem="@layout/note_item"/>
 
@@ -30,4 +44,16 @@
 		android:textStyle="bold"
 		app:drawableTopCompat="@drawable/ic_note"
 		tools:visibility="gone" />
-</FrameLayout>
+
+	<com.google.android.material.floatingactionbutton.FloatingActionButton
+		android:id="@+id/fab"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom|end"
+		android:layout_marginBottom="@dimen/fab_margin"
+		android:layout_marginEnd="@dimen/fab_margin"
+		android:contentDescription="@string/add_note"
+		app:backgroundTint="?attr/colorPrimary"
+		app:srcCompat="@drawable/ic_add_item"
+		app:tint="?attr/colorSurface"/>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

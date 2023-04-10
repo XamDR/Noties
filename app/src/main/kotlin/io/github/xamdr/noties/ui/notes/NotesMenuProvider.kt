@@ -17,9 +17,6 @@ class NotesMenuProvider(
 	}
 
 	override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
-		R.id.sort_notes -> {
-			listener.showSortNotesDialog(); true
-		}
 		R.id.change_notes_layout -> {
 			listener.changeNotesLayout(LayoutType.valueOf(preferenceStorage.layoutType)); true
 		}

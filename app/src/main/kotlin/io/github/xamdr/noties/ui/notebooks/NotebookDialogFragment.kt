@@ -10,8 +10,9 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.core.NotebookEntity
+import io.github.xamdr.noties.data.entity.NotebookEntityLocal
 import io.github.xamdr.noties.databinding.DialogFragmentNotebookBinding
+import io.github.xamdr.noties.domain.model.Notebook
 import io.github.xamdr.noties.ui.MainActivity
 import io.github.xamdr.noties.ui.helpers.getPositiveButton
 import io.github.xamdr.noties.ui.helpers.showSoftKeyboard
@@ -37,10 +38,7 @@ class NotebookDialogFragment : DialogFragment() {
 	}
 
 	override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-		_binding = DialogFragmentNotebookBinding.inflate(layoutInflater).apply {
-//			vm = viewModel
-//			lifecycleOwner = this@NotebookDialogFragment
-		}
+		_binding = DialogFragmentNotebookBinding.inflate(layoutInflater)
 		return MaterialAlertDialogBuilder(requireContext())
 			.setTitle(if (notebookUiState.operation == Operation.Insert) R.string.new_notebook else R.string.edit_notebook_name)
 			.setView(binding.root)
@@ -104,11 +102,12 @@ class NotebookDialogFragment : DialogFragment() {
 	private fun createOrUpdateNotebook(notebookUiState: NotebookUiState) {
 		when (notebookUiState.operation) {
 			Operation.Insert -> {
-				val newNotebook = NotebookEntity(name = viewModel.notebookUiState.value.name)
+//				val newNotebook = NotebookEntityLocal(name = viewModel.notebookUiState.value.name)
+				val newNotebook = Notebook(name = viewModel.notebookUiState.value.name)
 				viewModel.createNotebook(newNotebook)
 			}
 			Operation.Update -> {
-				val updatedNotebook = NotebookEntity(
+				val updatedNotebook = NotebookEntityLocal(
 					id = notebookUiState.id,
 					name = viewModel.notebookUiState.value.name
 				)
@@ -121,7 +120,6 @@ class NotebookDialogFragment : DialogFragment() {
 
 	private fun cleanup() {
 		viewModel.reset()
-		(requireActivity() as MainActivity).unlockDrawerLayout()
 	}
 
 	companion object {

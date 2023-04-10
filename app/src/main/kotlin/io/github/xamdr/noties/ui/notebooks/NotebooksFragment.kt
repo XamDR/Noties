@@ -11,8 +11,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.core.Notebook
-import io.github.xamdr.noties.core.NotebookEntity
+import io.github.xamdr.noties.data.entity.NotebookEntityCrossRefLocal
+import io.github.xamdr.noties.data.entity.NotebookEntityLocal
 import io.github.xamdr.noties.databinding.FragmentNotebooksBinding
 import io.github.xamdr.noties.ui.helpers.addMenuProvider
 import io.github.xamdr.noties.ui.helpers.showDialog
@@ -53,13 +53,13 @@ class NotebooksFragment : Fragment(), NotebookToolbarItemListener, NotebookItemP
 		showDialog(notebookDialog, TAG)
 	}
 
-	override fun showEditNotebookNameDialog(notebook: NotebookEntity) {
+	override fun showEditNotebookNameDialog(notebook: NotebookEntityLocal) {
 		val uiState = NotebookUiState(id = notebook.id, name = notebook.name, operation = Operation.Update)
 		val notebookDialog = NotebookDialogFragment.newInstance(uiState)
 		showDialog(notebookDialog, TAG)
 	}
 
-	override fun deleteNotebook(notebook: Notebook) {
+	override fun deleteNotebook(notebook: NotebookEntityCrossRefLocal) {
 		viewModel.deleteNotebookAndNotes(notebook) {
 			binding.root.showSnackbar(R.string.delete_notes_message)
 		}
@@ -71,7 +71,7 @@ class NotebooksFragment : Fragment(), NotebookToolbarItemListener, NotebookItemP
 				// HACK: If a folder is deleted and the fragment with such folder name
 				// was in the back stack, we navigate to "All folders".
 				// There is a bug here...
-				val args = bundleOf(NOTEBOOK to NotebookEntity())
+				val args = bundleOf(NOTEBOOK to NotebookEntityLocal())
 				findNavController().tryNavigate(R.id.action_notebooks_to_notes, args)
 			}
 			else {

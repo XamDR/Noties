@@ -97,10 +97,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	override fun onCreateView(inflater: LayoutInflater,
 							  container: ViewGroup?,
 							  savedInstanceState: Bundle?): View {
-		_binding = FragmentEditorBinding.inflate(inflater, container, false).apply {
-//			fragment = this@EditorFragment
-//			vm = viewModel
-		}
+		_binding = FragmentEditorBinding.inflate(inflater, container, false)
 		return binding.root
 	}
 
@@ -114,7 +111,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		checkIfNoteIsProtected()
 		initTransition()
 		onBackPressed()
-		binding.topToolbar.setOnMenuItemClickListener(menuItemClickListener)
+//		binding.topToolbar.setOnMenuItemClickListener(menuItemClickListener)
 		setupRecyclerView()
 		updateToolbarsUI()
 	}
@@ -129,7 +126,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 			val fragment = childFragmentManager.findFragmentByTag(ADD_IMAGES_TAG) as AddImagesFragment
 			fragment.addImages(uris)
 			imageAdapter.submitList(viewModel.note.images)
-			binding.topToolbar.findItem(R.id.delete_images).isVisible = true
+//			binding.topToolbar.findItem(R.id.delete_images).isVisible = true
 		}
 	}
 
@@ -159,7 +156,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		deleteImage(imageToBeDeleted)
 		imageAdapter.submitList(viewModel.note.images)
 		if (viewModel.note.images.isEmpty()) {
-			binding.topToolbar.findItem(R.id.delete_images).isVisible = false
+//			binding.topToolbar.findItem(R.id.delete_images).isVisible = false
 		}
 	}
 
@@ -203,7 +200,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 				val inputStream = requireContext().contentResolver.openInputStream(uri)
 				val file = DocumentFile.fromSingleUri(requireContext(), uri)
 				inputStream?.bufferedReader()?.use { reader ->
-					binding.noteTitle.setText(file?.simpleName)
+//					binding.noteTitle.setText(file?.simpleName)
 					viewModel.updateNote(viewModel.entity.copy(text = reader.readText()))
 				}
 				textAdapter.notifyItemChanged(0)
@@ -223,8 +220,8 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 			))
 			initializeTextAdapter()
 			concatAdapter.addAdapter(textAdapter)
-			binding.topToolbar.findItem(R.id.hide_todos).isVisible = false
-			binding.topToolbar.findItem(R.id.open_file).isVisible = true
+//			binding.topToolbar.findItem(R.id.hide_todos).isVisible = false
+//			binding.topToolbar.findItem(R.id.open_file).isVisible = true
 		}
 	}
 
@@ -282,23 +279,23 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	private fun updateToolbarsUI() {
 		if (viewModel.note.images.isNotEmpty()) {
 			imageAdapter.submitList(viewModel.note.images)
-			binding.topToolbar.findItem(R.id.delete_images).isVisible = true
+//			binding.topToolbar.findItem(R.id.delete_images).isVisible = true
 		}
 		if (viewModel.entity.isTodoList) {
-			binding.topToolbar.findItem(R.id.hide_todos).isVisible = true
-			binding.topToolbar.findItem(R.id.open_file).isVisible = false
+//			binding.topToolbar.findItem(R.id.hide_todos).isVisible = true
+//			binding.topToolbar.findItem(R.id.open_file).isVisible = false
 		}
 		if (viewModel.entity.isProtected) {
-			binding.topToolbar.findItem(R.id.lock_note).apply {
-				setIcon(R.drawable.ic_unlock_note)
-				setTitle(R.string.unlock_note)
-			}
+//			binding.topToolbar.findItem(R.id.lock_note).apply {
+//				setIcon(R.drawable.ic_unlock_note)
+//				setTitle(R.string.unlock_note)
+//			}
 		}
 		if (viewModel.entity.isPinned) {
-			binding.topToolbar.findItem(R.id.pin_note).apply {
-				setIcon(R.drawable.ic_unpin_note)
-				setTitle(R.string.unpin_note)
-			}
+//			binding.topToolbar.findItem(R.id.pin_note).apply {
+//				setIcon(R.drawable.ic_unpin_note)
+//				setTitle(R.string.unpin_note)
+//			}
 		}
 	}
 
@@ -399,7 +396,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	private fun deleteAllImages() {
 		viewModel.note.images.forEach { deleteImage(it) }
 		imageAdapter.submitList(viewModel.note.images)
-		binding.topToolbar.findItem(R.id.delete_images).isVisible = false
+//		binding.topToolbar.findItem(R.id.delete_images).isVisible = false
 	}
 
 	private fun deleteImage(image: ImageEntity) {
@@ -427,8 +424,8 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 			initializeTodoItemAdapter()
 			concatAdapter.addAdapter(todoItemAdapter)
 			viewModel.updateNote(viewModel.entity.copy(isTodoList = true))
-			binding.topToolbar.findItem(R.id.hide_todos).isVisible = true
-			binding.topToolbar.findItem(R.id.open_file).isVisible = false
+//			binding.topToolbar.findItem(R.id.hide_todos).isVisible = true
+//			binding.topToolbar.findItem(R.id.open_file).isVisible = false
 		}
 	}
 
