@@ -35,20 +35,18 @@
 	<string name="confirme_device_credential_desc">To continue, please unlock your device to see the contents of this note.</string>
 	<string name="error_auth">Error. Unable to verify your identity.</string>
 
-	<!-- Notebooks Fragment -->
-	<string name="notebooks_fragment_label">Notebooks</string>
-	<string name="empty_notebooks_message">No notebooks here</string>
-	<string name="edit_notebooks">Edit notebooks</string>
-	<string name="create_notebook">Create notebook</string>
-	<string name="general_notebook">General</string>
-	<string name="search_notebooks">Search your notebooks</string>
+	<!-- Tags Fragment -->
+	<string name="tags_fragment_label">Tags</string>
+	<string name="empty_tags_message">No tags here</string>
+	<string name="create_tag">Create tag</string>
+	<string name="search_tags">Search your tags</string>
 	<string name="more_options">More options</string>
-	<string name="new_notebook">New notebook</string>
-	<string name="notebook_name">Notebook name</string>
-	<string name="error_message_notebook_duplicate">The notebook already exists</string>
-	<string name="edit_notebook_name">Edit name</string>
-	<string name="delete_notebook">Delete notebook</string>
-	<string name="delete_notes_message">The notes inside this notebook have been moved to the trash.</string>
+	<string name="new_tag">New tag</string>
+	<string name="tag_name">Tag name</string>
+	<string name="error_message_tag_duplicate">The tag already exists</string>
+	<string name="edit_tag_name">Edit name</string>
+	<string name="delete_tag">Delete tag</string>
+	<string name="delete_notes_message">The notes inside this tag have been moved to the trash.</string>
 
 	<!-- RecycleBin Fragment -->
 	<string name="recycle_bin_fragment_label">Trash</string>

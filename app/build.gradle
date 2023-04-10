@@ -50,8 +50,8 @@ android {
 		sourceCompatibility JavaVersion.VERSION_11
 		targetCompatibility JavaVersion.VERSION_11
 	}
-	kotlinOptions {
-		jvmTarget = 11
+	kotlin {
+		jvmToolchain(11)
 	}
 	buildFeatures {
 		viewBinding true
@@ -96,6 +96,9 @@ dependencies {
 
 	// Gif support
 	implementation libs.gif
+
+	// Timber
+	implementation libs.timber
 
 	// Testing
 	testImplementation libs.junit4

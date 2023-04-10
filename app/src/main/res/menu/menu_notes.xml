@@ -5,10 +5,10 @@
 	tools:context=".ui.notes.NotesFragment">
 
 	<item
-		android:id="@+id/nav_notebooks"
+		android:id="@+id/nav_tags"
 		android:icon="@drawable/ic_edit_tag"
 		android:orderInCategory="1"
-		android:title="@string/notebooks_fragment_label"
+		android:title="@string/tags_fragment_label"
 		app:showAsAction="always"
 		tools:ignore="AlwaysShowAction" />
 

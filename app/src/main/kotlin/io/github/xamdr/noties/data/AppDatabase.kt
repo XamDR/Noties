@@ -5,16 +5,20 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import io.github.xamdr.noties.core.ImageEntity
 import io.github.xamdr.noties.core.NoteEntity
-import io.github.xamdr.noties.data.entity.NotebookEntityLocal
+import io.github.xamdr.noties.data.dao.TagDao
+import io.github.xamdr.noties.data.entity.tag.DatabaseTagEntity
 
-@Database(entities = [NotebookEntityLocal::class, ImageEntity::class, NoteEntity::class], version = 1)
+@Database(entities = [DatabaseTagEntity::class, ImageEntity::class, NoteEntity::class], version = 1)
 @TypeConverters(
 	ZonedDateTimeToStringConverter::class,
 	StringArrayToStringConverter::class,
 	UriToStringConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
-	abstract fun notebookDao(): NotebookDao
+
 	abstract fun imageDao(): ImageDao
+
 	abstract fun noteDao(): NoteDao
+
+	abstract fun tagDao(): TagDao
 }

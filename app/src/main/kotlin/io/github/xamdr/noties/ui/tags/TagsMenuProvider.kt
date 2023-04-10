@@ -1,4 +1,4 @@
-package io.github.xamdr.noties.ui.notebooks
+package io.github.xamdr.noties.ui.tags
 
 import android.view.Menu
 import android.view.MenuInflater
@@ -6,15 +6,15 @@ import android.view.MenuItem
 import androidx.core.view.MenuProvider
 import io.github.xamdr.noties.R
 
-class NotebooksMenuProvider(private val listener: NotebookToolbarItemListener) : MenuProvider {
+class TagsMenuProvider(private val listener: TagToolbarItemListener) : MenuProvider {
 
 	override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-		menuInflater.inflate(R.menu.menu_notebooks, menu)
+		menuInflater.inflate(R.menu.menu_tags, menu)
 	}
 
 	override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
-		R.id.add_new_notebook -> {
-			listener.showCreateNotebookDialog(); true
+		R.id.add_new_tag -> {
+			listener.showCreateTagDialog(); true
 		}
  		else -> false
 	}

@@ -7,12 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.getSystemService
-import androidx.core.os.bundleOf
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -23,13 +21,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.core.Note
 import io.github.xamdr.noties.core.NoteEntity
-import io.github.xamdr.noties.data.entity.NotebookEntityLocal
 import io.github.xamdr.noties.databinding.FragmentNotesBinding
 import io.github.xamdr.noties.ui.editor.EditorFragment
 import io.github.xamdr.noties.ui.editor.EditorViewModel
 import io.github.xamdr.noties.ui.helpers.*
 import io.github.xamdr.noties.ui.image.ImageStorageManager
-import io.github.xamdr.noties.ui.notebooks.NotebooksFragment
 import io.github.xamdr.noties.ui.notes.selection.*
 import io.github.xamdr.noties.ui.settings.PreferenceStorage
 import io.github.xamdr.noties.ui.urls.UrlsDialogFragment
@@ -43,9 +39,9 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	private val viewModel by viewModels<NotesViewModel>()
 	private val noteAdapter = NoteAdapter(this)
 	@Inject lateinit var preferenceStorage: PreferenceStorage
-	private val notebook by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getParcelable(NotebooksFragment.NOTEBOOK) ?: NotebookEntityLocal()
-	}
+//	private val notebook by lazy(LazyThreadSafetyMode.NONE) {
+//		requireArguments().getParcelable(NotebooksFragment.NOTEBOOK) ?: NotebookEntityLocal()
+//	}
 	private lateinit var menuProvider: NotesMenuProvider
 	private lateinit var selectionTracker: SelectionTracker<Note>
 	private lateinit var actionModeCallback: RecyclerViewActionModeCallback
@@ -122,13 +118,13 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	}
 
 	override fun showSortNotesDialog() {
-		val sortNotesDialog = SortNotesDialogFragment().apply {
-			setOnSortNotesListener {
-				mode -> submitList(notebook.id, mode)
-				preferenceStorage.sortMode = mode.name
-			}
-		}
-		showDialog(sortNotesDialog, SORT_NOTES)
+//		val sortNotesDialog = SortNotesDialogFragment().apply {
+//			setOnSortNotesListener {
+//				mode -> submitList(notebook.id, mode)
+//				preferenceStorage.sortMode = mode.name
+//			}
+//		}
+//		showDialog(sortNotesDialog, SORT_NOTES)
 	}
 
 	override fun changeNotesLayout(layoutType: LayoutType) {
@@ -147,9 +143,9 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	}
 
 	private fun navigateToEditor() {
-		selectionObserver.actionMode?.finish()
-		val args = bundleOf(ID to if (notebook.id == 0) 1 else notebook.id)
-		findNavController().tryNavigate(R.id.action_notes_to_editor, args)
+//		selectionObserver.actionMode?.finish()
+//		val args = bundleOf(ID to if (notebook.id == 0) 1 else notebook.id)
+//		findNavController().tryNavigate(R.id.action_notes_to_editor, args)
 	}
 
 	private fun setupRecyclerView() {
@@ -166,8 +162,8 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	}
 
 	private fun submitListAndUpdateToolbar() {
-		supportActionBar?.title = notebook.name.ifEmpty { getString(R.string.notes_fragment_label) }
-		submitList(notebook.id, SortMode.valueOf(preferenceStorage.sortMode))
+//		supportActionBar?.title = notebook.name.ifEmpty { getString(R.string.notes_fragment_label) }
+//		submitList(notebook.id, SortMode.valueOf(preferenceStorage.sortMode))
 	}
 
 	private fun submitList(notebookId: Int, mode: SortMode) {
@@ -230,8 +226,8 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 	}
 
 	private fun togglePinnedValueForNotes(notes: List<Note>) {
-		viewModel.togglePinnedValueForNotes(notes) { selectionObserver.actionMode?.finish() }
-		submitList(notebook.id, SortMode.valueOf(preferenceStorage.sortMode))
+//		viewModel.togglePinnedValueForNotes(notes) { selectionObserver.actionMode?.finish() }
+//		submitList(notebook.id, SortMode.valueOf(preferenceStorage.sortMode))
 	}
 
 	private fun showMoveNotesDialog(notes: List<Note>) {

@@ -5,17 +5,17 @@ import io.github.xamdr.noties.core.Note
 import io.github.xamdr.noties.core.NoteEntity
 import io.github.xamdr.noties.data.ImageDao
 import io.github.xamdr.noties.data.NoteDao
-import io.github.xamdr.noties.data.NotebookDao
+import io.github.xamdr.noties.data.dao.TagDao
 import javax.inject.Inject
 
 class InsertNoteUseCase @Inject constructor(
-	private val notebookDao: NotebookDao,
+	private val tagDao: TagDao,
 	private val noteDao: NoteDao,
 	private val imageDao: ImageDao
 ) {
 
 	suspend operator fun invoke(note: NoteEntity, images: List<ImageEntity>) {
-		notebookDao.incrementNotebookNoteCount(note.notebookId)
+//		tagDao.incrementNotebookNoteCount(note.notebookId)
 		val id = noteDao.insertNote(note)
 		for (image in images) {
 			image.noteId = id
@@ -45,14 +45,14 @@ class UpdateNoteUseCase @Inject constructor(
 class DeleteNotesUseCase @Inject constructor(
 	private val noteDao: NoteDao,
 	private val imageDao: ImageDao,
-	private val notebookDao: NotebookDao) {
+	private val tagDao: TagDao) {
 
 	suspend operator fun invoke(notes: List<Note>) {
 		for (note in notes) {
 			imageDao.deleteImages(note.images)
 			noteDao.deleteNote(note.entity)
 			if (!note.entity.isTrashed) {
-				notebookDao.decrementNotebookNoteCount(note.entity.notebookId)
+//				tagDao.decrementNotebookNoteCount(note.entity.notebookId)
 			}
 		}
 	}
@@ -60,25 +60,25 @@ class DeleteNotesUseCase @Inject constructor(
 
 class MoveNoteToTrashUseCase @Inject constructor(
 	private val noteDao: NoteDao,
-	private val notebookDao: NotebookDao) {
+	private val tagDao: TagDao) {
 
 	suspend operator fun invoke(note: NoteEntity) {
 		val trashedNote = note.copy(isTrashed = true)
 		noteDao.updateNote(trashedNote)
-		notebookDao.decrementNotebookNoteCount(trashedNote.notebookId)
+//		tagDao.decrementNotebookNoteCount(trashedNote.notebookId)
 	}
 }
 
 class RestoreNoteUseCase @Inject constructor(
 	private val noteDao: NoteDao,
-	private val notebookDao: NotebookDao) {
+	private val tagDao: TagDao) {
 
 	suspend operator fun invoke(note: NoteEntity) {
-		val idExists = notebookDao.getIfNotebookIdExists(note.notebookId)
-		val restoredNote = if (idExists) note.copy(isTrashed = false)
-		else note.copy(isTrashed = false, notebookId = 1)
-		noteDao.updateNote(restoredNote)
-		notebookDao.incrementNotebookNoteCount(restoredNote.notebookId)
+//		val idExists = tagDao.getIfNotebookIdExists(note.notebookId)
+//		val restoredNote = if (idExists) note.copy(isTrashed = false)
+//		else note.copy(isTrashed = false, notebookId = 1)
+//		noteDao.updateNote(restoredNote)
+//		tagDao.incrementNotebookNoteCount(restoredNote.notebookId)
 	}
 }
 
@@ -142,15 +142,15 @@ class UnpinNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
 
 class MoveNotesUseCase @Inject constructor(
 	private val noteDao: NoteDao,
-	private val notebookDao: NotebookDao) {
+	private val tagDao: TagDao) {
 
 	suspend operator fun invoke(notes: List<NoteEntity>, notebookId: Int) {
 		for (note in notes) {
 			if (note.notebookId != notebookId) {
-				notebookDao.decrementNotebookNoteCount(note.notebookId)
+//				tagDao.decrementNotebookNoteCount(note.notebookId)
 				val updatedNote = note.copy(notebookId = notebookId)
 				noteDao.updateNote(updatedNote)
-				notebookDao.incrementNotebookNoteCount(notebookId)
+//				tagDao.incrementNotebookNoteCount(notebookId)
 			}
 		}
 	}

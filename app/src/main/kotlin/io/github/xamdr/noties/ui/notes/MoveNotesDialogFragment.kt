@@ -2,15 +2,9 @@ package io.github.xamdr.noties.ui.notes
 
 import android.app.Dialog
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
-import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import io.github.xamdr.noties.R
 import io.github.xamdr.noties.core.Note
-import io.github.xamdr.noties.data.entity.NotebookEntityLocal
-import io.github.xamdr.noties.domain.model.Notebook
 import io.github.xamdr.noties.ui.helpers.getPositiveButton
 
 class MoveNotesDialogFragment : DialogFragment() {
@@ -19,27 +13,28 @@ class MoveNotesDialogFragment : DialogFragment() {
 	private val notes by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelableArrayList<Note>(NOTES_KEY) ?: emptyList()
 	}
-	private val notebooks by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getParcelableArrayList<Notebook>(NOTEBOOKS_KEY) ?: emptyList()
-	}
+//	private val notebooks by lazy(LazyThreadSafetyMode.NONE) {
+//		requireArguments().getParcelableArrayList<Notebook>(NOTEBOOKS_KEY) ?: emptyList()
+//	}
 	private var notebookId = 0
 
 	override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-		val items = notebooks.map { it.name }.toTypedArray()
-		val dialog = MaterialAlertDialogBuilder(requireContext())
-			.setTitle(R.string.move_notes_title)
-			.setNegativeButton(R.string.cancel_button, null)
-			.setPositiveButton(R.string.move_button, null)
-			.setSingleChoiceItems(items, -1) { _, which -> selectNotebook(which) }
-			.create().apply {
-				setOnShowListener {
-					getButton(AlertDialog.BUTTON_POSITIVE).apply {
-						setOnClickListener { moveNotes(notes, notebookId) }
-					}
-				}
-			}
-		dialog.window?.setWindowAnimations(R.style.ScaleAnimationDialog)
-		return dialog
+//		val items = notebooks.map { it.name }.toTypedArray()
+//		val dialog = MaterialAlertDialogBuilder(requireContext())
+//			.setTitle(R.string.move_notes_title)
+//			.setNegativeButton(R.string.cancel_button, null)
+//			.setPositiveButton(R.string.move_button, null)
+//			.setSingleChoiceItems(items, -1) { _, which -> selectNotebook(which) }
+//			.create().apply {
+//				setOnShowListener {
+//					getButton(AlertDialog.BUTTON_POSITIVE).apply {
+//						setOnClickListener { moveNotes(notes, notebookId) }
+//					}
+//				}
+//			}
+//		dialog.window?.setWindowAnimations(R.style.ScaleAnimationDialog)
+//		return dialog
+		throw NotImplementedError("")
 	}
 
 	override fun onResume() {
@@ -52,7 +47,7 @@ class MoveNotesDialogFragment : DialogFragment() {
 	}
 
 	private fun selectNotebook(position: Int) {
-		notebookId = notebooks[position].id
+//		notebookId = notebooks[position].id
 		getPositiveButton().isEnabled = true
 	}
 
@@ -67,12 +62,12 @@ class MoveNotesDialogFragment : DialogFragment() {
 		private const val NOTES_KEY = "notes"
 		private const val NOTEBOOKS_KEY = "notebooks"
 
-		fun newInstance(notes: List<Note>,
-		                notebooks: List<NotebookEntityLocal>) = MoveNotesDialogFragment().apply {
-			arguments = bundleOf(
-				NOTES_KEY to notes,
-				NOTEBOOKS_KEY to notebooks
-			)
-		}
+//		fun newInstance(notes: List<Note>,
+//		                notebooks: List<NotebookEntityLocal>) = MoveNotesDialogFragment().apply {
+//			arguments = bundleOf(
+//				NOTES_KEY to notes,
+//				NOTEBOOKS_KEY to notebooks
+//			)
+//		}
 	}
 }
