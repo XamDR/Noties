@@ -14,11 +14,12 @@ import io.github.xamdr.noties.ui.helpers.showDialog
 import timber.log.Timber
 
 @AndroidEntryPoint
-class TagsFragment : Fragment(), TagToolbarItemListener {
+class TagsFragment : Fragment(), TagToolbarItemListener, TagPopupMenuItemListener {
 
 	private var _binding: FragmentTagsBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<TagsViewModel>()
+	private val tagAdapter = TagAdapter(this)
 	private val menuProvider = TagsMenuProvider(this)
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -34,11 +35,27 @@ class TagsFragment : Fragment(), TagToolbarItemListener {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		Timber.d("ViewModel", viewModel)
+		binding.recyclerView.setEmptyView(binding.emptyView)
+		binding.recyclerView.adapter = tagAdapter
+		viewModel.getTags().observe(viewLifecycleOwner) { tags -> tagAdapter.submitList(tags) }
 	}
 
 	override fun showCreateTagDialog() {
 		val tagDialog = TagDialogFragment.newInstance(Tag())
-		showDialog(tagDialog, "TAG_DIALOG")
+		showDialog(tagDialog, TAG_DIALOG)
+	}
+
+	override fun showCreateTagDialog(tag: Tag) {
+		val tagDialog = TagDialogFragment.newInstance(tag)
+		showDialog(tagDialog, TAG_DIALOG)
+	}
+
+	override fun deleteTag(tag: Tag) {
+		viewModel.deleteTags(listOf(tag))
+		Timber.d("Tag deleted: $tag")
+	}
+
+	private companion object {
+		private const val TAG_DIALOG = "TAG_DIALOG"
 	}
 }

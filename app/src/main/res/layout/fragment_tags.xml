@@ -14,4 +14,16 @@
 		android:orientation="vertical"
 		app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
 		tools:listitem="@layout/item_tag" />
+
+	<TextView
+		android:id="@+id/empty_view"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:gravity="center"
+		android:text="@string/empty_tags_message"
+		android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+		android:textStyle="bold"
+		app:drawableTopCompat="@drawable/ic_edit_tag"
+		tools:visibility="gone" />
 </FrameLayout>

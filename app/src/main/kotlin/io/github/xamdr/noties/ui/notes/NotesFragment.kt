@@ -4,13 +4,16 @@ import android.app.KeyguardManager
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.getSystemService
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -32,7 +35,7 @@ import io.github.xamdr.noties.ui.urls.UrlsDialogFragment
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeListener, NotesMenuListener {
+class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeListener, NotesMenuListener, Toolbar.OnMenuItemClickListener {
 
 	private var _binding: FragmentNotesBinding? = null
 	private val binding get() = _binding!!
@@ -78,6 +81,7 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 		setupRecyclerView()
 		submitListAndUpdateToolbar()
 		buildTracker(savedInstanceState)
+		binding.searchBar.setOnMenuItemClickListener(this)
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
@@ -115,6 +119,10 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 			}
 		}
 		showDialog(deleteNotesDialog, DELETE_NOTES)
+	}
+
+	override fun navigateToTags() {
+		findNavController().tryNavigate(R.id.action_notes_to_tags)
 	}
 
 	override fun showSortNotesDialog() {
@@ -264,5 +272,12 @@ class NotesFragment : Fragment(), SwipeToDeleteListener, RecyclerViewActionModeL
 		private const val DELETE_NOTES = "DELETE_NOTES_DIALOG"
 		private const val SORT_NOTES = "SORT_NOTES_DIALOG"
 		private const val MOVE_NOTES = "MOVE_NOTES_DIALOG"
+	}
+
+	override fun onMenuItemClick(item: MenuItem) = when (item.itemId) {
+		R.id.nav_tags -> {
+			navigateToTags(); true
+		}
+		else -> false
 	}
 }

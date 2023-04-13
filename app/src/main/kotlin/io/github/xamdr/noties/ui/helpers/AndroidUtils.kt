@@ -2,6 +2,7 @@ package io.github.xamdr.noties.ui.helpers
 
 import android.os.Build
 import android.os.Bundle
+import androidx.appcompat.widget.AppCompatEditText
 import java.io.Serializable
 
 @Suppress("UNCHECKED_CAST")
@@ -13,4 +14,8 @@ fun <T : Serializable> Bundle.getSerializableCompat(key: String, clazz: Class<T>
 		@Suppress("DEPRECATION")
 		(this.getSerializable(key) ?: clazz.newInstance()) as T
 	}
+}
+
+fun AppCompatEditText.textAsString(): String {
+	return if (this.text != null) this.text.toString() else String.Empty
 }

@@ -37,6 +37,10 @@
 			app:destination="@id/nav_editor" />
 
 		<action
+			android:id="@+id/action_notes_to_tags"
+			app:destination="@id/nav_tags" />
+
+		<action
 			android:id="@+id/action_notes_to_self"
 			app:destination="@id/nav_notes"
 			app:popUpTo="@id/nav_graph"

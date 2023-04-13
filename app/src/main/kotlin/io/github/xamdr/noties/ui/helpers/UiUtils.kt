@@ -71,7 +71,7 @@ fun Fragment.inflateTransition(@TransitionRes resId: Int): Transition =
 
 fun View.showSoftKeyboard() {
 	if (this.requestFocus()) {
-		val imm = context.getSystemService<InputMethodManager>()
+		val imm = this.context.getSystemService<InputMethodManager>()
 		imm?.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
 	}
 }
