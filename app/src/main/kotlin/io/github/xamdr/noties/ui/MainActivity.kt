@@ -1,9 +1,7 @@
 package io.github.xamdr.noties.ui
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isVisible
 import androidx.navigation.NavController
@@ -13,13 +11,10 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.AppBarLayout.LayoutParams
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.core.Note
-import io.github.xamdr.noties.core.NoteEntity
 import io.github.xamdr.noties.databinding.ActivityMainBinding
-import io.github.xamdr.noties.ui.editor.EditorViewModel
-import io.github.xamdr.noties.ui.helpers.*
+import io.github.xamdr.noties.ui.helpers.findNavController
+import io.github.xamdr.noties.ui.helpers.setNightMode
 import io.github.xamdr.noties.ui.settings.PreferenceStorage
-import java.time.ZonedDateTime
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -36,35 +31,35 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		setContentView(binding.root)
 		setSupportActionBar(binding.toolbar)
 		setupNavigation()
-		handleIntent()
+//		handleIntent()
 	}
 
-	private fun handleIntent() {
-		if (intent.action == Intent.ACTION_SEND) {
-			if (intent.type == "text/plain") {
-				val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT) ?: return
-				val entity = NoteEntity(
-					text = sharedText,
-					modificationDate = ZonedDateTime.now(),
-					urls = extractUrls(sharedText),
-					notebookId = 1
-				)
-				val args = bundleOf(EditorViewModel.NOTE to Note(entity = entity))
-				navController.tryNavigate(R.id.action_notes_to_editor, args)
-			}
-		}
-		else {
-			val uri = intent.data ?: return
-			val entity = readUriContent(this, uri)
-			if (entity != null) {
-				val args = bundleOf(EditorViewModel.NOTE to Note(entity = entity))
-				navController.tryNavigate(R.id.action_notes_to_editor, args)
-			}
-			else {
-				showToast(R.string.error_open_file)
-			}
-		}
-	}
+//	private fun handleIntent() {
+//		if (intent.action == Intent.ACTION_SEND) {
+//			if (intent.type == "text/plain") {
+//				val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT) ?: return
+//				val entity = DatabaseNoteEntity(
+//					text = sharedText,
+//					modificationDate = ZonedDateTime.now(),
+//					urls = extractUrls(sharedText),
+//					notebookId = 1
+//				)
+//				val args = bundleOf(EditorViewModel.NOTE to Note(entity = entity))
+//				navController.tryNavigate(R.id.action_notes_to_editor, args)
+//			}
+//		}
+//		else {
+//			val uri = intent.data ?: return
+//			val entity = readUriContent(this, uri)
+//			if (entity != null) {
+//				val args = bundleOf(EditorViewModel.NOTE to Note(entity = entity))
+//				navController.tryNavigate(R.id.action_notes_to_editor, args)
+//			}
+//			else {
+//				showToast(R.string.error_open_file)
+//			}
+//		}
+//	}
 
 	override fun onStart() {
 		super.onStart()

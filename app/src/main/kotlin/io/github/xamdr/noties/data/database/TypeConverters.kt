@@ -1,23 +1,23 @@
-package io.github.xamdr.noties.data
+package io.github.xamdr.noties.data.database
 
 import android.net.Uri
 import androidx.room.TypeConverter
+import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 class ZonedDateTimeToStringConverter {
 
 	@TypeConverter
-	fun fromZonedDateTime(dateTime: ZonedDateTime?): String? {
+	fun fromZonedDateTime(dateTime: LocalDateTime?): String? {
 		val formatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.systemDefault())
 		return if (dateTime != null) formatter.format(dateTime) else null
 	}
 
 	@TypeConverter
-	fun toZonedDateTime(value: String?): ZonedDateTime? {
+	fun toZonedDateTime(value: String?): LocalDateTime? {
 		val formatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.systemDefault())
-		return if (value != null) ZonedDateTime.parse(value, formatter) else null
+		return if (value != null) LocalDateTime.parse(value, formatter) else null
 	}
 
 	companion object {

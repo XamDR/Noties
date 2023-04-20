@@ -12,9 +12,9 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.core.Note
-import io.github.xamdr.noties.core.NoteEntity
+import io.github.xamdr.noties.data.entity.note.DatabaseNoteEntity
 import io.github.xamdr.noties.databinding.FragmentRecycleBinBinding
+import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.*
 import io.github.xamdr.noties.ui.image.ImageStorageManager
 import io.github.xamdr.noties.ui.notes.NoteAdapter
@@ -27,7 +27,7 @@ class RecycleBinFragment : Fragment(), SwipeToDeleteListener, RecycleBinMenuList
 	private var _binding: FragmentRecycleBinBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<RecycleBinViewModel>()
-	private val noteAdapter = NoteAdapter(this)
+	private val noteAdapter = NoteAdapter()
 	private val menuProvider = RecycleBinMenuProvider(this)
 	private lateinit var selectionTracker: SelectionTracker<Note>
 	private lateinit var actionModeCallback: RecyclerViewActionModeCallback
@@ -81,7 +81,7 @@ class RecycleBinFragment : Fragment(), SwipeToDeleteListener, RecycleBinMenuList
 		}
 	}
 
-	override fun moveNoteToTrash(note: NoteEntity) {}
+	override fun moveNoteToTrash(note: DatabaseNoteEntity) {}
 
 	override fun showEmptyRecycleBinDialog() {
 		val emptyRecycleBinDialog = EmptyRecycleBinDialogFragment().apply {
@@ -101,10 +101,10 @@ class RecycleBinFragment : Fragment(), SwipeToDeleteListener, RecycleBinMenuList
 	}
 
 	private fun observeTrashedNotes() {
-		viewModel.getTrashedNotes().observe(viewLifecycleOwner) { notes: List<Note> ->
-			noteAdapter.submitList(notes)
-			if (notes.isEmpty()) removeMenuProvider(menuProvider)
-		}
+//		viewModel.getTrashedNotes().observe(viewLifecycleOwner) { notes: List<Note> ->
+//			noteAdapter.submitList(notes)
+//			if (notes.isEmpty()) removeMenuProvider(menuProvider)
+//		}
 	}
 
 	private fun buildTracker(savedInstanceState: Bundle?) {

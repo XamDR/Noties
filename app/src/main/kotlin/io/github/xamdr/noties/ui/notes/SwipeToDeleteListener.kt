@@ -1,7 +1,7 @@
 package io.github.xamdr.noties.ui.notes
 
-import io.github.xamdr.noties.core.NoteEntity
+import io.github.xamdr.noties.data.entity.note.DatabaseNoteEntity
 
 interface SwipeToDeleteListener {
-	fun moveNoteToTrash(note: NoteEntity)
+	fun moveNoteToTrash(note: DatabaseNoteEntity)
 }

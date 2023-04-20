@@ -5,7 +5,6 @@ import android.app.Activity
 import android.app.KeyguardManager
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -24,37 +23,40 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.transition.MaterialArcMotion
 import com.google.android.material.transition.MaterialContainerTransform
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.core.ImageEntity
-import io.github.xamdr.noties.core.Note
-import io.github.xamdr.noties.core.Todo
+import io.github.xamdr.noties.domain.model.Todo
 import io.github.xamdr.noties.databinding.FragmentEditorBinding
+import io.github.xamdr.noties.domain.model.Image
+import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.editor.todos.DragDropCallback
 import io.github.xamdr.noties.ui.editor.todos.TodoItemAdapter
 import io.github.xamdr.noties.ui.helpers.*
 import io.github.xamdr.noties.ui.image.*
-import io.github.xamdr.noties.ui.notes.NotesFragment
 import io.github.xamdr.noties.ui.reminders.DateTimePickerDialogFragment
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.io.FileNotFoundException
-import java.time.ZonedDateTime
+import com.google.android.material.R as Material
 
 @AndroidEntryPoint
-class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
+class EditorFragment : Fragment(), EditorTextAdapter.NoteContentListener, AttachImagesListener, LinkClickedListener,
 	ImageItemContextMenuListener, ToolbarItemMenuListener, OpenFileListener {
 
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<EditorViewModel>()
-	private val notebookId by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getInt(NotesFragment.ID, 1)
+	private val tagId by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getInt(Constants.BUNDLE_TAG_ID, 0)
 	}
 	private val imageAdapter = ImageAdapter(this)
 	private lateinit var textAdapter: EditorTextAdapter
@@ -88,10 +90,10 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		menuItemClickListener = MenuItemClickListener(this, viewModel.note)
+		menuItemClickListener = MenuItemClickListener(this, Note())
 		initializeAdapters()
 		addChildHeadlessFragments()
-		window.setStatusBarColor(viewModel.entity.color)
+//		window.setStatusBarColor(viewModel.entity.color)
 	}
 
 	override fun onCreateView(inflater: LayoutInflater,
@@ -166,23 +168,23 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	override fun lockNote() {
-		viewModel.updateNote(viewModel.entity.copy(isProtected = true))
-		binding.root.showSnackbar(R.string.note_locked)
+//		viewModel.updateNote(viewModel.entity.copy(isProtected = true))
+//		binding.root.showSnackbar(R.string.note_locked)
 	}
 
 	override fun unlockNote() {
-		viewModel.updateNote(viewModel.entity.copy(isProtected = false))
-		binding.root.showSnackbar(R.string.note_unlocked)
+//		viewModel.updateNote(viewModel.entity.copy(isProtected = false))
+//		binding.root.showSnackbar(R.string.note_unlocked)
 	}
 
 	override fun pinNote() {
-		viewModel.updateNote(viewModel.entity.copy(isPinned = true))
-		binding.root.showSnackbar(R.string.note_pinned)
+//		viewModel.updateNote(viewModel.entity.copy(isPinned = true))
+//		binding.root.showSnackbar(R.string.note_pinned)
 	}
 
 	override fun unpinNote() {
-		viewModel.updateNote(viewModel.entity.copy(isPinned = false))
-		binding.root.showSnackbar(R.string.note_unpinned)
+//		viewModel.updateNote(viewModel.entity.copy(isPinned = false))
+//		binding.root.showSnackbar(R.string.note_unpinned)
 	}
 
 	override fun showDeleteImagesDialog() {
@@ -201,7 +203,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 				val file = DocumentFile.fromSingleUri(requireContext(), uri)
 				inputStream?.bufferedReader()?.use { reader ->
 //					binding.noteTitle.setText(file?.simpleName)
-					viewModel.updateNote(viewModel.entity.copy(text = reader.readText()))
+//					viewModel.updateNote(viewModel.entity.copy(text = reader.readText()))
 				}
 				textAdapter.notifyItemChanged(0)
 			}
@@ -213,16 +215,16 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	override fun hideTodoList() {
-		if (concatAdapter.removeAdapter(todoItemAdapter)) {
-			viewModel.updateNote(viewModel.entity.copy(
-				text = todoItemAdapter.joinToString(),
-				isTodoList = false
-			))
-			initializeTextAdapter()
-			concatAdapter.addAdapter(textAdapter)
+//		if (concatAdapter.removeAdapter(todoItemAdapter)) {
+//			viewModel.updateNote(viewModel.entity.copy(
+//				text = todoItemAdapter.joinToString(),
+//				isTodoList = false
+//			))
+//			initializeTextAdapter()
+//			concatAdapter.addAdapter(textAdapter)
 //			binding.topToolbar.findItem(R.id.hide_todos).isVisible = false
 //			binding.topToolbar.findItem(R.id.open_file).isVisible = true
-		}
+//		}
 	}
 
 	override fun showBottomSheetColorDialog() {
@@ -248,22 +250,31 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	fun afterTextChanged(s: Editable) {
-		viewModel.updateNote(viewModel.entity.copy(title = s.toString()))
+//		viewModel.updateNote(viewModel.entity.copy(title = s.toString()))
+	}
+
+	override fun onTextChanged(text: String) {
+		Timber.d(text)
+		viewModel.note = viewModel.note.copy(text = text)
 	}
 
 	private fun checkIfNoteIsProtected() {
-		if (viewModel.entity.isProtected) {
-			binding.root.isVisible = false
-			requestConfirmeDeviceCredential()
-		}
+//		if (viewModel.entity.isProtected) {
+//			binding.root.isVisible = false
+//			requestConfirmeDeviceCredential()
+//		}
 	}
 
 	private fun initTransition() {
 		enterTransition = MaterialContainerTransform().apply {
 			startView = requireActivity().findViewById(R.id.fab)
-			endView = binding.root
+			addTarget(binding.root)
 			endContainerColor = requireContext().getThemeColor(R.attr.colorSurface)
-			scrimColor = Color.TRANSPARENT
+			setAllContainerColors(MaterialColors.getColor(binding.root, Material.attr.colorSurface))
+			setPathMotion(MaterialArcMotion())
+			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
+			interpolator = FastOutSlowInInterpolator()
+			fadeMode = MaterialContainerTransform.FADE_MODE_IN
 		}
 	}
 
@@ -277,57 +288,41 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	private fun updateToolbarsUI() {
-		if (viewModel.note.images.isNotEmpty()) {
-			imageAdapter.submitList(viewModel.note.images)
+//		if (viewModel.note.images.isNotEmpty()) {
+//			imageAdapter.submitList(viewModel.note.images)
 //			binding.topToolbar.findItem(R.id.delete_images).isVisible = true
-		}
-		if (viewModel.entity.isTodoList) {
+//		}
+//		if (viewModel.entity.isTodoList) {
 //			binding.topToolbar.findItem(R.id.hide_todos).isVisible = true
 //			binding.topToolbar.findItem(R.id.open_file).isVisible = false
-		}
-		if (viewModel.entity.isProtected) {
+//		}
+//		if (viewModel.entity.isProtected) {
 //			binding.topToolbar.findItem(R.id.lock_note).apply {
 //				setIcon(R.drawable.ic_unlock_note)
 //				setTitle(R.string.unlock_note)
 //			}
-		}
-		if (viewModel.entity.isPinned) {
+//		}
+//		if (viewModel.entity.isPinned) {
 //			binding.topToolbar.findItem(R.id.pin_note).apply {
 //				setIcon(R.drawable.ic_unpin_note)
 //				setTitle(R.string.unpin_note)
 //			}
-		}
+//		}
 	}
 
 	private fun onBackPressed() {
 		requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-			insertOrUpdateNote(viewModel.note, viewModel.tempNote, notebookId)
+			insertOrUpdateNote(viewModel.note, tagId)
 			findNavController().popBackStack()
 			window.setStatusBarColor(null)
 		}
 	}
 
-	private fun insertOrUpdateNote(note: Note, tempNote: Note, notebookId: Int) {
+	private fun insertOrUpdateNote(note: Note, tagId: Int) {
 		if (note.isNonEmpty()) {
-			if (note.entity.isTodoList) {
-				note.entity = note.entity.copy(text = todoItemAdapter.convertItemsToString())
+			viewModel.insertNote(viewModel.note) {
+				binding.root.showSnackbar(R.string.note_saved)
 			}
-			if (note != tempNote) {
-				note.entity = note.entity.copy(
-					modificationDate = ZonedDateTime.now(),
-					urls = extractUrls(note.entity.text)
-				)
-				if (note.entity.id == 0L) {
-					note.entity = note.entity.copy(notebookId = notebookId)
-					viewModel.insertNote(note) { context?.showToast(R.string.note_saved) }
-				}
-				else {
-					viewModel.updateNote(note) { context?.showToast(R.string.note_updated) }
-				}
-			}
-		}
-		else if (note.entity.id != 0L) {
-			setNoteToBeDeleted(note)
 		}
 	}
 
@@ -399,8 +394,8 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 //		binding.topToolbar.findItem(R.id.delete_images).isVisible = false
 	}
 
-	private fun deleteImage(image: ImageEntity) {
-		viewModel.note.images -= image
+	private fun deleteImage(image: Image) {
+//		viewModel.note.images -= image
 		val images = listOf(image)
 		val result = ImageStorageManager.deleteImages(requireContext(), images)
 		printDebug(IMAGE_STORE_MANAGER, result)
@@ -411,7 +406,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	private fun setNoteToBeDeleted(note: Note) {
-		if (note.entity.id != 0L) {
+		if (note.id != 0L) {
 			setFragmentResult(
 				REQUEST_KEY,
 				bundleOf(EditorViewModel.NOTE to note)
@@ -423,7 +418,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 		if (concatAdapter.removeAdapter(textAdapter)) {
 			initializeTodoItemAdapter()
 			concatAdapter.addAdapter(todoItemAdapter)
-			viewModel.updateNote(viewModel.entity.copy(isTodoList = true))
+//			viewModel.updateNote(viewModel.entity.copy(isTodoList = true))
 //			binding.topToolbar.findItem(R.id.hide_todos).isVisible = true
 //			binding.topToolbar.findItem(R.id.open_file).isVisible = false
 		}
@@ -445,7 +440,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	private fun initializeAdapters() {
-		concatAdapter = if (viewModel.entity.isTodoList) {
+		concatAdapter = if (viewModel.note.isTodoList) {
 			initializeTodoItemAdapter()
 			ConcatAdapter(imageAdapter, todoItemAdapter)
 		}
@@ -456,7 +451,7 @@ class EditorFragment : Fragment(), AttachImagesListener, LinkClickedListener,
 	}
 
 	private fun initializeTextAdapter() {
-		textAdapter = EditorTextAdapter(viewModel.note, this).apply {
+		textAdapter = EditorTextAdapter(viewModel.note, this, this).apply {
 			setOnContentReceivedListener { uri -> addImages(listOf(uri)) }
 		}
 	}

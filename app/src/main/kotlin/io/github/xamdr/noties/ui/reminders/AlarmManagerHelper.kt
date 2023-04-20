@@ -11,7 +11,7 @@ import androidx.core.app.AlarmManagerCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.core.Note
+import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.MainActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -56,7 +56,7 @@ object AlarmManagerHelper {
 		val builder = NotificationCompat.Builder(context, MainActivity.CHANNEL_ID)
 			.setSmallIcon(R.drawable.ic_noties_notification)
 			.setContentTitle(context.getString(R.string.app_name))
-			.setContentText(note.entity.text)
+			.setContentText(note.text)
 
 		if (note.images.isNotEmpty()) {
 //			note.images[0].uri?.let {

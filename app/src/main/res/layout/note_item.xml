@@ -20,10 +20,13 @@
 			android:adjustViewBounds="true"
 			android:contentDescription="@string/user_image"
 			android:scaleType="centerCrop"
+			android:visibility="gone"
+			app:layout_constraintBottom_toTopOf="@id/title"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toTopOf="parent"
-			tools:src="@drawable/ic_android" />
+			tools:src="@drawable/ic_android"
+			tools:visibility="visible" />
 
 		<TextView
 			android:id="@+id/title"
@@ -36,6 +39,8 @@
 			android:maxLines="1"
 			android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
 			android:textStyle="bold"
+			android:visibility="gone"
+			app:layout_constraintBottom_toTopOf="@id/content"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toBottomOf="@id/image"
@@ -50,14 +55,17 @@
 			android:layout_marginTop="8dp"
 			android:layout_marginEnd="16dp"
 			android:ellipsize="end"
-			android:justificationMode="inter_word"
-			android:maxLines="4"
+			android:maxLines="5"
 			android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+			android:visibility="visible"
+			app:layout_constraintBottom_toTopOf="@id/url"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toBottomOf="@id/title"
-			tools:text="@string/demo_content"
-			tools:targetApi="o" />
+			app:layout_goneMarginBottom="16dp"
+			app:layout_goneMarginTop="16dp"
+			tools:targetApi="o"
+			tools:text="@string/demo_content" />
 
 		<com.google.android.material.chip.Chip
 			android:id="@+id/url"
@@ -67,36 +75,13 @@
 			android:layout_marginTop="8dp"
 			android:layout_marginBottom="8dp"
 			android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+			android:visibility="gone"
 			app:chipIcon="@drawable/ic_link"
 			app:chipStartPadding="8dp"
-			app:layout_constraintBottom_toBottomOf="@+id/date_modified"
+			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toTopOf="@+id/date_modified"
+			app:layout_constraintTop_toBottomOf="@id/content"
 			tools:text="3 hyperlinks"
 			tools:visibility="visible" />
-
-		<TextView
-			android:id="@+id/date_modified"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="8dp"
-			android:layout_marginEnd="16dp"
-			android:layout_marginBottom="8dp"
-			android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-			android:textStyle="italic"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/content"
-			tools:text="13 dic. 2021 23:46" />
-
-		<ImageView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="8dp"
-			android:layout_marginEnd="8dp"
-			android:contentDescription="@string/pin_note"
-			android:src="@drawable/ic_pin_note"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintTop_toTopOf="parent" />
 	</androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

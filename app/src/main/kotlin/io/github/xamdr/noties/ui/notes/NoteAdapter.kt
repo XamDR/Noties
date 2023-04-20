@@ -13,25 +13,32 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.core.Note
 import io.github.xamdr.noties.databinding.NoteItemBinding
 import io.github.xamdr.noties.databinding.ProtectedNoteItemBinding
+import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.editor.EditorViewModel
 import io.github.xamdr.noties.ui.helpers.blur
 import io.github.xamdr.noties.ui.helpers.setOnClickListener
 import io.github.xamdr.noties.ui.helpers.tryNavigate
 
-class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Note, NoteAdapter.BaseViewHolder>(NoteAdapterCallback()) {
+class NoteAdapter : ListAdapter<Note, NoteAdapter.BaseViewHolder>(NoteAdapterCallback()) {
 
 	var tracker: SelectionTracker<Note>? = null
 
 	open inner class BaseViewHolder(private val binding: ViewBinding) : RecyclerView.ViewHolder(binding.root) {
 
 		fun bind(note: Note, isSelected: Boolean = false) {
-			binding.apply {
-//				setVariable(io.xamdr.noties.BR.note, note)
-//				ViewCompat.setTransitionName(root, note.entity.id.toString())
-//				executePendingBindings()
+			when (binding) {
+				is NoteItemBinding -> {
+					binding.title.text = note.title
+					binding.content.text = note.text
+					binding.url.text = note.urls.size.toString()
+					binding.image.setImageURI(note.getPreviewImage())
+					ViewCompat.setTransitionName(binding.root, note.id.toString())
+				}
+				is ProtectedNoteItemBinding -> {
+
+				}
 			}
 			itemView.isActivated = isSelected
 		}
@@ -82,7 +89,7 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 
 	override fun getItemViewType(position: Int): Int {
 		val note = getItem(position)
-		return if (note.entity.isProtected) NOTE_PROTECTED else NOTE_LINEAR_LAYOUT
+		return if (note.isProtected) NOTE_PROTECTED else NOTE_LINEAR_LAYOUT
 	}
 
 	override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -91,8 +98,8 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 	}
 
 	fun moveNoteToTrash(position: Int) {
-		val note = getItem(position)
-		listener.moveNoteToTrash(note.entity)
+//		val note = getItem(position)
+//		listener.moveNoteToTrash(note.entity)
 	}
 
 	fun getSelectedNotes(): List<Note> {
@@ -126,9 +133,9 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 
 	private fun editNote(holder: RecyclerView.ViewHolder, position: Int) {
 		val note = getItem(position)
-		if (!note.entity.isTrashed) {
+		if (!note.isTrashed) {
 			val args = bundleOf(EditorViewModel.NOTE to note)
-			val extras = FragmentNavigatorExtras(holder.itemView to note.entity.id.toString())
+			val extras = FragmentNavigatorExtras(holder.itemView to note.id.toString())
 			holder.itemView.findNavController().tryNavigate(
 				resId = R.id.action_notes_to_editor,
 				args = args,
@@ -141,32 +148,16 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 	private fun showUrlsDialog(position: Int) {
 		if (position != RecyclerView.NO_POSITION) {
 			val note = getItem(position)
-			onShowUrlsCallback(note.entity.urls)
+			onShowUrlsCallback(note.urls)
 		}
-	}
-
-	fun setOnShowUrlsListener(callback: (urls: List<String>) -> Unit) {
-		onShowUrlsCallback = callback
 	}
 
 	fun setOnDeleteNotesListener(callback: (notes: List<Note>) -> Unit) {
 		onDeleteNotesCallback = callback
 	}
 
-	fun setOnLockNotesListener(callback: (notes: List<Note>) -> Unit) {
-		onLockNotesCallback = callback
-	}
-
 	fun setOnRestoreNotesListener(callback: (notes: List<Note>) -> Unit) {
 		onRestoreNotesCallback = callback
-	}
-
-	fun setOnPinNotesListener(callback: (notes: List<Note>) -> Unit) {
-		onPinNotesCallback = callback
-	}
-
-	fun setOnMoveNotesListener(callback: (notes: List<Note>) -> Unit) {
-		onMoveNotesCallback = callback
 	}
 
 	private var onShowUrlsCallback: (urls: List<String>) -> Unit = {}
@@ -183,7 +174,7 @@ class NoteAdapter(private val listener: SwipeToDeleteListener) : ListAdapter<Not
 
 	private class NoteAdapterCallback : DiffUtil.ItemCallback<Note>() {
 
-		override fun areItemsTheSame(oldNote: Note, newNote: Note) = oldNote.entity.id == newNote.entity.id
+		override fun areItemsTheSame(oldNote: Note, newNote: Note) = oldNote.id == newNote.id
 
 		override fun areContentsTheSame(oldNote: Note, newNote: Note) = oldNote == newNote
 	}

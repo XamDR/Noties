@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.recyclerview.selection.SelectionTracker
 import dagger.hilt.android.internal.managers.FragmentComponentManager
-import io.github.xamdr.noties.core.Note
+import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.printDebug
 
 class SelectionObserver(

@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.core.Note
-import io.github.xamdr.noties.core.Todo
+import io.github.xamdr.noties.domain.model.Todo
 import io.github.xamdr.noties.databinding.TodoItemBinding
 import io.github.xamdr.noties.databinding.TodoItemFooterBinding
+import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.editor.EditorFragment
 import io.github.xamdr.noties.ui.helpers.SpanSizeLookupOwner
 import io.github.xamdr.noties.ui.helpers.showSoftKeyboard

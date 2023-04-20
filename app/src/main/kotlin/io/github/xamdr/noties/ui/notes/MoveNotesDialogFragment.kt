@@ -4,7 +4,7 @@ import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import io.github.xamdr.noties.core.Note
+import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.getPositiveButton
 
 class MoveNotesDialogFragment : DialogFragment() {

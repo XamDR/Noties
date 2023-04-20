@@ -2,7 +2,7 @@ package io.github.xamdr.noties.ui.editor
 
 import android.net.Uri
 import androidx.core.content.FileProvider
-import io.github.xamdr.noties.core.ImageEntity
+import io.github.xamdr.noties.data.entity.image.DatabaseImageEntity
 import io.github.xamdr.noties.ui.helpers.getUriExtension
 import io.github.xamdr.noties.ui.helpers.getUriMimeType
 import io.github.xamdr.noties.ui.image.ImageStorageManager
@@ -15,12 +15,12 @@ class AddImagesFragment : BaseHeadlessChildFragment() {
 	suspend fun addImages(uris: List<Uri>) {
 		for (uri in uris) {
 			val newUri = copyUri(uri)
-			val image = ImageEntity(
+			val image = DatabaseImageEntity(
 				uri = newUri,
 				mimeType = requireContext().getUriMimeType(newUri),
-				noteId = viewModel.entity.id
+				noteId = viewModel.note.id
 			)
-			viewModel.note.images += image
+//			viewModel.note.images += image
 		}
 	}
 

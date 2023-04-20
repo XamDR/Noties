@@ -4,11 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.FragmentTagsBinding
 import io.github.xamdr.noties.domain.model.Tag
+import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.addMenuProvider
 import io.github.xamdr.noties.ui.helpers.showDialog
 import timber.log.Timber
@@ -21,6 +25,16 @@ class TagsFragment : Fragment(), TagToolbarItemListener, TagPopupMenuItemListene
 	private val viewModel by viewModels<TagsViewModel>()
 	private val tagAdapter = TagAdapter(this)
 	private val menuProvider = TagsMenuProvider(this)
+
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
+			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
+		}
+		returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
+			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
+		}
+	}
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 		_binding = FragmentTagsBinding.inflate(inflater, container, false)
@@ -35,19 +49,18 @@ class TagsFragment : Fragment(), TagToolbarItemListener, TagPopupMenuItemListene
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		binding.recyclerView.setEmptyView(binding.emptyView)
-		binding.recyclerView.adapter = tagAdapter
-		viewModel.getTags().observe(viewLifecycleOwner) { tags -> tagAdapter.submitList(tags) }
+		setupRecyclerView()
+		submitTags()
 	}
 
 	override fun showCreateTagDialog() {
 		val tagDialog = TagDialogFragment.newInstance(Tag())
-		showDialog(tagDialog, TAG_DIALOG)
+		showDialog(tagDialog, Constants.TAG_DIALOG)
 	}
 
 	override fun showCreateTagDialog(tag: Tag) {
 		val tagDialog = TagDialogFragment.newInstance(tag)
-		showDialog(tagDialog, TAG_DIALOG)
+		showDialog(tagDialog, Constants.TAG_DIALOG)
 	}
 
 	override fun deleteTag(tag: Tag) {
@@ -55,7 +68,16 @@ class TagsFragment : Fragment(), TagToolbarItemListener, TagPopupMenuItemListene
 		Timber.d("Tag deleted: $tag")
 	}
 
-	private companion object {
-		private const val TAG_DIALOG = "TAG_DIALOG"
+	private fun setupRecyclerView() {
+		binding.recyclerView.setEmptyView(binding.emptyView)
+		binding.recyclerView.adapter = tagAdapter
+		postponeEnterTransition()
+	}
+
+	private fun submitTags() {
+		viewModel.getTags().observe(viewLifecycleOwner) { tags ->
+			tagAdapter.submitList(tags)
+			binding.root.doOnPreDraw { startPostponedEnterTransition() }
+		}
 	}
 }

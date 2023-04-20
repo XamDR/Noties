@@ -8,10 +8,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.core.ImageEntity
 import io.github.xamdr.noties.databinding.DialogImageDescriptionBinding
+import io.github.xamdr.noties.domain.model.Image
 import io.github.xamdr.noties.ui.editor.EditorViewModel
 import io.github.xamdr.noties.ui.helpers.getPositiveButton
+import io.github.xamdr.noties.ui.helpers.getSerializableCompat
 import io.github.xamdr.noties.ui.helpers.showSoftKeyboard
 import io.github.xamdr.noties.ui.helpers.toEditable
 
@@ -21,14 +22,11 @@ class ImageDescriptionDialogFragment : DialogFragment() {
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<EditorViewModel>({ requireParentFragment() })
 	private val image by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getParcelable(KEY) ?: ImageEntity()
+		requireArguments().getSerializableCompat(KEY, Image::class.java)
 	}
 
 	override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-		_binding = DialogImageDescriptionBinding.inflate(layoutInflater).apply {
-//			vm = viewModel
-//			lifecycleOwner = this@ImageDescriptionDialogFragment
-		}
+		_binding = DialogImageDescriptionBinding.inflate(layoutInflater)
 		return MaterialAlertDialogBuilder(requireContext())
 			.setTitle(R.string.alt_text)
 			.setView(binding.root)
@@ -84,7 +82,7 @@ class ImageDescriptionDialogFragment : DialogFragment() {
 	companion object {
 		private const val KEY = "image"
 
-		fun newInstance(image: ImageEntity) = ImageDescriptionDialogFragment().apply {
+		fun newInstance(image: Image) = ImageDescriptionDialogFragment().apply {
 			arguments = bundleOf(KEY to image)
 		}
 	}

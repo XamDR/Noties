@@ -6,8 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.print.PrintHelper
 import androidx.viewpager2.widget.ViewPager2
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.core.ImageEntity
 import io.github.xamdr.noties.databinding.ActivityGalleryBinding
+import io.github.xamdr.noties.domain.model.Image
+import io.github.xamdr.noties.ui.helpers.getSerializableListExtraCompat
 import io.github.xamdr.noties.ui.helpers.printError
 import io.github.xamdr.noties.ui.helpers.showToast
 import java.io.FileNotFoundException
@@ -17,7 +18,7 @@ class GalleryActivity : AppCompatActivity(), GalleryMenuListener {
 	private lateinit var binding: ActivityGalleryBinding
 	private lateinit var stateAdapter: ViewPagerStateAdapter
 	private val images by lazy(LazyThreadSafetyMode.NONE) {
-		intent.extras?.getParcelableArrayList<ImageEntity>(IMAGES) ?: emptyList()
+		intent.getSerializableListExtraCompat(IMAGES, Image::class.java)
 	}
 	private val position by lazy(LazyThreadSafetyMode.NONE) {
 		intent.getIntExtra(POSITION, 0)

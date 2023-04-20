@@ -10,12 +10,12 @@ class ShareContentFragment : BaseHeadlessChildFragment() {
 	fun shareContent() {
 		if (viewModel.note.isNonEmpty()) {
 			if (viewModel.note.images.isEmpty()) {
-				shareText(viewModel.entity.text)
+				shareText(viewModel.note.text)
 			}
 			else {
 				shareImagesAndText(
 					viewModel.note.images.map { it.uri },
-					viewModel.entity.text
+					viewModel.note.text
 				)
 			}
 		}

@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.core.ImageEntity
 import io.github.xamdr.noties.databinding.ImageItemBinding
 import io.github.xamdr.noties.databinding.SingleImageItemBinding
+import io.github.xamdr.noties.domain.model.Image
 import io.github.xamdr.noties.ui.editor.EditorFragment
 import io.github.xamdr.noties.ui.helpers.SpanSizeLookupOwner
 import io.github.xamdr.noties.ui.helpers.printDebug
@@ -17,7 +17,7 @@ import io.github.xamdr.noties.ui.helpers.setOnClickListener
 
 class ImageAdapter(
 	private val listener: ImageItemContextMenuListener
-	) : ListAdapter<ImageEntity, BaseImageItemViewHolder>(ImageAdapterCallback()),
+	) : ListAdapter<Image, BaseImageItemViewHolder>(ImageAdapterCallback()),
 	SpanSizeLookupOwner {
 
 	inner class ImageItemViewHolder(binding: ImageItemBinding) : BaseImageItemViewHolder(binding) {
@@ -85,11 +85,11 @@ class ImageAdapter(
 		}
 	}
 
-	private class ImageAdapterCallback : DiffUtil.ItemCallback<ImageEntity>() {
+	private class ImageAdapterCallback : DiffUtil.ItemCallback<Image>() {
 
-		override fun areItemsTheSame(oldItem: ImageEntity, newItem: ImageEntity) = oldItem.id == newItem.id
+		override fun areItemsTheSame(oldItem: Image, newItem: Image) = oldItem.id == newItem.id
 
-		override fun areContentsTheSame(oldItem: ImageEntity, newItem: ImageEntity) = oldItem == newItem
+		override fun areContentsTheSame(oldItem: Image, newItem: Image) = oldItem == newItem
 	}
 
 	private companion object {

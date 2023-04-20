@@ -4,11 +4,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.xamdr.noties.data.NoteDao
+import io.github.xamdr.noties.data.dao.NoteDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.ZoneId
+import java.time.ZoneOffset
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -25,12 +27,12 @@ class BootCompletedReceiver : BroadcastReceiver() {
 
 	private fun setAlarms(noteDao: NoteDao, context: Context) {
 		coroutineScope.launch {
-			val notes = noteDao.getNotesWithReminderAsync()
+			val notes = noteDao.getNotesWithReminderAsync().map { it.asDomainModel() }
 			withContext(Dispatchers.Main) {
 				for (note in notes) {
-					val reminderDate = note.entity.reminderDate
+					val reminderDate = note.reminderDate
 					if (reminderDate != null) {
-						val delay = reminderDate.toInstant().toEpochMilli()
+						val delay = reminderDate.toInstant(ZoneOffset.of(ZoneId.systemDefault().id)).toEpochMilli()
 						AlarmManagerHelper.setAlarmManager(context, delay, note)
 					}
 				}

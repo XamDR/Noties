@@ -1,5 +1,6 @@
 package io.github.xamdr.noties.ui.helpers
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.widget.AppCompatEditText
@@ -13,6 +14,17 @@ fun <T : Serializable> Bundle.getSerializableCompat(key: String, clazz: Class<T>
 	else {
 		@Suppress("DEPRECATION")
 		(this.getSerializable(key) ?: clazz.newInstance()) as T
+	}
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <T : Serializable> Intent.getSerializableListExtraCompat(key: String, clazz: Class<T>): List<T> {
+	return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+		(this.getSerializableExtra(key, clazz) ?: emptyList<T>()) as List<T>
+	}
+	else {
+		@Suppress("DEPRECATION")
+		(this.getSerializableExtra(key) ?: emptyList<T>()) as List<T>
 	}
 }
 

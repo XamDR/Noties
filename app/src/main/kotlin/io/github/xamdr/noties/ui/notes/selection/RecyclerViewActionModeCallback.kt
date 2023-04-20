@@ -18,7 +18,7 @@ class RecyclerViewActionModeCallback(private val adapter: NoteAdapter) : ActionM
 	}
 
 	override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
-		if (adapter.getSelectedNotes().any { !it.entity.isProtected }) {
+		if (adapter.getSelectedNotes().any { !it.isProtected }) {
 			mode.menu.findItem(R.id.lock_note).apply {
 				setIcon(R.drawable.ic_lock_note)
 				setTitle(R.string.lock_note)
@@ -30,7 +30,7 @@ class RecyclerViewActionModeCallback(private val adapter: NoteAdapter) : ActionM
 				setTitle(R.string.unlock_note)
 			}
 		}
-		if (adapter.getSelectedNotes().any { !it.entity.isPinned }) {
+		if (adapter.getSelectedNotes().any { !it.isPinned }) {
 			mode.menu.findItem(R.id.pin_note).apply {
 				setIcon(R.drawable.ic_pin_note)
 				setTitle(R.string.pin_note)

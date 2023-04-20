@@ -44,18 +44,18 @@ class EditorColorFragment : BottomSheetDialogFragment() {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		binding.list.adapter = colorAdapter
-		colorAdapter.selectedPosition = colors.indexOf(viewModel.entity.color)
+		colorAdapter.selectedPosition = colors.indexOf(viewModel.note.color)
 		binding.list.smoothScrollToPosition(colorAdapter.selectedPosition)
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
 	private fun setEditorBackgroundColor(position: Int) {
 		val selectedColor = colors[position]
-		viewModel.updateNote(viewModel.entity.copy(color = selectedColor))
+		viewModel.updateNote(viewModel.note.copy(color = selectedColor))
 		binding.root.setBackgroundColor(selectedColor)
 		window.setStatusBarColor(selectedColor)
 		colorAdapter.apply {
-			selectedPosition = colors.indexOf(viewModel.entity.color)
+			selectedPosition = colors.indexOf(viewModel.note.color)
 			notifyDataSetChanged() // I don't like this, but it works
 		}
 		onColorSelectedCallback(selectedColor)

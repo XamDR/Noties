@@ -6,7 +6,7 @@ import android.text.Spanned
 import android.text.style.BulletSpan
 import android.text.style.StrikethroughSpan
 import androidx.core.text.set
-import io.github.xamdr.noties.core.Note
+import io.github.xamdr.noties.domain.model.Note
 
 object SpannableConverter {
 

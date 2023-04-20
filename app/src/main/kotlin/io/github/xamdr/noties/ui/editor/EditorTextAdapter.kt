@@ -2,31 +2,32 @@ package io.github.xamdr.noties.ui.editor
 
 import android.net.Uri
 import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.github.xamdr.noties.core.Note
 import io.github.xamdr.noties.databinding.FragmentEditorTextBinding
+import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.SpanSizeLookupOwner
 import io.github.xamdr.noties.ui.helpers.showSoftKeyboard
 
 class EditorTextAdapter(
 	private val note: Note,
+	private val noteContentListener : NoteContentListener,
 	private val listener: LinkClickedListener
 	) : RecyclerView.Adapter<EditorTextAdapter.EditorTextViewHolder>(),
 	SpanSizeLookupOwner {
 
-	inner class EditorTextViewHolder(private val binding: FragmentEditorTextBinding) : RecyclerView.ViewHolder(binding.root) {
+	inner class EditorTextViewHolder(private val binding: FragmentEditorTextBinding) : RecyclerView.ViewHolder(binding.root), TextWatcher {
 
 		private val contentReceiverListener = ImageContentReceiverListener { uri, _ ->
 			onContentReceivedCallback(uri)
 		}
 
 		init {
-//			binding.viewHolder = this
-			if (note.entity.id == 0L) {
+			if (note.id == 0L) {
 				binding.editor.post { binding.editor.showSoftKeyboard() }
 			}
 			binding.editor.setOnLinkClickedListener { url -> listener.onLinkClicked(url) }
@@ -35,14 +36,21 @@ class EditorTextAdapter(
 				ImageContentReceiverListener.MIME_TYPES,
 				contentReceiverListener
 			)
+			binding.editor.addTextChangedListener(this)
 		}
 
 		fun bind(note: Note) {
-//			binding.note = note
+			binding.editor.setText(note.text)
 		}
 
-		fun afterTextChanged(s: Editable) {
-			note.entity = note.entity.copy(text = s.toString())
+		fun clear() = binding.editor.removeTextChangedListener(this)
+
+		override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+		override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+		override fun afterTextChanged(s: Editable) {
+			noteContentListener.onTextChanged(s.toString())
 		}
 	}
 
@@ -59,6 +67,11 @@ class EditorTextAdapter(
 		holder.bind(note)
 	}
 
+	override fun onViewDetachedFromWindow(holder: EditorTextViewHolder) {
+		super.onViewDetachedFromWindow(holder)
+		holder.clear()
+	}
+
 	override fun getItemCount() = 1
 
 	override fun getSpanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
@@ -70,4 +83,8 @@ class EditorTextAdapter(
 	}
 
 	private var onContentReceivedCallback: (uri: Uri) -> Unit = {}
+
+	interface NoteContentListener {
+		fun onTextChanged(text: String);
+	}
 }

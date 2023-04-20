@@ -9,8 +9,9 @@ import androidx.core.view.WindowCompat.getInsetsController
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
-import io.github.xamdr.noties.core.ImageEntity
 import io.github.xamdr.noties.databinding.FragmentFullScreenImageBinding
+import io.github.xamdr.noties.domain.model.Image
+import io.github.xamdr.noties.ui.helpers.getSerializableCompat
 import io.github.xamdr.noties.ui.helpers.supportActionBar
 
 class FullScreenImageFragment : Fragment() {
@@ -18,16 +19,14 @@ class FullScreenImageFragment : Fragment() {
 	private var _binding: FragmentFullScreenImageBinding? = null
 	private val binding get() = _binding!!
 	private val image by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getParcelable(KEY) ?: ImageEntity()
+		requireArguments().getSerializableCompat(KEY, Image::class.java)
 	}
 	private var fullScreen = false
 
 	override fun onCreateView(inflater: LayoutInflater,
 	                          container: ViewGroup?,
 	                          savedInstanceState: Bundle?): View {
-		_binding = FragmentFullScreenImageBinding.inflate(inflater, container, false).apply {
-//			mediaItem = this@FullScreenImageFragment.image
-		}
+		_binding = FragmentFullScreenImageBinding.inflate(inflater, container, false)
 		return binding.root
 	}
 
@@ -38,6 +37,7 @@ class FullScreenImageFragment : Fragment() {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
+		binding.image.setImageURI(image.uri)
 		binding.image.setOnClickListener { toggleSystemBarsVisibility(it) }
 	}
 
@@ -76,7 +76,7 @@ class FullScreenImageFragment : Fragment() {
 	companion object {
 		private const val KEY = "image"
 
-		fun newInstance(image: ImageEntity) = FullScreenImageFragment().apply {
+		fun newInstance(image: Image) = FullScreenImageFragment().apply {
 			arguments = bundleOf(KEY to image)
 		}
 	}

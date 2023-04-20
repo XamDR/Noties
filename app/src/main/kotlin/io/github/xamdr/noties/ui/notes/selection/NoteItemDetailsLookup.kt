@@ -3,7 +3,7 @@ package io.github.xamdr.noties.ui.notes.selection
 import android.view.MotionEvent
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.widget.RecyclerView
-import io.github.xamdr.noties.core.Note
+import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.notes.NoteAdapter
 
 class NoteItemDetailsLookup(private val recyclerView: RecyclerView) : ItemDetailsLookup<Note>() {

@@ -6,13 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.xamdr.noties.core.ImageEntity
-import io.github.xamdr.noties.core.Note
-import io.github.xamdr.noties.core.NoteEntity
-import io.github.xamdr.noties.domain.DeleteImagesUseCase
-import io.github.xamdr.noties.domain.InsertNoteUseCase
-import io.github.xamdr.noties.domain.UpdateImageUseCase
-import io.github.xamdr.noties.domain.UpdateNoteUseCase
+import io.github.xamdr.noties.domain.model.Image
+import io.github.xamdr.noties.domain.model.Note
+import io.github.xamdr.noties.domain.usecase.DeleteImagesUseCase
+import io.github.xamdr.noties.domain.usecase.InsertNoteUseCase
+import io.github.xamdr.noties.domain.usecase.UpdateImageUseCase
 import io.github.xamdr.noties.ui.image.AltTextState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,16 +21,15 @@ import javax.inject.Inject
 @HiltViewModel
 class EditorViewModel @Inject constructor(
 	private val insertNoteUseCase: InsertNoteUseCase,
-	private val updateNoteUseCase: UpdateNoteUseCase,
 	private val updateImageUseCase: UpdateImageUseCase,
 	private val deleteImagesUseCase: DeleteImagesUseCase,
 	private val savedState: SavedStateHandle) : ViewModel() {
 
-	val note = savedState[NOTE] ?: Note()
-
-	val tempNote = savedState[TEMP_NOTE] ?: note.clone()
-
-	val entity get() = note.entity
+	var note = savedState[NOTE] ?: Note()
+//
+//	val tempNote = savedState[TEMP_NOTE] ?: note.clone()
+//
+//	val entity get() = note.entity
 
 	private val _description = MutableStateFlow(String.Empty)
 	val description = _description.asStateFlow()
@@ -40,7 +37,7 @@ class EditorViewModel @Inject constructor(
 	private val state: MutableStateFlow<AltTextState> = MutableStateFlow(AltTextState.EmptyDescription)
 	val altTextState = state.asLiveData()
 
-	fun deleteImages(images: List<ImageEntity>) {
+	fun deleteImages(images: List<Image>) {
 		viewModelScope.launch {
 			deleteImagesUseCase(images)
 		}
@@ -56,7 +53,7 @@ class EditorViewModel @Inject constructor(
 		}
 	}
 
-	fun updateImage(image: ImageEntity, description: String, action: () -> Unit) {
+	fun updateImage(image: Image, description: String, action: () -> Unit) {
 		viewModelScope.launch {
 			updateImageUseCase(image, description)
 			action()
@@ -64,26 +61,26 @@ class EditorViewModel @Inject constructor(
 	}
 
 	fun saveState() {
-		savedState[NOTE] = note
-		savedState[TEMP_NOTE] = tempNote
+//		savedState[NOTE] = note
+//		savedState[TEMP_NOTE] = tempNote
 	}
 
 	fun insertNote(note: Note, action: () -> Unit) {
 		viewModelScope.launch {
-			insertNoteUseCase(note.entity, note.images)
+			insertNoteUseCase(note, note.images)
 			action()
 		}
 	}
 
-	fun updateNote(note: Note, action: () -> Unit) {
-		viewModelScope.launch {
-			updateNoteUseCase(note.entity, note.images)
-			action()
-		}
-	}
+//	fun updateNote(note: Note, action: () -> Unit) {
+//		viewModelScope.launch {
+//			updateNoteUseCase(note.entity, note.images)
+//			action()
+//		}
+//	}
 
-	fun updateNote(newValue: NoteEntity) {
-		note.entity = newValue
+	fun updateNote(newValue: Note) {
+//		note.entity = newValue
 	}
 
 	companion object {

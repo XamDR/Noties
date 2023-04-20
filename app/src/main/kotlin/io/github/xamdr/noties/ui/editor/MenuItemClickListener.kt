@@ -3,11 +3,12 @@ package io.github.xamdr.noties.ui.editor
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.core.Note
+import io.github.xamdr.noties.domain.model.Note
 
 class MenuItemClickListener(
 	private val listener: ToolbarItemMenuListener,
-	private val note: Note) : Toolbar.OnMenuItemClickListener {
+	private val note: Note
+) : Toolbar.OnMenuItemClickListener {
 
 	override fun onMenuItemClick(item: MenuItem) = when (item.itemId) {
 		R.id.lock_note -> {
@@ -32,7 +33,7 @@ class MenuItemClickListener(
 	}
 
 	private fun toggleNoteLockedStatus(item: MenuItem) {
-		if (note.entity.isProtected) {
+		if (note.isProtected) {
 			listener.unlockNote()
 			item.apply {
 				setIcon(R.drawable.ic_lock_note)
@@ -49,7 +50,7 @@ class MenuItemClickListener(
 	}
 
 	private fun toggleNotePinnedStatus(item: MenuItem) {
-		if (note.entity.isPinned) {
+		if (note.isPinned) {
 			listener.unpinNote()
 			item.apply {
 				setIcon(R.drawable.ic_pin_note)

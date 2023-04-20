@@ -73,10 +73,10 @@ class DateTimePickerDialogFragment : DialogFragment(), DatePickerDialog.OnDateSe
 
 	private fun scheduleNotification() {
 		if (selectedDate != null && selectedTime != null) {
-			val selectedDateTime = ZonedDateTime.of(selectedDate, selectedTime, ZoneId.systemDefault())
+			val selectedDateTime = LocalDateTime.of(selectedDate, selectedTime)
 			printDebug(TAG, selectedDateTime)
-			viewModel.updateNote(viewModel.entity.copy(reminderDate = selectedDateTime))
-			val delay = selectedDateTime.toInstant().toEpochMilli()
+			viewModel.updateNote(viewModel.note.copy(reminderDate = selectedDateTime))
+			val delay = selectedDateTime.toInstant(ZoneOffset.of(ZoneId.systemDefault().id)).toEpochMilli()
 			AlarmManagerHelper.setAlarmManager(requireContext(), delay, viewModel.note)
 		}
 	}
@@ -109,7 +109,7 @@ class DateTimePickerDialogFragment : DialogFragment(), DatePickerDialog.OnDateSe
 	}
 
 	private fun showDatePickerDialog() {
-		val reminderDate = viewModel.entity.reminderDate ?: ZonedDateTime.now()
+		val reminderDate = viewModel.note.reminderDate ?: LocalDateTime.now()
 		DatePickerDialog(
 			requireContext(),
 			this,
@@ -120,7 +120,7 @@ class DateTimePickerDialogFragment : DialogFragment(), DatePickerDialog.OnDateSe
 	}
 
 	private fun showTimePickerDialog() {
-		val reminderDate = viewModel.entity.reminderDate ?: ZonedDateTime.now()
+		val reminderDate = viewModel.note.reminderDate ?: LocalDateTime.now()
 		TimePickerDialog(
 			requireContext(),
 			this,

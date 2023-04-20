@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import io.github.xamdr.noties.core.ImageEntity
+import io.github.xamdr.noties.domain.model.Image
 import io.github.xamdr.noties.ui.helpers.printDebug
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
@@ -41,7 +41,7 @@ object ImageStorageManager {
 		else null
 	}
 
-	fun deleteImages(context: Context, images: List<ImageEntity>) {
+	fun deleteImages(context: Context, images: List<Image>) {
 		for (image in images) {
 			val fileName = DocumentFile.fromSingleUri(context, image.uri!!)?.name
 			fileName?.let {

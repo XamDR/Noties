@@ -17,10 +17,7 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 	override fun onCreateView(inflater: LayoutInflater,
 							  container: ViewGroup?,
 							  savedInstanceState: Bundle?): View {
-		_binding = DialogFragmentEditorMenuBinding.inflate(inflater, container, false).apply {
-//			fragment = this@EditorMenuFragment
-//			vm = viewModel
-		}
+		_binding = DialogFragmentEditorMenuBinding.inflate(inflater, container, false)
 		return binding.root
 	}
 
