@@ -15,6 +15,7 @@ import io.github.xamdr.noties.databinding.TodoItemBinding
 import io.github.xamdr.noties.databinding.TodoItemFooterBinding
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.editor.EditorFragment
+import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.SpanSizeLookupOwner
 import io.github.xamdr.noties.ui.helpers.showSoftKeyboard
 import io.github.xamdr.noties.ui.helpers.strikethrough
@@ -90,7 +91,7 @@ class TodoItemAdapter(
 	}
 
 	override fun getSpanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
-		override fun getSpanSize(position: Int) = EditorFragment.SPAN_COUNT
+		override fun getSpanSize(position: Int) = Constants.SPAN_COUNT
 	}
 
 	fun moveItem(from: Int, to: Int) {

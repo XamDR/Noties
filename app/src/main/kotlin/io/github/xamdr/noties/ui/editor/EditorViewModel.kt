@@ -1,90 +1,57 @@
 package io.github.xamdr.noties.ui.editor
 
-import android.text.Editable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.xamdr.noties.domain.model.Image
 import io.github.xamdr.noties.domain.model.Note
-import io.github.xamdr.noties.domain.usecase.DeleteImagesUseCase
+import io.github.xamdr.noties.domain.usecase.DeleteNotesUseCase
+import io.github.xamdr.noties.domain.usecase.GetNoteByIdUseCase
 import io.github.xamdr.noties.domain.usecase.InsertNoteUseCase
-import io.github.xamdr.noties.domain.usecase.UpdateImageUseCase
-import io.github.xamdr.noties.ui.image.AltTextState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import io.github.xamdr.noties.domain.usecase.UpdateNoteUseCase
+import io.github.xamdr.noties.ui.helpers.Constants
 import javax.inject.Inject
 
 @HiltViewModel
 class EditorViewModel @Inject constructor(
+	private val getNoteByIdUseCase: GetNoteByIdUseCase,
 	private val insertNoteUseCase: InsertNoteUseCase,
-	private val updateImageUseCase: UpdateImageUseCase,
-	private val deleteImagesUseCase: DeleteImagesUseCase,
+	private val updateNoteUseCase: UpdateNoteUseCase,
+	private val deleteNotesUseCase: DeleteNotesUseCase,
 	private val savedState: SavedStateHandle) : ViewModel() {
 
-	var note = savedState[NOTE] ?: Note()
-//
-//	val tempNote = savedState[TEMP_NOTE] ?: note.clone()
-//
-//	val entity get() = note.entity
+	suspend fun getNote(noteId: Long) = savedState.get<Note>(Constants.BUNDLE_NOTE)
+		?: (if (noteId == 0L) Note() else getNoteById(noteId))
 
-	private val _description = MutableStateFlow(String.Empty)
-	val description = _description.asStateFlow()
-
-	private val state: MutableStateFlow<AltTextState> = MutableStateFlow(AltTextState.EmptyDescription)
-	val altTextState = state.asLiveData()
-
-	fun deleteImages(images: List<Image>) {
-		viewModelScope.launch {
-			deleteImagesUseCase(images)
-		}
+	suspend fun saveNote(note: Note, noteId: Long): NoteAction {
+		return if (note.id == 0L) insertNote(note) else updateNote(note, noteId)
 	}
 
-	fun updateImageAltText(s: Editable) {
-		_description.update { s.toString() }
-		if (_description.value.isNotEmpty()) {
-			state.update { AltTextState.EditingDescription }
-		}
-		else {
-			state.update { AltTextState.EmptyDescription }
-		}
+	fun saveState(note: Note) {
+		savedState[Constants.BUNDLE_NOTE] = note
 	}
 
-	fun updateImage(image: Image, description: String, action: () -> Unit) {
-		viewModelScope.launch {
-			updateImageUseCase(image, description)
-			action()
-		}
-	}
+	private suspend fun getNoteById(noteId: Long): Note = getNoteByIdUseCase(noteId)
 
-	fun saveState() {
-//		savedState[NOTE] = note
-//		savedState[TEMP_NOTE] = tempNote
-	}
-
-	fun insertNote(note: Note, action: () -> Unit) {
-		viewModelScope.launch {
+	private suspend fun insertNote(note: Note): NoteAction {
+		return if (!note.isEmpty()) {
 			insertNoteUseCase(note, note.images)
-			action()
+			NoteAction.InsertNote
 		}
+		else NoteAction.NoAction
 	}
 
-//	fun updateNote(note: Note, action: () -> Unit) {
-//		viewModelScope.launch {
-//			updateNoteUseCase(note.entity, note.images)
-//			action()
-//		}
-//	}
-
-	fun updateNote(newValue: Note) {
-//		note.entity = newValue
-	}
-
-	companion object {
-		const val NOTE = "note"
-		private const val TEMP_NOTE = "temp_note"
+	private suspend fun updateNote(note: Note, noteId: Long): NoteAction {
+		val originalNote = getNoteById(noteId)
+		return if (note != originalNote) {
+			if (note.isEmpty()) {
+				deleteNotesUseCase(listOf(note))
+				NoteAction.DeleteEmptyNote
+			}
+			else {
+				updateNoteUseCase(note, note.images)
+				NoteAction.UpdateNote
+			}
+		}
+		else NoteAction.NoAction
 	}
 }

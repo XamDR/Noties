@@ -75,9 +75,9 @@ class DateTimePickerDialogFragment : DialogFragment(), DatePickerDialog.OnDateSe
 		if (selectedDate != null && selectedTime != null) {
 			val selectedDateTime = LocalDateTime.of(selectedDate, selectedTime)
 			printDebug(TAG, selectedDateTime)
-			viewModel.updateNote(viewModel.note.copy(reminderDate = selectedDateTime))
-			val delay = selectedDateTime.toInstant(ZoneOffset.of(ZoneId.systemDefault().id)).toEpochMilli()
-			AlarmManagerHelper.setAlarmManager(requireContext(), delay, viewModel.note)
+//			viewModel.note = viewModel.note.copy(reminderDate = selectedDateTime)
+//			val delay = selectedDateTime.toInstant(ZoneOffset.of(ZoneId.systemDefault().id)).toEpochMilli()
+//			AlarmManagerHelper.setAlarmManager(requireContext(), delay, viewModel.note)
 		}
 	}
 
@@ -109,25 +109,25 @@ class DateTimePickerDialogFragment : DialogFragment(), DatePickerDialog.OnDateSe
 	}
 
 	private fun showDatePickerDialog() {
-		val reminderDate = viewModel.note.reminderDate ?: LocalDateTime.now()
-		DatePickerDialog(
-			requireContext(),
-			this,
-			reminderDate.year,
-			reminderDate.monthValue - 1,
-			reminderDate.dayOfMonth
-		).show()
+//		val reminderDate = viewModel.note.reminderDate ?: LocalDateTime.now()
+//		DatePickerDialog(
+//			requireContext(),
+//			this,
+//			reminderDate.year,
+//			reminderDate.monthValue - 1,
+//			reminderDate.dayOfMonth
+//		).show()
 	}
 
 	private fun showTimePickerDialog() {
-		val reminderDate = viewModel.note.reminderDate ?: LocalDateTime.now()
-		TimePickerDialog(
-			requireContext(),
-			this,
-			reminderDate.hour,
-			reminderDate.minute,
-			DateFormat.is24HourFormat(requireContext())
-		).show()
+//		val reminderDate = viewModel.note.reminderDate ?: LocalDateTime.now()
+//		TimePickerDialog(
+//			requireContext(),
+//			this,
+//			reminderDate.hour,
+//			reminderDate.minute,
+//			DateFormat.is24HourFormat(requireContext())
+//		).show()
 	}
 
 	private companion object {

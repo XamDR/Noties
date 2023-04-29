@@ -18,30 +18,6 @@ class RecyclerViewActionModeCallback(private val adapter: NoteAdapter) : ActionM
 	}
 
 	override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
-		if (adapter.getSelectedNotes().any { !it.isProtected }) {
-			mode.menu.findItem(R.id.lock_note).apply {
-				setIcon(R.drawable.ic_lock_note)
-				setTitle(R.string.lock_note)
-			}
-		}
-		else {
-			mode.menu.findItem(R.id.lock_note).apply {
-				setIcon(R.drawable.ic_unlock_note)
-				setTitle(R.string.unlock_note)
-			}
-		}
-		if (adapter.getSelectedNotes().any { !it.isPinned }) {
-			mode.menu.findItem(R.id.pin_note).apply {
-				setIcon(R.drawable.ic_pin_note)
-				setTitle(R.string.pin_note)
-			}
-		}
-		else {
-			mode.menu.findItem(R.id.pin_note).apply {
-				setIcon(R.drawable.ic_unpin_note)
-				setTitle(R.string.unpin_note)
-			}
-		}
 		return true
 	}
 
@@ -52,20 +28,18 @@ class RecyclerViewActionModeCallback(private val adapter: NoteAdapter) : ActionM
 		R.id.delete_notes -> {
 			adapter.deleteNotes(); true
 		}
-		R.id.pin_note -> {
-			adapter.togglePinnedValueForNotes(); true
-		}
-		R.id.lock_note -> {
-			adapter.toggleLockedValueForNotes(); true
-		}
-		R.id.move_note -> {
-			adapter.moveNotes(); true
-		}
 		else -> false
 	}
 
 	override fun onDestroyActionMode(mode: ActionMode) {
 		adapter.tracker?.clearSelection()
 		isVisible = false
+		onActionModeDone()
 	}
+
+	fun setOnActionModeDoneListener(callback: () -> Unit) {
+		onActionModeDone = callback
+	}
+
+	private var onActionModeDone: () -> Unit = {}
 }

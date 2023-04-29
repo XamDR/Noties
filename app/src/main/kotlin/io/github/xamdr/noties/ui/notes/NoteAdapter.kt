@@ -1,11 +1,10 @@
 package io.github.xamdr.noties.ui.notes
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.core.view.isVisible
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.DiffUtil
@@ -16,12 +15,12 @@ import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.NoteItemBinding
 import io.github.xamdr.noties.databinding.ProtectedNoteItemBinding
 import io.github.xamdr.noties.domain.model.Note
-import io.github.xamdr.noties.ui.editor.EditorViewModel
 import io.github.xamdr.noties.ui.helpers.blur
 import io.github.xamdr.noties.ui.helpers.setOnClickListener
-import io.github.xamdr.noties.ui.helpers.tryNavigate
 
-class NoteAdapter : ListAdapter<Note, NoteAdapter.BaseViewHolder>(NoteAdapterCallback()) {
+class NoteAdapter(
+	private val onNoteClicked: (view: View?, note: Note) -> Unit,
+	private val onNoteSwiped: (note: Note) -> Unit) : ListAdapter<Note, NoteAdapter.BaseViewHolder>(NoteAdapterCallback()) {
 
 	var tracker: SelectionTracker<Note>? = null
 
@@ -29,13 +28,7 @@ class NoteAdapter : ListAdapter<Note, NoteAdapter.BaseViewHolder>(NoteAdapterCal
 
 		fun bind(note: Note, isSelected: Boolean = false) {
 			when (binding) {
-				is NoteItemBinding -> {
-					binding.title.text = note.title
-					binding.content.text = note.text
-					binding.url.text = note.urls.size.toString()
-					binding.image.setImageURI(note.getPreviewImage())
-					ViewCompat.setTransitionName(binding.root, note.id.toString())
-				}
+				is NoteItemBinding -> bindNote(binding, note)
 				is ProtectedNoteItemBinding -> {
 
 				}
@@ -47,13 +40,21 @@ class NoteAdapter : ListAdapter<Note, NoteAdapter.BaseViewHolder>(NoteAdapterCal
 			override fun getPosition(): Int = bindingAdapterPosition
 			override fun getSelectionKey(): Note = getItem(position)
 		}
-	}
 
-	inner class NoteViewHolder(binding: NoteItemBinding) : BaseViewHolder(binding) {
-		init {
-			binding.url.setOnClickListener { showUrlsDialog(bindingAdapterPosition) }
+		private fun bindNote(binding: NoteItemBinding, note: Note) {
+			binding.title.isVisible = note.title.isNotEmpty()
+			binding.title.text = note.title
+			binding.content.isVisible = note.text.isNotEmpty()
+			binding.content.text = note.text
+			binding.url.isVisible = note.urls.isNotEmpty()
+			binding.url.text = note.urls.size.toString()
+			binding.image.isVisible = note.getPreviewImage() != null
+			binding.image.setImageURI(note.getPreviewImage())
+			ViewCompat.setTransitionName(binding.root, note.id.toString())
 		}
 	}
+
+	inner class NoteViewHolder(binding: NoteItemBinding) : BaseViewHolder(binding)
 
 	inner class ProtectedNoteViewHolder(binding: ProtectedNoteItemBinding) : BaseViewHolder(binding) {
 		init {
@@ -65,16 +66,14 @@ class NoteAdapter : ListAdapter<Note, NoteAdapter.BaseViewHolder>(NoteAdapterCal
 		NOTE_LINEAR_LAYOUT -> {
 			val binding = NoteItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 			NoteViewHolder(binding).apply {
-				setOnClickListener { position -> editNote(this, position) }
+				setOnClickListener(this@NoteAdapter::onItemClick)
 			}
 		}
 		NOTE_PROTECTED -> {
 			val binding = ProtectedNoteItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-			ProtectedNoteViewHolder(binding).apply {
-				setOnClickListener { position -> editNote(this, position) }
-			}
+			ProtectedNoteViewHolder(binding)
 		}
-		else -> throw Exception("Unknown view type.")
+		else -> throw ClassCastException("Unknown view type: $viewType.")
 	}
 
 	override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
@@ -97,12 +96,18 @@ class NoteAdapter : ListAdapter<Note, NoteAdapter.BaseViewHolder>(NoteAdapterCal
 		recyclerView.addItemDecoration(SpaceItemDecoration(spacing = 16))
 	}
 
-	fun moveNoteToTrash(position: Int) {
-//		val note = getItem(position)
-//		listener.moveNoteToTrash(note.entity)
+	private fun onItemClick(view: View?, position: Int) {
+		if (position != RecyclerView.NO_POSITION) {
+			onNoteClicked.invoke(view, getItem(position))
+		}
 	}
 
-	fun getSelectedNotes(): List<Note> {
+	fun moveNoteToTrash(position: Int) {
+		val note = getItem(position)
+		onNoteSwiped.invoke(note)
+	}
+
+	private fun getSelectedNotes(): List<Note> {
 		val iterator = tracker?.selection?.iterator()
 		val notes = mutableListOf<Note>()
 		iterator?.let {
@@ -115,8 +120,6 @@ class NoteAdapter : ListAdapter<Note, NoteAdapter.BaseViewHolder>(NoteAdapterCal
 
 	fun deleteNotes() = onDeleteNotesCallback(getSelectedNotes())
 
-	fun toggleLockedValueForNotes() = onLockNotesCallback(getSelectedNotes())
-
 	fun selectAllNotes() {
 		for (note in currentList) {
 			if (tracker?.isSelected(note) == false) {
@@ -125,52 +128,11 @@ class NoteAdapter : ListAdapter<Note, NoteAdapter.BaseViewHolder>(NoteAdapterCal
 		}
 	}
 
-	fun restoreNotes() = onRestoreNotesCallback(getSelectedNotes())
-
-	fun togglePinnedValueForNotes() = onPinNotesCallback(getSelectedNotes())
-
-	fun moveNotes() = onMoveNotesCallback(getSelectedNotes())
-
-	private fun editNote(holder: RecyclerView.ViewHolder, position: Int) {
-		val note = getItem(position)
-		if (!note.isTrashed) {
-			val args = bundleOf(EditorViewModel.NOTE to note)
-			val extras = FragmentNavigatorExtras(holder.itemView to note.id.toString())
-			holder.itemView.findNavController().tryNavigate(
-				resId = R.id.action_notes_to_editor,
-				args = args,
-				navOptions = null,
-				navigatorExtras = extras
-			)
-		}
-	}
-
-	private fun showUrlsDialog(position: Int) {
-		if (position != RecyclerView.NO_POSITION) {
-			val note = getItem(position)
-			onShowUrlsCallback(note.urls)
-		}
-	}
-
 	fun setOnDeleteNotesListener(callback: (notes: List<Note>) -> Unit) {
 		onDeleteNotesCallback = callback
 	}
 
-	fun setOnRestoreNotesListener(callback: (notes: List<Note>) -> Unit) {
-		onRestoreNotesCallback = callback
-	}
-
-	private var onShowUrlsCallback: (urls: List<String>) -> Unit = {}
-
 	private var onDeleteNotesCallback: (notes: List<Note>) -> Unit = {}
-
-	private var onLockNotesCallback: (notes: List<Note>) -> Unit = {}
-
-	private var onRestoreNotesCallback: (notes: List<Note>) -> Unit = {}
-
-	private var onPinNotesCallback: (notes: List<Note>) -> Unit = {}
-
-	private var onMoveNotesCallback: (notes: List<Note>) -> Unit = {}
 
 	private class NoteAdapterCallback : DiffUtil.ItemCallback<Note>() {
 

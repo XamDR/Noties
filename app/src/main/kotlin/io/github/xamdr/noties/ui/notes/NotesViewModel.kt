@@ -2,73 +2,34 @@ package io.github.xamdr.noties.ui.notes
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.asLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.xamdr.noties.domain.model.Note
-import io.github.xamdr.noties.domain.usecase.GetAllNotesUseCase
-import io.github.xamdr.noties.domain.usecase.GetNotesUseCase
-import kotlinx.coroutines.launch
+import io.github.xamdr.noties.domain.usecase.*
 import javax.inject.Inject
 
 @HiltViewModel
 class NotesViewModel @Inject constructor(
 	private val getNotesUseCase: GetNotesUseCase,
-	private val getAllNotesUseCase: GetAllNotesUseCase) : ViewModel() {
+	private val getAllNotesUseCase: GetAllNotesUseCase,
+	private val getTrashedNotesUseCase: GetTrashedNotesUseCase,
+	private val moveNotesToTrashUseCase: MoveNotesToTrashUseCase,
+	private val restoreNotesUseCase: RestoreNotesUseCase,
+	private val deleteNotesUseCase: DeleteNotesUseCase,
+	private val emptyTrashUseCase: EmptyTrashUseCase) : ViewModel() {
 
 	fun getNotesByTag(tagName: String): LiveData<List<Note>> {
-		return (if (tagName.isEmpty()) getAllNotesUseCase() else getNotesUseCase(tagName))
+		return ((if (tagName.isEmpty()) getAllNotesUseCase() else getNotesUseCase(tagName)))
+			.asLiveData()
 	}
 
-//	fun moveNoteToTrash(note: DatabaseNoteEntity, action: (note: DatabaseNoteEntity) -> Unit) {
-//		viewModelScope.launch {
-//			moveNoteToTrashUseCase(note)
-//			action(note)
-//		}
-//	}
-//
-//	fun restoreNote(note: DatabaseNoteEntity) {
-//		viewModelScope.launch { restoreNoteUseCase(note) }
-//	}
+	fun getTrashedNotes(): LiveData<List<Note>> = getTrashedNotesUseCase().asLiveData()
 
-	fun deleteNotes(notes: List<Note>, action: () -> Unit) {
-		viewModelScope.launch {
-//			deleteNotesUseCase(notes)
-//			action()
-		}
-	}
+	suspend fun moveNotesToTrash(notes: List<Note>) = moveNotesToTrashUseCase(notes)
 
-//	fun toggleLockedValueForNotes(notes: List<Note>, action: () -> Unit) {
-//		val entities = notes.map { it.entity }
-//
-//		viewModelScope.launch {
-//			if (entities.any { !it.isProtected }) {
-//				lockNotesUseCase(entities)
-//			}
-//			else {
-//				unlockNotesUseCase(entities)
-//			}
-//			action()
-//		}
-//	}
-//
-//	fun togglePinnedValueForNotes(notes: List<Note>, action: () -> Unit) {
-//		val entities = notes.map { it.entity }
-//
-//		viewModelScope.launch {
-//			if (entities.any { !it.isPinned }) {
-//				pinNotesUseCase(entities)
-//			}
-//			else {
-//				unpinNotesUseCase(entities)
-//			}
-//			action()
-//		}
-//	}
+	suspend fun restoreNotes(notes: List<Note>) = restoreNotesUseCase(notes)
 
-	fun moveNotes(notes: List<Note>, notebookId: Int, action: () -> Unit) {
-		viewModelScope.launch {
-//			moveNotesUseCase(notes.map { it.entity }, notebookId)
-//			action()
-		}
-	}
+	suspend fun emptyRecycleBin(notes: List<Note>): Int = emptyTrashUseCase(notes)
+
+	suspend fun deleteNotes(notes: List<Note>) = deleteNotesUseCase(notes)
 }

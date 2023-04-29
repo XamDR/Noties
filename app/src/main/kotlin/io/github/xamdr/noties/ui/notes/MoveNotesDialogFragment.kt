@@ -52,7 +52,7 @@ class MoveNotesDialogFragment : DialogFragment() {
 	}
 
 	private fun moveNotes(notes: List<Note>, notebookId: Int) {
-		viewModel.moveNotes(notes, notebookId) { onNotesMovedCallback() }
+//		viewModel.moveNotes(notes, notebookId) { onNotesMovedCallback() }
 		dismiss()
 	}
 

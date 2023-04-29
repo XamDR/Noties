@@ -41,7 +41,7 @@ class ColorAdapter(private val colors: List<Int?>) : RecyclerView.Adapter<ColorA
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ColorViewHolder {
 		val view = LayoutInflater.from(parent.context).inflate(R.layout.color_item, parent, false)
 		return ColorViewHolder(view).apply {
-			setOnClickListener { position -> onColorSelectedCallback(position) }
+//			setOnClickListener { position -> onColorSelectedCallback(position) }
 		}
 	}
 

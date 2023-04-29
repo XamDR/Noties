@@ -43,8 +43,7 @@
 		<action
 			android:id="@+id/action_notes_to_self"
 			app:destination="@id/nav_notes"
-			app:popUpTo="@id/nav_graph"
-			app:popUpToInclusive="true" />
+			app:popUpTo="@id/nav_notes"/>
 	</fragment>
 
 	<fragment
@@ -63,17 +62,6 @@
 			app:popUpTo="@id/nav_graph"
 			app:popUpToInclusive="true" />
 
-	</fragment>
-
-	<fragment
-		android:id="@+id/nav_trash"
-		android:name="io.github.xamdr.noties.ui.trash.RecycleBinFragment"
-		android:label="@string/recycle_bin_fragment_label"
-		tools:layout="@layout/fragment_recycle_bin">
-
-		<argument
-			android:name="ShowToolbar"
-			android:defaultValue="true" />
 	</fragment>
 
 	<fragment

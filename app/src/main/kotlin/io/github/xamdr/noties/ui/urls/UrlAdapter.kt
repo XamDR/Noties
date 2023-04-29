@@ -24,9 +24,10 @@ class UrlAdapter(private val urls: List<String>, private val listener: OnCloseDi
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UrlViewHolder {
 		val binding = UrlItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-		return UrlViewHolder(binding).setOnClickListener { position ->
-			openUrl(position, parent.context)
-		}
+		return UrlViewHolder(binding)
+//			.setOnClickListener { position ->
+//			openUrl(position, parent.context)
+//		}
 	}
 
 	override fun onBindViewHolder(holder: UrlViewHolder, position: Int) {

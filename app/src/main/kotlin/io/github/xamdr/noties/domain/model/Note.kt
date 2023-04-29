@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 
 @Parcelize
 data class Note(
-	val id: Long = 0,
+	val id: Long = 0L,
 	val title: String = String.Empty,
 	val text: String = String.Empty,
 	val modificationDate: LocalDateTime = LocalDateTime.now(),
@@ -19,7 +19,7 @@ data class Note(
 	val isTodoList: Boolean = false,
 	val reminderDate: LocalDateTime? = null,
 	val tags: List<String> = emptyList(),
-	val images: List<Image> = emptyList()
+	var images: List<Image> = emptyList()
 ) : Parcelable {
 
 	fun asDatabaseEntity(): DatabaseNoteEntity {
@@ -41,7 +41,7 @@ data class Note(
 
 	fun getPreviewImage() = images.firstOrNull()?.uri
 
-	fun isNonEmpty() = text.isNotEmpty() || images.isNotEmpty()
+	fun isEmpty() = text.isEmpty() && images.isEmpty()
 
 	fun toTodoList(): List<Todo.TodoItem> {
 		return if (text.isEmpty()) listOf(Todo.TodoItem())

@@ -43,12 +43,12 @@ class ImageDescriptionDialogFragment : DialogFragment() {
 
 	override fun onStart() {
 		super.onStart()
-		if (viewModel.description.value.isEmpty()) {
-			image.description?.let { viewModel.updateImageAltText(it.toEditable()) }
-		}
+//		if (viewModel.description.value.isEmpty()) {
+//			image.description?.let { viewModel.updateImageAltText(it.toEditable()) }
+//		}
 		binding.root.post {
 			binding.imageDesc.showSoftKeyboard()
-			binding.imageDesc.setSelection(viewModel.description.value.length)
+//			binding.imageDesc.setSelection(viewModel.description.value.length)
 		}
 	}
 
@@ -59,13 +59,13 @@ class ImageDescriptionDialogFragment : DialogFragment() {
 
 	override fun onResume() {
 		super.onResume()
-		viewModel.altTextState.observe(this) {
-			when (it) {
-				AltTextState.EmptyDescription -> getPositiveButton().isEnabled = false
-				AltTextState.EditingDescription ->
-					if (!getPositiveButton().isEnabled) getPositiveButton().isEnabled = true
-			}
-		}
+//		viewModel.altTextState.observe(this) {
+//			when (it) {
+//				AltTextState.EmptyDescription -> getPositiveButton().isEnabled = false
+//				AltTextState.EditingDescription ->
+//					if (!getPositiveButton().isEnabled) getPositiveButton().isEnabled = true
+//			}
+//		}
 	}
 
 	fun setOnAltTextAddedListener(callback: () -> Unit) {
@@ -73,8 +73,8 @@ class ImageDescriptionDialogFragment : DialogFragment() {
 	}
 
 	private fun updateImageAltText() {
-		viewModel.updateImage(image, viewModel.description.value) { onAltTextAddedCallback() }
-		requireDialog().dismiss()
+//		viewModel.updateImage(image, viewModel.description.value) { onAltTextAddedCallback() }
+//		requireDialog().dismiss()
 	}
 
 	private var onAltTextAddedCallback: () -> Unit = {}

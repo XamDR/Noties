@@ -11,6 +11,7 @@ import io.github.xamdr.noties.databinding.ImageItemBinding
 import io.github.xamdr.noties.databinding.SingleImageItemBinding
 import io.github.xamdr.noties.domain.model.Image
 import io.github.xamdr.noties.ui.editor.EditorFragment
+import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.SpanSizeLookupOwner
 import io.github.xamdr.noties.ui.helpers.printDebug
 import io.github.xamdr.noties.ui.helpers.setOnClickListener
@@ -45,7 +46,7 @@ class ImageAdapter(
 		MULTIPLE_IMAGES -> {
 			val binding = ImageItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 			ImageItemViewHolder(binding).apply {
-				setOnClickListener { position -> showMediaItemFullScreen(currentList, position) }
+//				setOnClickListener { position -> showMediaItemFullScreen(currentList, position) }
 			}
 		}
 		else -> throw Exception("Unknown view type.")
@@ -58,12 +59,12 @@ class ImageAdapter(
 	}
 
 	override fun getItemViewType(position: Int) =
-		if (itemCount.mod(EditorFragment.SPAN_COUNT) != 0 && position == 0) SINGLE_IMAGE
+		if (itemCount.mod(Constants.SPAN_COUNT) != 0 && position == 0) SINGLE_IMAGE
 		else MULTIPLE_IMAGES
 
 	override fun getSpanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
 		override fun getSpanSize(position: Int) =
-			if (itemCount.mod(EditorFragment.SPAN_COUNT) != 0 && position == 0) EditorFragment.SPAN_COUNT
+			if (itemCount.mod(Constants.SPAN_COUNT) != 0 && position == 0) Constants.SPAN_COUNT
 			else 1
 	}
 

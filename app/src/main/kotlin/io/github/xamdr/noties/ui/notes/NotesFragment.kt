@@ -2,15 +2,16 @@ package io.github.xamdr.noties.ui.notes
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
+import androidx.core.view.MenuProvider
 import androidx.core.view.doOnPreDraw
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
@@ -25,11 +26,14 @@ import io.github.xamdr.noties.databinding.FragmentNotesBinding
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.domain.model.Tag
 import io.github.xamdr.noties.ui.helpers.*
+import io.github.xamdr.noties.ui.image.ImageStorageManager
+import io.github.xamdr.noties.ui.notes.recyclebin.EmptyRecycleBinDialogFragment
+import io.github.xamdr.noties.ui.notes.selection.DeleteNotesDialogFragment
 import io.github.xamdr.noties.ui.notes.selection.NoteItemDetailsLookup
 import io.github.xamdr.noties.ui.notes.selection.NoteItemKeyProvider
 import io.github.xamdr.noties.ui.notes.selection.RecyclerViewActionModeCallback
-import io.github.xamdr.noties.ui.notes.selection.SelectionObserver
 import io.github.xamdr.noties.ui.settings.PreferenceStorage
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -38,18 +42,25 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 	private var _binding: FragmentNotesBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<NotesViewModel>()
-	private val noteAdapter = NoteAdapter()
+	private val noteAdapter = NoteAdapter(this::navigateToEditor, this::moveNoteToTrash)
 	@Inject lateinit var preferenceStorage: PreferenceStorage
 	private val tag by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getSerializableCompat(Constants.BUNDLE_TAG_ID, Tag::class.java)
 	}
 	private lateinit var selectionTracker: SelectionTracker<Note>
+	private var actionMode: ActionMode? = null
 	private lateinit var actionModeCallback: RecyclerViewActionModeCallback
-	private lateinit var selectionObserver: SelectionObserver
+	private val isRecycleBin by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getBoolean(Constants.BUNDLE_RECYCLE_BIN, false)
+	}
+	private val menuProvider = NotesMenuProvider()
+	private lateinit var trashedNotes: List<Note>
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
-		actionModeCallback = RecyclerViewActionModeCallback(noteAdapter)
+		actionModeCallback = RecyclerViewActionModeCallback(noteAdapter).apply {
+			setOnActionModeDoneListener(this@NotesFragment::onActionModeDone)
+		}
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,7 +86,12 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 		submitList(tag.name)
 		buildTracker(savedInstanceState)
 		binding.searchBar.setOnMenuItemClickListener(this)
-		binding.fab.setOnClickListener { navigateToEditor() }
+		binding.fab.setOnClickListener { navigateToEditor(note = Note()) }
+	}
+
+	override fun onStart() {
+		super.onStart()
+		noteAdapter.setOnDeleteNotesListener(this::showDeleteNotesDialog)
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
@@ -99,6 +115,10 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 		}
 		R.id.change_notes_layout -> {
 			changeNotesLayout(LayoutType.valueOf(preferenceStorage.layoutType)); true
+		}
+		R.id.nav_trash -> {
+			val args = bundleOf(Constants.BUNDLE_RECYCLE_BIN to true)
+			findNavController().tryNavigate(R.id.action_notes_to_self, args); true
 		}
 		else -> false
 	}
@@ -128,16 +148,17 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 		requireActivity().invalidateMenu()
 	}
 
-	private fun navigateToEditor() {
-		selectionObserver.actionMode?.finish()
+	private fun navigateToEditor(view: View? = null, note: Note) {
+		actionMode?.finish()
 		exitTransition = MaterialElevationScale(false).apply {
 			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
 		}
 		reenterTransition = MaterialElevationScale(true).apply {
 			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
 		}
-		val args = bundleOf(Constants.BUNDLE_TAG_ID to tag.id)
-		findNavController().tryNavigate(R.id.action_notes_to_editor, args)
+		val args = bundleOf(Constants.BUNDLE_NOTE_ID to note.id)
+		val extras = if (view != null) FragmentNavigatorExtras(view to note.id.toString()) else null
+		findNavController().tryNavigate(R.id.action_notes_to_editor, args, null, extras)
 	}
 
 	private fun setupRecyclerView() {
@@ -148,17 +169,43 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 				LayoutType.Linear -> 1
 				LayoutType.Grid -> 2
 			}
+			setEmptyView(binding.emptyView)
 			addItemTouchHelper(ItemTouchHelper(SwipeToDeleteCallback(noteAdapter)))
 		}
 		postponeEnterTransition()
 	}
 
 	private fun submitList(tagName: String) {
-		viewModel.getNotesByTag(tagName).observe(viewLifecycleOwner) { notes ->
-			if (tagName.isNotEmpty()) supportActionBar?.title = tag.name
-			noteAdapter.submitList(notes)
-			binding.root.doOnPreDraw { startPostponedEnterTransition() }
+		if (isRecycleBin) {
+			viewModel.getTrashedNotes().observe(viewLifecycleOwner) { trashedNotes ->
+				this.trashedNotes = trashedNotes
+				buildUIForTrashedNotes(trashedNotes)
+				noteAdapter.submitList(trashedNotes)
+				binding.root.doOnPreDraw { startPostponedEnterTransition() }
+			}
 		}
+		else {
+			viewModel.getNotesByTag(tagName).observe(viewLifecycleOwner) { notes ->
+				if (tagName.isNotEmpty()) supportActionBar?.title = tag.name
+				buildUIForNotes()
+				noteAdapter.submitList(notes)
+				binding.root.doOnPreDraw { startPostponedEnterTransition() }
+			}
+		}
+	}
+
+	private fun buildUIForNotes() {
+		binding.searchBar.isVisible = true
+		binding.fab.isVisible = true
+		binding.emptyView.setText(R.string.empty_notes_message)
+	}
+
+	private fun buildUIForTrashedNotes(trashedNotes: List<Note>) {
+		binding.searchBar.isVisible = false
+		binding.fab.isVisible = false
+		supportActionBar?.show(getString(R.string.recycle_bin_fragment_label))
+		if (trashedNotes.isNotEmpty()) addMenuProvider(menuProvider, viewLifecycleOwner)
+		binding.emptyView.setText(R.string.empty_recycle_bin)
 	}
 
 	private fun buildTracker(savedInstanceState: Bundle?) {
@@ -170,15 +217,99 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 			StorageStrategy.createParcelableStorage(Note::class.java)
 		).withSelectionPredicate(SelectionPredicates.createSelectAnything()).build().apply {
 			onRestoreInstanceState(savedInstanceState)
-			selectionObserver = SelectionObserver(requireContext(), actionModeCallback, this)
-			addObserver(selectionObserver)
+			addObserver(object : SelectionTracker.SelectionObserver<Note>() {
+				override fun onSelectionChanged() {
+					onSelectionChanged(selectionTracker)
+				}
+			})
 		}
 		noteAdapter.tracker = selectionTracker
 	}
 
-	private fun showActionMode() {
-		selectionObserver.actionMode = startActionMode(actionModeCallback)
+	private fun onSelectionChanged(selectionTracker: SelectionTracker<*>) {
 		val numSelectedItems = selectionTracker.selection.size()
-		selectionObserver.actionMode?.title = numSelectedItems.toString()
+		Timber.d("Number selected items: %s", numSelectedItems)
+		if (selectionTracker.hasSelection() && actionMode == null) {
+			binding.searchBar.isVisible = false
+			supportActionBar?.show()
+			actionMode = startActionMode(actionModeCallback)
+			actionMode?.title = numSelectedItems.toString()
+		}
+		else if (!selectionTracker.hasSelection() && actionMode != null) {
+			actionMode?.finish()
+			actionMode = null
+		}
+		else {
+			actionMode?.title = numSelectedItems.toString()
+			actionMode?.invalidate()
+		}
+	}
+
+	private fun showActionMode() {
+		binding.searchBar.isVisible = false // Bug here
+		actionMode = startActionMode(actionModeCallback)
+		val numSelectedItems = selectionTracker.selection.size()
+		actionMode?.title = numSelectedItems.toString()
+	}
+
+	private fun onActionModeDone() {
+		supportActionBar?.hide()
+		binding.searchBar.isVisible = true
+	}
+
+	private fun showDeleteNotesDialog(notes: List<Note>) {
+		val dialog = DeleteNotesDialogFragment.newInstance(notes).apply {
+			setOnNotesDeletedListener { notes ->
+				actionMode?.finish()
+				this@NotesFragment.launch {
+					viewModel.deleteNotes(notes)
+					deleteImages(notes)
+				}
+			}
+		}
+		showDialog(dialog, Constants.DELETE_NOTES_DIALOG_TAG)
+	}
+
+	private fun moveNoteToTrash(note: Note) {
+		launch {
+			val result = viewModel.moveNotesToTrash(listOf(note))
+			binding.root.showSnackbarWithActionSuspend(R.string.deleted_note, actionText = R.string.undo) {
+				viewModel.restoreNotes(result)
+			}
+		}
+	}
+
+	private fun showEmptyRecycleBinDialog() {
+		val dialog = EmptyRecycleBinDialogFragment().apply {
+			setOnRecycleBinEmptyListener {
+				this@NotesFragment.launch {
+					if (::trashedNotes.isInitialized) {
+						viewModel.emptyRecycleBin(trashedNotes)
+						deleteImages(trashedNotes)
+						this@NotesFragment.removeMenuProvider(menuProvider)
+					}
+				}
+			}
+		}
+		showDialog(dialog, Constants.EMPTY_RECYCLE_BIN_DIALOG_TAG)
+	}
+
+	private fun deleteImages(notes: List<Note>) {
+		for (note in notes) {
+			ImageStorageManager.deleteImages(requireContext(), note.images)
+		}
+	}
+
+	private inner class NotesMenuProvider : MenuProvider {
+		override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+			menuInflater.inflate(R.menu.menu_recycle_bin, menu)
+		}
+
+		override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
+			R.id.empty_recycle_bin -> {
+				showEmptyRecycleBinDialog(); true
+			}
+			else -> false
+		}
 	}
 }

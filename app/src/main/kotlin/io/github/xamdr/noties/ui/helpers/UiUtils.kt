@@ -10,12 +10,15 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.*
@@ -24,6 +27,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.ActionMode
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.getSystemService
 import androidx.core.view.MenuProvider
@@ -47,6 +51,7 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import io.github.xamdr.noties.R
+import kotlinx.coroutines.*
 
 fun FragmentActivity.findNavController(@IdRes id: Int) =
 	(this.supportFragmentManager.findFragmentById(id) as NavHostFragment).navController
@@ -84,10 +89,10 @@ fun View.hideSoftKeyboard() {
 fun Context.showToast(@StringRes text: Int, duration: Int = Toast.LENGTH_SHORT): Toast =
 	Toast.makeText(this.applicationContext, text, duration).also { it.show() }
 
-fun <T : RecyclerView.ViewHolder> T.setOnClickListener(callback: (position: Int) -> Unit): T {
+fun <T : RecyclerView.ViewHolder> T.setOnClickListener(callback: (view: View?, position: Int) -> Unit): T {
 	itemView.setOnClickListener {
 		ViewCompat.postOnAnimationDelayed(it, {
-			callback.invoke(bindingAdapterPosition)
+			callback.invoke(it, bindingAdapterPosition)
 		}, 100)
 	}
 	return this
@@ -97,28 +102,52 @@ fun RecyclerView.addItemTouchHelper(itemTouchHelper: ItemTouchHelper) {
 	itemTouchHelper.attachToRecyclerView(this)
 }
 
-fun View.showSnackbar(@StringRes message: Int,
-					  length: Int = Snackbar.LENGTH_LONG,
-					  @StringRes action: Int,
-					  listener: ((View) -> Unit)? = null): Snackbar {
-	return Snackbar.make(this, message, length).setAction(action, listener).apply {
-		behavior = BaseTransientBottomBar.Behavior().apply { setSwipeDirection(SwipeDismissBehavior.SWIPE_DIRECTION_ANY) }
-	}.also { it.show() }
-}
-
-fun View.showSnackbar(message: String,
-                      length: Int = Snackbar.LENGTH_LONG,
-                      @StringRes action: Int,
-                      listener: ((View) -> Unit)? = null): Snackbar {
-	return Snackbar.make(this, message, length).setAction(action, listener).apply {
-		behavior = BaseTransientBottomBar.Behavior().apply { setSwipeDirection(SwipeDismissBehavior.SWIPE_DIRECTION_ANY) }
-	}.also { it.show() }
-}
-
-fun View.showSnackbar(@StringRes message: Int,
-                      length: Int = Snackbar.LENGTH_LONG): Snackbar {
+fun View.showSnackbar(
+	@StringRes message: Int,
+	length: Int = Snackbar.LENGTH_LONG
+): Snackbar {
 	return Snackbar.make(this, message, length).apply {
 		behavior = BaseTransientBottomBar.Behavior().apply { setSwipeDirection(SwipeDismissBehavior.SWIPE_DIRECTION_ANY) }
+	}.also { it.show() }
+}
+
+fun View.showSnackbarWithAction(
+	message: String,
+	length: Int = Snackbar.LENGTH_LONG,
+	@StringRes actionText: Int,
+	action: (View) -> Unit
+): Snackbar {
+	return Snackbar.make(this, message, length).setAction(actionText, action).apply {
+		behavior = BaseTransientBottomBar.Behavior().apply { setSwipeDirection(SwipeDismissBehavior.SWIPE_DIRECTION_ANY) }
+	}.also { it.show() }
+}
+
+fun View.showSnackbarWithAction(
+	@StringRes message: Int,
+	length: Int = Snackbar.LENGTH_LONG,
+	@StringRes actionText: Int,
+	action: (View) -> Unit
+): Snackbar = this.showSnackbarWithAction(this.context.getString(message), length, actionText, action)
+
+fun View.showSnackbarWithActionSuspend(
+	@StringRes message: Int,
+	length: Int = Snackbar.LENGTH_LONG,
+	@StringRes actionText: Int,
+	action: suspend () -> Unit
+): Snackbar {
+	var actionJob: Job? = null
+	return Snackbar.make(this, message, length).setAction(actionText) {
+		actionJob = CoroutineScope(Dispatchers.Main).launch {
+			withContext(Dispatchers.Default) { action() }
+		}
+	}.apply {
+		behavior = BaseTransientBottomBar.Behavior().apply { setSwipeDirection(SwipeDismissBehavior.SWIPE_DIRECTION_ANY) }
+		addCallback(object : Snackbar.Callback() {
+			override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+				super.onDismissed(transientBottomBar, event)
+				actionJob?.cancel()
+			}
+		})
 	}.also { it.show() }
 }
 
@@ -140,6 +169,13 @@ fun NavController.tryNavigate(
 
 val Fragment.supportActionBar: ActionBar?
 	get() = (this.activity as AppCompatActivity).supportActionBar
+
+fun ActionBar.show(title: String) {
+	this.apply {
+		show()
+		setTitle(title)
+	}
+}
 
 fun Context.getUriMimeType(uri: Uri): String? = contentResolver.getType(uri)
 
@@ -237,5 +273,21 @@ fun Window.setStatusBarColor(@ColorInt color: Int?) {
 	}
 	else {
 		this.statusBarColor = color
+	}
+}
+
+fun AppCompatEditText.textAsString(): String {
+	return if (this.text != null) this.text.toString() else String.Empty
+}
+
+fun Snackbar.showOnTop() {
+	val typedValue = TypedValue()
+	var toolbarHeight = 0
+	if (this.context.theme.resolveAttribute(android.R.attr.actionBarSize, typedValue, true)) {
+		toolbarHeight = TypedValue.complexToDimensionPixelSize(typedValue.data, this.context.resources.displayMetrics)
+	}
+	this.view.layoutParams = (this.view.layoutParams as FrameLayout.LayoutParams).apply {
+		gravity = Gravity.TOP
+		setMargins(this.leftMargin * 2, (toolbarHeight * 1.5).toInt(), this.rightMargin * 2, this.bottomMargin)
 	}
 }

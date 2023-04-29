@@ -16,7 +16,6 @@ object ImageStorageManager {
 	private const val size = 1024
 	private const val TAG = "ImageStorageManager"
 
-	@Suppress("BlockingMethodInNonBlockingContext")
 	suspend fun saveImage(context: Context, uri: Uri, fileName: String): String = withContext(IO) {
 		val directory = "${context.filesDir}/images"
 		context.contentResolver.openInputStream(uri).use {

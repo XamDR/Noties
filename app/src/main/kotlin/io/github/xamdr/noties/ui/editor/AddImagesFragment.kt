@@ -18,7 +18,7 @@ class AddImagesFragment : BaseHeadlessChildFragment() {
 			val image = DatabaseImageEntity(
 				uri = newUri,
 				mimeType = requireContext().getUriMimeType(newUri),
-				noteId = viewModel.note.id
+//				noteId = viewModel.note.id
 			)
 //			viewModel.note.images += image
 		}

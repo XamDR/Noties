@@ -7,7 +7,7 @@
 	app:cardCornerRadius="5dp"
 	app:cardElevation="0dp"
 	app:strokeColor="@color/stroke_color"
-	app:strokeWidth="2dp">
+	app:strokeWidth="1.5dp">
 
 	<androidx.constraintlayout.widget.ConstraintLayout
 		android:layout_width="match_parent"
@@ -57,7 +57,6 @@
 			android:ellipsize="end"
 			android:maxLines="5"
 			android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-			android:visibility="visible"
 			app:layout_constraintBottom_toTopOf="@id/url"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"

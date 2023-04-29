@@ -1,17 +1,16 @@
 package io.github.xamdr.noties.domain.usecase
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.map
 import io.github.xamdr.noties.data.repository.NoteRepository
 import io.github.xamdr.noties.domain.model.Image
 import io.github.xamdr.noties.domain.model.Note
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 class InsertNoteUseCase @Inject constructor(
 	private val noteRepository: NoteRepository,
-	private val insertImagesUseCase: InsertImagesUseCase
-) {
+	private val insertImagesUseCase: InsertImagesUseCase) {
 
 	suspend operator fun invoke(note: Note, images: List<Image>) {
 		val id = noteRepository.insertNote(note.asDatabaseEntity())
@@ -25,49 +24,97 @@ class InsertNoteUseCase @Inject constructor(
 }
 
 class GetNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
-	operator fun invoke(tagName: String): LiveData<List<Note>> {
-		return noteRepository.getNotesByTag(tagName).asLiveData().map { list ->
+
+	operator fun invoke(tagName: String): Flow<List<Note>> {
+		return noteRepository.getNotesByTag(tagName).map { list ->
 			list.map { it.asDomainModel() }
 		}
+	}
+}
+
+class GetNoteByIdUseCase @Inject constructor(private val noteRepository: NoteRepository) {
+
+	suspend operator fun invoke(noteId: Long): Note {
+		return noteRepository.getNoteById(noteId).asDomainModel()
 	}
 }
 
 class GetAllNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
-	operator fun invoke(): LiveData<List<Note>> {
-		return noteRepository.getAllNotes().asLiveData().map { list ->
+
+	operator fun invoke(): Flow<List<Note>> {
+		return noteRepository.getAllNotes().map { list ->
 			list.map { it.asDomainModel() }
 		}
 	}
 }
 
-//
-//class UpdateNoteUseCase @Inject constructor(
-//	private val noteDao: NoteDao,
-//	private val imageDao: ImageDao
-//) {
-//
-//	suspend operator fun invoke(note: DatabaseNoteEntity, images: List<DatabaseImageEntity>) {
-//		noteDao.updateNote(note)
-//		imageDao.insertImages(images.filter { it.id == 0 })
-//	}
-//}
-//
-//class DeleteNotesUseCase @Inject constructor(
-//	private val noteDao: NoteDao,
-//	private val imageDao: ImageDao,
-//	private val tagDao: TagDao) {
-//
-//	suspend operator fun invoke(notes: List<Note>) {
-//		for (note in notes) {
-//			imageDao.deleteImages(note.images)
-//			noteDao.deleteNote(note.entity)
-//			if (!note.entity.isTrashed) {
-////				tagDao.decrementNotebookNoteCount(note.entity.notebookId)
-//			}
-//		}
-//	}
-//}
-//
+class UpdateNoteUseCase @Inject constructor(
+	private val noteRepository: NoteRepository,
+	private val insertImagesUseCase: InsertImagesUseCase) {
+
+	suspend operator fun invoke(note: Note, images: List<Image>) {
+		val updatedNote = note.copy(modificationDate = LocalDateTime.now())
+		noteRepository.updateNote(updatedNote.asDatabaseEntity())
+		insertImagesUseCase(images.filter { image -> image.id == 0 })
+	}
+}
+
+class DeleteNotesUseCase @Inject constructor(
+	private val noteRepository: NoteRepository,
+	private val deleteImagesUseCase: DeleteImagesUseCase) {
+
+	suspend operator fun invoke(notes: List<Note>) {
+		for (note in notes) {
+			deleteImagesUseCase(note.images)
+			noteRepository.deleteNote(note.asDatabaseEntity())
+		}
+	}
+}
+
+class GetTrashedNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
+	operator fun invoke(): Flow<List<Note>> {
+		return noteRepository.getTrashedNotes().map { list ->
+			list.map { it.asDomainModel() }
+		}
+	}
+}
+
+class EmptyTrashUseCase @Inject constructor(
+	private val noteRepository: NoteRepository,
+	private val deleteImagesUseCase: DeleteImagesUseCase) {
+
+	suspend operator fun invoke(notes: List<Note>): Int {
+		val entities = notes.map { it.asDatabaseEntity() }
+		for (note in notes) {
+			deleteImagesUseCase(note.images)
+		}
+		return noteRepository.deleteTrashedNotes(entities)
+	}
+}
+
+class MoveNotesToTrashUseCase @Inject constructor(private val noteRepository: NoteRepository) {
+
+	suspend operator fun invoke(notes: List<Note>): List<Note> {
+		val trashedNotes = mutableListOf<Note>()
+		for (note in notes) {
+			val trashedNote = note.copy(isTrashed =  true)
+			noteRepository.updateNote(trashedNote.asDatabaseEntity())
+			trashedNotes.add(trashedNote)
+		}
+		return trashedNotes
+	}
+}
+
+class RestoreNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
+
+	suspend operator fun invoke(notes: List<Note>) {
+		for (note in notes) {
+			val restoredNote = note.copy(isTrashed = false)
+			noteRepository.updateNote(restoredNote.asDatabaseEntity())
+		}
+	}
+}
+
 //class MoveNoteToTrashUseCase @Inject constructor(
 //	private val noteDao: NoteDao,
 //	private val tagDao: TagDao) {
