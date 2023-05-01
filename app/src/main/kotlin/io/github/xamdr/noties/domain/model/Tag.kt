@@ -1,9 +1,11 @@
 package io.github.xamdr.noties.domain.model
 
+import android.os.Parcelable
 import io.github.xamdr.noties.data.entity.tag.DatabaseTagEntity
-import java.io.Serializable
+import kotlinx.parcelize.Parcelize
 
-data class Tag(val id: Int = 0, val name: String = String.Empty) : Serializable {
+@Parcelize
+data class Tag(val id: Int = 0, val name: String = String.Empty) : Parcelable {
 
 	fun asDatabaseEntity(): DatabaseTagEntity {
 		return DatabaseTagEntity(

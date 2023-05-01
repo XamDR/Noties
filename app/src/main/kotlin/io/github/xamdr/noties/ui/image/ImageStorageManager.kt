@@ -5,19 +5,19 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import io.github.xamdr.noties.domain.model.Image
-import io.github.xamdr.noties.ui.helpers.printDebug
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 
 object ImageStorageManager {
 
 	private const val size = 1024
-	private const val TAG = "ImageStorageManager"
+	private const val DIRECTORY = "images"
 
 	suspend fun saveImage(context: Context, uri: Uri, fileName: String): String = withContext(IO) {
-		val directory = "${context.filesDir}/images"
+		val directory = "${context.filesDir}/$DIRECTORY"
 		context.contentResolver.openInputStream(uri).use {
 			FileOutputStream(File(directory, fileName)).use { fos ->
 				val buffer = ByteArray(size)
@@ -45,13 +45,13 @@ object ImageStorageManager {
 			val fileName = DocumentFile.fromSingleUri(context, image.uri!!)?.name
 			fileName?.let {
 				val result = deleteImage(context, it)
-				printDebug(TAG, result)
+				Timber.d("Result: %s", result)
 			}
 		}
 	}
 
 	private fun deleteImage(context: Context, imageFileName: String): Boolean {
-		val directory = "${context.filesDir}/images"
+		val directory = "${context.filesDir}/$DIRECTORY"
 		val file = File(directory, imageFileName)
 		return file.delete()
 	}

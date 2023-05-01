@@ -11,7 +11,8 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import io.github.xamdr.noties.databinding.FragmentFullScreenImageBinding
 import io.github.xamdr.noties.domain.model.Image
-import io.github.xamdr.noties.ui.helpers.getSerializableCompat
+import io.github.xamdr.noties.ui.helpers.Constants
+import io.github.xamdr.noties.ui.helpers.getParcelableCompat
 import io.github.xamdr.noties.ui.helpers.supportActionBar
 
 class FullScreenImageFragment : Fragment() {
@@ -19,7 +20,7 @@ class FullScreenImageFragment : Fragment() {
 	private var _binding: FragmentFullScreenImageBinding? = null
 	private val binding get() = _binding!!
 	private val image by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getSerializableCompat(KEY, Image::class.java)
+		requireArguments().getParcelableCompat(Constants.BUNDLE_IMAGE, Image::class.java)
 	}
 	private var fullScreen = false
 
@@ -74,10 +75,8 @@ class FullScreenImageFragment : Fragment() {
 	}
 
 	companion object {
-		private const val KEY = "image"
-
 		fun newInstance(image: Image) = FullScreenImageFragment().apply {
-			arguments = bundleOf(KEY to image)
+			arguments = bundleOf(Constants.BUNDLE_IMAGE to image)
 		}
 	}
 }

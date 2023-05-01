@@ -45,7 +45,7 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 	private val noteAdapter = NoteAdapter(this::navigateToEditor, this::moveNoteToTrash)
 	@Inject lateinit var preferenceStorage: PreferenceStorage
 	private val tag by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getSerializableCompat(Constants.BUNDLE_TAG_ID, Tag::class.java)
+		requireArguments().getParcelableCompat(Constants.BUNDLE_TAG_ID, Tag::class.java)
 	}
 	private lateinit var selectionTracker: SelectionTracker<Note>
 	private var actionMode: ActionMode? = null
@@ -156,7 +156,11 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 		reenterTransition = MaterialElevationScale(true).apply {
 			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
 		}
-		val args = bundleOf(Constants.BUNDLE_NOTE_ID to note.id)
+		val editorTitle = if (isRecycleBin) String.Empty else getString(R.string.editor_fragment_label)
+		val args = bundleOf(
+			Constants.BUNDLE_NOTE_ID to note.id,
+			Constants.ARG_TITLE to editorTitle
+		)
 		val extras = if (view != null) FragmentNavigatorExtras(view to note.id.toString()) else null
 		findNavController().tryNavigate(R.id.action_notes_to_editor, args, null, extras)
 	}

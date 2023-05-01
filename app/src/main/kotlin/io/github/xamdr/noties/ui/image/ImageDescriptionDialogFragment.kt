@@ -11,10 +11,8 @@ import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.DialogImageDescriptionBinding
 import io.github.xamdr.noties.domain.model.Image
 import io.github.xamdr.noties.ui.editor.EditorViewModel
-import io.github.xamdr.noties.ui.helpers.getPositiveButton
-import io.github.xamdr.noties.ui.helpers.getSerializableCompat
+import io.github.xamdr.noties.ui.helpers.getParcelableCompat
 import io.github.xamdr.noties.ui.helpers.showSoftKeyboard
-import io.github.xamdr.noties.ui.helpers.toEditable
 
 class ImageDescriptionDialogFragment : DialogFragment() {
 
@@ -22,7 +20,7 @@ class ImageDescriptionDialogFragment : DialogFragment() {
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<EditorViewModel>({ requireParentFragment() })
 	private val image by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getSerializableCompat(KEY, Image::class.java)
+		requireArguments().getParcelableCompat(KEY, Image::class.java)
 	}
 
 	override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

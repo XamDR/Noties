@@ -1,6 +1,7 @@
 package io.github.xamdr.noties.data.dao
 
 import androidx.room.*
+import io.github.xamdr.noties.data.entity.image.DatabaseImageEntity
 import io.github.xamdr.noties.data.entity.note.DatabaseNoteEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -10,38 +11,32 @@ interface NoteDao {
 	@Insert
 	suspend fun insertNote(note: DatabaseNoteEntity): Long
 
-	@Transaction
-	@Query("SELECT * FROM Notes WHERE instr(tags, :tagName) AND is_trashed <> 1 ORDER BY id DESC")
-	fun getNotesByTag(tagName: String): Flow<List<DatabaseNoteEntity>>
+	@Query("SELECT * FROM Notes " +
+			"JOIN Images ON Notes.id = Images.note_id " +
+			"WHERE instr(Notes.tags, :tagName) AND Notes.is_trashed <> 1 " +
+			"ORDER BY Notes.id DESC")
+	fun getNotesByTag(tagName: String): Flow<Map<DatabaseNoteEntity, List<DatabaseImageEntity>>>
 
-	@Query("SELECT * FROM Notes WHERE id = :noteId AND is_trashed <> 1")
-	suspend fun getNoteById(noteId: Long): DatabaseNoteEntity
+	@Query("SELECT * FROM Notes " +
+			"JOIN Images ON Notes.id = Images.note_id " +
+			"WHERE Notes.id = :noteId")
+	suspend fun getNoteById(noteId: Long): Map<DatabaseNoteEntity, List<DatabaseImageEntity>>
 
-	@Transaction
-	@Query("SELECT * FROM Notes WHERE is_trashed <> 1 ORDER BY id DESC")
-	fun getAllNotes(): Flow<List<DatabaseNoteEntity>>
+	@Query("SELECT * FROM Notes " +
+			"JOIN Images ON Notes.id = Images.note_id " +
+			"WHERE Notes.is_trashed <> 1 " +
+			"ORDER BY Notes.id DESC")
+	fun getAllNotes(): Flow<Map<DatabaseNoteEntity, List<DatabaseImageEntity>>>
 
 	@Update
 	suspend fun updateNote(note: DatabaseNoteEntity)
 
 	@Delete
-	suspend fun deleteNote(note: DatabaseNoteEntity)
-
-	@Transaction
-	@Query("SELECT * FROM Notes WHERE is_trashed = 1")
-	fun getTrashedNotes(): Flow<List<DatabaseNoteEntity>>
-
-//	@Transaction
-//	@Query("SELECT * FROM Notes WHERE is_trashed = 1")
-//	suspend fun getTrashedNotesSync(): List<DatabaseNoteEntity>
-//
-//	@Query("DELETE FROM Notes WHERE is_trashed = 1")
-//	suspend fun deleteTrashedNotes(): Int
-
-	@Delete
 	suspend fun deleteNotes(notes: List<DatabaseNoteEntity>): Int
 
-	@Transaction
-	@Query("SELECT * FROM notes WHERE reminder_date IS NOT NULL")
-	suspend fun getNotesWithReminderAsync(): List<DatabaseNoteEntity>
+	@Query("SELECT * FROM Notes " +
+			"JOIN Images ON Notes.id = Images.note_id " +
+			"WHERE Notes.is_trashed = 1 " +
+			"ORDER BY Notes.id DESC")
+	fun getTrashedNotes(): Flow<Map<DatabaseNoteEntity, List<DatabaseImageEntity>>>
 }

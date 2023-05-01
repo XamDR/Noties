@@ -4,6 +4,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,14 +21,19 @@ import com.google.android.material.transition.MaterialContainerTransform
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.FragmentEditorBinding
+import io.github.xamdr.noties.domain.model.Image
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.editor.todos.DragDropCallback
 import io.github.xamdr.noties.ui.helpers.*
+import io.github.xamdr.noties.ui.image.BitmapCache
+import io.github.xamdr.noties.ui.image.ImageAdapter
+import io.github.xamdr.noties.ui.image.ImageItemContextMenuListener
 import io.github.xamdr.noties.ui.image.ImageStorageManager
+import timber.log.Timber
 import com.google.android.material.R as Material
 
 @AndroidEntryPoint
-class EditorFragment : Fragment(), NoteContentListener, EditorToolbarItemListener {
+class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener, ImageItemContextMenuListener {
 
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
@@ -39,8 +47,13 @@ class EditorFragment : Fragment(), NoteContentListener, EditorToolbarItemListene
 	private lateinit var note: Note
 	private lateinit var textAdapter: EditorTextAdapter
 	private lateinit var concatAdapter: ConcatAdapter
+	private val imageAdapter = ImageAdapter(this::navigateToGallery, this)
 	private val menuProvider = EditorMenuProvider()
 	private val itemTouchHelper = ItemTouchHelper(DragDropCallback())
+
+	private val pickeMediaLauncher = registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
+		addImages(uris)
+	}
 
 	override fun onCreateView(inflater: LayoutInflater,
 							  container: ViewGroup?,
@@ -58,7 +71,8 @@ class EditorFragment : Fragment(), NoteContentListener, EditorToolbarItemListene
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		setup()
+		setupNote()
+		setupListeners()
 		onBackPressed { if (::note.isInitialized) saveNote(note) }
 	}
 
@@ -81,17 +95,69 @@ class EditorFragment : Fragment(), NoteContentListener, EditorToolbarItemListene
 		}
 	}
 
-	override fun navigateUp() {
+	override fun onAttachMediaFile() {
+		// For now support only images, we'll later add support for videos as well
+		val mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+		pickeMediaLauncher.launch(PickVisualMediaRequest(mediaType))
+	}
+
+	override fun addAltText(position: Int) {
+
+	}
+
+	override fun copyImage(position: Int) {
+		val uri = note.images[position].uri
+		uri?.let {
+			requireContext().copyUriToClipboard(R.string.image_item, it, R.string.image_copied_msg)
+		}
+	}
+
+	override fun deleteImage(position: Int) {
+		launch {
+			val imageToBeDeleted = note.images[position]
+			note = note.copy(images = note.images - imageToBeDeleted)
+			imageAdapter.submitList(note.images)
+			val images = listOf(imageToBeDeleted)
+			val result = ImageStorageManager.deleteImages(requireContext(), images)
+			Timber.d("Result: %s", result)
+			if (imageToBeDeleted.id != 0) {
+				viewModel.deleteImages(images)
+			}
+		}
+	}
+
+	private fun navigateUp() {
 		binding.root.hideSoftKeyboard()
 		requireActivity().onBackPressedDispatcher.onBackPressed()
 	}
 
-	private fun setup() {
+	private fun setupNote() {
 		launch {
 			note = viewModel.getNote(noteId)
 			textAdapter = EditorTextAdapter(note, this@EditorFragment)
-			concatAdapter = ConcatAdapter(textAdapter)
+			concatAdapter = ConcatAdapter(imageAdapter, textAdapter)
 			setupRecyclerView()
+			if (note.images.isNotEmpty()) {
+				imageAdapter.submitList(note.images)
+			}
+		}
+	}
+
+	private fun setupRecyclerView() {
+		binding.content.apply {
+			adapter = concatAdapter
+			(layoutManager as GridLayoutManager).spanSizeLookup =
+				ConcatSpanSizeLookup(Constants.SPAN_COUNT) { concatAdapter.adapters }
+			addItemTouchHelper(itemTouchHelper)
+		}
+	}
+
+	private fun setupListeners() {
+		binding.add.setOnClickListener {
+			val menuDialog = EditorMenuFragment().apply {
+				setEditorMenuListener(this@EditorFragment)
+			}
+			showDialog(menuDialog, Constants.MENU_DIALOG_TAG)
 		}
 	}
 
@@ -120,15 +186,6 @@ class EditorFragment : Fragment(), NoteContentListener, EditorToolbarItemListene
 		}
 	}
 
-	private fun setupRecyclerView() {
-		binding.content.apply {
-			adapter = concatAdapter
-			(layoutManager as GridLayoutManager).spanSizeLookup =
-				ConcatSpanSizeLookup(Constants.SPAN_COUNT) { concatAdapter.adapters }
-			addItemTouchHelper(itemTouchHelper)
-		}
-	}
-
 	private fun saveNote(note: Note) {
 		launch {
 			when (viewModel.saveNote(note, noteId)) {
@@ -142,6 +199,34 @@ class EditorFragment : Fragment(), NoteContentListener, EditorToolbarItemListene
 			}
 			findNavController().popBackStack()
 		}
+	}
+
+	private fun addImages(uris: List<Uri>) {
+		if (uris.isEmpty()) return
+		launch {
+			val images = mutableListOf<Image>()
+			for (uri in uris) {
+				val newUri = UriHelper.copyUri(requireContext(), uri)
+				val image = Image(
+					uri = newUri,
+					mimeType = requireContext().getUriMimeType(newUri),
+					noteId = note.id
+				)
+				images.add(image)
+			}
+			note = note.copy(images = note.images + images)
+			Timber.d("Images: %s", note.images)
+			imageAdapter.submitList(note.images)
+		}
+	}
+
+	private fun navigateToGallery(images: List<Image>, position: Int) {
+		BitmapCache.Instance.clear()
+		val args = bundleOf(
+			Constants.BUNDLE_IMAGES to images,
+			Constants.BUNDLE_POSITION to position
+		)
+		findNavController().tryNavigate(R.id.action_editor_gallery, args)
 	}
 
 	private inner class EditorMenuProvider : MenuProvider {

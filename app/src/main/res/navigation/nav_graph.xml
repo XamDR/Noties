@@ -77,8 +77,12 @@
 	<fragment
 		android:id="@+id/nav_editor"
 		android:name="io.github.xamdr.noties.ui.editor.EditorFragment"
-		android:label="@string/editor_fragment_label"
+		android:label="{title}"
 		tools:layout="@layout/fragment_editor">
+
+		<argument
+			android:name="title"
+			app:argType="string"/>
 
 		<argument
 			android:name="ShowToolbar"

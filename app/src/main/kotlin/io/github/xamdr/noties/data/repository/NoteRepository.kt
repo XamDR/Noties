@@ -1,6 +1,7 @@
 package io.github.xamdr.noties.data.repository
 
 import io.github.xamdr.noties.data.dao.NoteDao
+import io.github.xamdr.noties.data.entity.image.DatabaseImageEntity
 import io.github.xamdr.noties.data.entity.note.DatabaseNoteEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -10,15 +11,15 @@ class NoteRepository(private val noteDao: NoteDao) {
 		return noteDao.insertNote(note)
 	}
 
-	suspend fun getNoteById(noteId: Long): DatabaseNoteEntity {
+	suspend fun getNoteById(noteId: Long): Map<DatabaseNoteEntity, List<DatabaseImageEntity>> {
 		return noteDao.getNoteById(noteId)
 	}
 
-	fun getNotesByTag(tagName: String): Flow<List<DatabaseNoteEntity>> {
+	fun getNotesByTag(tagName: String): Flow<Map<DatabaseNoteEntity, List<DatabaseImageEntity>>> {
 		return noteDao.getNotesByTag(tagName)
 	}
 
-	fun getAllNotes(): Flow<List<DatabaseNoteEntity>> {
+	fun getAllNotes(): Flow<Map<DatabaseNoteEntity, List<DatabaseImageEntity>>> {
 		return noteDao.getAllNotes()
 	}
 
@@ -27,10 +28,10 @@ class NoteRepository(private val noteDao: NoteDao) {
 	}
 
 	suspend fun deleteNote(note: DatabaseNoteEntity) {
-		noteDao.deleteNote(note)
+		noteDao.deleteNotes(listOf(note))
 	}
 
-	fun getTrashedNotes(): Flow<List<DatabaseNoteEntity>> {
+	fun getTrashedNotes(): Flow<Map<DatabaseNoteEntity, List<DatabaseImageEntity>>> {
 		return noteDao.getTrashedNotes()
 	}
 

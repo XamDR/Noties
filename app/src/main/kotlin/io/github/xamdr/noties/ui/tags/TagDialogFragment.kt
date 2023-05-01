@@ -15,10 +15,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.DialogFragmentTagBinding
 import io.github.xamdr.noties.domain.model.Tag
-import io.github.xamdr.noties.ui.helpers.getPositiveButton
-import io.github.xamdr.noties.ui.helpers.getSerializableCompat
-import io.github.xamdr.noties.ui.helpers.showSoftKeyboard
-import io.github.xamdr.noties.ui.helpers.textAsString
+import io.github.xamdr.noties.ui.helpers.*
 import timber.log.Timber
 
 class TagDialogFragment : DialogFragment() {
@@ -27,7 +24,7 @@ class TagDialogFragment : DialogFragment() {
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<TagsViewModel>({ requireParentFragment() })
 	private val tag by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getSerializableCompat(BUNDLE_TAG, Tag::class.java)
+		requireArguments().getParcelableCompat(BUNDLE_TAG, Tag::class.java)
 	}
 	private val textWatcher = TagNameTextWatcher()
 

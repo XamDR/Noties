@@ -1,6 +1,7 @@
 package io.github.xamdr.noties.ui.helpers
 
 object Constants {
+	const val ARG_TITLE = "title"
 	const val BUNDLE_NOTE_ID = "BUNDLE_NOTE_ID"
 	const val BUNDLE_NOTE = "BUNDLE_NOTE"
 	const val BUNDLE_TAG_ID = "BUNDLE_TAG_ID"
@@ -23,4 +24,7 @@ object Constants {
 	const val BUNDLE_RECYCLE_BIN = "BUNDLE_RECYCLE_BIN"
 	const val DELETE_NOTES_DIALOG_TAG = "DELETE_NOTES_DIALOG_TAG"
 	const val EMPTY_RECYCLE_BIN_DIALOG_TAG = "EMPTY_RECYCLE_BIN_DIALOG_TAG"
+	const val BUNDLE_IMAGES = "BUNDLE_IMAGES"
+	const val BUNDLE_POSITION = "BUNDLE_POSITION"
+	const val BUNDLE_IMAGE = "BUNDLE_IMAGE"
 }

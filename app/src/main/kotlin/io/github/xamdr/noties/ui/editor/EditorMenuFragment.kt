@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.xamdr.noties.databinding.DialogFragmentEditorMenuBinding
 
@@ -12,7 +11,7 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 
 	private var _binding: DialogFragmentEditorMenuBinding? = null
 	private val binding get() = _binding!!
-	private val viewModel by viewModels<EditorViewModel>({ requireParentFragment() })
+	private var listener: EditorMenuListener? = null
 
 	override fun onCreateView(inflater: LayoutInflater,
 							  container: ViewGroup?,
@@ -26,47 +25,17 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 		_binding = null
 	}
 
-	fun invokeActivityResultCallback() {
-		onActivityResultCallback()
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+		super.onViewCreated(view, savedInstanceState)
+		binding.attachMedia.setOnClickListener { onAttachMediaFile() }
+	}
+
+	fun setEditorMenuListener(listener: EditorMenuListener) {
+		this.listener = listener
+	}
+
+	private fun onAttachMediaFile() {
+		listener?.onAttachMediaFile()
 		dismiss()
 	}
-
-	fun invokeTakePictureCallback() {
-		onTakePictureCallback()
-		dismiss()
-	}
-
-	fun invokeMakeTodoListCallback() {
-		onMakeTodoListCallback()
-		dismiss()
-	}
-
-	fun invokeShowDateTimePickerCallback() {
-		onShowDateTimePickerCallback()
-		dismiss()
-	}
-
-	fun setOnActivityResultListener(callback: () -> Unit) {
-		onActivityResultCallback = callback
-	}
-
-	fun setOnTakePictureListener(callback: () -> Unit) {
-		onTakePictureCallback = callback
-	}
-
-	fun setOnMakeTodoListListener(callback: () -> Unit) {
-		onMakeTodoListCallback = callback
-	}
-
-	fun setOnShowDateTimePickerListener(callback: () -> Unit) {
-		onShowDateTimePickerCallback = callback
-	}
-
-	private var onActivityResultCallback: () -> Unit = {}
-
-	private var onTakePictureCallback: () -> Unit = {}
-
-	private var onMakeTodoListCallback: () -> Unit = {}
-
-	private var onShowDateTimePickerCallback: () -> Unit = {}
 }

@@ -6,56 +6,55 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.ImageItemBinding
 import io.github.xamdr.noties.databinding.SingleImageItemBinding
 import io.github.xamdr.noties.domain.model.Image
-import io.github.xamdr.noties.ui.editor.EditorFragment
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.SpanSizeLookupOwner
-import io.github.xamdr.noties.ui.helpers.printDebug
 import io.github.xamdr.noties.ui.helpers.setOnClickListener
+import timber.log.Timber
 
 class ImageAdapter(
-	private val listener: ImageItemContextMenuListener
-	) : ListAdapter<Image, BaseImageItemViewHolder>(ImageAdapterCallback()),
-	SpanSizeLookupOwner {
+	private val onImageClicked: (images: List<Image>, position: Int) -> Unit,
+	private val listener: ImageItemContextMenuListener) :
+	ListAdapter<Image, BaseImageItemViewHolder>(ImageAdapterCallback()), SpanSizeLookupOwner {
 
 	inner class ImageItemViewHolder(binding: ImageItemBinding) : BaseImageItemViewHolder(binding) {
-		init {
-			binding.image.setOnCreateContextMenuListener { menu, _, _ ->
-				showContextMenu(menu, bindingAdapterPosition)
-			}
+
+		override fun createContextMenu(menu: Menu, position: Int) {
+			showContextMenu(menu, position)
 		}
 	}
 
 	inner class SingleImageItemViewHolder(binding: SingleImageItemBinding) : BaseImageItemViewHolder(binding) {
-		init {
-			binding.image.setOnClickListener { showMediaItemFullScreen(currentList) }
-			binding.image.setOnCreateContextMenuListener { menu, _, _ ->
-				showContextMenu(menu, bindingAdapterPosition)
-			}
+
+		override fun createContextMenu(menu: Menu, position: Int) {
+			showContextMenu(menu, position)
 		}
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseImageItemViewHolder = when (viewType) {
 		SINGLE_IMAGE -> {
 			val binding = SingleImageItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-			SingleImageItemViewHolder(binding)
+			SingleImageItemViewHolder(binding).apply {
+				setOnClickListener { _, position -> onItemClick(currentList, position) }
+			}
 		}
 		MULTIPLE_IMAGES -> {
 			val binding = ImageItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 			ImageItemViewHolder(binding).apply {
-//				setOnClickListener { position -> showMediaItemFullScreen(currentList, position) }
+				setOnClickListener { _, position -> onItemClick(currentList, position) }
 			}
 		}
-		else -> throw Exception("Unknown view type.")
+		else -> throw ClassCastException("Unknown view type: $viewType")
 	}
 
 	override fun onBindViewHolder(holder: BaseImageItemViewHolder, position: Int) {
 		val image = getItem(position)
 		holder.bind(image)
-		printDebug(TAG, image)
+		Timber.d("Image: %s", image)
 	}
 
 	override fun getItemViewType(position: Int) =
@@ -66,6 +65,12 @@ class ImageAdapter(
 		override fun getSpanSize(position: Int) =
 			if (itemCount.mod(Constants.SPAN_COUNT) != 0 && position == 0) Constants.SPAN_COUNT
 			else 1
+	}
+
+	private fun onItemClick(images: List<Image>, position: Int) {
+		if (position != RecyclerView.NO_POSITION) {
+			onImageClicked(images, position)
+		}
 	}
 
 	private fun showContextMenu(menu: Menu, position: Int) {
@@ -88,7 +93,7 @@ class ImageAdapter(
 
 	private class ImageAdapterCallback : DiffUtil.ItemCallback<Image>() {
 
-		override fun areItemsTheSame(oldItem: Image, newItem: Image) = oldItem.id == newItem.id
+		override fun areItemsTheSame(oldItem: Image, newItem: Image) = oldItem.uri == newItem.uri
 
 		override fun areContentsTheSame(oldItem: Image, newItem: Image) = oldItem == newItem
 	}
@@ -96,6 +101,5 @@ class ImageAdapter(
 	private companion object {
 		private const val SINGLE_IMAGE = R.layout.single_image_item
 		private const val MULTIPLE_IMAGES = R.layout.image_item
-		private const val TAG = "IMAGE_ITEM"
 	}
 }

@@ -19,7 +19,7 @@ data class Note(
 	val isTodoList: Boolean = false,
 	val reminderDate: LocalDateTime? = null,
 	val tags: List<String> = emptyList(),
-	var images: List<Image> = emptyList()
+	val images: List<Image> = emptyList()
 ) : Parcelable {
 
 	fun asDatabaseEntity(): DatabaseNoteEntity {
@@ -58,5 +58,23 @@ data class Note(
 		// These prefixes are based on the extended Markdown syntax for task lists.
 		const val PREFIX_NOT_DONE = "- [ ] "
 		const val PREFIX_DONE = "- [x] "
+
+		fun create(note: Note, images: List<Image>): Note {
+			return Note(
+				id = note.id,
+				title = note.title,
+				text = note.text,
+				modificationDate = note.modificationDate,
+				color = note.color,
+				urls = note.urls,
+				isProtected = note.isProtected,
+				isTrashed = note.isTrashed,
+				isPinned = note.isPinned,
+				isTodoList = note.isTodoList,
+				reminderDate = note.reminderDate,
+				tags = note.tags,
+				images = images
+			)
+		}
 	}
 }

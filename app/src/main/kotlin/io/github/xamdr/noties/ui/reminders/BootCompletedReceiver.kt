@@ -27,16 +27,16 @@ class BootCompletedReceiver : BroadcastReceiver() {
 
 	private fun setAlarms(noteDao: NoteDao, context: Context) {
 		coroutineScope.launch {
-			val notes = noteDao.getNotesWithReminderAsync().map { it.asDomainModel() }
-			withContext(Dispatchers.Main) {
-				for (note in notes) {
-					val reminderDate = note.reminderDate
-					if (reminderDate != null) {
-						val delay = reminderDate.toInstant(ZoneOffset.of(ZoneId.systemDefault().id)).toEpochMilli()
-						AlarmManagerHelper.setAlarmManager(context, delay, note)
-					}
-				}
-			}
+//			val notes = noteDao.getNotesWithReminderAsync().map { it.asDomainModel() }
+//			withContext(Dispatchers.Main) {
+//				for (note in notes) {
+//					val reminderDate = note.reminderDate
+//					if (reminderDate != null) {
+//						val delay = reminderDate.toInstant(ZoneOffset.of(ZoneId.systemDefault().id)).toEpochMilli()
+//						AlarmManagerHelper.setAlarmManager(context, delay, note)
+//					}
+//				}
+//			}
 		}
 	}
 }

@@ -12,22 +12,24 @@ class InsertNoteUseCase @Inject constructor(
 	private val noteRepository: NoteRepository,
 	private val insertImagesUseCase: InsertImagesUseCase) {
 
-	suspend operator fun invoke(note: Note, images: List<Image>) {
+	suspend operator fun invoke(note: Note) {
 		val id = noteRepository.insertNote(note.asDatabaseEntity())
 		val updateImages = mutableListOf<Image>()
-		for (image in images) {
+		for (image in note.images) {
 			val updatedImage = image.copy(noteId = id)
 			updateImages.add(updatedImage)
 		}
-		insertImagesUseCase(images)
+		insertImagesUseCase(updateImages)
 	}
 }
 
 class GetNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
 
 	operator fun invoke(tagName: String): Flow<List<Note>> {
-		return noteRepository.getNotesByTag(tagName).map { list ->
-			list.map { it.asDomainModel() }
+		return noteRepository.getNotesByTag(tagName).map { result ->
+			result.map { (note, images) ->
+				Note.create(note.asDomainModel(), images.map { it.asDomainModel() })
+			}
 		}
 	}
 }
@@ -35,15 +37,20 @@ class GetNotesUseCase @Inject constructor(private val noteRepository: NoteReposi
 class GetNoteByIdUseCase @Inject constructor(private val noteRepository: NoteRepository) {
 
 	suspend operator fun invoke(noteId: Long): Note {
-		return noteRepository.getNoteById(noteId).asDomainModel()
+		val result = noteRepository.getNoteById(noteId).entries.first()
+		val note = result.key.asDomainModel()
+		val images = result.value.map { it.asDomainModel() }
+		return Note.create(note, images)
 	}
 }
 
 class GetAllNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
 
 	operator fun invoke(): Flow<List<Note>> {
-		return noteRepository.getAllNotes().map { list ->
-			list.map { it.asDomainModel() }
+		return noteRepository.getAllNotes().map { result ->
+			result.map { (note, images) ->
+				Note.create(note.asDomainModel(), images.map { it.asDomainModel() })
+			}
 		}
 	}
 }
@@ -52,10 +59,10 @@ class UpdateNoteUseCase @Inject constructor(
 	private val noteRepository: NoteRepository,
 	private val insertImagesUseCase: InsertImagesUseCase) {
 
-	suspend operator fun invoke(note: Note, images: List<Image>) {
+	suspend operator fun invoke(note: Note) {
 		val updatedNote = note.copy(modificationDate = LocalDateTime.now())
 		noteRepository.updateNote(updatedNote.asDatabaseEntity())
-		insertImagesUseCase(images.filter { image -> image.id == 0 })
+		insertImagesUseCase(note.images.filter { image -> image.id == 0 })
 	}
 }
 
@@ -73,8 +80,10 @@ class DeleteNotesUseCase @Inject constructor(
 
 class GetTrashedNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
 	operator fun invoke(): Flow<List<Note>> {
-		return noteRepository.getTrashedNotes().map { list ->
-			list.map { it.asDomainModel() }
+		return noteRepository.getTrashedNotes().map { result ->
+			result.map { (note, images) ->
+				Note.create(note.asDomainModel(), images.map { it.asDomainModel() })
+			}
 		}
 	}
 }
@@ -114,102 +123,3 @@ class RestoreNotesUseCase @Inject constructor(private val noteRepository: NoteRe
 		}
 	}
 }
-
-//class MoveNoteToTrashUseCase @Inject constructor(
-//	private val noteDao: NoteDao,
-//	private val tagDao: TagDao) {
-//
-//	suspend operator fun invoke(note: DatabaseNoteEntity) {
-//		val trashedNote = note.copy(isTrashed = true)
-//		noteDao.updateNote(trashedNote)
-////		tagDao.decrementNotebookNoteCount(trashedNote.notebookId)
-//	}
-//}
-//
-//class RestoreNoteUseCase @Inject constructor(
-//	private val noteDao: NoteDao,
-//	private val tagDao: TagDao) {
-//
-//	suspend operator fun invoke(note: DatabaseNoteEntity) {
-////		val idExists = tagDao.getIfNotebookIdExists(note.notebookId)
-////		val restoredNote = if (idExists) note.copy(isTrashed = false)
-////		else note.copy(isTrashed = false, notebookId = 1)
-////		noteDao.updateNote(restoredNote)
-////		tagDao.incrementNotebookNoteCount(restoredNote.notebookId)
-//	}
-//}
-//
-//class GetTrashedNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
-//	operator fun invoke() = noteDao.getTrashedNotes()
-//}
-//
-//class GetTrashedNotesSyncUseCase @Inject constructor(private val noteDao: NoteDao) {
-//	suspend operator fun invoke() = noteDao.getTrashedNotesSync()
-//}
-//
-//class EmptyTrashUseCase @Inject constructor(
-//	private val noteDao: NoteDao,
-//	private val imageDao: ImageDao
-//) {
-//
-//	suspend operator fun invoke(): Int {
-//		imageDao.deleteImagesForTrashedNotes()
-//		return noteDao.deleteTrashedNotes()
-//	}
-//}
-//
-//class LockNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
-//	suspend operator fun invoke(notes: List<DatabaseNoteEntity>) {
-//		for (note in notes) {
-//			if (!note.isProtected) {
-//				val protectedNote = note.copy(isProtected = true)
-//				noteDao.updateNote(protectedNote)
-//			}
-//		}
-//	}
-//}
-//
-//class UnlockNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
-//	suspend operator fun invoke(notes: List<DatabaseNoteEntity>) {
-//		for (note in notes) {
-//			val unprotectedNote = note.copy(isProtected = false)
-//			noteDao.updateNote(unprotectedNote)
-//		}
-//	}
-//}
-//
-//class PinNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
-//	suspend operator fun invoke(notes: List<DatabaseNoteEntity>) {
-//		for (note in notes) {
-//			if (!note.isPinned) {
-//				val pinnedNote = note.copy(isPinned = true)
-//				noteDao.updateNote(pinnedNote)
-//			}
-//		}
-//	}
-//}
-//
-//class UnpinNotesUseCase @Inject constructor(private val noteDao: NoteDao) {
-//	suspend operator fun invoke(notes: List<DatabaseNoteEntity>) {
-//		for (note in notes) {
-//			val unpinnedNote = note.copy(isPinned = false)
-//			noteDao.updateNote(unpinnedNote)
-//		}
-//	}
-//}
-//
-//class MoveNotesUseCase @Inject constructor(
-//	private val noteDao: NoteDao,
-//	private val tagDao: TagDao) {
-//
-//	suspend operator fun invoke(notes: List<DatabaseNoteEntity>, notebookId: Int) {
-//		for (note in notes) {
-//			if (note.notebookId != notebookId) {
-////				tagDao.decrementNotebookNoteCount(note.notebookId)
-//				val updatedNote = note.copy(notebookId = notebookId)
-//				noteDao.updateNote(updatedNote)
-////				tagDao.incrementNotebookNoteCount(notebookId)
-//			}
-//		}
-//	}
-//}

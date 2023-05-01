@@ -2,29 +2,32 @@ package io.github.xamdr.noties.ui.gallery
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.print.PrintHelper
 import androidx.viewpager2.widget.ViewPager2
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.ActivityGalleryBinding
 import io.github.xamdr.noties.domain.model.Image
-import io.github.xamdr.noties.ui.helpers.getSerializableListExtraCompat
-import io.github.xamdr.noties.ui.helpers.printError
+import io.github.xamdr.noties.ui.helpers.Constants
+import io.github.xamdr.noties.ui.helpers.getParcelableArrayListCompat
 import io.github.xamdr.noties.ui.helpers.showToast
+import io.github.xamdr.noties.ui.image.BitmapCache
+import timber.log.Timber
 import java.io.FileNotFoundException
 
-class GalleryActivity : AppCompatActivity(), GalleryMenuListener {
+class GalleryActivity : AppCompatActivity() {
 
 	private lateinit var binding: ActivityGalleryBinding
 	private lateinit var stateAdapter: ViewPagerStateAdapter
 	private val images by lazy(LazyThreadSafetyMode.NONE) {
-		intent.getSerializableListExtraCompat(IMAGES, Image::class.java)
+		intent.getParcelableArrayListCompat(Constants.BUNDLE_IMAGES, Image::class.java)
 	}
 	private val position by lazy(LazyThreadSafetyMode.NONE) {
-		intent.getIntExtra(POSITION, 0)
+		intent.getIntExtra(Constants.BUNDLE_POSITION, 0)
 	}
 	private val callback = PageSelectedCallback()
-	private val menuProvider = GalleryMenuProvider(this)
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -33,12 +36,32 @@ class GalleryActivity : AppCompatActivity(), GalleryMenuListener {
 		setSupportActionBar(binding.toolbar)
 		supportActionBar?.setDisplayHomeAsUpEnabled(true)
 		setupViewPager()
-		addMenuProvider(menuProvider, this)
 	}
 
 	override fun onStart() {
 		super.onStart()
 		callback.onPageSelected(position)
+	}
+
+	override fun onCreateOptionsMenu(menu: Menu): Boolean {
+		menuInflater.inflate(R.menu.menu_image_full_screen, menu)
+		return true
+	}
+
+	override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+		R.id.share_image -> {
+			shareImage(binding.pager.currentItem); true
+		}
+		R.id.set_as -> {
+			setImageAs(binding.pager.currentItem); true
+		}
+		R.id.print_image -> {
+			printImage(binding.pager.currentItem); true
+		}
+		android.R.id.home -> {
+			navigateUp(); true
+		}
+		else -> false
 	}
 
 	override fun onPause() {
@@ -51,7 +74,7 @@ class GalleryActivity : AppCompatActivity(), GalleryMenuListener {
 		binding.pager.registerOnPageChangeCallback(callback)
 	}
 
-	override fun shareImage(position: Int) {
+	private fun shareImage(position: Int) {
 		val shareIntent = Intent().apply {
 			action = Intent.ACTION_SEND
 			putExtra(Intent.EXTRA_STREAM, images[position].uri)
@@ -61,7 +84,7 @@ class GalleryActivity : AppCompatActivity(), GalleryMenuListener {
 		startActivity(Intent.createChooser(shareIntent, getString(R.string.share_image)))
 	}
 
-	override fun setImageAs(position: Int) {
+	private fun setImageAs(position: Int) {
 		val intent = Intent().apply {
 			action = Intent.ACTION_ATTACH_DATA
 			setDataAndType(images[position].uri, MIME_TYPE)
@@ -71,7 +94,7 @@ class GalleryActivity : AppCompatActivity(), GalleryMenuListener {
 		startActivity(Intent.createChooser(intent, getString(R.string.set_image_as)))
 	}
 
-	override fun printImage(position: Int) {
+	private fun printImage(position: Int) {
 		val jobName = getString(R.string.print_image_job_name, position)
 		val printHelper = PrintHelper(this).apply { scaleMode = PrintHelper.SCALE_MODE_FILL }
 		try {
@@ -80,13 +103,10 @@ class GalleryActivity : AppCompatActivity(), GalleryMenuListener {
 			printHelper.printBitmap(jobName, imageFile)
 		}
 		catch (e: FileNotFoundException) {
-			printError(TAG, e.message)
+			Timber.e(e)
 			showToast(R.string.error_print_image)
 		}
 	}
-
-	override val currentItem: Int
-		get() = binding.pager.currentItem
 
 	private fun setupViewPager() {
 		stateAdapter = ViewPagerStateAdapter(this, images)
@@ -97,6 +117,11 @@ class GalleryActivity : AppCompatActivity(), GalleryMenuListener {
 		}
 	}
 
+	private fun navigateUp() {
+		BitmapCache.Instance.clear()
+		onBackPressedDispatcher.onBackPressed()
+	}
+
 	private inner class PageSelectedCallback : ViewPager2.OnPageChangeCallback() {
 		override fun onPageSelected(position: Int) {
 			supportActionBar?.title = "${position + 1}/${images.size}"
@@ -104,9 +129,6 @@ class GalleryActivity : AppCompatActivity(), GalleryMenuListener {
 	}
 
 	companion object {
-		const val IMAGES = "images"
-		const val POSITION = "position"
 		private const val MIME_TYPE = "image/*"
-		private const val TAG = "PRINT_ERROR"
 	}
 }
