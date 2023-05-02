@@ -1,5 +1,6 @@
 package io.github.xamdr.noties.domain.usecase
 
+import io.github.xamdr.noties.data.repository.ImageRepository
 import io.github.xamdr.noties.data.repository.NoteRepository
 import io.github.xamdr.noties.domain.model.Image
 import io.github.xamdr.noties.domain.model.Note
@@ -10,16 +11,16 @@ import javax.inject.Inject
 
 class InsertNoteUseCase @Inject constructor(
 	private val noteRepository: NoteRepository,
-	private val insertImagesUseCase: InsertImagesUseCase) {
+	private val imageRepository: ImageRepository) {
 
 	suspend operator fun invoke(note: Note) {
 		val id = noteRepository.insertNote(note.asDatabaseEntity())
-		val updateImages = mutableListOf<Image>()
+		val updatedImages = mutableListOf<Image>()
 		for (image in note.images) {
 			val updatedImage = image.copy(noteId = id)
-			updateImages.add(updatedImage)
+			updatedImages.add(updatedImage)
 		}
-		insertImagesUseCase(updateImages)
+		imageRepository.insertImages(updatedImages.map { it.asDatabaseEntity() })
 	}
 }
 
@@ -57,22 +58,24 @@ class GetAllNotesUseCase @Inject constructor(private val noteRepository: NoteRep
 
 class UpdateNoteUseCase @Inject constructor(
 	private val noteRepository: NoteRepository,
-	private val insertImagesUseCase: InsertImagesUseCase) {
+	private val imageRepository: ImageRepository) {
 
 	suspend operator fun invoke(note: Note) {
 		val updatedNote = note.copy(modificationDate = LocalDateTime.now())
 		noteRepository.updateNote(updatedNote.asDatabaseEntity())
-		insertImagesUseCase(note.images.filter { image -> image.id == 0 })
+		val newImages = note.images.filter { image -> image.id == 0 }.map { it.asDatabaseEntity() }
+		imageRepository.insertImages(newImages)
 	}
 }
 
 class DeleteNotesUseCase @Inject constructor(
 	private val noteRepository: NoteRepository,
-	private val deleteImagesUseCase: DeleteImagesUseCase) {
+	private val imageRepository: ImageRepository) {
 
 	suspend operator fun invoke(notes: List<Note>) {
 		for (note in notes) {
-			deleteImagesUseCase(note.images)
+			val images = note.images.map { it.asDatabaseEntity() }
+			imageRepository.deleteImages(images)
 			noteRepository.deleteNote(note.asDatabaseEntity())
 		}
 	}
@@ -90,12 +93,13 @@ class GetTrashedNotesUseCase @Inject constructor(private val noteRepository: Not
 
 class EmptyTrashUseCase @Inject constructor(
 	private val noteRepository: NoteRepository,
-	private val deleteImagesUseCase: DeleteImagesUseCase) {
+	private val imageRepository: ImageRepository) {
 
 	suspend operator fun invoke(notes: List<Note>): Int {
 		val entities = notes.map { it.asDatabaseEntity() }
 		for (note in notes) {
-			deleteImagesUseCase(note.images)
+			val images = note.images.map { it.asDatabaseEntity() }
+			imageRepository.deleteImages(images)
 		}
 		return noteRepository.deleteTrashedNotes(entities)
 	}

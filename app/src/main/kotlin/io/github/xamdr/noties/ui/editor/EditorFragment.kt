@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
@@ -27,13 +26,12 @@ import io.github.xamdr.noties.ui.editor.todos.DragDropCallback
 import io.github.xamdr.noties.ui.helpers.*
 import io.github.xamdr.noties.ui.image.BitmapCache
 import io.github.xamdr.noties.ui.image.ImageAdapter
-import io.github.xamdr.noties.ui.image.ImageItemContextMenuListener
 import io.github.xamdr.noties.ui.image.ImageStorageManager
 import timber.log.Timber
 import com.google.android.material.R as Material
 
 @AndroidEntryPoint
-class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener, ImageItemContextMenuListener {
+class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
@@ -47,11 +45,11 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener, Imag
 	private lateinit var note: Note
 	private lateinit var textAdapter: EditorTextAdapter
 	private lateinit var concatAdapter: ConcatAdapter
-	private val imageAdapter = ImageAdapter(this::navigateToGallery, this)
+	private val imageAdapter = ImageAdapter(this::navigateToGallery)
 	private val menuProvider = EditorMenuProvider()
 	private val itemTouchHelper = ItemTouchHelper(DragDropCallback())
 
-	private val pickeMediaLauncher = registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia()) { uris ->
+	private val pickeMediaLauncher = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
 		addImages(uris)
 	}
 
@@ -95,36 +93,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener, Imag
 		}
 	}
 
-	override fun onAttachMediaFile() {
-		// For now support only images, we'll later add support for videos as well
-		val mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-		pickeMediaLauncher.launch(PickVisualMediaRequest(mediaType))
-	}
-
-	override fun addAltText(position: Int) {
-
-	}
-
-	override fun copyImage(position: Int) {
-		val uri = note.images[position].uri
-		uri?.let {
-			requireContext().copyUriToClipboard(R.string.image_item, it, R.string.image_copied_msg)
-		}
-	}
-
-	override fun deleteImage(position: Int) {
-		launch {
-			val imageToBeDeleted = note.images[position]
-			note = note.copy(images = note.images - imageToBeDeleted)
-			imageAdapter.submitList(note.images)
-			val images = listOf(imageToBeDeleted)
-			val result = ImageStorageManager.deleteImages(requireContext(), images)
-			Timber.d("Result: %s", result)
-			if (imageToBeDeleted.id != 0) {
-				viewModel.deleteImages(images)
-			}
-		}
-	}
+	override fun onAttachMediaFile() = pickeMediaLauncher.launch(arrayOf("image/*"))
 
 	private fun navigateUp() {
 		binding.root.hideSoftKeyboard()

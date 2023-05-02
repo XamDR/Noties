@@ -8,7 +8,7 @@ import io.github.xamdr.noties.R
 class DeleteImagesDialogFragment : DialogFragment() {
 
 	override fun onCreateDialog(savedInstanceState: Bundle?) = MaterialAlertDialogBuilder(requireContext())
-		.setMessage(R.string.delete_all_images_question)
+		.setMessage(R.string.delete_all_items_question)
 		.setNegativeButton(R.string.cancel_button, null)
 		.setPositiveButton(R.string.ok_button) { _, _ -> onDeleteImagesCallback() }
 		.create()

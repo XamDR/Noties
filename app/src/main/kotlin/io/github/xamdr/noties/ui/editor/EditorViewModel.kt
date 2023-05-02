@@ -3,9 +3,11 @@ package io.github.xamdr.noties.ui.editor
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.xamdr.noties.domain.model.Image
 import io.github.xamdr.noties.domain.model.Note
-import io.github.xamdr.noties.domain.usecase.*
+import io.github.xamdr.noties.domain.usecase.DeleteNotesUseCase
+import io.github.xamdr.noties.domain.usecase.GetNoteByIdUseCase
+import io.github.xamdr.noties.domain.usecase.InsertNoteUseCase
+import io.github.xamdr.noties.domain.usecase.UpdateNoteUseCase
 import io.github.xamdr.noties.ui.helpers.Constants
 import javax.inject.Inject
 
@@ -15,7 +17,6 @@ class EditorViewModel @Inject constructor(
 	private val insertNoteUseCase: InsertNoteUseCase,
 	private val updateNoteUseCase: UpdateNoteUseCase,
 	private val deleteNotesUseCase: DeleteNotesUseCase,
-	/* private val deleteImagesUseCase: DeleteImagesUseCase, */
 	private val savedState: SavedStateHandle) : ViewModel() {
 
 	suspend fun getNote(noteId: Long) = savedState.get<Note>(Constants.BUNDLE_NOTE)
@@ -23,10 +24,6 @@ class EditorViewModel @Inject constructor(
 
 	suspend fun saveNote(note: Note, noteId: Long): NoteAction {
 		return if (note.id == 0L) insertNote(note) else updateNote(note, noteId)
-	}
-
-	suspend fun deleteImages(images: List<Image>) {
-//		deleteImagesUseCase(images)
 	}
 
 	fun saveState(note: Note) {

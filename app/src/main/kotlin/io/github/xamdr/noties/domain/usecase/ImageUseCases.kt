@@ -1,10 +1,9 @@
 package io.github.xamdr.noties.domain.usecase
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.map
 import io.github.xamdr.noties.data.repository.ImageRepository
 import io.github.xamdr.noties.domain.model.Image
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class InsertImagesUseCase @Inject constructor(private val imageRepository: ImageRepository) {
@@ -16,8 +15,8 @@ class InsertImagesUseCase @Inject constructor(private val imageRepository: Image
 
 class GetImagesUseCase @Inject constructor(private val imageRepository: ImageRepository) {
 
-	operator fun invoke(noteId: Int): LiveData<List<Image>> {
-		return imageRepository.getImages(noteId).asLiveData().map { list ->
+	operator fun invoke(noteId: Int): Flow<List<Image>> {
+		return imageRepository.getImages(noteId).map { list ->
 			list.map { it.asDomainModel() }
 		}
 	}

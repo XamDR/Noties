@@ -125,18 +125,16 @@
 	<string name="permission_denied">Permission denied.</string>
 	<string name="image_attachment">Image attached to the note.</string>
 
-	<!-- Attachment context menu -->
-	<string name="copy_item">Copy item</string>
-	<string name="add_alt_text">Add alt text</string>
-	<string name="update_alt_text">Edit alt text</string>
-	<string name="delete_item">Delete item</string>
-	<string name="delete_all_images">Delete all images</string>
-	<string name="delete_all_images_question">Are you sure you want to delete all the images attached to this note?</string>
+	<!-- Gallery Fragment -->
+	<string name="share_item">Share</string>
+	<string name="copy_item">Copy</string>
+	<string name="download_item">Download</string>
+	<string name="delete_item">Delete</string>
+	<string name="set_image_as">Set image as</string>
+	<string name="delete_all_items">Delete all images</string>
+	<string name="delete_all_items_question">Are you sure you want to delete all the images attached to this note?</string>
 	<string name="image_item">Image</string>
 	<string name="image_copied_msg">Image copied to clipboard</string>
-	<string name="alt_text">Alternative text</string>
-	<string name="image_desc">Write the image description</string>
-	<string name="alt_text_updated">Image description updated</string>
 
 	<!-- DateTime Picker Fragment -->
 	<string name="date">Date:</string>
@@ -180,14 +178,6 @@
 	<string name="color_item">Color item</string>
 	<string name="app_color">App Color</string>
 	<string name="color_chosen">Color chosen</string>
-
-	<!-- Gallery Activity -->
-	<string name="share_image">Share image</string>
-	<string name="set_image_as">Set image as</string>
-	<string name="print_image">Print</string>
-	<string name="print_image_job_name">Image %d</string>
-	<string name="error_print_image">Error. Image could not be printed.</string>
-	<string name="init_print_dialog">Preparing image…</string>
 
 	<!-- Record Audio -->
 	<string name="speech_recording_fragment_label">Record speech</string>

@@ -5,17 +5,14 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.print.PrintHelper
 import androidx.viewpager2.widget.ViewPager2
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.ActivityGalleryBinding
 import io.github.xamdr.noties.domain.model.Image
 import io.github.xamdr.noties.ui.helpers.Constants
+import io.github.xamdr.noties.ui.helpers.copyUriToClipboard
 import io.github.xamdr.noties.ui.helpers.getParcelableArrayListCompat
-import io.github.xamdr.noties.ui.helpers.showToast
 import io.github.xamdr.noties.ui.image.BitmapCache
-import timber.log.Timber
-import java.io.FileNotFoundException
 
 class GalleryActivity : AppCompatActivity() {
 
@@ -49,14 +46,20 @@ class GalleryActivity : AppCompatActivity() {
 	}
 
 	override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-		R.id.share_image -> {
+		R.id.share -> {
 			shareImage(binding.pager.currentItem); true
 		}
-		R.id.set_as -> {
-			setImageAs(binding.pager.currentItem); true
+		R.id.copy -> {
+			copyImage(binding.pager.currentItem); true
 		}
-		R.id.print_image -> {
-			printImage(binding.pager.currentItem); true
+		R.id.download -> {
+			true
+		}
+		R.id.delete -> {
+			true
+		}
+ 		R.id.set_as -> {
+			setImageAs(binding.pager.currentItem); true
 		}
 		android.R.id.home -> {
 			navigateUp(); true
@@ -81,7 +84,14 @@ class GalleryActivity : AppCompatActivity() {
 			type = MIME_TYPE
 			addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 		}
-		startActivity(Intent.createChooser(shareIntent, getString(R.string.share_image)))
+		startActivity(Intent.createChooser(shareIntent, getString(R.string.share_item)))
+	}
+
+	private fun copyImage(position: Int) {
+		val uri = images[position].uri
+		uri?.let {
+			this.copyUriToClipboard(R.string.image_item, it, R.string.image_copied_msg)
+		}
 	}
 
 	private fun setImageAs(position: Int) {
@@ -92,20 +102,6 @@ class GalleryActivity : AppCompatActivity() {
 			addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 		}
 		startActivity(Intent.createChooser(intent, getString(R.string.set_image_as)))
-	}
-
-	private fun printImage(position: Int) {
-		val jobName = getString(R.string.print_image_job_name, position)
-		val printHelper = PrintHelper(this).apply { scaleMode = PrintHelper.SCALE_MODE_FILL }
-		try {
-			showToast(R.string.init_print_dialog)
-			val imageFile = images[position].uri ?: return
-			printHelper.printBitmap(jobName, imageFile)
-		}
-		catch (e: FileNotFoundException) {
-			Timber.e(e)
-			showToast(R.string.error_print_image)
-		}
 	}
 
 	private fun setupViewPager() {

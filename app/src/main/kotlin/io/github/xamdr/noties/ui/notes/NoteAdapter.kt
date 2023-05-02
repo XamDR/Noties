@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.databinding.NoteItemBinding
-import io.github.xamdr.noties.databinding.ProtectedNoteItemBinding
+import io.github.xamdr.noties.databinding.ItemNoteBinding
+import io.github.xamdr.noties.databinding.ItemProtectedNoteBinding
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.blur
 import io.github.xamdr.noties.ui.helpers.setOnClickListener
@@ -28,8 +28,8 @@ class NoteAdapter(
 
 		fun bind(note: Note, isSelected: Boolean = false) {
 			when (binding) {
-				is NoteItemBinding -> bindNote(binding, note)
-				is ProtectedNoteItemBinding -> {
+				is ItemNoteBinding -> bindNote(binding, note)
+				is ItemProtectedNoteBinding -> {
 
 				}
 			}
@@ -41,7 +41,7 @@ class NoteAdapter(
 			override fun getSelectionKey(): Note = getItem(position)
 		}
 
-		private fun bindNote(binding: NoteItemBinding, note: Note) {
+		private fun bindNote(binding: ItemNoteBinding, note: Note) {
 			binding.title.isVisible = note.title.isNotEmpty()
 			binding.title.text = note.title
 			binding.content.isVisible = note.text.isNotEmpty()
@@ -54,9 +54,9 @@ class NoteAdapter(
 		}
 	}
 
-	inner class NoteViewHolder(binding: NoteItemBinding) : BaseViewHolder(binding)
+	inner class NoteViewHolder(binding: ItemNoteBinding) : BaseViewHolder(binding)
 
-	inner class ProtectedNoteViewHolder(binding: ProtectedNoteItemBinding) : BaseViewHolder(binding) {
+	inner class ProtectedNoteViewHolder(binding: ItemProtectedNoteBinding) : BaseViewHolder(binding) {
 		init {
 			binding.placeholderContent.blur()
 		}
@@ -64,13 +64,13 @@ class NoteAdapter(
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
 		NOTE_LINEAR_LAYOUT -> {
-			val binding = NoteItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+			val binding = ItemNoteBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 			NoteViewHolder(binding).apply {
 				setOnClickListener(this@NoteAdapter::onItemClick)
 			}
 		}
 		NOTE_PROTECTED -> {
-			val binding = ProtectedNoteItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+			val binding = ItemProtectedNoteBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 			ProtectedNoteViewHolder(binding)
 		}
 		else -> throw ClassCastException("Unknown view type: $viewType.")
@@ -142,7 +142,7 @@ class NoteAdapter(
 	}
 
 	private companion object {
-		private const val NOTE_LINEAR_LAYOUT = R.layout.note_item
-		private const val NOTE_PROTECTED = R.layout.protected_note_item
+		private const val NOTE_LINEAR_LAYOUT = R.layout.item_note
+		private const val NOTE_PROTECTED = R.layout.item_protected_note
 	}
 }
