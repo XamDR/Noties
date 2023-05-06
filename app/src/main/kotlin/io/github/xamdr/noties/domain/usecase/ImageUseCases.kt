@@ -33,6 +33,7 @@ class UpdateImageUseCase @Inject constructor(private val imageRepository: ImageR
 class DeleteImagesUseCase @Inject constructor(private val imageRepository: ImageRepository) {
 
 	suspend operator fun invoke(images: List<Image>) {
-		imageRepository.deleteImages(images.map { it.asDatabaseEntity() })
+		val realImages = images.filter { image -> image.id != 0 }.map { it.asDatabaseEntity() }
+		imageRepository.deleteImages(realImages)
 	}
 }

@@ -4,12 +4,17 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.view.View.OnLayoutChangeListener
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.SharedElementCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
@@ -27,6 +32,7 @@ import io.github.xamdr.noties.ui.helpers.*
 import io.github.xamdr.noties.ui.image.BitmapCache
 import io.github.xamdr.noties.ui.image.ImageAdapter
 import io.github.xamdr.noties.ui.image.ImageStorageManager
+import io.github.xamdr.noties.ui.media.MediaViewerViewModel
 import timber.log.Timber
 import com.google.android.material.R as Material
 
@@ -36,6 +42,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<EditorViewModel>()
+	private val sharedViewModel by hiltNavGraphViewModels<MediaViewerViewModel>(R.id.nav_editor)
 	private val noteId by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getLong(Constants.BUNDLE_NOTE_ID, 0L)
 	}
@@ -45,10 +52,9 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 	private lateinit var note: Note
 	private lateinit var textAdapter: EditorTextAdapter
 	private lateinit var concatAdapter: ConcatAdapter
-	private val imageAdapter = ImageAdapter(this::navigateToGallery)
+	private val imageAdapter = ImageAdapter(this::navigateToMediaViewer)
 	private val menuProvider = EditorMenuProvider()
 	private val itemTouchHelper = ItemTouchHelper(DragDropCallback())
-
 	private val pickeMediaLauncher = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
 		addImages(uris)
 	}
@@ -59,6 +65,8 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		_binding = FragmentEditorBinding.inflate(inflater, container, false)
 		initTransitions(noteId)
 		addMenuProvider(menuProvider, viewLifecycleOwner)
+		prepareSharedElementExitTransition()
+		postponeEnterTransition()
 		return binding.root
 	}
 
@@ -102,12 +110,21 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 
 	private fun setupNote() {
 		launch {
-			note = viewModel.getNote(noteId)
+			if (!::note.isInitialized) {
+				note = viewModel.getNote(noteId)
+			}
+			else {
+				getNavigationResult<Image>(Constants.BUNDLE_IMAGE)?.let { itemToDelete ->
+					note = note.copy(images = note.images - itemToDelete)
+				}
+			}
 			textAdapter = EditorTextAdapter(note, this@EditorFragment)
 			concatAdapter = ConcatAdapter(imageAdapter, textAdapter)
 			setupRecyclerView()
-			if (note.images.isNotEmpty()) {
-				imageAdapter.submitList(note.images)
+			imageAdapter.submitList(note.images)
+			binding.root.doOnPreDraw { startPostponedEnterTransition() }
+			if (sharedViewModel.currentPosition == 0) {
+				supportActionBar?.setTitle(R.string.editor_fragment_label)
 			}
 		}
 	}
@@ -128,6 +145,27 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 			}
 			showDialog(menuDialog, Constants.MENU_DIALOG_TAG)
 		}
+		binding.content.addOnLayoutChangeListener(object : OnLayoutChangeListener {
+			override fun onLayoutChange(
+				v: View?,
+				left: Int,
+				top: Int,
+				right: Int,
+				bottom: Int,
+				oldLeft: Int,
+				oldTop: Int,
+				oldRight: Int,
+				oldBottom: Int
+			) {
+				binding.content.removeOnLayoutChangeListener(this)
+				val layoutManager = binding.content.layoutManager ?: return
+				val viewAtPosition = layoutManager.findViewByPosition(sharedViewModel.currentPosition)
+				if (viewAtPosition == null ||
+					layoutManager.isViewPartiallyVisible(viewAtPosition, false, true)) {
+					binding.content.post { layoutManager.scrollToPosition(sharedViewModel.currentPosition) }
+				}
+			}
+		})
 	}
 
 	private fun initTransitions(noteId: Long) {
@@ -164,7 +202,13 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 				}
 				NoteAction.InsertNote -> binding.root.showSnackbar(R.string.note_saved).showOnTop()
 				NoteAction.NoAction -> {}
-				NoteAction.UpdateNote -> binding.root.showSnackbar(R.string.note_updated).showOnTop()
+				NoteAction.UpdateNote -> {
+					getNavigationResult<Image>(Constants.BUNDLE_IMAGE)?.let { itemToDelete ->
+						ImageStorageManager.deleteImages(requireContext(), listOf(itemToDelete))
+						viewModel.deleteImage(itemToDelete)
+					}
+					binding.root.showSnackbar(R.string.note_updated).showOnTop()
+				}
 			}
 			findNavController().popBackStack()
 		}
@@ -189,13 +233,27 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		}
 	}
 
-	private fun navigateToGallery(images: List<Image>, position: Int) {
+	private fun prepareSharedElementExitTransition() {
+		setExitSharedElementCallback(object : SharedElementCallback() {
+			override fun onMapSharedElements(names: MutableList<String>?, sharedElements: MutableMap<String, View>?) {
+				val viewHolder = binding.content.findViewHolderForAdapterPosition(sharedViewModel.currentPosition)
+				if (viewHolder?.itemView == null) return
+				if (!names.isNullOrEmpty() && !sharedElements.isNullOrEmpty()) {
+					sharedElements[names[0]] = viewHolder.itemView.findViewById(R.id.image)
+				}
+			}
+		})
+	}
+
+	private fun navigateToMediaViewer(view: View, position: Int) {
 		BitmapCache.Instance.clear()
 		val args = bundleOf(
-			Constants.BUNDLE_IMAGES to images,
+			Constants.BUNDLE_IMAGES to note.images,
 			Constants.BUNDLE_POSITION to position
 		)
-		findNavController().tryNavigate(R.id.action_editor_gallery, args)
+		val item = note.images[position]
+		val extras = FragmentNavigatorExtras(view to item.id.toString())
+		findNavController().tryNavigate(R.id.action_editor_media_viewer, args, null, extras)
 	}
 
 	private inner class EditorMenuProvider : MenuProvider {

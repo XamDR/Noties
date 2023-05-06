@@ -1,7 +1,6 @@
 package io.github.xamdr.noties.ui.helpers
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
@@ -28,6 +27,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
@@ -73,16 +73,6 @@ fun <T : Parcelable> Bundle.getParcelableCompat(key: String, clazz: Class<T>): T
 	}
 }
 
-fun <T : Parcelable> Intent.getParcelableArrayListCompat(key: String, clazz: Class<T>): ArrayList<T> {
-	return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-		(this.getParcelableArrayListExtra(key, clazz) ?: emptyList<T>()) as ArrayList<T>
-	}
-	else {
-		@Suppress("DEPRECATION")
-		return (this.getParcelableArrayListExtra(key) ?: emptyList<T>()) as ArrayList<T>
-	}
-}
-
 fun <T : Parcelable> Bundle.getParcelableArrayListCompat(key: String, clazz: Class<T>): ArrayList<T> {
 	return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 		(this.getParcelableArrayList(key, clazz) ?: emptyList<T>()) as ArrayList<T>
@@ -106,6 +96,14 @@ fun Fragment.onBackPressed(block: () -> Unit) {
 			}
 		}
 	)
+}
+
+fun <T : Parcelable> Fragment.getNavigationResult(key: String): T? {
+	return this.findNavController().currentBackStackEntry?.savedStateHandle?.get(key)
+}
+
+fun <T : Parcelable> Fragment.setNavigationResult(key: String, value: T) {
+	this.findNavController().previousBackStackEntry?.savedStateHandle?.set(key, value)
 }
 
 fun NavController.tryNavigate(

@@ -1,6 +1,7 @@
 package io.github.xamdr.noties.ui.image
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
@@ -16,7 +17,7 @@ import io.github.xamdr.noties.ui.helpers.setOnClickListener
 import timber.log.Timber
 
 class ImageAdapter(
-	private val onImageClicked: (images: List<Image>, position: Int) -> Unit) :
+	private val onItemClicked: (view: View, position: Int) -> Unit) :
 	ListAdapter<Image, BaseImageItemViewHolder>(ImageAdapterCallback()), SpanSizeLookupOwner {
 
 	class ImageItemViewHolder(binding: ItemImageBinding) : BaseImageItemViewHolder(binding)
@@ -27,13 +28,13 @@ class ImageAdapter(
 		SINGLE_IMAGE -> {
 			val binding = ItemSingleImageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 			SingleImageItemViewHolder(binding).apply {
-				setOnClickListener { _, position -> onItemClick(currentList, position) }
+				setOnClickListener { _, position -> onItemClick(itemView, position) }
 			}
 		}
 		MULTIPLE_IMAGES -> {
 			val binding = ItemImageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 			ImageItemViewHolder(binding).apply {
-				setOnClickListener { _, position -> onItemClick(currentList, position) }
+				setOnClickListener { _, position -> onItemClick(itemView, position) }
 			}
 		}
 		else -> throw ClassCastException("Unknown view type: $viewType")
@@ -55,9 +56,9 @@ class ImageAdapter(
 			else 1
 	}
 
-	private fun onItemClick(images: List<Image>, position: Int) {
+	private fun onItemClick(view: View, position: Int) {
 		if (position != RecyclerView.NO_POSITION) {
-			onImageClicked(images, position)
+			onItemClicked(view, position)
 		}
 	}
 

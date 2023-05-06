@@ -17,6 +17,7 @@ import io.github.xamdr.noties.databinding.ItemProtectedNoteBinding
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.blur
 import io.github.xamdr.noties.ui.helpers.setOnClickListener
+import io.github.xamdr.noties.ui.image.ImageLoader
 
 class NoteAdapter(
 	private val onNoteClicked: (view: View?, note: Note) -> Unit,
@@ -49,7 +50,7 @@ class NoteAdapter(
 			binding.url.isVisible = note.urls.isNotEmpty()
 			binding.url.text = note.urls.size.toString()
 			binding.image.isVisible = note.getPreviewImage() != null
-			binding.image.setImageURI(note.getPreviewImage())
+			ImageLoader.load(binding.image, note.getPreviewImage(), 400)
 			ViewCompat.setTransitionName(binding.root, note.id.toString())
 		}
 	}

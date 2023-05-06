@@ -20,7 +20,7 @@
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent"
 		app:spanCount="@integer/span_count"
-		tools:listitem="@layout/fragment_editor_text" />
+		tools:listitem="@layout/item_text" />
 
 	<LinearLayout
 		android:id="@+id/bottom_toolbar"

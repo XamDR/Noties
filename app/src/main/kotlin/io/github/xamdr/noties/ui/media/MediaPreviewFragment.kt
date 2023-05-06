@@ -1,33 +1,32 @@
-package io.github.xamdr.noties.ui.gallery
+package io.github.xamdr.noties.ui.media
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.core.view.WindowCompat.getInsetsController
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
-import io.github.xamdr.noties.databinding.FragmentFullScreenImageBinding
+import io.github.xamdr.noties.databinding.FragmentMediaPreviewImageBinding
 import io.github.xamdr.noties.domain.model.Image
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.getParcelableCompat
 import io.github.xamdr.noties.ui.helpers.supportActionBar
+import io.github.xamdr.noties.ui.image.ImageLoader
 
-class FullScreenImageFragment : Fragment() {
+class MediaPreviewFragment : Fragment() {
 
-	private var _binding: FragmentFullScreenImageBinding? = null
+	private var _binding: FragmentMediaPreviewImageBinding? = null
 	private val binding get() = _binding!!
-	private val image by lazy(LazyThreadSafetyMode.NONE) {
+	private val item by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelableCompat(Constants.BUNDLE_IMAGE, Image::class.java)
 	}
 	private var fullScreen = false
 
-	override fun onCreateView(inflater: LayoutInflater,
-	                          container: ViewGroup?,
-	                          savedInstanceState: Bundle?): View {
-		_binding = FragmentFullScreenImageBinding.inflate(inflater, container, false)
+	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+		_binding = FragmentMediaPreviewImageBinding.inflate(inflater, container, false)
 		return binding.root
 	}
 
@@ -38,7 +37,9 @@ class FullScreenImageFragment : Fragment() {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		binding.image.setImageURI(image.uri)
+		ImageLoader.load(binding.image, item.uri, 800) {
+			parentFragment?.startPostponedEnterTransition()
+		}
 		binding.image.setOnClickListener { toggleSystemBarsVisibility(it) }
 	}
 
@@ -49,14 +50,14 @@ class FullScreenImageFragment : Fragment() {
 	}
 
 	private fun hideSystemBars(view: View) {
-		getInsetsController(requireActivity().window, view).apply {
+		WindowCompat.getInsetsController(requireActivity().window, view).apply {
 			systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE
 			hide(WindowInsetsCompat.Type.systemBars())
 		}
 	}
 
 	private fun showSystemBars(view: View) {
-		getInsetsController(requireActivity().window, view).apply {
+		WindowCompat.getInsetsController(requireActivity().window, view).apply {
 			systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE
 			show(WindowInsetsCompat.Type.systemBars())
 		}
@@ -75,8 +76,8 @@ class FullScreenImageFragment : Fragment() {
 	}
 
 	companion object {
-		fun newInstance(image: Image) = FullScreenImageFragment().apply {
-			arguments = bundleOf(Constants.BUNDLE_IMAGE to image)
+		fun newInstance(item: Image) = MediaPreviewFragment().apply {
+			arguments = bundleOf(Constants.BUNDLE_IMAGE to item)
 		}
 	}
 }

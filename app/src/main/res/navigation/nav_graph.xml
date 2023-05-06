@@ -89,13 +89,18 @@
 			android:defaultValue="true" />
 
 		<action
-			android:id="@+id/action_editor_gallery"
-			app:destination="@id/nav_gallery" />
+			android:id="@+id/action_editor_media_viewer"
+			app:destination="@id/nav_media_viewer" />
 	</fragment>
 
-	<activity
-		android:id="@+id/nav_gallery"
-		android:name="io.github.xamdr.noties.ui.gallery.GalleryActivity"
-		android:label="GalleryActivity"
-		tools:layout="@layout/activity_gallery"/>
+	<fragment
+		android:id="@+id/nav_media_viewer"
+		android:name="io.github.xamdr.noties.ui.media.MediaViewerFragment"
+		android:label=""
+		tools:layout="@layout/fragment_media_viewer">
+
+		<argument
+			android:name="ShowToolbar"
+			android:defaultValue="true" />
+	</fragment>
 </navigation>

@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.github.xamdr.noties.databinding.FragmentEditorTextBinding
+import io.github.xamdr.noties.databinding.ItemTextBinding
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.SimpleTextWatcher
@@ -17,7 +17,7 @@ import io.github.xamdr.noties.ui.helpers.showSoftKeyboard
 class EditorTextAdapter(private val note: Note, private val listener: NoteContentListener) :
 	RecyclerView.Adapter<EditorTextAdapter.EditorTextViewHolder>(), SpanSizeLookupOwner {
 
-	inner class EditorTextViewHolder(private val binding: FragmentEditorTextBinding) :
+	inner class EditorTextViewHolder(private val binding: ItemTextBinding) :
 		RecyclerView.ViewHolder(binding.root), SimpleTextWatcher {
 
 		private val contentReceiverListener = ImageContentReceiverListener { uri, _ ->
@@ -57,7 +57,7 @@ class EditorTextAdapter(private val note: Note, private val listener: NoteConten
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EditorTextViewHolder {
-		val binding = FragmentEditorTextBinding.inflate(
+		val binding = ItemTextBinding.inflate(
 			LayoutInflater.from(parent.context),
 			parent,
 			false

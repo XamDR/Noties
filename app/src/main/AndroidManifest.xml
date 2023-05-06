@@ -19,13 +19,6 @@
 		android:supportsRtl="true">
 
 		<activity
-			android:name="io.github.xamdr.noties.ui.gallery.GalleryActivity"
-			android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|layoutDirection|fontScale"
-			android:exported="false"
-			android:theme="@style/Theme.Noties.Gallery"
-			android:windowSoftInputMode="stateAlwaysHidden"/>
-
-		<activity
 			android:name="io.github.xamdr.noties.ui.MainActivity"
 			android:exported="true"
 			android:theme="@style/Theme.SplashScreen.Noties"

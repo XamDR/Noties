@@ -1,4 +1,4 @@
-package io.github.xamdr.noties.ui.gallery
+package io.github.xamdr.noties.ui.media
 
 import android.view.View
 import androidx.viewpager2.widget.ViewPager2
