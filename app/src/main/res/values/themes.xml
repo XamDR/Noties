@@ -34,8 +34,6 @@
 <!--		<item name="actionModeBackground">@color/white_smoke</item>-->
 	</style>
 
-	<style name="Theme.Noties.Gallery" parent="Theme.Noties"/>
-
 	<style name="Theme.SplashScreen.Noties" parent="Theme.SplashScreen">
 		<item name="windowSplashScreenBackground">@color/md_theme_light_primary</item>
 		<item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>

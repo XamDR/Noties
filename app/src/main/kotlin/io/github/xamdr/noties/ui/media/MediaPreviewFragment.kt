@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -14,6 +15,7 @@ import io.github.xamdr.noties.domain.model.Image
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.getParcelableCompat
 import io.github.xamdr.noties.ui.helpers.supportActionBar
+import io.github.xamdr.noties.ui.helpers.window
 import io.github.xamdr.noties.ui.image.ImageLoader
 
 class MediaPreviewFragment : Fragment() {
@@ -23,7 +25,6 @@ class MediaPreviewFragment : Fragment() {
 	private val item by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelableCompat(Constants.BUNDLE_IMAGE, Image::class.java)
 	}
-	private var fullScreen = false
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 		_binding = FragmentMediaPreviewImageBinding.inflate(inflater, container, false)
@@ -44,33 +45,19 @@ class MediaPreviewFragment : Fragment() {
 	}
 
 	private fun toggleSystemBarsVisibility(view: View) {
-		if (fullScreen) showSystemBars(view) else hideSystemBars(view)
-		fullScreen = !fullScreen
-		toggleActionBarVisibility(view)
-	}
-
-	private fun hideSystemBars(view: View) {
-		WindowCompat.getInsetsController(requireActivity().window, view).apply {
-			systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE
-			hide(WindowInsetsCompat.Type.systemBars())
-		}
-	}
-
-	private fun showSystemBars(view: View) {
-		WindowCompat.getInsetsController(requireActivity().window, view).apply {
-			systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE
-			show(WindowInsetsCompat.Type.systemBars())
-		}
-	}
-
-	@Suppress("DEPRECATION")
-	private fun toggleActionBarVisibility(view: View) {
-		view.setOnSystemUiVisibilityChangeListener { visibility ->
-			if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
-				supportActionBar?.show()
+		val windowInsetsController = WindowCompat.getInsetsController(window, view)
+		windowInsetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE
+		ViewCompat.getRootWindowInsets(view)?.let { windowInsets ->
+			val systemInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+			// We use systemInsets.top to check if the status bar is visible,
+			// and systemInsets.bottom to check if the navigation bar is visible
+			if (systemInsets.top > 0 || systemInsets.bottom > 0) {
+				windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+				supportActionBar?.hide()
 			}
 			else {
-				supportActionBar?.hide()
+				windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+				supportActionBar?.show()
 			}
 		}
 	}
