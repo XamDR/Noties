@@ -29,7 +29,6 @@ class MediaViewerFragment : Fragment() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		android.os.Debug.waitForDebugger()
 		mediaStateAdapter = MediaStateAdapter(this, images, this::onItemRemoved)
 		pageSelectedCallback = PageSelectedCallback(images.size)
 	}
