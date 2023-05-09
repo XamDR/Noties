@@ -23,6 +23,11 @@ class MediaStateAdapter(
 
 	override fun containsItem(itemId: Long) = itemsId.contains(itemId)
 
+	fun findFragmentByPosition(position: Int): Fragment? {
+		val tag = "f${getItemId(position)}"
+		return fragment.childFragmentManager.findFragmentByTag(tag)
+	}
+
 	fun removeFragment(position: Int) {
 		onItemRemoved(position)
 		items.removeAt(position)

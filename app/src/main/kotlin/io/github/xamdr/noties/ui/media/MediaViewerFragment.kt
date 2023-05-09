@@ -85,8 +85,7 @@ class MediaViewerFragment : Fragment() {
 		setEnterSharedElementCallback(object : SharedElementCallback() {
 			override fun onMapSharedElements(names: MutableList<String>?, sharedElements: MutableMap<String, View>?) {
 				if (sharedViewModel.currentPosition != 0) {
-					val currentFragment = childFragmentManager.findFragmentByTag(
-						"f${mediaStateAdapter.getItemId(sharedViewModel.currentPosition)}") ?: return
+					val currentFragment = mediaStateAdapter.findFragmentByPosition(sharedViewModel.currentPosition) ?: return
 					val view = currentFragment.view ?: return
 					if (!names.isNullOrEmpty() && !sharedElements.isNullOrEmpty()) {
 						sharedElements[names[0]] = view.findViewById(R.id.image)
