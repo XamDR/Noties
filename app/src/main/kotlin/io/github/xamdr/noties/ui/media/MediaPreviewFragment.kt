@@ -1,5 +1,6 @@
 package io.github.xamdr.noties.ui.media
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -52,10 +53,16 @@ class MediaPreviewFragment : Fragment() {
 			// We use systemInsets.top to check if the status bar is visible,
 			// and systemInsets.bottom to check if the navigation bar is visible
 			if (systemInsets.top > 0 || systemInsets.bottom > 0) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+					WindowCompat.setDecorFitsSystemWindows(window, false)
+				}
 				windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
 				supportActionBar?.hide()
 			}
 			else {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+					WindowCompat.setDecorFitsSystemWindows(window, true)
+				}
 				windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
 				supportActionBar?.show()
 			}

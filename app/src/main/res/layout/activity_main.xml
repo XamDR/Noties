@@ -10,6 +10,7 @@
 		android:id="@+id/app_bar"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+		android:animateLayoutChanges="true"
 		android:background="@android:color/transparent"
 		android:stateListAnimator="@null"
 		app:layout_constraintBottom_toTopOf="@id/nav_host_fragment"

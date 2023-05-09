@@ -19,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialArcMotion
 import com.google.android.material.transition.MaterialContainerTransform
@@ -113,10 +114,8 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 			if (!::note.isInitialized) {
 				note = viewModel.getNote(noteId)
 			}
-			else {
-				getNavigationResult<Image>(Constants.BUNDLE_IMAGE)?.let { itemToDelete ->
-					note = note.copy(images = note.images - itemToDelete)
-				}
+			getNavigationResult<Image>(Constants.BUNDLE_IMAGE)?.let { itemToDelete ->
+				note = note.copy(images = note.images - itemToDelete)
 			}
 			textAdapter = EditorTextAdapter(note, this@EditorFragment)
 			concatAdapter = ConcatAdapter(imageAdapter, textAdapter)
@@ -236,10 +235,12 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 	private fun prepareSharedElementExitTransition() {
 		setExitSharedElementCallback(object : SharedElementCallback() {
 			override fun onMapSharedElements(names: MutableList<String>?, sharedElements: MutableMap<String, View>?) {
-				val viewHolder = binding.content.findViewHolderForAdapterPosition(sharedViewModel.currentPosition)
-				if (viewHolder?.itemView == null) return
-				if (!names.isNullOrEmpty() && !sharedElements.isNullOrEmpty()) {
-					sharedElements[names[0]] = viewHolder.itemView.findViewById(R.id.image)
+				if (sharedViewModel.currentPosition != RecyclerView.NO_POSITION) {
+					val viewHolder = binding.content.findViewHolderForAdapterPosition(sharedViewModel.currentPosition)
+					if (viewHolder?.itemView == null) return
+					if (!names.isNullOrEmpty() && !sharedElements.isNullOrEmpty()) {
+						sharedElements[names[0]] = viewHolder.itemView.findViewById(R.id.image)
+					}
 				}
 			}
 		})
@@ -247,10 +248,8 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 
 	private fun navigateToMediaViewer(view: View, position: Int) {
 		BitmapCache.Instance.clear()
-		val args = bundleOf(
-			Constants.BUNDLE_IMAGES to note.images,
-			Constants.BUNDLE_POSITION to position
-		)
+		sharedViewModel.currentPosition = position
+		val args = bundleOf(Constants.BUNDLE_IMAGES to note.images)
 		val item = note.images[position]
 		val extras = FragmentNavigatorExtras(view to item.id.toString())
 		findNavController().tryNavigate(R.id.action_editor_media_viewer, args, null, extras)

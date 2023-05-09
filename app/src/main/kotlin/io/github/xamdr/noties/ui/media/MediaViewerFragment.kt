@@ -23,15 +23,13 @@ class MediaViewerFragment : Fragment() {
 	private val images by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelableArrayListCompat(Constants.BUNDLE_IMAGES, Image::class.java)
 	}
-	private val position by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getInt(Constants.BUNDLE_POSITION, 0)
-	}
 	private lateinit var mediaStateAdapter: MediaStateAdapter
 	private lateinit var pageSelectedCallback: PageSelectedCallback
 	private val menuProvider = MediaMenuProvider()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
+		android.os.Debug.waitForDebugger()
 		mediaStateAdapter = MediaStateAdapter(this, images, this::onItemRemoved)
 		pageSelectedCallback = PageSelectedCallback(images.size)
 	}
@@ -52,7 +50,7 @@ class MediaViewerFragment : Fragment() {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		setupViewPager()
-		pageSelectedCallback.onPageSelected(position)
+		pageSelectedCallback.onPageSelected(sharedViewModel.currentPosition)
 	}
 
 	override fun onPause() {
@@ -85,7 +83,7 @@ class MediaViewerFragment : Fragment() {
 		binding.pager.apply {
 			adapter = mediaStateAdapter
 //			setPageTransformer(ZoomOutPageTransformer())
-			setCurrentItem(position, false)
+			setCurrentItem(sharedViewModel.currentPosition, false)
 		}
 	}
 
