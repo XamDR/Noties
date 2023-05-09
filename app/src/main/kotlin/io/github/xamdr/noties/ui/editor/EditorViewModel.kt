@@ -24,7 +24,7 @@ class EditorViewModel @Inject constructor(
 	suspend fun saveNote(note: Note, noteId: Long) =
 		if (note.id == 0L) insertNote(note) else updateNote(note, noteId)
 
-	suspend fun deleteImage(image: Image) = deleteImagesUseCase(listOf(image))
+	suspend fun deleteImages(images: List<Image>) = deleteImagesUseCase(images)
 
 	fun saveState(note: Note) {
 		savedState[Constants.BUNDLE_NOTE] = note

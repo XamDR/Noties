@@ -45,33 +45,27 @@ class TagsViewModel @Inject constructor(
 		}
 	}
 
-	fun createTag(tag: Tag) {
-		viewModelScope.launch {
-			createTagUseCase(tag)
-			names.add(tag.name)
-			clearNameState()
-		}
+	suspend fun createTag(tag: Tag) {
+		createTagUseCase(tag)
+		names.add(tag.name)
+		clearNameState()
 	}
 
 	fun clearNameState() {
 		tagNameState.update { TagNameState.EmptyOrUpdatingName }
 	}
 
-	fun getTags(): LiveData<List<Tag>> = getTagsUseCase()
+	fun getTags(): LiveData<List<Tag>> = getTagsUseCase().asLiveData()
 
-	fun updateTag(tag: Tag, oldTag: Tag) {
-		viewModelScope.launch {
-			updateTagUseCase(tag)
-			names.remove(oldTag.name)
-			names.add(tag.name)
-			clearNameState()
-		}
+	suspend fun updateTag(tag: Tag, oldTag: Tag) {
+		updateTagUseCase(tag)
+		names.remove(oldTag.name)
+		names.add(tag.name)
+		clearNameState()
 	}
 
-	fun deleteTags(tags: List<Tag>) {
-		viewModelScope.launch {
-			deleteTagsUseCase(tags)
-			names.removeAll(tags.map { it.name }.toSet())
-		}
+	suspend fun deleteTags(tags: List<Tag>) {
+		deleteTagsUseCase(tags)
+		names.removeAll(tags.map { it.name }.toSet())
 	}
 }

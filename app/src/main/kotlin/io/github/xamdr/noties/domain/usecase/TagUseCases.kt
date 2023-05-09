@@ -1,10 +1,9 @@
 package io.github.xamdr.noties.domain.usecase
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.map
 import io.github.xamdr.noties.data.repository.TagRepository
 import io.github.xamdr.noties.domain.model.Tag
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class CreateTagUseCase @Inject constructor(private val tagRepository: TagRepository) {
@@ -12,8 +11,8 @@ class CreateTagUseCase @Inject constructor(private val tagRepository: TagReposit
 }
 
 class GetTagsUseCase @Inject constructor(private val tagRepository: TagRepository) {
-	operator fun invoke(): LiveData<List<Tag>> {
-		return tagRepository.getTags().asLiveData().map { list ->
+	operator fun invoke(): Flow<List<Tag>> {
+		return tagRepository.getTags().map { list ->
 			list.map { it.asDomainModel() }
 		}
 	}

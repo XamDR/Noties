@@ -87,6 +87,10 @@ fun Fragment.launch(block: suspend CoroutineScope.() -> Unit): Job {
 	return this.viewLifecycleOwner.lifecycleScope.launch(block = block)
 }
 
+fun DialogFragment.launch(block: suspend CoroutineScope.() -> Unit): Job {
+	return this.lifecycleScope.launch(block = block)
+}
+
 fun Fragment.onBackPressed(block: () -> Unit) {
 	this.requireActivity().onBackPressedDispatcher.addCallback(
 		this.viewLifecycleOwner,
@@ -98,11 +102,15 @@ fun Fragment.onBackPressed(block: () -> Unit) {
 	)
 }
 
-fun <T : Parcelable> Fragment.getNavigationResult(key: String): T? {
+fun Fragment.onBackPressed() {
+	this.requireActivity().onBackPressedDispatcher.onBackPressed()
+}
+
+fun <T> Fragment.getNavigationResult(key: String): T? {
 	return this.findNavController().currentBackStackEntry?.savedStateHandle?.get(key)
 }
 
-fun <T : Parcelable> Fragment.setNavigationResult(key: String, value: T) {
+fun <T> Fragment.setNavigationResult(key: String, value: T) {
 	this.findNavController().previousBackStackEntry?.savedStateHandle?.set(key, value)
 }
 

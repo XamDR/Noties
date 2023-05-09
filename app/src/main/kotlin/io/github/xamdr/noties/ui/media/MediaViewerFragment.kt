@@ -7,6 +7,7 @@ import androidx.core.app.SharedElementCallback
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
@@ -26,11 +27,19 @@ class MediaViewerFragment : Fragment() {
 	private lateinit var mediaStateAdapter: MediaStateAdapter
 	private lateinit var pageSelectedCallback: PageSelectedCallback
 	private val menuProvider = MediaMenuProvider()
+	private val itemsToDelete = mutableListOf<Image>()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		mediaStateAdapter = MediaStateAdapter(this, images, this::onItemRemoved)
 		pageSelectedCallback = PageSelectedCallback(images.size)
+		if (savedInstanceState != null) {
+			val restoredItemsToDelete = savedInstanceState.getParcelableArrayListCompat(
+				Constants.BUNDLE_IMAGES,
+				Image::class.java
+			)
+			itemsToDelete.addAll(restoredItemsToDelete)
+		}
 	}
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -50,6 +59,15 @@ class MediaViewerFragment : Fragment() {
 		super.onViewCreated(view, savedInstanceState)
 		setupViewPager()
 		pageSelectedCallback.onPageSelected(sharedViewModel.currentPosition)
+		onBackPressed {
+			setNavigationResult(Constants.BUNDLE_IMAGES, ArrayList(itemsToDelete))
+			findNavController().popBackStack()
+		}
+	}
+
+	override fun onSaveInstanceState(outState: Bundle) {
+		super.onSaveInstanceState(outState)
+		outState.putParcelableArrayList(Constants.BUNDLE_IMAGES, ArrayList(itemsToDelete))
 	}
 
 	override fun onPause() {
@@ -115,7 +133,7 @@ class MediaViewerFragment : Fragment() {
 		else {
 			sharedViewModel.currentPosition = 0
 		}
-		setNavigationResult(Constants.BUNDLE_IMAGE, itemToDelete)
+		itemsToDelete.add(itemToDelete)
 	}
 
 	private inner class MediaMenuProvider : MenuProvider {
@@ -125,6 +143,9 @@ class MediaViewerFragment : Fragment() {
 
 		override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
 			return when (menuItem.itemId) {
+				android.R.id.home -> {
+					onBackPressed(); true
+				}
 				R.id.share -> {
 					shareMediaItem(binding.pager.currentItem); true
 				}

@@ -24,7 +24,7 @@ class TagDialogFragment : DialogFragment() {
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<TagsViewModel>({ requireParentFragment() })
 	private val tag by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getParcelableCompat(BUNDLE_TAG, Tag::class.java)
+		requireArguments().getParcelableCompat(Constants.BUNDLE_TAG, Tag::class.java)
 	}
 	private val textWatcher = TagNameTextWatcher()
 
@@ -85,17 +85,19 @@ class TagDialogFragment : DialogFragment() {
 	}
 
 	private fun createOrUpdateTag(tag: Tag) {
-		if (tag.id == 0) {
-			val newTag = Tag(name = binding.tagName.textAsString())
-			viewModel.createTag(newTag)
-			Timber.d("New tag created: $newTag")
+		launch {
+			if (tag.id == 0) {
+				val newTag = Tag(name = binding.tagName.textAsString())
+				viewModel.createTag(newTag)
+				Timber.d("New tag created: $newTag")
+			}
+			else {
+				val updatedTag = tag.copy(name = binding.tagName.textAsString())
+				viewModel.updateTag(updatedTag, tag)
+				Timber.d("Tag updated: $updatedTag")
+			}
+			dismiss()
 		}
-		else {
-			val updatedTag = tag.copy(name = binding.tagName.textAsString())
-			viewModel.updateTag(updatedTag, tag)
-			Timber.d("Tag updated: $updatedTag")
-		}
-		dismiss()
 	}
 
 	private fun cancel() {
@@ -104,10 +106,8 @@ class TagDialogFragment : DialogFragment() {
 	}
 
 	companion object {
-		private const val BUNDLE_TAG = "BUNDLE_TAG"
-
 		fun newInstance(tag: Tag) = TagDialogFragment().apply {
-			arguments = bundleOf(BUNDLE_TAG to tag)
+			arguments = bundleOf(Constants.BUNDLE_TAG to tag)
 		}
 	}
 

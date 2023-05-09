@@ -106,7 +106,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 
 	private fun navigateUp() {
 		binding.root.hideSoftKeyboard()
-		requireActivity().onBackPressedDispatcher.onBackPressed()
+		onBackPressed()
 	}
 
 	private fun setupNote() {
@@ -114,8 +114,8 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 			if (!::note.isInitialized) {
 				note = viewModel.getNote(noteId)
 			}
-			getNavigationResult<Image>(Constants.BUNDLE_IMAGE)?.let { itemToDelete ->
-				note = note.copy(images = note.images - itemToDelete)
+			getNavigationResult<ArrayList<Image>>(Constants.BUNDLE_IMAGES)?.let { itemsToDelete ->
+				note = note.copy(images = note.images - itemsToDelete.toSet())
 			}
 			textAdapter = EditorTextAdapter(note, this@EditorFragment)
 			concatAdapter = ConcatAdapter(imageAdapter, textAdapter)
@@ -202,9 +202,9 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 				NoteAction.InsertNote -> binding.root.showSnackbar(R.string.note_saved).showOnTop()
 				NoteAction.NoAction -> {}
 				NoteAction.UpdateNote -> {
-					getNavigationResult<Image>(Constants.BUNDLE_IMAGE)?.let { itemToDelete ->
-						ImageStorageManager.deleteImages(requireContext(), listOf(itemToDelete))
-						viewModel.deleteImage(itemToDelete)
+					getNavigationResult<ArrayList<Image>>(Constants.BUNDLE_IMAGES)?.let { itemsToDelete ->
+						ImageStorageManager.deleteImages(requireContext(), itemsToDelete)
+						viewModel.deleteImages(itemsToDelete)
 					}
 					binding.root.showSnackbar(R.string.note_updated).showOnTop()
 				}

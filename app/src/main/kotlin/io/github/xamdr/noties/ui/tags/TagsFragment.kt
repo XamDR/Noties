@@ -14,6 +14,7 @@ import io.github.xamdr.noties.databinding.FragmentTagsBinding
 import io.github.xamdr.noties.domain.model.Tag
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.addMenuProvider
+import io.github.xamdr.noties.ui.helpers.launch
 import io.github.xamdr.noties.ui.helpers.showDialog
 import timber.log.Timber
 
@@ -64,8 +65,10 @@ class TagsFragment : Fragment(), TagToolbarItemListener, TagPopupMenuItemListene
 	}
 
 	override fun deleteTag(tag: Tag) {
-		viewModel.deleteTags(listOf(tag))
-		Timber.d("Tag deleted: $tag")
+		launch {
+			viewModel.deleteTags(listOf(tag))
+			Timber.d("Tag deleted: $tag")
+		}
 	}
 
 	private fun setupRecyclerView() {
