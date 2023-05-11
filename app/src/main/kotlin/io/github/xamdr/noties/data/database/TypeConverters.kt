@@ -2,6 +2,7 @@ package io.github.xamdr.noties.data.database
 
 import android.net.Uri
 import androidx.room.TypeConverter
+import io.github.xamdr.noties.ui.helpers.Constants
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -9,19 +10,15 @@ import java.time.format.DateTimeFormatter
 class ZonedDateTimeToStringConverter {
 
 	@TypeConverter
-	fun fromZonedDateTime(dateTime: LocalDateTime?): String? {
-		val formatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.systemDefault())
+	fun fromLocalDateTime(dateTime: LocalDateTime?): String? {
+		val formatter = DateTimeFormatter.ofPattern(Constants.DATE_TIME_PATTERN).withZone(ZoneId.systemDefault())
 		return if (dateTime != null) formatter.format(dateTime) else null
 	}
 
 	@TypeConverter
-	fun toZonedDateTime(value: String?): LocalDateTime? {
-		val formatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.systemDefault())
+	fun toLocalDateTime(value: String?): LocalDateTime? {
+		val formatter = DateTimeFormatter.ofPattern(Constants.DATE_TIME_PATTERN).withZone(ZoneId.systemDefault())
 		return if (value != null) LocalDateTime.parse(value, formatter) else null
-	}
-
-	companion object {
-		private const val pattern = "dd/MM/yyyy HH:mm:ss"
 	}
 }
 

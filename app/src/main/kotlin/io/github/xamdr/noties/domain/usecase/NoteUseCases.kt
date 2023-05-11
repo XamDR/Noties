@@ -38,7 +38,7 @@ class GetNotesUseCase @Inject constructor(private val noteRepository: NoteReposi
 class GetNoteByIdUseCase @Inject constructor(private val noteRepository: NoteRepository) {
 
 	suspend operator fun invoke(noteId: Long): Note {
-		val result = noteRepository.getNoteById(noteId).entries.first()
+		val result = noteRepository.getNoteById(noteId).entries.firstOrNull() ?: return Note()
 		val note = result.key.asDomainModel()
 		val images = result.value.map { it.asDomainModel() }
 		return Note.create(note, images)

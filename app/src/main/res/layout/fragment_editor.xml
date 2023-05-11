@@ -8,7 +8,7 @@
 	tools:context=".ui.editor.EditorFragment">
 
 	<androidx.recyclerview.widget.RecyclerView
-		android:id="@+id/content"
+		android:id="@+id/rv_content"
 		android:layout_width="0dp"
 		android:layout_height="0dp"
 		android:contentDescription="@string/editor_content"
@@ -29,11 +29,11 @@
 		android:orientation="horizontal"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/content"
+		app:layout_constraintTop_toBottomOf="@id/rv_content"
 		app:layout_constraintBottom_toBottomOf="parent">
 
 		<ImageButton
-			android:id="@+id/add"
+			android:id="@+id/btn_add"
 			android:layout_width="@dimen/bottom_app_bar_item_height"
 			android:layout_height="@dimen/bottom_app_bar_item_height"
 			android:layout_marginStart="8dp"
@@ -42,7 +42,7 @@
 			android:src="@drawable/ic_add_attachment"/>
 
 		<TextView
-			android:id="@+id/note_update_date"
+			android:id="@+id/txt_modification_date"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center"
@@ -54,7 +54,7 @@
 			tools:text="Última edición: 14/12/2021 22:20" />
 
 		<ImageButton
-			android:id="@+id/note_color"
+			android:id="@+id/btn_color"
 			android:layout_width="@dimen/bottom_app_bar_item_height"
 			android:layout_height="@dimen/bottom_app_bar_item_height"
 			android:layout_marginEnd="8dp"

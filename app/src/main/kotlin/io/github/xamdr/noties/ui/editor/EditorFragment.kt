@@ -119,32 +119,33 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 			}
 			textAdapter = EditorTextAdapter(note, this@EditorFragment)
 			concatAdapter = ConcatAdapter(imageAdapter, textAdapter)
-			setupRecyclerView()
-			imageAdapter.submitList(note.images)
-			binding.root.doOnPreDraw { startPostponedEnterTransition() }
-			if (sharedViewModel.currentPosition == 0) {
-				supportActionBar?.setTitle(R.string.editor_fragment_label)
-			}
+			setupViews(note)
 		}
 	}
 
-	private fun setupRecyclerView() {
-		binding.content.apply {
+	private fun setupViews(note: Note) {
+		binding.rvContent.apply {
 			adapter = concatAdapter
 			(layoutManager as GridLayoutManager).spanSizeLookup =
 				ConcatSpanSizeLookup(Constants.SPAN_COUNT) { concatAdapter.adapters }
 			addItemTouchHelper(itemTouchHelper)
 		}
+		imageAdapter.submitList(note.images)
+		binding.txtModificationDate.text = DateTimeHelper.formatCurrentDateTime(note.modificationDate)
+		binding.root.doOnPreDraw { startPostponedEnterTransition() }
+//		if (sharedViewModel.currentPosition == 0) {
+//			supportActionBar?.setTitle(R.string.editor_fragment_label)
+//		}
 	}
 
 	private fun setupListeners() {
-		binding.add.setOnClickListener {
+		binding.btnAdd.setOnClickListener {
 			val menuDialog = EditorMenuFragment().apply {
 				setEditorMenuListener(this@EditorFragment)
 			}
 			showDialog(menuDialog, Constants.MENU_DIALOG_TAG)
 		}
-		binding.content.addOnLayoutChangeListener(object : OnLayoutChangeListener {
+		binding.rvContent.addOnLayoutChangeListener(object : OnLayoutChangeListener {
 			override fun onLayoutChange(
 				v: View?,
 				left: Int,
@@ -156,12 +157,12 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 				oldRight: Int,
 				oldBottom: Int
 			) {
-				binding.content.removeOnLayoutChangeListener(this)
-				val layoutManager = binding.content.layoutManager ?: return
+				binding.rvContent.removeOnLayoutChangeListener(this)
+				val layoutManager = binding.rvContent.layoutManager ?: return
 				val viewAtPosition = layoutManager.findViewByPosition(sharedViewModel.currentPosition)
 				if (viewAtPosition == null ||
 					layoutManager.isViewPartiallyVisible(viewAtPosition, false, true)) {
-					binding.content.post { layoutManager.scrollToPosition(sharedViewModel.currentPosition) }
+					binding.rvContent.post { layoutManager.scrollToPosition(sharedViewModel.currentPosition) }
 				}
 			}
 		})
@@ -236,7 +237,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		setExitSharedElementCallback(object : SharedElementCallback() {
 			override fun onMapSharedElements(names: MutableList<String>?, sharedElements: MutableMap<String, View>?) {
 				if (sharedViewModel.currentPosition != RecyclerView.NO_POSITION) {
-					val viewHolder = binding.content.findViewHolderForAdapterPosition(sharedViewModel.currentPosition)
+					val viewHolder = binding.rvContent.findViewHolderForAdapterPosition(sharedViewModel.currentPosition)
 					if (viewHolder?.itemView == null) return
 					if (!names.isNullOrEmpty() && !sharedElements.isNullOrEmpty()) {
 						sharedElements[names[0]] = viewHolder.itemView.findViewById(R.id.image)
