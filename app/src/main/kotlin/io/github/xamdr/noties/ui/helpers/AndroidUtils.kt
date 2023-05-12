@@ -35,6 +35,7 @@ import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 fun FragmentActivity.findNavController(@IdRes id: Int) =
 	(this.supportFragmentManager.findFragmentById(id) as NavHostFragment).navController
@@ -126,7 +127,7 @@ fun NavController.tryNavigate(
 		this.navigate(resId, args, navOptions, navigatorExtras)
 	}
 	catch (e: IllegalArgumentException) {
-		printError(NavController::class.java.simpleName, e)
+		Timber.e(e)
 	}
 }
 
@@ -166,9 +167,9 @@ fun DialogFragment.getPositiveButton(): Button {
 	return (requireDialog() as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
 }
 
-fun Context.getUriMimeType(uri: Uri): String? = contentResolver.getType(uri)
+fun Context.getUriMimeType(uri: Uri): String? = this.contentResolver.getType(uri)
 
 fun Context.getUriExtension(uri: Uri): String? {
-	val mimeType = contentResolver.getType(uri)
+	val mimeType = this.contentResolver.getType(uri)
 	return MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
 }

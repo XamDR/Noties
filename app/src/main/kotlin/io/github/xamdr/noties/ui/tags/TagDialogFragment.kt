@@ -87,12 +87,12 @@ class TagDialogFragment : DialogFragment() {
 	private fun createOrUpdateTag(tag: Tag) {
 		launch {
 			if (tag.id == 0) {
-				val newTag = Tag(name = binding.tagName.textAsString())
+				val newTag = Tag(name = binding.tagName.textString)
 				viewModel.createTag(newTag)
 				Timber.d("New tag created: $newTag")
 			}
 			else {
-				val updatedTag = tag.copy(name = binding.tagName.textAsString())
+				val updatedTag = tag.copy(name = binding.tagName.textString)
 				viewModel.updateTag(updatedTag, tag)
 				Timber.d("Tag updated: $updatedTag")
 			}

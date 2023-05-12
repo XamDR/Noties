@@ -24,7 +24,7 @@
 		android:orderInCategory="4"
 		android:icon="@drawable/ic_share_content"
 		android:title="@string/share_content"
-		app:showAsAction="never"/>
+		app:showAsAction="always"/>
 
 <!--	<item-->
 <!--		android:id="@+id/open_file"-->

@@ -13,12 +13,12 @@ import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.getSystemService
 import androidx.core.view.ViewCompat
@@ -168,9 +168,8 @@ fun Window.setStatusBarColor(@ColorInt color: Int?) {
 	}
 }
 
-fun AppCompatEditText.textAsString(): String {
-	return if (this.text != null) this.text.toString() else String.Empty
-}
+val EditText.textString: String
+	get() = if (this.text != null) this.text.toString() else String.Empty
 
 fun Snackbar.showOnTop() {
 	val typedValue = TypedValue()

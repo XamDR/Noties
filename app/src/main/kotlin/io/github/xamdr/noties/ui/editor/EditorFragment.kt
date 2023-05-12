@@ -65,7 +65,6 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 							  savedInstanceState: Bundle?): View {
 		_binding = FragmentEditorBinding.inflate(inflater, container, false)
 		initTransitions(noteId)
-		addMenuProvider(menuProvider, viewLifecycleOwner)
 		prepareSharedElementExitTransition()
 		postponeEnterTransition()
 		return binding.root
@@ -90,6 +89,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 
 	override fun onNoteTextChanged(text: String) {
 		note = note.copy(text = text)
+		requireActivity().invalidateMenu()
 	}
 
 	override fun onNoteTitleChanged(title: String) {
@@ -116,8 +116,11 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 			}
 			getNavigationResult<ArrayList<Image>>(Constants.BUNDLE_IMAGES)?.let { itemsToDelete ->
 				note = note.copy(images = note.images - itemsToDelete.toSet())
+				requireActivity().invalidateMenu()
 			}
-			textAdapter = EditorTextAdapter(note, this@EditorFragment)
+			textAdapter = EditorTextAdapter(note, this@EditorFragment).apply {
+				setOnContentReceivedListener { uri -> addImages(listOf(uri)) }
+			}
 			concatAdapter = ConcatAdapter(imageAdapter, textAdapter)
 			setupViews(note)
 		}
@@ -133,9 +136,10 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		imageAdapter.submitList(note.images)
 		binding.txtModificationDate.text = DateTimeHelper.formatCurrentDateTime(note.modificationDate)
 		binding.root.doOnPreDraw { startPostponedEnterTransition() }
-//		if (sharedViewModel.currentPosition == 0) {
-//			supportActionBar?.setTitle(R.string.editor_fragment_label)
-//		}
+		if (sharedViewModel.currentPosition == 0) {
+			supportActionBar?.setTitle(R.string.editor_fragment_label)
+		}
+		addMenuProvider(menuProvider, viewLifecycleOwner)
 	}
 
 	private fun setupListeners() {
@@ -195,6 +199,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 
 	private fun saveNote(note: Note) {
 		launch {
+			Timber.d("Note: %s", note)
 			when (viewModel.saveNote(note, noteId)) {
 				NoteAction.DeleteEmptyNote -> {
 					ImageStorageManager.deleteImages(requireContext(), note.images)
@@ -228,8 +233,8 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 				images.add(image)
 			}
 			note = note.copy(images = note.images + images)
-			Timber.d("Images: %s", note.images)
 			imageAdapter.submitList(note.images)
+			requireActivity().invalidateMenu()
 		}
 	}
 
@@ -261,10 +266,19 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 			menuInflater.inflate(R.menu.menu_editor, menu)
 		}
 
+		override fun onPrepareMenu(menu: Menu) {
+			val menuItem = menu.findItem(R.id.share_content)
+			menuItem.isVisible = !note.isEmpty()
+			menuItem.isEnabled = !note.isEmpty()
+		}
+
 		override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
 			return when (menuItem.itemId) {
 				android.R.id.home -> {
 					navigateUp(); true
+				}
+				R.id.share_content -> {
+					ShareHelper.shareContent(requireContext(), note); true
 				}
 				else -> false
 			}

@@ -1,9 +1,9 @@
 package io.github.xamdr.noties.ui.media
 
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.xamdr.noties.domain.model.Image
+import io.github.xamdr.noties.ui.helpers.onBackPressed
 
 class MediaStateAdapter(
 	private val fragment: Fragment,
@@ -34,7 +34,7 @@ class MediaStateAdapter(
 		itemsId.removeAt(position)
 		notifyItemRemoved(position)
 		if (itemCount == 0) {
-			fragment.findNavController().popBackStack()
+			fragment.onBackPressed()
 		}
 	}
 }

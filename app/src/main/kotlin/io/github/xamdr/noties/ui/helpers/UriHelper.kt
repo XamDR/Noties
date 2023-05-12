@@ -1,9 +1,8 @@
-package io.github.xamdr.noties.ui.editor
+package io.github.xamdr.noties.ui.helpers
 
 import android.content.Context
 import android.net.Uri
 import androidx.core.content.FileProvider
-import io.github.xamdr.noties.ui.helpers.getUriExtension
 import io.github.xamdr.noties.ui.image.ImageStorageManager
 import java.io.File
 import java.time.LocalDateTime
