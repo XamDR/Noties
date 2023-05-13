@@ -44,6 +44,10 @@
 			android:id="@+id/action_notes_to_self"
 			app:destination="@id/nav_notes"
 			app:popUpTo="@id/nav_notes"/>
+
+		<action
+			android:id="@+id/action_notes_to_settings"
+			app:destination="@id/nav_settings" />
 	</fragment>
 
 	<fragment

@@ -14,9 +14,9 @@ import io.github.xamdr.noties.ui.settings.preferences.*
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
-	private val uiListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+	private val preferenceChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
 		when (key) {
-			"app_theme" -> context?.setNightMode()
+			"app_theme" -> requireContext().setNightMode()
 			"app_color" -> requireActivity().recreate()
 		}
 	}
@@ -26,22 +26,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
 	}
 
 	override fun onDisplayPreferenceDialog(preference: Preference) {
-		if (parentFragmentManager.findFragmentByTag(FONT_SIZE_TAG) != null ||
-			parentFragmentManager.findFragmentByTag(EDITOR_STYLE_TAG) != null ||
-			parentFragmentManager.findFragmentByTag(COLOR_TAG) != null) return
+		if (parentFragmentManager.findFragmentByTag(COLOR_TAG) != null ||
+			parentFragmentManager.findFragmentByTag(EDITOR_STYLE_TAG) != null) return
 
 		when (preference) {
-			is FontSizePreference -> {
-				val dialog = FontSizePreferenceDialog.newInstance(preference.key)
-				showDialog(dialog, FONT_SIZE_TAG)
+			is ColorPreference -> {
+				val dialog = ColorPreferenceDialog.newInstance(preference.key)
+				showDialog(dialog, COLOR_TAG)
 			}
 			is EditorStylePreference -> {
 				val dialog = EditorStylePreferenceDialog.newInstance(preference.key)
 				showDialog(dialog, EDITOR_STYLE_TAG)
-			}
-			is ColorPreference -> {
-				val dialog = ColorPreferenceDialog.newInstance(preference.key)
-				showDialog(dialog, COLOR_TAG)
 			}
 			else -> super.onDisplayPreferenceDialog(preference)
 		}
@@ -56,12 +51,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 	override fun onPause() {
 		super.onPause()
-		preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(uiListener)
+		preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener)
 	}
 
 	override fun onResume() {
 		super.onResume()
-		preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(uiListener)
+		preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(preferenceChangeListener)
 	}
 
 	// We need to suppress the deprecation of the method setTargetFragment
@@ -73,9 +68,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
 		dialog.show(parentFragmentManager, tag)
 	}
 
-	companion object {
-		private const val EDITOR_STYLE_TAG = "EditorStyleDialog"
-		private const val FONT_SIZE_TAG = "FontSizeDialog"
-		private const val COLOR_TAG = "ColorDialog"
+	private companion object {
+		private const val COLOR_TAG = "COLOR_TAG"
+		private const val EDITOR_STYLE_TAG = "EDITOR_STYLE_TAG"
 	}
 }

@@ -16,7 +16,21 @@
 		android:id="@+id/change_notes_layout"
 		android:orderInCategory="5"
 		android:title="@string/change_layout"
-		app:showAsAction="never" />
+		app:showAsAction="never">
+
+		<menu>
+			<group android:checkableBehavior="single">
+				<item
+					android:id="@+id/action_layout_linear"
+					android:title="@string/set_grid_layout"
+					android:orderInCategory="0"/>
+				<item
+					android:id="@+id/action_layout_grid"
+					android:title="@string/set_linear_layout"
+					android:orderInCategory="5"/>
+			</group>
+		</menu>
+	</item>
 
 	<item
 		android:id="@+id/nav_trash"

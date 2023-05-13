@@ -53,7 +53,7 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 	private val isRecycleBin by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getBoolean(Constants.BUNDLE_RECYCLE_BIN, false)
 	}
-	private val menuProvider = NotesMenuProvider()
+	private val menuProvider = RecycleBinMenuProvider()
 	private lateinit var trashedNotes: List<Note>
 
 	override fun onAttach(context: Context) {
@@ -113,12 +113,21 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 		R.id.nav_tags -> {
 			navigateToTags(); true
 		}
-		R.id.change_notes_layout -> {
-			changeNotesLayout(LayoutType.valueOf(preferenceStorage.layoutType)); true
+//		R.id.change_notes_layout -> {
+//			changeNotesLayout(LayoutType.valueOf(preferenceStorage.layoutType)); true
+//		}
+		R.id.action_layout_linear -> {
+			setLayoutPreference(LayoutType.Linear, item); true
+		}
+		R.id.action_layout_grid -> {
+			setLayoutPreference(LayoutType.Grid, item); true
 		}
 		R.id.nav_trash -> {
 			val args = bundleOf(Constants.BUNDLE_RECYCLE_BIN to true)
 			findNavController().tryNavigate(R.id.action_notes_to_self, args); true
+		}
+		R.id.nav_settings -> {
+			findNavController().tryNavigate(R.id.action_notes_to_settings); true
 		}
 		else -> false
 	}
@@ -133,7 +142,7 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 		findNavController().tryNavigate(R.id.action_notes_to_tags)
 	}
 
-	private fun changeNotesLayout(layoutType: LayoutType) {
+	private fun setLayoutPreference(layoutType: LayoutType, menuItem: MenuItem) {
 		val layoutManager = binding.recyclerView.layoutManager as StaggeredGridLayoutManager
 		when (layoutType) {
 			LayoutType.Linear -> {
@@ -145,7 +154,7 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 				preferenceStorage.layoutType = LayoutType.Linear.name
 			}
 		}
-		requireActivity().invalidateMenu()
+		menuItem.isChecked = true
 	}
 
 	private fun navigateToEditor(view: View? = null, note: Note) {
@@ -304,7 +313,7 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 		}
 	}
 
-	private inner class NotesMenuProvider : MenuProvider {
+	private inner class RecycleBinMenuProvider : MenuProvider {
 		override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
 			menuInflater.inflate(R.menu.menu_recycle_bin, menu)
 		}
