@@ -113,9 +113,6 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 		R.id.nav_tags -> {
 			navigateToTags(); true
 		}
-//		R.id.change_notes_layout -> {
-//			changeNotesLayout(LayoutType.valueOf(preferenceStorage.layoutType)); true
-//		}
 		R.id.action_layout_linear -> {
 			setLayoutPreference(LayoutType.Linear, item); true
 		}
