@@ -11,7 +11,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
-import io.github.xamdr.noties.ui.helpers.printError
+import timber.log.Timber
 import java.io.File
 import java.io.FileNotFoundException
 import java.time.LocalDateTime
@@ -38,7 +38,7 @@ object BitmapHelper {
 			return bitmap
 		}
 		catch (e: FileNotFoundException) {
-			printError("EXCEPTION", e.message)
+			Timber.e(e)
 			return null
 		}
 	}

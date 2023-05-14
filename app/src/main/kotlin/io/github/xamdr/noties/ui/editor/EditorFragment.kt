@@ -1,12 +1,16 @@
 package io.github.xamdr.noties.ui.editor
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.view.View.OnLayoutChangeListener
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.SharedElementCallback
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.core.view.doOnPreDraw
@@ -31,6 +35,7 @@ import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.editor.todos.DragDropCallback
 import io.github.xamdr.noties.ui.helpers.*
 import io.github.xamdr.noties.ui.image.BitmapCache
+import io.github.xamdr.noties.ui.image.BitmapHelper
 import io.github.xamdr.noties.ui.image.ImageAdapter
 import io.github.xamdr.noties.ui.image.ImageStorageManager
 import io.github.xamdr.noties.ui.media.MediaViewerViewModel
@@ -58,6 +63,13 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 	private val itemTouchHelper = ItemTouchHelper(DragDropCallback())
 	private val pickeMediaLauncher = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
 		addImages(uris)
+	}
+	private lateinit var cameraUri: Uri
+	private val takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+		savePicture(success)
+	}
+	private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+		onPermissionRequested(granted)
 	}
 
 	override fun onCreateView(inflater: LayoutInflater,
@@ -103,6 +115,29 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 	}
 
 	override fun onAttachMediaFile() = pickeMediaLauncher.launch(arrayOf("image/*"))
+
+	override fun onTakePicture() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			takePicture()
+		}
+		else {
+			if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+				PackageManager.PERMISSION_GRANTED) {
+				PermissionRationaleDialog.createFor(
+					requireContext(),
+					R.string.write_external_storage_permission_rationale,
+					R.drawable.ic_external_storage
+				)
+				.setNegativeButton(R.string.not_now_button, null)
+				.setPositiveButton(R.string.continue_button) { _, _ ->
+					requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+				}.show()
+			}
+			else {
+				takePicture()
+			}
+		}
+	}
 
 	private fun navigateUp() {
 		binding.root.hideSoftKeyboard()
@@ -235,6 +270,30 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 			note = note.copy(images = note.images + images)
 			imageAdapter.submitList(note.images)
 			requireActivity().invalidateMenu()
+		}
+	}
+
+	private fun takePicture() {
+		val savedUri = BitmapHelper.savePicture(requireContext()) ?: return
+		cameraUri = savedUri
+		takePictureLauncher.launch(cameraUri)
+	}
+
+	private fun savePicture(success: Boolean) {
+		if (success && ::cameraUri.isInitialized) {
+			addImages(listOf(cameraUri))
+		}
+		else {
+			binding.root.showSnackbar(R.string.error_take_picture)
+		}
+	}
+
+	private fun onPermissionRequested(granted: Boolean) {
+		if (granted) {
+			takePicture()
+		}
+		else {
+			binding.root.showSnackbar(R.string.permission_denied)
 		}
 	}
 

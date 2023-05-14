@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
-import android.text.format.DateFormat
 import android.widget.DatePicker
 import android.widget.TimePicker
 import androidx.fragment.app.DialogFragment
@@ -14,7 +13,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.DialogFragmentDatetimePickerBinding
 import io.github.xamdr.noties.ui.editor.EditorViewModel
-import io.github.xamdr.noties.ui.helpers.printDebug
+import timber.log.Timber
 import java.time.*
 
 class DateTimePickerDialogFragment : DialogFragment(), DatePickerDialog.OnDateSetListener,
@@ -74,7 +73,7 @@ class DateTimePickerDialogFragment : DialogFragment(), DatePickerDialog.OnDateSe
 	private fun scheduleNotification() {
 		if (selectedDate != null && selectedTime != null) {
 			val selectedDateTime = LocalDateTime.of(selectedDate, selectedTime)
-			printDebug(TAG, selectedDateTime)
+			Timber.d("SelectedDateTime: %s", selectedDateTime)
 //			viewModel.note = viewModel.note.copy(reminderDate = selectedDateTime)
 //			val delay = selectedDateTime.toInstant(ZoneOffset.of(ZoneId.systemDefault().id)).toEpochMilli()
 //			AlarmManagerHelper.setAlarmManager(requireContext(), delay, viewModel.note)

@@ -28,6 +28,7 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		binding.attachMedia.setOnClickListener { onAttachMediaFile() }
+		binding.takePicture.setOnClickListener { onTakePicture() }
 	}
 
 	fun setEditorMenuListener(listener: EditorMenuListener) {
@@ -36,6 +37,11 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 
 	private fun onAttachMediaFile() {
 		listener?.onAttachMediaFile()
+		dismiss()
+	}
+
+	private fun onTakePicture() {
+		listener?.onTakePicture()
 		dismiss()
 	}
 }
