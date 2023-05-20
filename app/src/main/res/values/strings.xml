@@ -190,6 +190,7 @@
 	<string name="error_play_audio">Error playing audio file</string>
 	<string name="error_record_speech">Error recording speech</string>
 	<string name="recording_finished">Recording finished</string>
+	<string name="loading_text">Loading text…</string>
 
 	<!-- Plurals -->
 	<plurals name="note_count">

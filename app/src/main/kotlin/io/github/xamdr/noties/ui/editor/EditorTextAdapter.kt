@@ -13,11 +13,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.xamdr.noties.databinding.ItemTextBinding
 import io.github.xamdr.noties.domain.model.Note
-import io.github.xamdr.noties.ui.helpers.Constants
-import io.github.xamdr.noties.ui.helpers.SpanSizeLookupOwner
-import io.github.xamdr.noties.ui.helpers.showSoftKeyboard
+import io.github.xamdr.noties.ui.helpers.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-class EditorTextAdapter(private val note: Note, private val listener: NoteContentListener) :
+class EditorTextAdapter(private var note: Note, private val listener: NoteContentListener) :
 	RecyclerView.Adapter<EditorTextAdapter.EditorTextViewHolder>(), SpanSizeLookupOwner {
 
 	private val handler = Handler(Looper.getMainLooper())
@@ -31,8 +33,8 @@ class EditorTextAdapter(private val note: Note, private val listener: NoteConten
 		private lateinit var runnable: Runnable
 
 		init {
-			if (note.id == 0L) {
-				binding.noteText.post { binding.noteText.showSoftKeyboard() }
+			if (note.id == 0L && note.isEmpty()) {
+				binding.root.post { binding.noteText.showSoftKeyboard() }
 			}
 			binding.noteText.setOnLinkClickedListener { url -> listener.onLinkClicked(url) }
 			ViewCompat.setOnReceiveContentListener(
@@ -43,8 +45,27 @@ class EditorTextAdapter(private val note: Note, private val listener: NoteConten
 		}
 
 		fun bind(note: Note) {
-			binding.noteText.setText(note.text)
 			binding.noteTitle.setText(note.title)
+			val text = note.text
+			if (text.length > TEXT_CHUNK_SIZE) {
+				listener.onNoteContentLoading()
+				val chunks = mutableListOf<String>()
+				for	(i in 0..text.length step TEXT_CHUNK_SIZE) {
+					val end = minOf(i + TEXT_CHUNK_SIZE, text.length)
+					chunks.add(text.substring(i, end))
+				}
+				CoroutineScope(Dispatchers.Main).launch {
+					for (chunk in chunks) {
+						binding.noteText.append(chunk)
+						delay(100)
+					}
+					binding.noteText.setSelection(0)
+					listener.onNoteContentLoaded()
+				}
+			}
+			else {
+				binding.noteText.setText(text)
+			}
 		}
 
 		fun bindTextWatcher() {
@@ -104,6 +125,11 @@ class EditorTextAdapter(private val note: Note, private val listener: NoteConten
 		override fun getSpanSize(position: Int) = Constants.SPAN_COUNT
 	}
 
+	fun submitNote(note: Note) {
+		this.note = note
+		notifyItemChanged(0)
+	}
+
 	fun setOnContentReceivedListener(callback: (uri: Uri) -> Unit) {
 		onContentReceivedCallback = callback
 	}
@@ -112,5 +138,6 @@ class EditorTextAdapter(private val note: Note, private val listener: NoteConten
 
 	private companion object {
 		private const val DELAY = 1000L
+		private const val TEXT_CHUNK_SIZE = 32768
 	}
 }

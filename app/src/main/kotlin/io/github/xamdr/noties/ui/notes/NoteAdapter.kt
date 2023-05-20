@@ -16,6 +16,7 @@ import io.github.xamdr.noties.databinding.ItemNoteBinding
 import io.github.xamdr.noties.databinding.ItemProtectedNoteBinding
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.blur
+import io.github.xamdr.noties.ui.helpers.estimateNumberChars
 import io.github.xamdr.noties.ui.helpers.setOnClickListener
 import io.github.xamdr.noties.ui.image.ImageLoader
 
@@ -26,6 +27,8 @@ class NoteAdapter(
 	var tracker: SelectionTracker<Note>? = null
 
 	open inner class BaseViewHolder(private val binding: ViewBinding) : RecyclerView.ViewHolder(binding.root) {
+
+		private val numberOfChars = (binding as ItemNoteBinding).content.estimateNumberChars(5)
 
 		fun bind(note: Note, isSelected: Boolean = false) {
 			when (binding) {
@@ -46,7 +49,7 @@ class NoteAdapter(
 			binding.title.isVisible = note.title.isNotEmpty()
 			binding.title.text = note.title
 			binding.content.isVisible = note.text.isNotEmpty()
-			binding.content.text = note.text
+			binding.content.text = if (note.text.length <= numberOfChars) note.text else note.text.substring(0, numberOfChars)
 			binding.url.isVisible = note.urls.isNotEmpty()
 			binding.url.text = note.urls.size.toString()
 			binding.image.isVisible = note.getPreviewImage() != null

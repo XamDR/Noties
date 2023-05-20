@@ -182,3 +182,10 @@ fun Snackbar.showOnTop() {
 		setMargins(this.leftMargin * 2, (toolbarHeight * 1.5).toInt(), this.rightMargin * 2, this.bottomMargin)
 	}
 }
+
+fun TextView.estimateNumberChars(numLines: Int): Int {
+	val charWidth = this.paint.measureText("a").toInt()
+	val screenWidth = this.context.resources.displayMetrics.widthPixels
+	val numCharsPerLine = screenWidth / charWidth
+	return numCharsPerLine * numLines
+}

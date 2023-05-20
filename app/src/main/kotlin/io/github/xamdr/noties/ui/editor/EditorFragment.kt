@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.core.view.doOnPreDraw
+import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -40,6 +41,7 @@ import io.github.xamdr.noties.ui.image.ImageAdapter
 import io.github.xamdr.noties.ui.image.ImageStorageManager
 import io.github.xamdr.noties.ui.media.MediaViewerViewModel
 import timber.log.Timber
+import java.io.FileNotFoundException
 import com.google.android.material.R as Material
 
 @AndroidEntryPoint
@@ -71,6 +73,10 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 	private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
 		onPermissionRequested(granted)
 	}
+	private val openFileLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+		readFileContent(uri)
+	}
+	private var fileUri: Uri? = null
 
 	override fun onCreateView(inflater: LayoutInflater,
 							  container: ViewGroup?,
@@ -96,7 +102,21 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 
 	override fun onSaveInstanceState(outState: Bundle) {
 		super.onSaveInstanceState(outState)
-		viewModel.saveState(note)
+		if (note.text.length <= 65536) {
+			viewModel.saveState(note)
+		}
+		else {
+			Timber.d("Text is too big to be saved into bundle.")
+			fileUri?.let { outState.putParcelable(Constants.BUNDLE_FILE_URI, it) }
+		}
+	}
+
+	override fun onViewStateRestored(savedInstanceState: Bundle?) {
+		super.onViewStateRestored(savedInstanceState)
+		if (savedInstanceState != null && savedInstanceState.containsKey(Constants.BUNDLE_FILE_URI)) {
+			fileUri = savedInstanceState.getParcelableCompat(Constants.BUNDLE_FILE_URI, Uri::class.java)
+			readFileContent(fileUri)
+		}
 	}
 
 	override fun onNoteTextChanged(text: String) {
@@ -320,6 +340,29 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		findNavController().tryNavigate(R.id.action_editor_media_viewer, args, null, extras)
 	}
 
+	override fun onNoteContentLoading() = ProgressDialogHelper.show(requireContext(), getString(R.string.loading_text))
+
+	override fun onNoteContentLoaded() = ProgressDialogHelper.dismiss()
+
+	private fun readFileContent(uri: Uri?) {
+		if (uri != null) {
+			try {
+				launch {
+					fileUri = uri
+					val file = DocumentFile.fromSingleUri(requireContext(), uri)
+					val text = UriHelper.readTextFromUri(requireContext(), uri)
+					note = note.copy(title = file?.simpleName ?: String.Empty, text = text)
+					textAdapter.submitNote(note)
+					requireActivity().invalidateMenu()
+				}
+			}
+			catch (e: FileNotFoundException) {
+				Timber.e(e)
+				binding.root.showSnackbar(R.string.error_open_file)
+			}
+		}
+	}
+
 	private inner class EditorMenuProvider : MenuProvider {
 		override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
 			menuInflater.inflate(R.menu.menu_editor, menu)
@@ -338,6 +381,10 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 				}
 				R.id.share_content -> {
 					ShareHelper.shareContent(requireContext(), note); true
+				}
+				R.id.open_file -> {
+					binding.root.hideSoftKeyboard()
+					openFileLauncher.launch(arrayOf(Constants.MIME_TYPE_TEXT)); true
 				}
 				else -> false
 			}

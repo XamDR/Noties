@@ -29,4 +29,5 @@ object Constants {
 	const val BUNDLE_POSITION = "BUNDLE_POSITION"
 	const val BUNDLE_IMAGE = "BUNDLE_IMAGE"
 	const val DATE_TIME_PATTERN = "dd/MM/yyyy HH:mm:ss"
+	const val BUNDLE_FILE_URI = "BUNDLE_FILE_URI"
 }
