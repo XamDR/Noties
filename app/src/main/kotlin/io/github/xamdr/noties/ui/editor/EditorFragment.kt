@@ -30,15 +30,13 @@ import com.google.android.material.transition.MaterialArcMotion
 import com.google.android.material.transition.MaterialContainerTransform
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
+import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.databinding.FragmentEditorBinding
-import io.github.xamdr.noties.domain.model.Image
+import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.editor.todos.DragDropCallback
 import io.github.xamdr.noties.ui.helpers.*
-import io.github.xamdr.noties.ui.image.BitmapCache
-import io.github.xamdr.noties.ui.image.BitmapHelper
-import io.github.xamdr.noties.ui.image.ImageAdapter
-import io.github.xamdr.noties.ui.image.ImageStorageManager
+import io.github.xamdr.noties.ui.image.*
 import io.github.xamdr.noties.ui.media.MediaViewerViewModel
 import timber.log.Timber
 import java.io.FileNotFoundException
@@ -60,11 +58,11 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 	private lateinit var note: Note
 	private lateinit var textAdapter: EditorTextAdapter
 	private lateinit var concatAdapter: ConcatAdapter
-	private val imageAdapter = ImageAdapter(this::navigateToMediaViewer)
+	private val mediaItemAdapter = MediaItemAdapter(this::navigateToMediaViewer)
 	private val menuProvider = EditorMenuProvider()
 	private val itemTouchHelper = ItemTouchHelper(DragDropCallback())
 	private val pickeMediaLauncher = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
-		addImages(uris)
+		addMediaItems(uris)
 	}
 	private lateinit var cameraUri: Uri
 	private val takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
@@ -134,7 +132,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		}
 	}
 
-	override fun onAttachMediaFile() = pickeMediaLauncher.launch(arrayOf("image/*"))
+	override fun onAttachMediaFiles() = pickeMediaLauncher.launch(arrayOf("image/*", "video/*"))
 
 	override fun onTakePicture() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -169,14 +167,14 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 			if (!::note.isInitialized) {
 				note = viewModel.getNote(noteId)
 			}
-			getNavigationResult<ArrayList<Image>>(Constants.BUNDLE_IMAGES)?.let { itemsToDelete ->
-				note = note.copy(images = note.images - itemsToDelete.toSet())
+			getNavigationResult<ArrayList<MediaItem>>(Constants.BUNDLE_ITEMS_DELETE)?.let { itemsToDelete ->
+				note = note.copy(items = note.items - itemsToDelete.toSet())
 				requireActivity().invalidateMenu()
 			}
 			textAdapter = EditorTextAdapter(note, this@EditorFragment).apply {
-				setOnContentReceivedListener { uri -> addImages(listOf(uri)) }
+				setOnContentReceivedListener { uri -> addMediaItems(listOf(uri)) }
 			}
-			concatAdapter = ConcatAdapter(imageAdapter, textAdapter)
+			concatAdapter = ConcatAdapter(mediaItemAdapter, textAdapter)
 			setupViews(note)
 		}
 	}
@@ -188,7 +186,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 				ConcatSpanSizeLookup(Constants.SPAN_COUNT) { concatAdapter.adapters }
 			addItemTouchHelper(itemTouchHelper)
 		}
-		imageAdapter.submitList(note.images)
+		mediaItemAdapter.submitList(note.items)
 		binding.txtModificationDate.text = DateTimeHelper.formatCurrentDateTime(note.modificationDate)
 		binding.root.doOnPreDraw { startPostponedEnterTransition() }
 		if (sharedViewModel.currentPosition == 0) {
@@ -257,15 +255,15 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 			Timber.d("Note: %s", note)
 			when (viewModel.saveNote(note, noteId)) {
 				NoteAction.DeleteEmptyNote -> {
-					ImageStorageManager.deleteImages(requireContext(), note.images)
+					MediaStorageManager.deleteItems(requireContext(), note.items)
 					binding.root.showSnackbar(R.string.empty_note_deleted).showOnTop()
 				}
 				NoteAction.InsertNote -> binding.root.showSnackbar(R.string.note_saved).showOnTop()
 				NoteAction.NoAction -> {}
 				NoteAction.UpdateNote -> {
-					getNavigationResult<ArrayList<Image>>(Constants.BUNDLE_IMAGES)?.let { itemsToDelete ->
-						ImageStorageManager.deleteImages(requireContext(), itemsToDelete)
-						viewModel.deleteImages(itemsToDelete)
+					getNavigationResult<ArrayList<MediaItem>>(Constants.BUNDLE_ITEMS_DELETE)?.let { itemsToDelete ->
+						MediaStorageManager.deleteItems(requireContext(), itemsToDelete)
+						viewModel.deleteItems(itemsToDelete)
 					}
 					binding.root.showSnackbar(R.string.note_updated).showOnTop()
 				}
@@ -274,21 +272,38 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		}
 	}
 
-	private fun addImages(uris: List<Uri>) {
+	private fun addMediaItems(uris: List<Uri>) {
 		if (uris.isEmpty()) return
 		launch {
-			val images = mutableListOf<Image>()
+			binding.progressIndicator.show()
+			val items = mutableListOf<MediaItem>()
 			for (uri in uris) {
 				val newUri = UriHelper.copyUri(requireContext(), uri)
-				val image = Image(
-					uri = newUri,
-					mimeType = requireContext().getUriMimeType(newUri),
-					noteId = note.id
-				)
-				images.add(image)
+				val mimeType = MediaHelper.getMediaMimeType(requireContext(), newUri)
+				val item: MediaItem
+				if (MediaHelper.isImage(requireContext(), newUri)) {
+					item = MediaItem(
+						uri = newUri,
+						mimeType = mimeType,
+						mediaType = MediaType.Image,
+						noteId = note.id
+					)
+				}
+				else {
+					val metadata = MediaHelper.getMediaItemMetadata(requireContext(), newUri)
+					item = MediaItem(
+						uri = newUri,
+						mimeType = mimeType,
+						mediaType = MediaType.Video,
+						metadata = metadata,
+						noteId = note.id
+					)
+				}
+				items.add(item)
 			}
-			note = note.copy(images = note.images + images)
-			imageAdapter.submitList(note.images)
+			note = note.copy(items = note.items + items)
+			mediaItemAdapter.submitList(note.items)
+			binding.progressIndicator.hide()
 			requireActivity().invalidateMenu()
 		}
 	}
@@ -301,7 +316,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 
 	private fun savePicture(success: Boolean) {
 		if (success && ::cameraUri.isInitialized) {
-			addImages(listOf(cameraUri))
+			addMediaItems(listOf(cameraUri))
 		}
 		else {
 			binding.root.showSnackbar(R.string.error_take_picture)
@@ -334,8 +349,8 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 	private fun navigateToMediaViewer(view: View, position: Int) {
 		BitmapCache.Instance.clear()
 		sharedViewModel.currentPosition = position
-		val args = bundleOf(Constants.BUNDLE_IMAGES to note.images)
-		val item = note.images[position]
+		val args = bundleOf(Constants.BUNDLE_ITEMS to note.items)
+		val item = note.items[position]
 		val extras = FragmentNavigatorExtras(view to item.id.toString())
 		findNavController().tryNavigate(R.id.action_editor_media_viewer, args, null, extras)
 	}

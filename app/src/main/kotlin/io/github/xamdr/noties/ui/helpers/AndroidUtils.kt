@@ -2,12 +2,10 @@ package io.github.xamdr.noties.ui.helpers
 
 import android.content.Context
 import android.graphics.Color
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.Window
-import android.webkit.MimeTypeMap
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -165,11 +163,4 @@ fun ActionBar.show(title: String) {
 
 fun DialogFragment.getPositiveButton(): Button {
 	return (requireDialog() as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
-}
-
-fun Context.getUriMimeType(uri: Uri): String? = this.contentResolver.getType(uri)
-
-fun Context.getUriExtension(uri: Uri): String? {
-	val mimeType = this.contentResolver.getType(uri)
-	return MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
 }

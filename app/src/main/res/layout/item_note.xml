@@ -13,20 +13,39 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
-		<ImageView
-			android:id="@+id/image"
+		<FrameLayout
+			android:id="@+id/media_container"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:adjustViewBounds="true"
-			android:contentDescription="@string/user_image"
-			android:scaleType="centerCrop"
 			android:visibility="gone"
 			app:layout_constraintBottom_toTopOf="@id/title"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toTopOf="parent"
-			tools:src="@drawable/ic_android"
-			tools:visibility="visible" />
+			tools:visibility="visible">
+
+			<ImageView
+				android:id="@+id/image"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:adjustViewBounds="true"
+				android:contentDescription="@string/user_image"
+				android:scaleType="centerCrop"
+				tools:src="@drawable/ic_android" />
+
+			<TextView
+				android:id="@+id/duration"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="top|end"
+				android:layout_margin="8dp"
+				android:drawablePadding="8dp"
+				android:gravity="center"
+				android:visibility="gone"
+				app:drawableStartCompat="@drawable/ic_play_video"
+				tools:text="04:40"
+				tools:visibility="visible" />
+		</FrameLayout>
 
 		<TextView
 			android:id="@+id/title"
@@ -43,7 +62,7 @@
 			app:layout_constraintBottom_toTopOf="@id/content"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/image"
+			app:layout_constraintTop_toBottomOf="@id/media_container"
 			tools:text="Lorem Ipsum"
 			tools:visibility="visible" />
 

@@ -1,13 +1,5 @@
 package io.github.xamdr.noties
 
-import io.github.xamdr.noties.data.entity.image.DatabaseImageEntity
-import io.github.xamdr.noties.domain.model.Note
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
-import org.junit.Test
-import java.time.ZonedDateTime
-import java.time.temporal.ChronoUnit
-
 class NoteEqualityTest {
 
 //	@Test

@@ -26,7 +26,7 @@ import io.github.xamdr.noties.databinding.FragmentNotesBinding
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.domain.model.Tag
 import io.github.xamdr.noties.ui.helpers.*
-import io.github.xamdr.noties.ui.image.ImageStorageManager
+import io.github.xamdr.noties.ui.image.MediaStorageManager
 import io.github.xamdr.noties.ui.notes.recyclebin.EmptyRecycleBinDialogFragment
 import io.github.xamdr.noties.ui.notes.selection.DeleteNotesDialogFragment
 import io.github.xamdr.noties.ui.notes.selection.NoteItemDetailsLookup
@@ -306,7 +306,7 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
 	private fun deleteImages(notes: List<Note>) {
 		for (note in notes) {
-			ImageStorageManager.deleteImages(requireContext(), note.images)
+			MediaStorageManager.deleteItems(requireContext(), note.items)
 		}
 	}
 

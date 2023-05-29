@@ -111,8 +111,7 @@
 
 	<!-- Add attachment Fragment -->
 	<string name="text_editor_menu_fragment_label">Text editor menu attachments</string>
-	<string name="attach_images">Attach images</string>
-	<string name="attach_multimedia">Attach multimedia</string>
+	<string name="attach_media">Attach multimedia </string>
 	<string name="take_picture">Take a picture</string>
 	<string name="write_external_storage_permission_rationale">Noties needs permission to access your gallery in order to save the picture taken by the camera.</string>
 	<string name="take_video">Record a video</string>

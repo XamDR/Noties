@@ -19,7 +19,7 @@ data class Note(
 	val isTodoList: Boolean = false,
 	val reminderDate: LocalDateTime? = null,
 	val tags: List<String> = emptyList(),
-	val images: List<Image> = emptyList()
+	val items: List<MediaItem> = emptyList()
 ) : Parcelable {
 
 	fun asDatabaseEntity(): DatabaseNoteEntity {
@@ -39,9 +39,10 @@ data class Note(
 		)
 	}
 
-	fun getPreviewImage() = images.firstOrNull()?.uri
+	val previewItem: MediaItem?
+		get() = items.firstOrNull()
 
-	fun isEmpty() = text.isEmpty() && images.isEmpty()
+	fun isEmpty() = text.isEmpty() && items.isEmpty()
 
 	fun toTodoList(): List<Todo.TodoItem> {
 		return if (text.isEmpty()) listOf(Todo.TodoItem())
@@ -59,7 +60,7 @@ data class Note(
 		const val PREFIX_NOT_DONE = "- [ ] "
 		const val PREFIX_DONE = "- [x] "
 
-		fun create(note: Note, images: List<Image>): Note {
+		fun create(note: Note, items: List<MediaItem>): Note {
 			return Note(
 				id = note.id,
 				title = note.title,
@@ -73,7 +74,7 @@ data class Note(
 				isTodoList = note.isTodoList,
 				reminderDate = note.reminderDate,
 				tags = note.tags,
-				images = images
+				items = items
 			)
 		}
 	}

@@ -11,20 +11,22 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
+import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.databinding.FragmentMediaPreviewImageBinding
-import io.github.xamdr.noties.domain.model.Image
+import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.getParcelableCompat
 import io.github.xamdr.noties.ui.helpers.supportActionBar
 import io.github.xamdr.noties.ui.helpers.window
 import io.github.xamdr.noties.ui.image.ImageLoader
+import timber.log.Timber
 
-class MediaPreviewFragment : Fragment() {
+class ImageMediaPreviewFragment : Fragment() {
 
 	private var _binding: FragmentMediaPreviewImageBinding? = null
 	private val binding get() = _binding!!
 	private val item by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getParcelableCompat(Constants.BUNDLE_IMAGE, Image::class.java)
+		requireArguments().getParcelableCompat(Constants.BUNDLE_MEDIA_ITEM, MediaItem::class.java)
 	}
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -39,8 +41,13 @@ class MediaPreviewFragment : Fragment() {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		ImageLoader.load(binding.image, item.uri, 800) {
-			parentFragment?.startPostponedEnterTransition()
+		if (item.mediaType == MediaType.Image) {
+			ImageLoader.load(binding.image, item.uri, 800) {
+				parentFragment?.startPostponedEnterTransition()
+			}
+		}
+		else {
+			Timber.d("The mediaType of %s is: %s", item, item.mediaType)
 		}
 		binding.image.setOnClickListener { toggleSystemBarsVisibility(it) }
 	}
@@ -70,8 +77,8 @@ class MediaPreviewFragment : Fragment() {
 	}
 
 	companion object {
-		fun newInstance(item: Image) = MediaPreviewFragment().apply {
-			arguments = bundleOf(Constants.BUNDLE_IMAGE to item)
+		fun newInstance(item: MediaItem) = ImageMediaPreviewFragment().apply {
+			arguments = bundleOf(Constants.BUNDLE_MEDIA_ITEM to item)
 		}
 	}
 }

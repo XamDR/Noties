@@ -58,13 +58,13 @@ object AlarmManagerHelper {
 			.setContentTitle(context.getString(R.string.app_name))
 			.setContentText(note.text)
 
-		if (note.images.isNotEmpty()) {
+		if (note.items.isNotEmpty()) {
 //			note.images[0].uri?.let {
 //				val bitmap = BitmapHelper.getBitmapFromUri(context, it, 200, 400)
 //				builder.setLargeIcon(bitmap)
 //				builder.setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap).bigLargeIcon(null))
 //			}
-			note.images[0].uri?.let { setBitmap(context, builder, it) }
+			note.items[0].uri?.let { setBitmap(context, builder, it) }
 		}
 		builder.apply {
 			setContentIntent(pendingIntent)

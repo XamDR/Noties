@@ -32,7 +32,7 @@ object ImageLoader {
 						gifDrawable = GifDrawable(imageView.context.contentResolver, src)
 					}
 					else {
-						bitmap = ImageStorageManager.getImageFromInternalStorage(imageView.context, src, size, size)?.also {
+						bitmap = MediaStorageManager.getImageFromInternalStorage(imageView.context, src, size, size)?.also {
 							BitmapCache.Instance.addBitmapToMemoryCache(imageKey, it)
 						}
 					}

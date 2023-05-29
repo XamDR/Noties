@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import io.github.xamdr.noties.R
+import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.databinding.ItemNoteBinding
 import io.github.xamdr.noties.databinding.ItemProtectedNoteBinding
 import io.github.xamdr.noties.domain.model.Note
@@ -19,6 +20,7 @@ import io.github.xamdr.noties.ui.helpers.blur
 import io.github.xamdr.noties.ui.helpers.estimateNumberChars
 import io.github.xamdr.noties.ui.helpers.setOnClickListener
 import io.github.xamdr.noties.ui.image.ImageLoader
+import io.github.xamdr.noties.ui.image.MediaHelper
 
 class NoteAdapter(
 	private val onNoteClicked: (view: View?, note: Note) -> Unit,
@@ -52,8 +54,19 @@ class NoteAdapter(
 			binding.content.text = if (note.text.length <= numberOfChars) note.text else note.text.substring(0, numberOfChars)
 			binding.url.isVisible = note.urls.isNotEmpty()
 			binding.url.text = note.urls.size.toString()
-			binding.image.isVisible = note.getPreviewImage() != null
-			ImageLoader.load(binding.image, note.getPreviewImage(), 400)
+			binding.mediaContainer.isVisible = note.previewItem != null
+			when (note.previewItem?.mediaType) {
+				MediaType.Image -> {
+					binding.duration.isVisible = false
+					ImageLoader.load(binding.image, note.previewItem?.uri, 400)
+				}
+				MediaType.Video -> {
+					binding.duration.isVisible = true
+					binding.duration.text = note.previewItem?.metadata?.duration?.let { MediaHelper.formatDuration(it) }
+					ImageLoader.load(binding.image, note.previewItem?.metadata?.thumbnail, 400)
+				}
+				else -> {}
+			}
 			ViewCompat.setTransitionName(binding.root, note.id.toString())
 		}
 	}

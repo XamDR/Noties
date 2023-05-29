@@ -12,14 +12,17 @@ import android.provider.MediaStore
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import timber.log.Timber
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileNotFoundException
+import java.io.FileOutputStream
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 object BitmapHelper {
 
-	private const val authority = "io.github.xamdr.noties"
+	private const val AUTHORITY = "io.github.xamdr.noties"
+	private const val DIRECTORY_IMAGES = "images"
 
 	fun getBitmapFromUri(context: Context, uri: Uri, reqWidth: Int, reqHeight: Int): Bitmap? {
 		val bitmap: Bitmap?
@@ -41,6 +44,26 @@ object BitmapHelper {
 			Timber.e(e)
 			return null
 		}
+	}
+
+	fun getUriFromBitmap(context: Context, bitmap: Bitmap): Uri? {
+		val fileName = buildString {
+			append("IMG_")
+			append(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(LocalDateTime.now()))
+			append("_${(0..999).random()}.jpg")
+		}
+		val file = File("${context.filesDir}/$DIRECTORY_IMAGES", "/$fileName")
+		val bytes = ByteArrayOutputStream()
+		val result = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+		return if (result) {
+			val bitmapData = bytes.toByteArray()
+			FileOutputStream(file).apply {
+				write(bitmapData)
+				flush()
+				close()
+			}
+			FileProvider.getUriForFile(context, AUTHORITY, file)
+		} else null
 	}
 
 	fun rotateImageIfRequired(context: Context, uri: Uri, originalBitmap: Bitmap): Bitmap {
@@ -80,7 +103,7 @@ object BitmapHelper {
 			val appPicturesDir = File("${picturesDir}/Noties")
 			if (!appPicturesDir.exists()) appPicturesDir.mkdir()
 			val imageFile = File(appPicturesDir, "/$fileName")
-			FileProvider.getUriForFile(context, authority, imageFile)
+			FileProvider.getUriForFile(context, AUTHORITY, imageFile)
 		}
 		return imageUri
 	}

@@ -3,13 +3,10 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context=".ui.media.ImageMediaPreviewFragment">
+	tools:context=".ui.media.VideoMediaPreviewFragment">
 
-	<io.github.xamdr.noties.ui.views.PhotoImageView
-		android:id="@+id/image"
+	<VideoView
+		android:id="@+id/video"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:adjustViewBounds="true"
-		android:scaleType="fitCenter"
-		tools:src="@drawable/ic_android"/>
+		android:layout_height="match_parent" />
 </io.github.xamdr.noties.ui.views.PannableHost>

@@ -12,7 +12,7 @@ import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.FragmentMediaViewerBinding
-import io.github.xamdr.noties.domain.model.Image
+import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.helpers.*
 
 @AndroidEntryPoint
@@ -21,22 +21,22 @@ class MediaViewerFragment : Fragment() {
 	private var _binding: FragmentMediaViewerBinding? = null
 	private val binding get() = _binding!!
 	private val sharedViewModel by hiltNavGraphViewModels<MediaViewerViewModel>(R.id.nav_editor)
-	private val images by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getParcelableArrayListCompat(Constants.BUNDLE_IMAGES, Image::class.java)
+	private val items by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getParcelableArrayListCompat(Constants.BUNDLE_ITEMS, MediaItem::class.java)
 	}
 	private lateinit var mediaStateAdapter: MediaStateAdapter
 	private lateinit var pageSelectedCallback: PageSelectedCallback
 	private val menuProvider = MediaMenuProvider()
-	private val itemsToDelete = mutableListOf<Image>()
+	private val itemsToDelete = mutableListOf<MediaItem>()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		mediaStateAdapter = MediaStateAdapter(this, images, this::onItemRemoved)
-		pageSelectedCallback = PageSelectedCallback(images.size)
+		mediaStateAdapter = MediaStateAdapter(this, items, this::onItemRemoved)
+		pageSelectedCallback = PageSelectedCallback(items.size)
 		if (savedInstanceState != null) {
 			val restoredItemsToDelete = savedInstanceState.getParcelableArrayListCompat(
-				Constants.BUNDLE_IMAGES,
-				Image::class.java
+				Constants.BUNDLE_ITEMS_DELETE,
+				MediaItem::class.java
 			)
 			itemsToDelete.addAll(restoredItemsToDelete)
 		}
@@ -60,14 +60,14 @@ class MediaViewerFragment : Fragment() {
 		setupViewPager()
 		pageSelectedCallback.onPageSelected(sharedViewModel.currentPosition)
 		onBackPressed {
-			setNavigationResult(Constants.BUNDLE_IMAGES, ArrayList(itemsToDelete))
+			setNavigationResult(Constants.BUNDLE_ITEMS_DELETE, ArrayList(itemsToDelete))
 			findNavController().popBackStack()
 		}
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
 		super.onSaveInstanceState(outState)
-		outState.putParcelableArrayList(Constants.BUNDLE_IMAGES, ArrayList(itemsToDelete))
+		outState.putParcelableArrayList(Constants.BUNDLE_ITEMS_DELETE, ArrayList(itemsToDelete))
 	}
 
 	override fun onPause() {
@@ -104,7 +104,7 @@ class MediaViewerFragment : Fragment() {
 	}
 
 	private fun shareMediaItem(position: Int) {
-		val uri = images[position].uri ?: return
+		val uri = items[position].uri ?: return
 		ShareCompat.IntentBuilder(requireContext())
 			.setType(Constants.MIME_TYPE_IMAGE)
 			.addStream(uri)
@@ -113,18 +113,18 @@ class MediaViewerFragment : Fragment() {
 	}
 
 	private fun copyMediaItem(position: Int) {
-		val uri = images[position].uri ?: return
+		val uri = items[position].uri ?: return
 		requireContext().copyUriToClipboard(R.string.image_item, uri, R.string.image_copied_msg)
 	}
 
 	private fun downloadMediaItem(position: Int) {
-		val uri = images[position].uri ?: return
+		val uri = items[position].uri ?: return
 		TODO("Save $uri to disk :)")
 	}
 
 	private fun onItemRemoved(position: Int) {
-		val itemToDelete = images[position]
-		val newImages = images - itemToDelete
+		val itemToDelete = items[position]
+		val newImages = items - itemToDelete
 		if (newImages.isNotEmpty()) {
 			pageSelectedCallback.size = newImages.size
 			pageSelectedCallback.onPageSelected(position)

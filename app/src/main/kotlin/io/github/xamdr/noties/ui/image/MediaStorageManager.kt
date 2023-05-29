@@ -4,20 +4,22 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import io.github.xamdr.noties.domain.model.Image
+import io.github.xamdr.noties.domain.model.MediaItem
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 
-object ImageStorageManager {
+object MediaStorageManager {
 
 	private const val size = 1024
-	private const val DIRECTORY = "images"
+	private const val DIRECTORY_IMAGES = "images"
+	private const val DIRECTORY_VIDEOS = "videos"
 
-	suspend fun saveImage(context: Context, uri: Uri, fileName: String): String = withContext(IO) {
-		val directory = "${context.filesDir}/$DIRECTORY"
+	suspend fun saveMediaItem(context: Context, uri: Uri, fileName: String): String = withContext(IO) {
+		val isImage = MediaHelper.isImage(context, uri)
+		val directory = if (isImage) "${context.filesDir}/$DIRECTORY_IMAGES" else "${context.filesDir}/$DIRECTORY_VIDEOS"
 		context.contentResolver.openInputStream(uri).use {
 			FileOutputStream(File(directory, fileName)).use { fos ->
 				val buffer = ByteArray(size)
@@ -40,19 +42,19 @@ object ImageStorageManager {
 		else null
 	}
 
-	fun deleteImages(context: Context, images: List<Image>) {
-		for (image in images) {
-			val fileName = DocumentFile.fromSingleUri(context, image.uri!!)?.name
+	fun deleteItems(context: Context, items: List<MediaItem>) {
+		for (item in items) {
+			val fileName = item.uri?.let { DocumentFile.fromSingleUri(context, it)?.name }
 			fileName?.let {
-				val result = deleteImage(context, it)
+				val result = deleteItem(context, it, MediaHelper.isImage(context, item.uri))
 				Timber.d("Result: %s", result)
 			}
 		}
 	}
 
-	private fun deleteImage(context: Context, imageFileName: String): Boolean {
-		val directory = "${context.filesDir}/$DIRECTORY"
-		val file = File(directory, imageFileName)
+	private fun deleteItem(context: Context, itemFileName: String, isImage: Boolean): Boolean {
+		val directory = if (isImage) "${context.filesDir}/$DIRECTORY_IMAGES" else "${context.filesDir}/$DIRECTORY_VIDEOS"
+		val file = File(directory, itemFileName)
 		return file.delete()
 	}
 }
