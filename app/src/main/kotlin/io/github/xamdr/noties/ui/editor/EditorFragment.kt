@@ -34,9 +34,11 @@ import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.databinding.FragmentEditorBinding
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
+import io.github.xamdr.noties.ui.helpers.media.MediaHelper
+import io.github.xamdr.noties.ui.editor.media.MediaItemAdapter
+import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
 import io.github.xamdr.noties.ui.editor.todos.DragDropCallback
 import io.github.xamdr.noties.ui.helpers.*
-import io.github.xamdr.noties.ui.image.*
 import io.github.xamdr.noties.ui.media.MediaViewerViewModel
 import timber.log.Timber
 import java.io.FileNotFoundException
@@ -100,7 +102,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 
 	override fun onSaveInstanceState(outState: Bundle) {
 		super.onSaveInstanceState(outState)
-		if (note.text.length <= 65536) {
+		if (::note.isInitialized && note.text.length <= Constants.MAX_TEXT_LIMIT) {
 			viewModel.saveState(note)
 		}
 		else {
@@ -278,7 +280,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 			binding.progressIndicator.show()
 			val items = mutableListOf<MediaItem>()
 			for (uri in uris) {
-				val newUri = UriHelper.copyUri(requireContext(), uri)
+				val newUri = MediaHelper.copyUri(requireContext(), uri)
 				val mimeType = MediaHelper.getMediaMimeType(requireContext(), newUri)
 				val item: MediaItem
 				if (MediaHelper.isImage(requireContext(), newUri)) {
@@ -309,7 +311,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 	}
 
 	private fun takePicture() {
-		val savedUri = BitmapHelper.savePicture(requireContext()) ?: return
+		val savedUri = MediaStorageManager.saveMediaItem(requireContext()) ?: return
 		cameraUri = savedUri
 		takePictureLauncher.launch(cameraUri)
 	}

@@ -18,7 +18,7 @@ import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.getParcelableCompat
 import io.github.xamdr.noties.ui.helpers.supportActionBar
 import io.github.xamdr.noties.ui.helpers.window
-import io.github.xamdr.noties.ui.image.ImageLoader
+import io.github.xamdr.noties.ui.helpers.media.ImageLoader
 import timber.log.Timber
 
 class ImageMediaPreviewFragment : Fragment() {

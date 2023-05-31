@@ -1,16 +1,39 @@
-package io.github.xamdr.noties.ui.image
+package io.github.xamdr.noties.ui.helpers.media
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.webkit.MimeTypeMap
+import androidx.core.content.FileProvider
 import io.github.xamdr.noties.domain.model.MediaItemMetadata
+import io.github.xamdr.noties.ui.helpers.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object MediaHelper {
 
+	private const val DEFAULT_IMAGE_EXTENSION = "jpeg"
+	private const val DEFAULT_VIDEO_EXTENSION = "mp4"
 	private const val PREFIX_IMAGE = "image"
 	private const val PREFIX_VIDEO = "video"
+
+	suspend fun copyUri(context: Context, uri: Uri): Uri {
+		val isImage = isImage(context, uri)
+		val mimeType = getMediaMimeType(context, uri)
+		val defaultExtension = if (isImage) DEFAULT_IMAGE_EXTENSION else DEFAULT_VIDEO_EXTENSION
+		val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: defaultExtension
+		val fileName = buildString {
+			append(if (isImage) "IMG_" else "VID_")
+			append(DateTimeFormatter.ofPattern(Constants.MEDIA_ITEM_PATTERN).format(LocalDateTime.now()))
+			append("_${(0..999).random()}.$extension")
+		}
+		val fullPath = MediaStorageManager.saveMediaItem(context, uri, fileName)
+		val file = File(fullPath)
+		return FileProvider.getUriForFile(context, Constants.AUTHORITY, file)
+	}
 
 	suspend fun getMediaItemMetadata(context: Context, src: Uri): MediaItemMetadata = withContext(Dispatchers.IO) {
 		val retriever = MediaMetadataRetriever()

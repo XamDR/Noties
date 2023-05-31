@@ -19,8 +19,8 @@ import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.blur
 import io.github.xamdr.noties.ui.helpers.estimateNumberChars
 import io.github.xamdr.noties.ui.helpers.setOnClickListener
-import io.github.xamdr.noties.ui.image.ImageLoader
-import io.github.xamdr.noties.ui.image.MediaHelper
+import io.github.xamdr.noties.ui.helpers.media.ImageLoader
+import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 
 class NoteAdapter(
 	private val onNoteClicked: (view: View?, note: Note) -> Unit,

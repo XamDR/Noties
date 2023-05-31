@@ -1,16 +1,13 @@
-package io.github.xamdr.noties.ui.image
+package io.github.xamdr.noties.ui.helpers.media
 
-import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
-import android.os.Build
-import android.os.Environment
-import android.provider.MediaStore
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
+import io.github.xamdr.noties.ui.helpers.Constants
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -21,10 +18,35 @@ import java.time.format.DateTimeFormatter
 
 object BitmapHelper {
 
-	private const val AUTHORITY = "io.github.xamdr.noties"
-	private const val DIRECTORY_IMAGES = "images"
+	fun getBitmapFromInternalStorage(context: Context, uri: Uri, width: Int, height: Int): Bitmap? {
+		val originalBitmap = getBitmapFromUri(context, uri, width, height)
+		return if (originalBitmap != null) {
+			rotateImageIfRequired(context, uri, originalBitmap)
+		}
+		else null
+	}
 
-	fun getBitmapFromUri(context: Context, uri: Uri, reqWidth: Int, reqHeight: Int): Bitmap? {
+	fun getUriFromBitmap(context: Context, bitmap: Bitmap): Uri? {
+		val fileName = buildString {
+			append("IMG_")
+			append(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(LocalDateTime.now()))
+			append("_${(0..999).random()}.jpg")
+		}
+		val file = File("${context.filesDir}/${Constants.DIRECTORY_IMAGES}", "/$fileName")
+		val bytes = ByteArrayOutputStream()
+		val result = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+		return if (result) {
+			val bitmapData = bytes.toByteArray()
+			FileOutputStream(file).apply {
+				write(bitmapData)
+				flush()
+				close()
+			}
+			FileProvider.getUriForFile(context, Constants.AUTHORITY, file)
+		} else null
+	}
+
+	private fun getBitmapFromUri(context: Context, uri: Uri, reqWidth: Int, reqHeight: Int): Bitmap? {
 		val bitmap: Bitmap?
 		try {
 			var inputStream = context.contentResolver.openInputStream(uri)
@@ -46,27 +68,7 @@ object BitmapHelper {
 		}
 	}
 
-	fun getUriFromBitmap(context: Context, bitmap: Bitmap): Uri? {
-		val fileName = buildString {
-			append("IMG_")
-			append(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(LocalDateTime.now()))
-			append("_${(0..999).random()}.jpg")
-		}
-		val file = File("${context.filesDir}/$DIRECTORY_IMAGES", "/$fileName")
-		val bytes = ByteArrayOutputStream()
-		val result = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-		return if (result) {
-			val bitmapData = bytes.toByteArray()
-			FileOutputStream(file).apply {
-				write(bitmapData)
-				flush()
-				close()
-			}
-			FileProvider.getUriForFile(context, AUTHORITY, file)
-		} else null
-	}
-
-	fun rotateImageIfRequired(context: Context, uri: Uri, originalBitmap: Bitmap): Bitmap {
+	private fun rotateImageIfRequired(context: Context, uri: Uri, originalBitmap: Bitmap): Bitmap {
 		val matrix = Matrix()
 		val rotationDegree = getRotationDegree(context, uri)
 		return if (rotationDegree != 0f) {
@@ -79,33 +81,6 @@ object BitmapHelper {
 			rotatedBitmap
 		}
 		else originalBitmap
-	}
-
-	@Suppress("DEPRECATION")
-	fun savePicture(context: Context): Uri? {
-		val fileName = buildString {
-			append("IMG_")
-			append(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(LocalDateTime.now()))
-			append("_${(0..999).random()}.jpg")
-		}
-		val directory = "${Environment.DIRECTORY_PICTURES}/Noties"
-
-		val imageUri: Uri? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-			val contentValues = ContentValues().apply {
-				put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-				put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
-				put(MediaStore.MediaColumns.RELATIVE_PATH, directory)
-			}
-			context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-		}
-		else {
-			val picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-			val appPicturesDir = File("${picturesDir}/Noties")
-			if (!appPicturesDir.exists()) appPicturesDir.mkdir()
-			val imageFile = File(appPicturesDir, "/$fileName")
-			FileProvider.getUriForFile(context, AUTHORITY, imageFile)
-		}
-		return imageUri
 	}
 
 	private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {

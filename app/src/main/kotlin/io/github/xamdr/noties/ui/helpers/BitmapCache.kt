@@ -1,4 +1,4 @@
-package io.github.xamdr.noties.ui.image
+package io.github.xamdr.noties.ui.helpers
 
 import android.graphics.Bitmap
 import androidx.collection.LruCache

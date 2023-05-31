@@ -1,4 +1,4 @@
-package io.github.xamdr.noties.ui.image
+package io.github.xamdr.noties.ui.editor.media
 
 import android.view.LayoutInflater
 import android.view.View
@@ -43,7 +43,7 @@ class MediaItemAdapter(
 	override fun onBindViewHolder(holder: BaseMediaItemViewHolder, position: Int) {
 		val item = getItem(position)
 		holder.bind(item)
-		Timber.d("Image: %s", item)
+		Timber.d("MediaItem: %s", item)
 	}
 
 	override fun getItemViewType(position: Int) =

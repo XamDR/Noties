@@ -1,9 +1,10 @@
-package io.github.xamdr.noties.ui.image
+package io.github.xamdr.noties.ui.helpers.media
 
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.widget.ImageView
+import io.github.xamdr.noties.ui.helpers.BitmapCache
 import pl.droidsonroids.gif.GifDrawable
 import java.util.concurrent.Executors
 
@@ -32,7 +33,7 @@ object ImageLoader {
 						gifDrawable = GifDrawable(imageView.context.contentResolver, src)
 					}
 					else {
-						bitmap = MediaStorageManager.getImageFromInternalStorage(imageView.context, src, size, size)?.also {
+						bitmap = BitmapHelper.getBitmapFromInternalStorage(imageView.context, src, size, size)?.also {
 							BitmapCache.Instance.addBitmapToMemoryCache(imageKey, it)
 						}
 					}

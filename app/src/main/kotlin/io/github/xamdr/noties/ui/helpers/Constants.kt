@@ -31,4 +31,10 @@ object Constants {
 	const val BUNDLE_MEDIA_ITEM = "BUNDLE_MEDIA_ITEM"
 	const val DATE_TIME_PATTERN = "dd/MM/yyyy HH:mm:ss"
 	const val BUNDLE_FILE_URI = "BUNDLE_FILE_URI"
+	const val MAX_TEXT_LIMIT = 65536
+	const val AUTHORITY = "io.github.xamdr.noties"
+	const val DIRECTORY_IMAGES = "images"
+	const val DIRECTORY_VIDEOS = "videos"
+	const val DIRECTORY_AUDIOS = "audios"
+	const val MEDIA_ITEM_PATTERN = "yyyyMMdd_HHmmss"
 }

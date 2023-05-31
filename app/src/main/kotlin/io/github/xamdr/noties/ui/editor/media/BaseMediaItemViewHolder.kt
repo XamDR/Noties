@@ -1,4 +1,4 @@
-package io.github.xamdr.noties.ui.image
+package io.github.xamdr.noties.ui.editor.media
 
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
@@ -8,6 +8,8 @@ import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.databinding.ItemMediaBinding
 import io.github.xamdr.noties.databinding.ItemSingleMediaBinding
 import io.github.xamdr.noties.domain.model.MediaItem
+import io.github.xamdr.noties.ui.helpers.media.ImageLoader
+import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 
 open class BaseMediaItemViewHolder(private val binding: ViewBinding) : RecyclerView.ViewHolder(binding.root) {
 
