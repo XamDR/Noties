@@ -101,6 +101,10 @@ dependencies {
 	// Timber
 	implementation libs.timber
 
+	// Media3
+	implementation libs.media3
+	implementation libs.media3.ui
+
 	// Testing
 	testImplementation libs.junit4
 	androidTestImplementation libs.androidx.core.testing

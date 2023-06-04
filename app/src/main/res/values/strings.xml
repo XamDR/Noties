@@ -112,15 +112,16 @@
 	<!-- Add attachment Fragment -->
 	<string name="text_editor_menu_fragment_label">Text editor menu attachments</string>
 	<string name="attach_media">Attach multimedia </string>
-	<string name="take_picture">Take a picture</string>
-	<string name="write_external_storage_permission_rationale">Noties needs permission to access your gallery in order to save the picture taken by the camera.</string>
-	<string name="take_video">Record a video</string>
+	<string name="take_picture">Take picture</string>
+	<string name="write_external_storage_permission_rationale">Noties needs permission to access your gallery in order to save the picture or video taken by the camera.</string>
+	<string name="take_video">Record video</string>
 	<string name="talk_to_write">Talk to write</string>
 	<string name="add_todo_list">Add to-do list</string>
 	<string name="add_reminder">Add reminder</string>
 	<string name="user_image">Image added by the user</string>
 	<string name="image_saved">Picture saved</string>
 	<string name="error_take_picture">No photo was taken.</string>
+	<string name="error_take_video">No video was recorded.</string>
 	<string name="permission_denied">Permission denied.</string>
 	<string name="image_attachment">Image attached to the note.</string>
 

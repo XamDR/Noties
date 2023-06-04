@@ -22,6 +22,8 @@ object MediaStorageManager {
 
 	private const val size = 1024
 	private const val DEFAULT_IMAGE_MIME_TYPE = "image/jpg"
+	private const val DEFAULT_VIDEO_MIME_TYPE = "video/mp4"
+	private const val DEFAULT_DIRECTORY = "Noties"
 
 	suspend fun saveMediaItem(context: Context, uri: Uri, fileName: String): String = withContext(IO) {
 		val isImage = MediaHelper.isImage(context, uri)
@@ -42,13 +44,13 @@ object MediaStorageManager {
 	}
 
 	@Suppress("DEPRECATION")
-	fun saveMediaItem(context: Context): Uri? {
+	fun savePicture(context: Context): Uri? {
 		val fileName = buildString {
 			append("IMG_")
 			append(DateTimeFormatter.ofPattern(Constants.MEDIA_ITEM_PATTERN).format(LocalDateTime.now()))
 			append("_${(0..999).random()}.jpg")
 		}
-		val directory = "${Environment.DIRECTORY_PICTURES}/Noties"
+		val directory = "${Environment.DIRECTORY_PICTURES}/$DEFAULT_DIRECTORY"
 
 		val imageUri: Uri? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 			val contentValues = ContentValues().apply {
@@ -60,12 +62,39 @@ object MediaStorageManager {
 		}
 		else {
 			val picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-			val appPicturesDir = File("${picturesDir}/Noties")
+			val appPicturesDir = File("${picturesDir}/$DEFAULT_DIRECTORY")
 			if (!appPicturesDir.exists()) appPicturesDir.mkdir()
 			val imageFile = File(appPicturesDir, "/$fileName")
 			FileProvider.getUriForFile(context, Constants.AUTHORITY, imageFile)
 		}
 		return imageUri
+	}
+
+	@Suppress("DEPRECATION")
+	fun saveVideo(context: Context): Uri? {
+		val fileName = buildString {
+			append("VID_")
+			append(DateTimeFormatter.ofPattern(Constants.MEDIA_ITEM_PATTERN).format(LocalDateTime.now()))
+			append("_${(0..999).random()}.mp4")
+		}
+		val directory = "${Environment.DIRECTORY_MOVIES}/$DEFAULT_DIRECTORY"
+
+		val videoUri: Uri? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			val contentValues = ContentValues().apply {
+				put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+				put(MediaStore.MediaColumns.MIME_TYPE, DEFAULT_VIDEO_MIME_TYPE)
+				put(MediaStore.MediaColumns.RELATIVE_PATH, directory)
+			}
+			context.contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues)
+		}
+		else {
+			val moviesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
+			val appMoviesDir = File("${moviesDir}/$DEFAULT_DIRECTORY")
+			if (!appMoviesDir.exists()) appMoviesDir.mkdir()
+			val videoFile = File(appMoviesDir, "/$fileName")
+			FileProvider.getUriForFile(context, Constants.AUTHORITY, videoFile)
+		}
+		return videoUri
 	}
 
 	fun deleteItems(context: Context, items: List<MediaItem>) {

@@ -1,12 +1,21 @@
 package io.github.xamdr.noties.ui.media
 
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.OptIn
 import androidx.core.app.ShareCompat
 import androidx.core.app.SharedElementCallback
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.media3.common.Player
+import androidx.media3.common.MediaItem as ExoPlayerMediaItem
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,11 +37,15 @@ class MediaViewerFragment : Fragment() {
 	private lateinit var pageSelectedCallback: PageSelectedCallback
 	private val menuProvider = MediaMenuProvider()
 	private val itemsToDelete = mutableListOf<MediaItem>()
+	var player: ExoPlayer? = null
+	private lateinit var mediaSourceFactory: DefaultDataSource.Factory
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		mediaStateAdapter = MediaStateAdapter(this, items, this::onItemRemoved)
 		pageSelectedCallback = PageSelectedCallback(items.size)
+		player = ExoPlayer.Builder(requireContext()).build()
+		mediaSourceFactory = DefaultDataSource.Factory(requireContext())
 		if (savedInstanceState != null) {
 			val restoredItemsToDelete = savedInstanceState.getParcelableArrayListCompat(
 				Constants.BUNDLE_ITEMS_DELETE,
@@ -70,14 +83,35 @@ class MediaViewerFragment : Fragment() {
 		outState.putParcelableArrayList(Constants.BUNDLE_ITEMS_DELETE, ArrayList(itemsToDelete))
 	}
 
+	override fun onStop() {
+		super.onStop()
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			releasePlayer()
+		}
+	}
+
 	override fun onPause() {
 		super.onPause()
 		binding.pager.unregisterOnPageChangeCallback(pageSelectedCallback)
+		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+			releasePlayer()
+		}
 	}
 
 	override fun onResume() {
 		super.onResume()
 		binding.pager.registerOnPageChangeCallback(pageSelectedCallback)
+	}
+
+	@OptIn(UnstableApi::class)
+	fun addMediaSource(player: ExoPlayer, src: Uri, listener: Player.Listener) {
+		val mediaSource = ProgressiveMediaSource.Factory(mediaSourceFactory).createMediaSource(ExoPlayerMediaItem.fromUri(src))
+		player.apply {
+			setMediaSource(mediaSource)
+			addListener(listener)
+			prepare()
+			play()
+		}
 	}
 
 	private fun prepareSharedElementEnterTransition() {
@@ -88,7 +122,7 @@ class MediaViewerFragment : Fragment() {
 					val currentFragment = mediaStateAdapter.findFragmentByPosition(sharedViewModel.currentPosition) ?: return
 					val view = currentFragment.view ?: return
 					if (!names.isNullOrEmpty() && !sharedElements.isNullOrEmpty()) {
-						sharedElements[names[0]] = view.findViewById(R.id.image)
+						sharedElements[names[0]] = view.findViewById(R.id.image) ?: view.findViewById(R.id.thumbnail)
 					}
 				}
 			}
@@ -133,6 +167,11 @@ class MediaViewerFragment : Fragment() {
 			sharedViewModel.currentPosition = 0
 		}
 		itemsToDelete.add(itemToDelete)
+	}
+
+	private fun releasePlayer() {
+		player?.release()
+		player = null
 	}
 
 	private inner class MediaMenuProvider : MenuProvider {

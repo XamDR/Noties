@@ -9,6 +9,7 @@ import android.view.Window
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultRegistry
 import androidx.annotation.*
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
@@ -131,6 +132,9 @@ fun NavController.tryNavigate(
 
 val Fragment.supportActionBar: ActionBar?
 	get() = (this.activity as AppCompatActivity).supportActionBar
+
+val Fragment.activityResultRegistry: ActivityResultRegistry
+	get() = this.requireActivity().activityResultRegistry
 
 fun Fragment.addMenuProvider(provider: MenuProvider, owner: LifecycleOwner) {
 	this.requireActivity().addMenuProvider(provider, owner)

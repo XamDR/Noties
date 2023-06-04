@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<io.github.xamdr.noties.ui.views.PannableHost xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	tools:context=".ui.media.VideoMediaPreviewFragment">
 
-	<VideoView
-		android:id="@+id/video"
+	<ImageView
+		android:id="@+id/thumbnail"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent" />
-</io.github.xamdr.noties.ui.views.PannableHost>
+		android:layout_height="match_parent"
+		android:layout_margin="8dp"
+		android:adjustViewBounds="true"
+		android:importantForAccessibility="no"
+		android:scaleType="fitCenter"
+		tools:src="@drawable/ic_android"
+		tools:visibility="gone" />
+
+	<androidx.media3.ui.PlayerView
+		android:id="@+id/player_view"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_margin="8dp"
+		android:visibility="gone"
+		app:use_artwork="false"
+		tools:visibility="visible" />
+</FrameLayout>

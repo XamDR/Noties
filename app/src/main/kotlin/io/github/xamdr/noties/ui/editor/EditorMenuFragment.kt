@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.xamdr.noties.databinding.DialogFragmentEditorMenuBinding
+import io.github.xamdr.noties.ui.helpers.onClick
 
 class EditorMenuFragment : BottomSheetDialogFragment() {
 
@@ -27,8 +28,9 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		binding.attachMedia.setOnClickListener { onAttachMediaFiles() }
-		binding.takePicture.setOnClickListener { onTakePicture() }
+		binding.attachMedia.onClick { onAttachMediaFiles() }
+		binding.takePicture.onClick { onTakePicture() }
+		binding.takeVideo.onClick { onTakeVideo() }
 	}
 
 	fun setEditorMenuListener(listener: EditorMenuListener) {
@@ -42,6 +44,11 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 
 	private fun onTakePicture() {
 		listener?.onTakePicture()
+		dismiss()
+	}
+
+	private fun onTakeVideo() {
+		listener?.onTakeVideo()
 		dismiss()
 	}
 }

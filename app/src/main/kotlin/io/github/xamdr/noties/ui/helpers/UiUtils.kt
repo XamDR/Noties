@@ -189,3 +189,7 @@ fun TextView.estimateNumberChars(numLines: Int): Int {
 	val numCharsPerLine = screenWidth / charWidth
 	return numCharsPerLine * numLines
 }
+
+fun View.onClick(action: (View) -> Unit) {
+	this.setOnClickListener(action)
+}

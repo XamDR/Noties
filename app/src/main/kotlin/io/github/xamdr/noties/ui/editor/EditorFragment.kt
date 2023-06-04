@@ -1,16 +1,12 @@
 package io.github.xamdr.noties.ui.editor
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.view.View.OnLayoutChangeListener
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.SharedElementCallback
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.core.view.doOnPreDraw
@@ -34,11 +30,13 @@ import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.databinding.FragmentEditorBinding
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
-import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.editor.media.MediaItemAdapter
-import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
+import io.github.xamdr.noties.ui.editor.media.RecordVideoLauncher
+import io.github.xamdr.noties.ui.editor.media.TakePictureLauncher
 import io.github.xamdr.noties.ui.editor.todos.DragDropCallback
 import io.github.xamdr.noties.ui.helpers.*
+import io.github.xamdr.noties.ui.helpers.media.MediaHelper
+import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
 import io.github.xamdr.noties.ui.media.MediaViewerViewModel
 import timber.log.Timber
 import java.io.FileNotFoundException
@@ -66,17 +64,30 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 	private val pickeMediaLauncher = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
 		addMediaItems(uris)
 	}
-	private lateinit var cameraUri: Uri
-	private val takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-		savePicture(success)
-	}
-	private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-		onPermissionRequested(granted)
-	}
+	private lateinit var takePictureLauncher: TakePictureLauncher
+	private lateinit var recordVideoLauncher: RecordVideoLauncher
 	private val openFileLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
 		readFileContent(uri)
 	}
 	private var fileUri: Uri? = null
+
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		takePictureLauncher = TakePictureLauncher(
+			requireContext(),
+			activityResultRegistry,
+			onSuccess = { cameraUri -> addMediaItems(listOf(cameraUri)) },
+			onError = { binding.root.showSnackbar(R.string.error_take_picture) }
+		)
+		recordVideoLauncher = RecordVideoLauncher(
+			requireContext(),
+			activityResultRegistry,
+			onSuccess = { videoUri -> addMediaItems(listOf(videoUri)) },
+			onError = { binding.root.showSnackbar(R.string.error_take_video) }
+		)
+		lifecycle.addObserver(takePictureLauncher)
+		lifecycle.addObserver(recordVideoLauncher)
+	}
 
 	override fun onCreateView(inflater: LayoutInflater,
 							  container: ViewGroup?,
@@ -136,28 +147,9 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 
 	override fun onAttachMediaFiles() = pickeMediaLauncher.launch(arrayOf("image/*", "video/*"))
 
-	override fun onTakePicture() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-			takePicture()
-		}
-		else {
-			if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-				PackageManager.PERMISSION_GRANTED) {
-				PermissionRationaleDialog.createFor(
-					requireContext(),
-					R.string.write_external_storage_permission_rationale,
-					R.drawable.ic_external_storage
-				)
-				.setNegativeButton(R.string.not_now_button, null)
-				.setPositiveButton(R.string.continue_button) { _, _ ->
-					requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-				}.show()
-			}
-			else {
-				takePicture()
-			}
-		}
-	}
+	override fun onTakePicture() = takePictureLauncher.launch()
+
+	override fun onTakeVideo() = recordVideoLauncher.launch()
 
 	private fun navigateUp() {
 		binding.root.hideSoftKeyboard()
@@ -307,30 +299,6 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 			mediaItemAdapter.submitList(note.items)
 			binding.progressIndicator.hide()
 			requireActivity().invalidateMenu()
-		}
-	}
-
-	private fun takePicture() {
-		val savedUri = MediaStorageManager.saveMediaItem(requireContext()) ?: return
-		cameraUri = savedUri
-		takePictureLauncher.launch(cameraUri)
-	}
-
-	private fun savePicture(success: Boolean) {
-		if (success && ::cameraUri.isInitialized) {
-			addMediaItems(listOf(cameraUri))
-		}
-		else {
-			binding.root.showSnackbar(R.string.error_take_picture)
-		}
-	}
-
-	private fun onPermissionRequested(granted: Boolean) {
-		if (granted) {
-			takePicture()
-		}
-		else {
-			binding.root.showSnackbar(R.string.permission_denied)
 		}
 	}
 
