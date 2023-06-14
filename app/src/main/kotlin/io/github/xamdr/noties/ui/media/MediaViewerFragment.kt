@@ -1,5 +1,6 @@
 package io.github.xamdr.noties.ui.media
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -23,6 +24,8 @@ import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.FragmentMediaViewerBinding
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.helpers.*
+import io.github.xamdr.noties.ui.helpers.media.MediaHelper
+import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
 
 @AndroidEntryPoint
 class MediaViewerFragment : Fragment() {
@@ -132,7 +135,6 @@ class MediaViewerFragment : Fragment() {
 	private fun setupViewPager() {
 		binding.pager.apply {
 			adapter = mediaStateAdapter
-//			setPageTransformer(ZoomOutPageTransformer())
 			setCurrentItem(sharedViewModel.currentPosition, false)
 		}
 	}
@@ -153,7 +155,16 @@ class MediaViewerFragment : Fragment() {
 
 	private fun downloadMediaItem(position: Int) {
 		val uri = items[position].uri ?: return
-		TODO("Save $uri to disk :)")
+		launch {
+			if	(MediaHelper.isVideo(requireContext(), uri)) {
+				ProgressDialogHelper.show(requireContext(), getString(R.string.download_video_message), true)
+				MediaStorageManager.downloadVideo(requireContext(), uri)
+				ProgressDialogHelper.dismiss()
+			}
+			else {
+				MediaStorageManager.downloadPicture(requireContext(), uri)
+			}
+		}
 	}
 
 	private fun onItemRemoved(position: Int) {
@@ -169,6 +180,17 @@ class MediaViewerFragment : Fragment() {
 		itemsToDelete.add(itemToDelete)
 	}
 
+	private fun setImageAs(position: Int) {
+		val uri = items[position].uri ?: return
+		val intent = Intent().apply {
+			action = Intent.ACTION_ATTACH_DATA
+			setDataAndType(uri, Constants.MIME_TYPE_IMAGE)
+			putExtra("mimeType", Constants.MIME_TYPE_IMAGE)
+			addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+		}
+		startActivity(Intent.createChooser(intent, getString(R.string.set_image_as)))
+	}
+
 	private fun releasePlayer() {
 		player?.release()
 		player = null
@@ -176,7 +198,22 @@ class MediaViewerFragment : Fragment() {
 
 	private inner class MediaMenuProvider : MenuProvider {
 		override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-			menuInflater.inflate(R.menu.menu_image_full_screen, menu)
+			menuInflater.inflate(R.menu.menu_item_preview, menu)
+		}
+
+		override fun onPrepareMenu(menu: Menu) {
+			val copyItem = menu.findItem(R.id.copy)
+			val setAsItem = menu.findItem(R.id.set_as)
+			val uri = items[binding.pager.currentItem].uri ?: return
+			val isImage = MediaHelper.isImage(requireContext(), uri)
+			copyItem.apply {
+				isVisible = isImage
+				isEnabled = isImage
+			}
+			setAsItem.apply {
+				isVisible = isImage
+				isEnabled = isImage
+			}
 		}
 
 		override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -195,6 +232,9 @@ class MediaViewerFragment : Fragment() {
 				}
 				R.id.delete -> {
 					mediaStateAdapter.removeFragment(binding.pager.currentItem); true
+				}
+				R.id.set_as -> {
+					setImageAs(binding.pager.currentItem); true
 				}
 				else -> false
 			}

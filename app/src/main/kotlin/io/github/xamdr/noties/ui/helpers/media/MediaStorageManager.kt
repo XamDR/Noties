@@ -70,6 +70,36 @@ object MediaStorageManager {
 		return imageUri
 	}
 
+	suspend fun downloadPicture(context: Context, originalUri: Uri) {
+		withContext(IO) {
+			val documentFile = DocumentFile.fromSingleUri(context, originalUri)
+			val directory = "${Environment.DIRECTORY_PICTURES}/$DEFAULT_DIRECTORY"
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+				val contentValues = ContentValues().apply {
+					put(MediaStore.MediaColumns.DISPLAY_NAME, documentFile?.name)
+					put(MediaStore.MediaColumns.MIME_TYPE, MediaHelper.getMediaMimeType(context, originalUri))
+					put(MediaStore.MediaColumns.RELATIVE_PATH, directory)
+				}
+				context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+			}
+			else {
+				val picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+				val appPicturesDir = File("${picturesDir}/$DEFAULT_DIRECTORY")
+				if (!appPicturesDir.exists()) appPicturesDir.mkdir()
+				val imageFile = File(appPicturesDir, "/${documentFile?.name}")
+				FileProvider.getUriForFile(context, Constants.AUTHORITY, imageFile)
+			}?.also { newUri ->
+				val inputStream = context.contentResolver.openInputStream(originalUri)
+				val outputStream = context.contentResolver.openOutputStream(newUri)
+				inputStream?.use { input ->
+					outputStream?.use { output ->
+						input.copyTo(output)
+					}
+				}
+			}
+		}
+	}
+
 	@Suppress("DEPRECATION")
 	fun saveVideo(context: Context): Uri? {
 		val fileName = buildString {
@@ -95,6 +125,36 @@ object MediaStorageManager {
 			FileProvider.getUriForFile(context, Constants.AUTHORITY, videoFile)
 		}
 		return videoUri
+	}
+	
+	suspend fun downloadVideo(context: Context, originalUri: Uri) {
+		withContext(IO) {
+			val documentFile = DocumentFile.fromSingleUri(context, originalUri)
+			val directory = "${Environment.DIRECTORY_PICTURES}/$DEFAULT_DIRECTORY"
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+				val contentValues = ContentValues().apply {
+					put(MediaStore.MediaColumns.DISPLAY_NAME, documentFile?.name)
+					put(MediaStore.MediaColumns.MIME_TYPE, MediaHelper.getMediaMimeType(context, originalUri))
+					put(MediaStore.MediaColumns.RELATIVE_PATH, directory)
+				}
+				context.contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues)
+			}
+			else {
+				val moviesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
+				val appMoviesDir = File("${moviesDir}/$DEFAULT_DIRECTORY")
+				if (!appMoviesDir.exists()) appMoviesDir.mkdir()
+				val videoFile = File(appMoviesDir, "/${documentFile?.name}")
+				FileProvider.getUriForFile(context, Constants.AUTHORITY, videoFile)
+			}?.also { newUri ->
+				val inputStream = context.contentResolver.openInputStream(originalUri)
+				val outputStream = context.contentResolver.openOutputStream(newUri)
+				inputStream?.use { input ->
+					outputStream?.use { output ->
+						input.copyTo(output)
+					}
+				}
+			}
+		}
 	}
 
 	fun deleteItems(context: Context, items: List<MediaItem>) {

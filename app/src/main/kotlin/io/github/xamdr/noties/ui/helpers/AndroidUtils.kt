@@ -168,3 +168,7 @@ fun ActionBar.show(title: String) {
 fun DialogFragment.getPositiveButton(): Button {
 	return (requireDialog() as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
 }
+
+fun Context.isLandscape(): Boolean {
+	return this.resources.displayMetrics.heightPixels < this.resources.displayMetrics.widthPixels
+}

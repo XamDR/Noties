@@ -18,8 +18,8 @@ class MediaStateAdapter(
 	override fun createFragment(position: Int): Fragment {
 		val item = items[position]
 		return when (item.mediaType) {
-			MediaType.Image -> ImageMediaPreviewFragment.newInstance(item)
-			MediaType.Video -> VideoMediaPreviewFragment.newInstance(item)
+			MediaType.Image -> ImageMediaViewerFragment.newInstance(item)
+			MediaType.Video -> VideoMediaViewerFragment.newInstance(item)
 			MediaType.Audio -> throw IllegalArgumentException("Wrong mediatype: ${item.mediaType}")
 		}
 	}

@@ -37,4 +37,5 @@ object Constants {
 	const val DIRECTORY_VIDEOS = "videos"
 	const val DIRECTORY_AUDIOS = "audios"
 	const val MEDIA_ITEM_PATTERN = "yyyyMMdd_HHmmss"
+	const val BUNDLE_VIDEO_STATE = "BUNDLE_VIDEO_STATE"
 }
