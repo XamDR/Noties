@@ -4,23 +4,18 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import android.view.View.OnLayoutChangeListener
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.SharedElementCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.core.view.doOnPreDraw
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialArcMotion
 import com.google.android.material.transition.MaterialContainerTransform
@@ -37,7 +32,6 @@ import io.github.xamdr.noties.ui.editor.todos.DragDropCallback
 import io.github.xamdr.noties.ui.helpers.*
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
-import io.github.xamdr.noties.ui.media.MediaViewerViewModel
 import timber.log.Timber
 import java.io.FileNotFoundException
 import com.google.android.material.R as Material
@@ -48,7 +42,6 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<EditorViewModel>()
-	private val sharedViewModel by hiltNavGraphViewModels<MediaViewerViewModel>(R.id.nav_editor)
 	private val noteId by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getLong(Constants.BUNDLE_NOTE_ID, 0L)
 	}
@@ -94,7 +87,6 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 							  savedInstanceState: Bundle?): View {
 		_binding = FragmentEditorBinding.inflate(inflater, container, false)
 		initTransitions(noteId)
-		prepareSharedElementExitTransition()
 		postponeEnterTransition()
 		return binding.root
 	}
@@ -161,10 +153,10 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 			if (!::note.isInitialized) {
 				note = viewModel.getNote(noteId)
 			}
-			getNavigationResult<ArrayList<MediaItem>>(Constants.BUNDLE_ITEMS_DELETE)?.let { itemsToDelete ->
-				note = note.copy(items = note.items - itemsToDelete.toSet())
-				requireActivity().invalidateMenu()
-			}
+//			getNavigationResult<ArrayList<MediaItem>>(Constants.BUNDLE_ITEMS_DELETE)?.let { itemsToDelete ->
+//				note = note.copy(items = note.items - itemsToDelete.toSet())
+//				requireActivity().invalidateMenu()
+//			}
 			textAdapter = EditorTextAdapter(note, this@EditorFragment).apply {
 				setOnContentReceivedListener { uri -> addMediaItems(listOf(uri)) }
 			}
@@ -183,9 +175,6 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		mediaItemAdapter.submitList(note.items)
 		binding.txtModificationDate.text = DateTimeHelper.formatCurrentDateTime(note.modificationDate)
 		binding.root.doOnPreDraw { startPostponedEnterTransition() }
-		if (sharedViewModel.currentPosition == 0) {
-			supportActionBar?.setTitle(R.string.editor_fragment_label)
-		}
 		addMenuProvider(menuProvider, viewLifecycleOwner)
 	}
 
@@ -196,27 +185,6 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 			}
 			showDialog(menuDialog, Constants.MENU_DIALOG_TAG)
 		}
-		binding.rvContent.addOnLayoutChangeListener(object : OnLayoutChangeListener {
-			override fun onLayoutChange(
-				v: View?,
-				left: Int,
-				top: Int,
-				right: Int,
-				bottom: Int,
-				oldLeft: Int,
-				oldTop: Int,
-				oldRight: Int,
-				oldBottom: Int
-			) {
-				binding.rvContent.removeOnLayoutChangeListener(this)
-				val layoutManager = binding.rvContent.layoutManager ?: return
-				val viewAtPosition = layoutManager.findViewByPosition(sharedViewModel.currentPosition)
-				if (viewAtPosition == null ||
-					layoutManager.isViewPartiallyVisible(viewAtPosition, false, true)) {
-					binding.rvContent.post { layoutManager.scrollToPosition(sharedViewModel.currentPosition) }
-				}
-			}
-		})
 	}
 
 	private fun initTransitions(noteId: Long) {
@@ -255,10 +223,11 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 				NoteAction.InsertNote -> binding.root.showSnackbar(R.string.note_saved).showOnTop()
 				NoteAction.NoAction -> {}
 				NoteAction.UpdateNote -> {
-					getNavigationResult<ArrayList<MediaItem>>(Constants.BUNDLE_ITEMS_DELETE)?.let { itemsToDelete ->
-						MediaStorageManager.deleteItems(requireContext(), itemsToDelete)
-						viewModel.deleteItems(itemsToDelete)
-					}
+//					getNavigationResult<ArrayList<MediaItem>>(Constants.BUNDLE_ITEMS_DELETE)?.let { itemsToDelete ->
+//						MediaStorageManager.deleteItems(requireContext(), itemsToDelete)
+//						viewModel.deleteItems(itemsToDelete)
+//					}
+
 					binding.root.showSnackbar(R.string.note_updated).showOnTop()
 				}
 			}
@@ -302,27 +271,13 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		}
 	}
 
-	private fun prepareSharedElementExitTransition() {
-		setExitSharedElementCallback(object : SharedElementCallback() {
-			override fun onMapSharedElements(names: MutableList<String>?, sharedElements: MutableMap<String, View>?) {
-				if (sharedViewModel.currentPosition != RecyclerView.NO_POSITION) {
-					val viewHolder = binding.rvContent.findViewHolderForAdapterPosition(sharedViewModel.currentPosition)
-					if (viewHolder?.itemView == null) return
-					if (!names.isNullOrEmpty() && !sharedElements.isNullOrEmpty()) {
-						sharedElements[names[0]] = viewHolder.itemView.findViewById(R.id.image)
-					}
-				}
-			}
-		})
-	}
-
 	private fun navigateToMediaViewer(view: View, position: Int) {
 		BitmapCache.Instance.clear()
-		sharedViewModel.currentPosition = position
-		val args = bundleOf(Constants.BUNDLE_ITEMS to note.items)
-		val item = note.items[position]
-		val extras = FragmentNavigatorExtras(view to item.id.toString())
-		findNavController().tryNavigate(R.id.action_editor_media_viewer, args, null, extras)
+		val args = bundleOf(
+			Constants.BUNDLE_ITEMS to note.items,
+			Constants.BUNDLE_POSITION to position
+		)
+		findNavController().tryNavigate(R.id.action_editor_media_viewer, args)
 	}
 
 	override fun onNoteContentLoading() = ProgressDialogHelper.show(requireContext(), getString(R.string.loading_text))

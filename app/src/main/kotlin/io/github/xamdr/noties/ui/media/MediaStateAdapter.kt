@@ -1,15 +1,15 @@
 package io.github.xamdr.noties.ui.media
 
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.domain.model.MediaItem
-import io.github.xamdr.noties.ui.helpers.onBackPressed
 
 class MediaStateAdapter(
-	private val fragment: Fragment,
+	private val activity: FragmentActivity,
 	private val items: MutableList<MediaItem>,
-	private val onItemRemoved: (position: Int) -> Unit) : FragmentStateAdapter(fragment) {
+	private val onItemRemoved: (position: Int) -> Unit) : FragmentStateAdapter(activity) {
 
 	private val itemsId = items.map { it.id.toLong() }.toMutableList()
 
@@ -30,7 +30,7 @@ class MediaStateAdapter(
 
 	fun findFragmentByPosition(position: Int): Fragment? {
 		val tag = "f${getItemId(position)}"
-		return fragment.childFragmentManager.findFragmentByTag(tag)
+		return activity.supportFragmentManager.findFragmentByTag(tag)
 	}
 
 	fun removeFragment(position: Int) {
@@ -39,7 +39,7 @@ class MediaStateAdapter(
 		itemsId.removeAt(position)
 		notifyItemRemoved(position)
 		if (itemCount == 0) {
-			fragment.onBackPressed()
+			activity.finish()
 		}
 	}
 }

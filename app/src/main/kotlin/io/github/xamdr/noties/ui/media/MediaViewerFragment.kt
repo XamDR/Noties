@@ -1,146 +1,30 @@
 package io.github.xamdr.noties.ui.media
 
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.view.*
-import androidx.annotation.OptIn
+import android.content.pm.ActivityInfo
 import androidx.core.app.ShareCompat
-import androidx.core.app.SharedElementCallback
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.media3.common.Player
-import androidx.media3.common.MediaItem as ExoPlayerMediaItem
-import androidx.media3.common.util.UnstableApi
-import androidx.media3.datasource.DefaultDataSource
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.ProgressiveMediaSource
-import androidx.navigation.fragment.findNavController
-import androidx.viewpager2.widget.ViewPager2
-import dagger.hilt.android.AndroidEntryPoint
+import androidx.print.PrintHelper
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.databinding.FragmentMediaViewerBinding
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.helpers.*
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
+import timber.log.Timber
+import java.io.FileNotFoundException
 
-@AndroidEntryPoint
-class MediaViewerFragment : Fragment() {
+open class MediaViewerFragment : Fragment() {
 
-	private var _binding: FragmentMediaViewerBinding? = null
-	private val binding get() = _binding!!
-	private val sharedViewModel by hiltNavGraphViewModels<MediaViewerViewModel>(R.id.nav_editor)
-	private val items by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getParcelableArrayListCompat(Constants.BUNDLE_ITEMS, MediaItem::class.java)
+	protected val item by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getParcelableCompat(Constants.BUNDLE_MEDIA_ITEM, MediaItem::class.java)
 	}
-	private lateinit var mediaStateAdapter: MediaStateAdapter
-	private lateinit var pageSelectedCallback: PageSelectedCallback
-	private val menuProvider = MediaMenuProvider()
-	private val itemsToDelete = mutableListOf<MediaItem>()
-	var player: ExoPlayer? = null
-	private lateinit var mediaSourceFactory: DefaultDataSource.Factory
+	protected val fullScreenHelper = FullScreenHelper(
+		onEnterFullScreen = { supportActionBar?.hide() },
+		onExitFullScreen = { supportActionBar?.show() }
+	)
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		mediaStateAdapter = MediaStateAdapter(this, items, this::onItemRemoved)
-		pageSelectedCallback = PageSelectedCallback(items.size)
-		player = ExoPlayer.Builder(requireContext()).build()
-		mediaSourceFactory = DefaultDataSource.Factory(requireContext())
-		if (savedInstanceState != null) {
-			val restoredItemsToDelete = savedInstanceState.getParcelableArrayListCompat(
-				Constants.BUNDLE_ITEMS_DELETE,
-				MediaItem::class.java
-			)
-			itemsToDelete.addAll(restoredItemsToDelete)
-		}
-	}
-
-	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-		_binding = FragmentMediaViewerBinding.inflate(inflater, container, false)
-		addMenuProvider(menuProvider, viewLifecycleOwner)
-		prepareSharedElementEnterTransition()
-		postponeEnterTransition()
-		return binding.root
-	}
-
-	override fun onDestroyView() {
-		super.onDestroyView()
-		_binding = null
-	}
-
-	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-		super.onViewCreated(view, savedInstanceState)
-		setupViewPager()
-		pageSelectedCallback.onPageSelected(sharedViewModel.currentPosition)
-		onBackPressed {
-			setNavigationResult(Constants.BUNDLE_ITEMS_DELETE, ArrayList(itemsToDelete))
-			findNavController().popBackStack()
-		}
-	}
-
-	override fun onSaveInstanceState(outState: Bundle) {
-		super.onSaveInstanceState(outState)
-		outState.putParcelableArrayList(Constants.BUNDLE_ITEMS_DELETE, ArrayList(itemsToDelete))
-	}
-
-	override fun onStop() {
-		super.onStop()
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-			releasePlayer()
-		}
-	}
-
-	override fun onPause() {
-		super.onPause()
-		binding.pager.unregisterOnPageChangeCallback(pageSelectedCallback)
-		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-			releasePlayer()
-		}
-	}
-
-	override fun onResume() {
-		super.onResume()
-		binding.pager.registerOnPageChangeCallback(pageSelectedCallback)
-	}
-
-	@OptIn(UnstableApi::class)
-	fun addMediaSource(player: ExoPlayer, src: Uri, listener: Player.Listener) {
-		val mediaSource = ProgressiveMediaSource.Factory(mediaSourceFactory).createMediaSource(ExoPlayerMediaItem.fromUri(src))
-		player.apply {
-			setMediaSource(mediaSource)
-			addListener(listener)
-			prepare()
-			play()
-		}
-	}
-
-	private fun prepareSharedElementEnterTransition() {
-		sharedElementEnterTransition = inflateTransition(R.transition.shared_image_transition)
-		setEnterSharedElementCallback(object : SharedElementCallback() {
-			override fun onMapSharedElements(names: MutableList<String>?, sharedElements: MutableMap<String, View>?) {
-				if (sharedViewModel.currentPosition != 0) {
-					val currentFragment = mediaStateAdapter.findFragmentByPosition(sharedViewModel.currentPosition) ?: return
-					val view = currentFragment.view ?: return
-					if (!names.isNullOrEmpty() && !sharedElements.isNullOrEmpty()) {
-						sharedElements[names[0]] = view.findViewById(R.id.image) ?: view.findViewById(R.id.thumbnail)
-					}
-				}
-			}
-		})
-	}
-
-	private fun setupViewPager() {
-		binding.pager.apply {
-			adapter = mediaStateAdapter
-			setCurrentItem(sharedViewModel.currentPosition, false)
-		}
-	}
-
-	private fun shareMediaItem(position: Int) {
-		val uri = items[position].uri ?: return
+	protected fun shareMediaItem() {
+		val uri = item.uri ?: return
 		ShareCompat.IntentBuilder(requireContext())
 			.setType(Constants.MIME_TYPE_IMAGE)
 			.addStream(uri)
@@ -148,40 +32,48 @@ class MediaViewerFragment : Fragment() {
 			.startChooser()
 	}
 
-	private fun copyMediaItem(position: Int) {
-		val uri = items[position].uri ?: return
+	protected fun rotateScreen() {
+		requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+	}
+
+	protected fun copyImageToClipboard() {
+		val uri = item.uri ?: return
 		requireContext().copyUriToClipboard(R.string.image_item, uri, R.string.image_copied_msg)
 	}
 
-	private fun downloadMediaItem(position: Int) {
-		val uri = items[position].uri ?: return
+	protected fun downloadMediaItem() {
+		val uri = item.uri ?: return
 		launch {
 			if	(MediaHelper.isVideo(requireContext(), uri)) {
 				ProgressDialogHelper.show(requireContext(), getString(R.string.download_video_message), true)
 				MediaStorageManager.downloadVideo(requireContext(), uri)
 				ProgressDialogHelper.dismiss()
+				requireContext().showToast(R.string.video_downloaded_message)
 			}
 			else {
 				MediaStorageManager.downloadPicture(requireContext(), uri)
+				requireContext().showToast(R.string.image_downloaded_message)
 			}
 		}
 	}
 
-	private fun onItemRemoved(position: Int) {
-		val itemToDelete = items[position]
-		val newImages = items - itemToDelete
-		if (newImages.isNotEmpty()) {
-			pageSelectedCallback.size = newImages.size
-			pageSelectedCallback.onPageSelected(position)
+	protected fun printImage() {
+		val suffix = (0..999).random()
+		val jobName = getString(R.string.print_image_job_name, suffix)
+		val printHelper = PrintHelper(requireContext()).apply { scaleMode = PrintHelper.SCALE_MODE_FILL }
+		try {
+			requireContext().showToast(R.string.init_print_dialog)
+			val imageFile = item.uri ?: return
+			printHelper.printBitmap(jobName, imageFile)
 		}
-		else {
-			sharedViewModel.currentPosition = 0
+		catch (e: FileNotFoundException) {
+			Timber.e(e)
+			requireContext().showToast(R.string.error_print_image)
 		}
-		itemsToDelete.add(itemToDelete)
 	}
 
-	private fun setImageAs(position: Int) {
-		val uri = items[position].uri ?: return
+	protected fun setImageAs() {
+		val uri = item.uri ?: return
 		val intent = Intent().apply {
 			action = Intent.ACTION_ATTACH_DATA
 			setDataAndType(uri, Constants.MIME_TYPE_IMAGE)
@@ -189,63 +81,5 @@ class MediaViewerFragment : Fragment() {
 			addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 		}
 		startActivity(Intent.createChooser(intent, getString(R.string.set_image_as)))
-	}
-
-	private fun releasePlayer() {
-		player?.release()
-		player = null
-	}
-
-	private inner class MediaMenuProvider : MenuProvider {
-		override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-			menuInflater.inflate(R.menu.menu_item_preview, menu)
-		}
-
-		override fun onPrepareMenu(menu: Menu) {
-			val copyItem = menu.findItem(R.id.copy)
-			val setAsItem = menu.findItem(R.id.set_as)
-			val uri = items[binding.pager.currentItem].uri ?: return
-			val isImage = MediaHelper.isImage(requireContext(), uri)
-			copyItem.apply {
-				isVisible = isImage
-				isEnabled = isImage
-			}
-			setAsItem.apply {
-				isVisible = isImage
-				isEnabled = isImage
-			}
-		}
-
-		override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-			return when (menuItem.itemId) {
-				android.R.id.home -> {
-					onBackPressed(); true
-				}
-				R.id.share -> {
-					shareMediaItem(binding.pager.currentItem); true
-				}
-				R.id.copy -> {
-					copyMediaItem(binding.pager.currentItem); true
-				}
-				R.id.download -> {
-					downloadMediaItem(binding.pager.currentItem); true
-				}
-				R.id.delete -> {
-					mediaStateAdapter.removeFragment(binding.pager.currentItem); true
-				}
-				R.id.set_as -> {
-					setImageAs(binding.pager.currentItem); true
-				}
-				else -> false
-			}
-		}
-	}
-
-	private inner class PageSelectedCallback(var size: Int) : ViewPager2.OnPageChangeCallback() {
-
-		override fun onPageSelected(position: Int) {
-			supportActionBar?.title = "${position + 1}/$size"
-			sharedViewModel.currentPosition = position
-		}
 	}
 }

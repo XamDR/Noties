@@ -4,6 +4,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import io.github.xamdr.noties.R
 import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.databinding.ItemMediaBinding
 import io.github.xamdr.noties.databinding.ItemSingleMediaBinding
@@ -19,12 +20,17 @@ open class BaseMediaItemViewHolder(private val binding: ViewBinding) : RecyclerV
 				when (item.mediaType) {
 					MediaType.Image -> {
 						binding.duration.isVisible = false
-						ImageLoader.load(binding.image, item.uri, 800)
+						ImageLoader.load(binding.image, item.uri, 200)
 					}
 					MediaType.Video -> {
 						binding.duration.isVisible = true
 						binding.duration.text = MediaHelper.formatDuration(item.metadata.duration)
-						ImageLoader.load(binding.image, item.metadata.thumbnail, 800)
+						if (item.metadata.thumbnail != null) {
+							ImageLoader.load(binding.image, item.metadata.thumbnail, 200)
+						}
+						else {
+							binding.image.setImageResource(R.drawable.ic_image_not_supported)
+						}
 					}
 					MediaType.Audio -> {}
 				}
@@ -38,7 +44,12 @@ open class BaseMediaItemViewHolder(private val binding: ViewBinding) : RecyclerV
 					MediaType.Video -> {
 						binding.duration.isVisible = true
 						binding.duration.text = MediaHelper.formatDuration(item.metadata.duration)
-						ImageLoader.load(binding.image, item.metadata.thumbnail, 800)
+						if (item.metadata.thumbnail != null) {
+							ImageLoader.load(binding.image, item.metadata.thumbnail, 800)
+						}
+						else {
+							binding.image.setImageResource(R.drawable.ic_image_not_supported)
+						}
 					}
 					MediaType.Audio -> {}
 				}

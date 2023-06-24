@@ -63,7 +63,12 @@ class NoteAdapter(
 				MediaType.Video -> {
 					binding.duration.isVisible = true
 					binding.duration.text = note.previewItem?.metadata?.duration?.let { MediaHelper.formatDuration(it) }
-					ImageLoader.load(binding.image, note.previewItem?.metadata?.thumbnail, 400)
+					if (note.previewItem?.metadata?.thumbnail != null) {
+						ImageLoader.load(binding.image, note.previewItem?.metadata?.thumbnail, 400)
+					}
+					else {
+						binding.image.setImageResource(R.drawable.ic_image_not_supported)
+					}
 				}
 				else -> {}
 			}

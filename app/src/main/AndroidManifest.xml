@@ -43,6 +43,13 @@
 			</intent-filter>
 		</activity>
 
+		<activity
+			android:name="io.github.xamdr.noties.ui.media.MediaViewerActivity"
+			android:configChanges="mcc|mnc|colorMode|density|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|layoutDirection|fontScale"
+			android:exported="false"
+			android:theme="@style/Theme.Noties.MediaViewer"
+			android:windowSoftInputMode="stateAlwaysHidden"/>
+
 		<receiver
 			android:name=".ui.reminders.AlarmReceiver"
 			android:enabled="true"

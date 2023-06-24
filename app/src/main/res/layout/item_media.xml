@@ -14,16 +14,28 @@
 		android:scaleType="centerCrop"
 		tools:src="@drawable/ic_android" />
 
-	<TextView
+	<!--	<TextView-->
+	<!--		android:id="@+id/duration"-->
+	<!--		android:layout_width="wrap_content"-->
+	<!--		android:layout_height="wrap_content"-->
+	<!--		android:layout_gravity="top|end"-->
+	<!--		android:layout_margin="8dp"-->
+	<!--		android:drawablePadding="8dp"-->
+	<!--		android:gravity="center"-->
+	<!--		android:visibility="gone"-->
+	<!--		app:drawableStartCompat="@drawable/ic_play_video"-->
+	<!--		tools:text="04:40"-->
+	<!--		tools:visibility="visible" />-->
+
+	<com.google.android.material.chip.Chip
 		android:id="@+id/duration"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_gravity="top|end"
 		android:layout_margin="8dp"
-		android:drawablePadding="8dp"
-		android:gravity="center"
 		android:visibility="gone"
-		app:drawableStartCompat="@drawable/ic_play_video"
+		app:chipIcon="@drawable/ic_play_video"
+		app:chipStartPadding="8dp"
 		tools:text="04:40"
 		tools:visibility="visible" />
 </FrameLayout>

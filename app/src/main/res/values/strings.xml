@@ -128,14 +128,22 @@
 	<!-- MediaViewer Fragment -->
 	<string name="share_item">Share</string>
 	<string name="copy_item">Copy</string>
-	<string name="download_item">Download</string>
-	<string name="download_video_message">Downloading video…</string>
+	<string name="download_item">Save</string>
+	<string name="download_video_message">Saving video…</string>
+	<string name="video_downloaded_message">Video saved in your device.</string>
+	<string name="image_downloaded_message">Image saved in your device.</string>
 	<string name="delete_item">Delete</string>
 	<string name="set_image_as">Set image as</string>
 	<string name="delete_all_items">Delete all images</string>
 	<string name="delete_all_items_question">Are you sure you want to delete all the images attached to this note?</string>
 	<string name="image_item">Image</string>
 	<string name="image_copied_msg">Image copied to clipboard</string>
+	<string name="error_video_playback">Error. This video cannot be played.</string>
+	<string name="print_image">Print image</string>
+	<string name="rotate">Rotate</string>
+	<string name="print_image_job_name">Image %d</string>
+	<string name="error_print_image">Error. Image could not be printed.</string>
+	<string name="init_print_dialog">Preparing image…</string>
 
 	<!-- DateTime Picker Fragment -->
 	<string name="date">Date:</string>

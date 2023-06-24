@@ -193,3 +193,10 @@ fun TextView.estimateNumberChars(numLines: Int): Int {
 fun View.onClick(action: (View) -> Unit) {
 	this.setOnClickListener(action)
 }
+
+var MenuItem.isActive: Boolean
+	get() = this.isVisible && this.isEnabled
+	set(value) {
+		this.isVisible = value
+		this.isEnabled = value
+	}

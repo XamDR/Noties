@@ -9,6 +9,7 @@ import io.github.xamdr.noties.domain.model.MediaItemMetadata
 import io.github.xamdr.noties.ui.helpers.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -37,15 +38,21 @@ object MediaHelper {
 
 	suspend fun getMediaItemMetadata(context: Context, src: Uri): MediaItemMetadata = withContext(Dispatchers.IO) {
 		val retriever = MediaMetadataRetriever()
-		retriever.setDataSource(context, src)
-		val thumbnail = retriever.frameAtTime
-		val durationString = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-		val duration = durationString?.toLong() ?: 0
-		if (thumbnail != null) {
-			val uri = BitmapHelper.getUriFromBitmap(context, thumbnail)
-			MediaItemMetadata(uri, duration)
+		try {
+			retriever.setDataSource(context, src)
+			val thumbnail = retriever.frameAtTime
+			val durationString = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+			val duration = durationString?.toLong() ?: 0
+			if (thumbnail != null) {
+				val uri = BitmapHelper.getUriFromBitmap(context, thumbnail)
+				MediaItemMetadata(uri, duration)
+			}
+			else MediaItemMetadata(null, duration)
 		}
-		else MediaItemMetadata(null, duration)
+		catch (e: RuntimeException) {
+			Timber.e(e)
+			MediaItemMetadata()
+		}
 	}
 
 	fun formatDuration(duration: Long): String {

@@ -97,14 +97,9 @@
 			app:destination="@id/nav_media_viewer" />
 	</fragment>
 
-	<fragment
+	<activity
 		android:id="@+id/nav_media_viewer"
-		android:name="io.github.xamdr.noties.ui.media.MediaViewerFragment"
+		android:name="io.github.xamdr.noties.ui.media.MediaViewerActivity"
 		android:label=""
-		tools:layout="@layout/fragment_media_viewer">
-
-		<argument
-			android:name="ShowToolbar"
-			android:defaultValue="true" />
-	</fragment>
+		tools:layout="@layout/activity_media_viewer"/>
 </navigation>
