@@ -156,7 +156,7 @@ class VideoMediaViewerFragment : MediaViewerFragment(), Player.Listener {
 					downloadMediaItem(); true
 				}
 				R.id.delete -> {
-					true
+					deleteMediaItem(); true
 				}
 				else -> false
 			}

@@ -74,7 +74,7 @@ class ImageMediaViewerFragment : MediaViewerFragment() {
 				printImage(); true
 			}
 			R.id.delete -> {
-				true
+				deleteMediaItem(); true
 			}
 			R.id.set_as -> {
 				setImageAs(); true

@@ -1,11 +1,11 @@
 package io.github.xamdr.noties.ui.editor
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.core.view.doOnPreDraw
 import androidx.documentfile.provider.DocumentFile
@@ -32,6 +32,7 @@ import io.github.xamdr.noties.ui.editor.todos.DragDropCallback
 import io.github.xamdr.noties.ui.helpers.*
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
+import io.github.xamdr.noties.ui.media.MediaViewerActivity
 import timber.log.Timber
 import java.io.FileNotFoundException
 import com.google.android.material.R as Material
@@ -63,6 +64,12 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		readFileContent(uri)
 	}
 	private var fileUri: Uri? = null
+	private val itemsToDelete = mutableListOf<MediaItem>()
+	private val mediaViewerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+		if (result.resultCode == Activity.RESULT_OK) {
+			handleItemsToDelete(result.data)
+		}
+	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -153,10 +160,6 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 			if (!::note.isInitialized) {
 				note = viewModel.getNote(noteId)
 			}
-//			getNavigationResult<ArrayList<MediaItem>>(Constants.BUNDLE_ITEMS_DELETE)?.let { itemsToDelete ->
-//				note = note.copy(items = note.items - itemsToDelete.toSet())
-//				requireActivity().invalidateMenu()
-//			}
 			textAdapter = EditorTextAdapter(note, this@EditorFragment).apply {
 				setOnContentReceivedListener { uri -> addMediaItems(listOf(uri)) }
 			}
@@ -223,11 +226,8 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 				NoteAction.InsertNote -> binding.root.showSnackbar(R.string.note_saved).showOnTop()
 				NoteAction.NoAction -> {}
 				NoteAction.UpdateNote -> {
-//					getNavigationResult<ArrayList<MediaItem>>(Constants.BUNDLE_ITEMS_DELETE)?.let { itemsToDelete ->
-//						MediaStorageManager.deleteItems(requireContext(), itemsToDelete)
-//						viewModel.deleteItems(itemsToDelete)
-//					}
-
+					MediaStorageManager.deleteItems(requireContext(), itemsToDelete)
+					viewModel.deleteItems(itemsToDelete)
 					binding.root.showSnackbar(R.string.note_updated).showOnTop()
 				}
 			}
@@ -273,11 +273,19 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 
 	private fun navigateToMediaViewer(view: View, position: Int) {
 		BitmapCache.Instance.clear()
-		val args = bundleOf(
-			Constants.BUNDLE_ITEMS to note.items,
-			Constants.BUNDLE_POSITION to position
-		)
-		findNavController().tryNavigate(R.id.action_editor_media_viewer, args)
+		val intent = Intent(requireContext(), MediaViewerActivity::class.java).apply {
+			putExtra(Constants.BUNDLE_ITEMS, ArrayList(note.items))
+			putExtra(Constants.BUNDLE_POSITION, position)
+		}
+		mediaViewerLauncher.launch(intent)
+	}
+
+	private fun handleItemsToDelete(data: Intent?) {
+		val items = data?.getParcelableArrayListCompat(Constants.BUNDLE_ITEMS_DELETE, MediaItem::class.java) ?: return
+		itemsToDelete.addAll(items)
+		note = note.copy(items = note.items - items.toSet())
+		mediaItemAdapter.submitList(note.items)
+		requireActivity().invalidateMenu()
 	}
 
 	override fun onNoteContentLoading() = ProgressDialogHelper.show(requireContext(), getString(R.string.loading_text))

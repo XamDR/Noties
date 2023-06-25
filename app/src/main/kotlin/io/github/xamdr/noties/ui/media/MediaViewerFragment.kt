@@ -72,6 +72,8 @@ open class MediaViewerFragment : Fragment() {
 		}
 	}
 
+	protected fun deleteMediaItem() = (requireActivity() as MediaViewerActivity).deleteMediaItem()
+
 	protected fun setImageAs() {
 		val uri = item.uri ?: return
 		val intent = Intent().apply {

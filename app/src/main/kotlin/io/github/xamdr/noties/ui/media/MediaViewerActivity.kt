@@ -1,7 +1,10 @@
 package io.github.xamdr.noties.ui.media
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.addCallback
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.common.util.Clock
@@ -39,6 +42,7 @@ class MediaViewerActivity : AppCompatActivity() {
 		setSupportActionBar(binding.toolbar)
 		supportActionBar?.setDisplayHomeAsUpEnabled(true)
 		setupViewPager()
+		navigateUp()
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
@@ -97,6 +101,8 @@ class MediaViewerActivity : AppCompatActivity() {
 		}
 	}
 
+	fun deleteMediaItem() = mediaStateAdapter.removeFragment(binding.pager.currentItem)
+
 	private fun setupViewPager() {
 		mediaStateAdapter = MediaStateAdapter(this, items, this::onItemRemoved)
 		binding.pager.apply {
@@ -138,6 +144,16 @@ class MediaViewerActivity : AppCompatActivity() {
 			}
 		}
 		itemsToDelete.add(itemToDelete)
+	}
+
+	private fun navigateUp() {
+		onBackPressedDispatcher.addCallback(this) {
+			val intent = Intent().apply {
+				putExtra(Constants.BUNDLE_ITEMS_DELETE, ArrayList(itemsToDelete))
+			}
+			setResult(Activity.RESULT_OK, intent)
+			finish()
+		}
 	}
 
 	private companion object {

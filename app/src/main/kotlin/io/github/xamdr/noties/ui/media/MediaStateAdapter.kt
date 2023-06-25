@@ -39,7 +39,7 @@ class MediaStateAdapter(
 		itemsId.removeAt(position)
 		notifyItemRemoved(position)
 		if (itemCount == 0) {
-			activity.finish()
+			activity.onBackPressedDispatcher.onBackPressed()
 		}
 	}
 }
