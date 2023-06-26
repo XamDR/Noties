@@ -141,7 +141,7 @@
 	<string name="error_video_playback">Error. This video cannot be played.</string>
 	<string name="print_image">Print image</string>
 	<string name="rotate">Rotate</string>
-	<string name="print_image_job_name">Image %d</string>
+	<string name="print_image_job_name">Image_%d</string>
 	<string name="error_print_image">Error. Image could not be printed.</string>
 	<string name="init_print_dialog">Preparing image…</string>
 

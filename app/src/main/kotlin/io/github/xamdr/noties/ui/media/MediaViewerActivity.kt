@@ -17,9 +17,11 @@ import androidx.media3.exoplayer.analytics.DefaultAnalyticsCollector
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
+import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.databinding.ActivityMediaViewerBinding
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.helpers.*
+import timber.log.Timber
 import androidx.media3.common.MediaItem as ExoMediaItem
 
 class MediaViewerActivity : AppCompatActivity() {
@@ -65,7 +67,7 @@ class MediaViewerActivity : AppCompatActivity() {
 			onPageSelected(position)
 		}
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-			buildPlayer()
+			initializePlayer()
 		}
 	}
 
@@ -80,7 +82,7 @@ class MediaViewerActivity : AppCompatActivity() {
 		super.onResume()
 		binding.pager.registerOnPageChangeCallback(pageChangedCallback)
 		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-			buildPlayer()
+			initializePlayer()
 		}
 	}
 
@@ -111,6 +113,13 @@ class MediaViewerActivity : AppCompatActivity() {
 		}
 	}
 
+	private fun initializePlayer() {
+		if (items.any { it.mediaType == MediaType.Video }) {
+			buildPlayer()
+			Timber.d("ExoPlayer instance initialized")
+		}
+	}
+
 	@OptIn(UnstableApi::class)
 	private fun buildPlayer() {
 		val mediaSourceFactory = ProgressiveMediaSource.Factory { ContentDataSource(this) }
@@ -130,8 +139,11 @@ class MediaViewerActivity : AppCompatActivity() {
 	}
 
 	private fun releasePlayer() {
-		player?.release()
-		player = null
+		if (player != null) {
+			player?.release()
+			player = null
+			Timber.d("ExoPlayer instance released")
+		}
 	}
 
 	private fun onItemRemoved(position: Int) {
@@ -141,6 +153,9 @@ class MediaViewerActivity : AppCompatActivity() {
 			pageChangedCallback.apply {
 				size = newItems.size
 				onPageSelected(position)
+			}
+			if (newItems.none { it.mediaType == MediaType.Video }) {
+				releasePlayer()
 			}
 		}
 		itemsToDelete.add(itemToDelete)
