@@ -10,7 +10,7 @@
 		app:showAsAction="always"/>
 
 	<item
-		android:id="@+id/rotate_screen"
+		android:id="@+id/toggle_orientation"
 		android:orderInCategory="1"
 		android:title="@string/rotate"
 		android:icon="@drawable/ic_screen_rotation"

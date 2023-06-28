@@ -32,8 +32,10 @@ open class MediaViewerFragment : Fragment() {
 			.startChooser()
 	}
 
-	protected fun rotateScreen() {
-		requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+	protected fun toggleScreenOrientation() {
+		val newOrientation = if (requireContext().isLandscape()) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+			else ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+		requireActivity().requestedOrientation = newOrientation
 	}
 
 	protected fun copyImageToClipboard() {

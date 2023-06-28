@@ -61,8 +61,8 @@ class ImageMediaViewerFragment : MediaViewerFragment() {
 			R.id.share -> {
 				shareMediaItem(); true
 			}
-			R.id.rotate_screen -> {
-				rotateScreen(); true
+			R.id.toggle_orientation -> {
+				toggleScreenOrientation(); true
 			}
 			R.id.copy -> {
 				copyImageToClipboard(); true

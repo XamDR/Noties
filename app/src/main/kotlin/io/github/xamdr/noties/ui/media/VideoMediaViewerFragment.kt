@@ -110,11 +110,11 @@ class VideoMediaViewerFragment : MediaViewerFragment(), Player.Listener {
 	private fun toggleFullScreenAndOrientation() {
 		viewModel.isFullScreen = !viewModel.isFullScreen
 		toggleFullScreen(viewModel.isFullScreen)
-		toggleOrientationIfNecessary()
+		toggleScreenOrientationIfNecessary()
 	}
 
 	@OptIn(UnstableApi::class)
-	private fun toggleOrientationIfNecessary() {
+	private fun toggleScreenOrientationIfNecessary() {
 		exoPlayer.videoFormat?.let { format ->
 			val width = format.width
 			val height = format.height
