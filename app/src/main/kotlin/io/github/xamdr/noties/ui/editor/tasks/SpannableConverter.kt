@@ -1,4 +1,4 @@
-package io.github.xamdr.noties.ui.editor.todos
+package io.github.xamdr.noties.ui.editor.tasks
 
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
@@ -10,7 +10,6 @@ import io.github.xamdr.noties.domain.model.Note
 
 object SpannableConverter {
 
-	@JvmStatic
 	fun convertToSpannable(input: String): CharSequence {
 		val list = input.split(NEWLINE).map { str ->
 			if (str.startsWith(Note.PREFIX_NOT_DONE)) {

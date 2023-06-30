@@ -32,10 +32,24 @@
 		android:title="@string/open_file"
 		app:showAsAction="never"/>
 
-<!--	<item-->
-<!--		android:id="@+id/hide_todos"-->
-<!--		android:orderInCategory="10"-->
-<!--		android:title="@string/hide_checkboxes"-->
-<!--		android:visible="false"-->
-<!--		app:showAsAction="never"/>-->
+	<item
+		android:id="@+id/hide_tasks"
+		android:orderInCategory="10"
+		android:title="@string/hide_checkboxes"
+		android:visible="false"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/check_tasks"
+		android:orderInCategory="12"
+		android:title="@string/check_all_checkboxes"
+		android:visible="false"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/uncheck_tasks"
+		android:orderInCategory="16"
+		android:title="@string/uncheck_all_checkboxes"
+		android:visible="false"
+		app:showAsAction="never"/>
 </menu>

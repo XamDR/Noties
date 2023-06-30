@@ -104,6 +104,8 @@
 	<string name="remove_item">Remove todo item</string>
 	<string name="new_todo_item">Todo item</string>
 	<string name="hide_checkboxes">Hide checkboxes</string>
+	<string name="check_all_checkboxes">Check all checkboxes</string>
+	<string name="uncheck_all_checkboxes">Uncheck all checkboxes</string>
 	<string name="note_locked">Note locked</string>
 	<string name="note_unlocked">Note unlocked</string>
 	<string name="note_pinned">Note will be pinned</string>

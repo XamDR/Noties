@@ -25,10 +25,12 @@ import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.databinding.FragmentEditorBinding
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
+import io.github.xamdr.noties.domain.model.Task
 import io.github.xamdr.noties.ui.editor.media.MediaItemAdapter
 import io.github.xamdr.noties.ui.editor.media.RecordVideoLauncher
 import io.github.xamdr.noties.ui.editor.media.TakePictureLauncher
-import io.github.xamdr.noties.ui.editor.todos.DragDropCallback
+import io.github.xamdr.noties.ui.editor.tasks.DragDropCallback
+import io.github.xamdr.noties.ui.editor.tasks.TaskAdapter
 import io.github.xamdr.noties.ui.helpers.*
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
@@ -50,8 +52,9 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 //		requireArguments().getInt(Constants.BUNDLE_TAG_ID, 0)
 //	}
 	private lateinit var note: Note
-	private lateinit var textAdapter: EditorTextAdapter
 	private lateinit var concatAdapter: ConcatAdapter
+	private lateinit var textAdapter: EditorTextAdapter
+	private lateinit var taskAdapter: TaskAdapter
 	private val mediaItemAdapter = MediaItemAdapter(this::navigateToMediaViewer)
 	private val menuProvider = EditorMenuProvider()
 	private val itemTouchHelper = ItemTouchHelper(DragDropCallback())
@@ -107,7 +110,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		super.onViewCreated(view, savedInstanceState)
 		setupNote()
 		setupListeners()
-		onBackPressed { if (::note.isInitialized) saveNote(note) }
+		onBackPressed { saveNoteOnBackPress() }
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
@@ -150,6 +153,17 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 
 	override fun onTakeVideo() = recordVideoLauncher.launch()
 
+	override fun onAddTaskList() {
+		if (concatAdapter.removeAdapter(textAdapter)) {
+			val tasks = (note.toTaskList() + Task.Footer).toMutableList()
+			taskAdapter.submitTasks(tasks)
+			concatAdapter.addAdapter(taskAdapter)
+			note = note.copy(isTaskList = true)
+			viewModel.isTaskList.value = true
+			requireActivity().invalidateMenu()
+		}
+	}
+
 	private fun navigateUp() {
 		binding.root.hideSoftKeyboard()
 		onBackPressed()
@@ -159,13 +173,21 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		launch {
 			if (!::note.isInitialized) {
 				note = viewModel.getNote(noteId)
+				viewModel.isTaskList.value = note.isTaskList
 			}
-			textAdapter = EditorTextAdapter(note, this@EditorFragment).apply {
-				setOnContentReceivedListener { uri -> addMediaItems(listOf(uri)) }
-			}
-			concatAdapter = ConcatAdapter(mediaItemAdapter, textAdapter)
+			concatAdapter = initializeAdapter(note)
 			setupViews(note)
 		}
+	}
+
+	private fun initializeAdapter(note: Note): ConcatAdapter {
+		val tasks = (note.toTaskList() + Task.Footer).toMutableList()
+		taskAdapter = TaskAdapter(tasks, itemTouchHelper)
+		textAdapter = EditorTextAdapter(note, this@EditorFragment).apply {
+			setOnContentReceivedListener { uri -> addMediaItems(listOf(uri)) }
+		}
+		return if (note.isTaskList) ConcatAdapter(mediaItemAdapter, taskAdapter)
+			else ConcatAdapter(mediaItemAdapter, textAdapter)
 	}
 
 	private fun setupViews(note: Note) {
@@ -212,6 +234,15 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 				fadeMode = MaterialContainerTransform.FADE_MODE_IN
 				setAllContainerColors(MaterialColors.getColor(binding.root, Material.attr.colorSurface))
 			}
+		}
+	}
+
+	private fun saveNoteOnBackPress() {
+		if (::note.isInitialized) {
+			if (note.isTaskList) {
+				note = note.copy(text = taskAdapter.convertItemsToString())
+			}
+			saveNote(note)
 		}
 	}
 
@@ -311,15 +342,31 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		}
 	}
 
+	private fun removeTaskList() {
+		if (concatAdapter.removeAdapter(taskAdapter)) {
+			note = note.copy(text = taskAdapter.joinToString(), isTaskList =  false)
+			viewModel.isTaskList.value = false
+			textAdapter.submitNote(note)
+			concatAdapter.addAdapter(textAdapter)
+			requireActivity().invalidateMenu()
+		}
+	}
+
+	private fun checkAllTasks() = taskAdapter.markAllTasksAsDone(true)
+
+	private fun uncheckAllTasks() = taskAdapter.markAllTasksAsDone(false)
+
 	private inner class EditorMenuProvider : MenuProvider {
 		override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
 			menuInflater.inflate(R.menu.menu_editor, menu)
 		}
 
 		override fun onPrepareMenu(menu: Menu) {
-			val menuItem = menu.findItem(R.id.share_content)
-			menuItem.isVisible = !note.isEmpty()
-			menuItem.isEnabled = !note.isEmpty()
+			menu.findItem(R.id.share_content).isActive = !note.isEmpty()
+			menu.findItem(R.id.open_file).isActive = !note.isTaskList
+			menu.findItem(R.id.hide_tasks).isActive = note.isTaskList
+			menu.findItem(R.id.check_tasks).isActive = note.isTaskList
+			menu.findItem(R.id.uncheck_tasks).isActive = note.isTaskList
 		}
 
 		override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -333,6 +380,15 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 				R.id.open_file -> {
 					binding.root.hideSoftKeyboard()
 					openFileLauncher.launch(arrayOf(Constants.MIME_TYPE_TEXT)); true
+				}
+				R.id.hide_tasks -> {
+					removeTaskList(); true
+				}
+				R.id.check_tasks -> {
+					checkAllTasks(); true
+				}
+				R.id.uncheck_tasks -> {
+					uncheckAllTasks(); true
 				}
 				else -> false
 			}

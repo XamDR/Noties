@@ -4,4 +4,5 @@ interface EditorMenuListener {
 	fun onAttachMediaFiles()
 	fun onTakePicture()
 	fun onTakeVideo()
+	fun onAddTaskList()
 }

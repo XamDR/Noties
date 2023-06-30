@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.github.xamdr.noties.databinding.DialogFragmentEditorMenuBinding
 import io.github.xamdr.noties.ui.helpers.onClick
@@ -12,6 +14,7 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 
 	private var _binding: DialogFragmentEditorMenuBinding? = null
 	private val binding get() = _binding!!
+	private val viewModel by viewModels<EditorViewModel>({ requireParentFragment() })
 	private var listener: EditorMenuListener? = null
 
 	override fun onCreateView(inflater: LayoutInflater,
@@ -31,6 +34,8 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 		binding.attachMedia.onClick { onAttachMediaFiles() }
 		binding.takePicture.onClick { onTakePicture() }
 		binding.takeVideo.onClick { onTakeVideo() }
+		binding.addTaskList.onClick { onAddTaskList() }
+		viewModel.isTaskList.observe(viewLifecycleOwner) { binding.addTaskList.isVisible = it.not() }
 	}
 
 	fun setEditorMenuListener(listener: EditorMenuListener) {
@@ -49,6 +54,11 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 
 	private fun onTakeVideo() {
 		listener?.onTakeVideo()
+		dismiss()
+	}
+
+	private fun onAddTaskList() {
+		listener?.onAddTaskList()
 		dismiss()
 	}
 }

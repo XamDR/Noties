@@ -1,4 +1,4 @@
-package io.github.xamdr.noties.ui.editor.todos
+package io.github.xamdr.noties.ui.editor.tasks
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_DRAG
@@ -12,10 +12,10 @@ class DragDropCallback :
 		viewHolder: RecyclerView.ViewHolder,
 		target: RecyclerView.ViewHolder
 	): Boolean {
-		if (viewHolder is TodoItemAdapter.TodoItemViewHolder &&
-			target is TodoItemAdapter.TodoItemViewHolder) {
+		if (viewHolder is TaskAdapter.TaskViewHolder &&
+			target is TaskAdapter.TaskViewHolder) {
 //			val adapter = (recyclerView.adapter as ConcatAdapter).adapters[1] as TodoItemAdapter
-			val adapter = viewHolder.bindingAdapter as TodoItemAdapter
+			val adapter = viewHolder.bindingAdapter as TaskAdapter
 			val from = viewHolder.bindingAdapterPosition
 			val to = target.bindingAdapterPosition
 			adapter.moveItem(from, to)

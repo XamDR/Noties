@@ -1,5 +1,6 @@
 package io.github.xamdr.noties.ui.editor
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +18,8 @@ class EditorViewModel @Inject constructor(
 	private val deleteNotesUseCase: DeleteNotesUseCase,
 	private val deleteMediaItemsUseCase: DeleteMediaItemsUseCase,
 	private val savedState: SavedStateHandle) : ViewModel() {
+
+	val isTaskList = MutableLiveData(false)
 
 	suspend fun getNote(noteId: Long) = savedState.get<Note>(Constants.BUNDLE_NOTE)
 		?: (if (noteId == 0L) Note() else getNoteById(noteId))
