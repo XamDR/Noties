@@ -5,32 +5,8 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content">
 
-	<EditText
-		android:id="@+id/note_title"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:background="@null"
-		android:hint="@string/note_title"
-		android:imeOptions="flagNoFullscreen"
-		android:importantForAutofill="no"
-		android:inputType="textMultiLine|textCapSentences"
-		android:minHeight="48dp"
-		android:paddingStart="16dp"
-		android:paddingTop="8dp"
-		android:paddingEnd="16dp"
-		android:paddingBottom="8dp"
-		android:scrollbars="none"
-		android:scrollHorizontally="false"
-		android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-		android:textCursorDrawable="@drawable/cursor_color"
-		app:layout_constraintBottom_toTopOf="@id/note_text"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent"
-		tools:text="Lorem Ipsum" />
-
 	<io.github.xamdr.noties.ui.views.LinedEditText
-		android:id="@+id/note_text"
+		android:id="@+id/text"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:background="@null"
@@ -51,6 +27,6 @@
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/note_title"
+		app:layout_constraintTop_toTopOf="parent"
 		tools:text="@string/demo_content" />
 </androidx.constraintlayout.widget.ConstraintLayout>

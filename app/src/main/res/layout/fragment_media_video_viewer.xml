@@ -23,6 +23,7 @@
 		android:layout_height="match_parent"
 		android:layout_margin="8dp"
 		android:visibility="gone"
+		app:repeat_toggle_modes="one"
 		app:show_next_button="false"
 		app:show_previous_button="false"
 		app:use_artwork="false"

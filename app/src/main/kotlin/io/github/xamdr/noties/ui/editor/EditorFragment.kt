@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.MenuProvider
@@ -16,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialArcMotion
 import com.google.android.material.transition.MaterialContainerTransform
@@ -40,7 +42,7 @@ import java.io.FileNotFoundException
 import com.google.android.material.R as Material
 
 @AndroidEntryPoint
-class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
+class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, EditorMenuListener {
 
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
@@ -103,6 +105,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 
 	override fun onDestroyView() {
 		super.onDestroyView()
+		binding.title.removeTextChangedListener(this)
 		_binding = null
 	}
 
@@ -137,8 +140,8 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		requireActivity().invalidateMenu()
 	}
 
-	override fun onNoteTitleChanged(title: String) {
-		note = note.copy(title = title)
+	override fun afterTextChanged(s: Editable) {
+		note = note.copy(title = s.toString())
 	}
 
 	override fun onLinkClicked(url: String) {
@@ -191,25 +194,43 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 	}
 
 	private fun setupViews(note: Note) {
-		binding.rvContent.apply {
+		supportActionBar?.title = note.title.ifEmpty { getString(R.string.editor_fragment_label) }
+		binding.content.apply {
 			adapter = concatAdapter
 			(layoutManager as GridLayoutManager).spanSizeLookup =
 				ConcatSpanSizeLookup(Constants.SPAN_COUNT) { concatAdapter.adapters }
 			addItemTouchHelper(itemTouchHelper)
 		}
 		mediaItemAdapter.submitList(note.items)
-		binding.txtModificationDate.text = DateTimeHelper.formatCurrentDateTime(note.modificationDate)
+		binding.modificationDate.text = DateTimeHelper.formatCurrentDateTime(note.modificationDate)
 		binding.root.doOnPreDraw { startPostponedEnterTransition() }
 		addMenuProvider(menuProvider, viewLifecycleOwner)
 	}
 
 	private fun setupListeners() {
-		binding.btnAdd.setOnClickListener {
+		binding.buttonAdd.setOnClickListener {
 			val menuDialog = EditorMenuFragment().apply {
 				setEditorMenuListener(this@EditorFragment)
 			}
 			showDialog(menuDialog, Constants.MENU_DIALOG_TAG)
 		}
+		requireActivity().findViewById<MaterialToolbar>(R.id.toolbar).apply {
+			setOnClickListener {
+				binding.textInputLayout.slideVisibility(true, Gravity.TOP)
+				binding.title.showSoftKeyboard()
+				binding.title.setText(note.title)
+				supportActionBar?.title = String.Empty
+				supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_upward)
+			}
+			setNavigationOnClickListener {
+				binding.textInputLayout.slideVisibility(false, Gravity.TOP)
+				supportActionBar?.title = note.title.ifEmpty { getString(R.string.editor_fragment_label) }
+				supportActionBar?.setHomeAsUpIndicator(0)
+				if (note.id == 0L) binding.content.showSoftKeyboard()
+				else binding.title.hideSoftKeyboard()
+			}
+		}
+		binding.title.addTextChangedListener(this)
 	}
 
 	private fun initTransitions(noteId: Long) {
@@ -331,6 +352,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 					val file = DocumentFile.fromSingleUri(requireContext(), uri)
 					val text = UriHelper.readTextFromUri(requireContext(), uri)
 					note = note.copy(title = file?.simpleName ?: String.Empty, text = text)
+					supportActionBar?.title = note.title
 					textAdapter.submitNote(note)
 					requireActivity().invalidateMenu()
 				}
