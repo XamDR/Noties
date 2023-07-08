@@ -81,12 +81,14 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 		takePictureLauncher = TakePictureLauncher(
 			requireContext(),
 			activityResultRegistry,
+			this,
 			onSuccess = { cameraUri -> addMediaItems(listOf(cameraUri)) },
 			onError = { binding.root.showSnackbar(R.string.error_take_picture) }
 		)
 		recordVideoLauncher = RecordVideoLauncher(
 			requireContext(),
 			activityResultRegistry,
+			this,
 			onSuccess = { videoUri -> addMediaItems(listOf(videoUri)) },
 			onError = { binding.root.showSnackbar(R.string.error_take_video) }
 		)
