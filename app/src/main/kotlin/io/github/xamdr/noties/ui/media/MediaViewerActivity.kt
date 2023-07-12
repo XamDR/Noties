@@ -94,12 +94,13 @@ class MediaViewerActivity : AppCompatActivity() {
 		}
 	}
 
-	fun setMediaItem(item: MediaItem) {
+	fun setMediaItem(item: MediaItem, playbackPosition: Long, playWhenReady: Boolean) {
 		val uri = item.uri ?: return
 		player?.apply {
 			setMediaItem(ExoMediaItem.fromUri(uri))
+			seekTo(playbackPosition)
 			prepare()
-			play()
+			setPlayWhenReady(playWhenReady)
 		}
 	}
 

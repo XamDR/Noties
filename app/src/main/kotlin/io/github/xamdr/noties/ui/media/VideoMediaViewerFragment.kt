@@ -22,6 +22,7 @@ import io.github.xamdr.noties.databinding.FragmentMediaVideoViewerBinding
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.helpers.*
 import io.github.xamdr.noties.ui.helpers.media.ImageLoader
+import timber.log.Timber
 
 class VideoMediaViewerFragment : MediaViewerFragment(), Player.Listener {
 
@@ -31,6 +32,7 @@ class VideoMediaViewerFragment : MediaViewerFragment(), Player.Listener {
 	private val menuProvider = VideoMediaMenuProvider()
 	private lateinit var exoPlayer: ExoPlayer
 	private lateinit var settingsObserver: OrientationSettingsObserver
+	private val videoState = VideoState()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -68,8 +70,8 @@ class VideoMediaViewerFragment : MediaViewerFragment(), Player.Listener {
 	override fun onResume() {
 		super.onResume()
 		addMenuProvider(menuProvider)
-		setPlayer()
-		toggleFullScreen(viewModel.isFullScreen)
+		setPlayer(videoState.playbackPosition, videoState.playWhenReady)
+		binding.root.doOnAttach { toggleFullScreen(viewModel.isFullScreen) }
 		window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 	}
 
@@ -78,6 +80,32 @@ class VideoMediaViewerFragment : MediaViewerFragment(), Player.Listener {
 		removeMenuProvider(menuProvider)
 		clearPlayer()
 		window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+	}
+
+	override fun onSaveInstanceState(outState: Bundle) {
+		super.onSaveInstanceState(outState)
+		val videoState =
+		if (::exoPlayer.isInitialized) {
+			VideoState(
+				playbackPosition = exoPlayer.contentPosition,
+				playWhenReady = exoPlayer.playWhenReady
+			)
+		}
+		else {
+			VideoState()
+		}
+		outState.putParcelable(Constants.BUNDLE_VIDEO_STATE, videoState)
+	}
+
+	override fun onViewStateRestored(savedInstanceState: Bundle?) {
+		super.onViewStateRestored(savedInstanceState)
+		if (savedInstanceState != null) {
+			val savedVideoState = savedInstanceState.getParcelableCompat(Constants.BUNDLE_VIDEO_STATE, VideoState::class.java)
+			videoState.apply {
+				playbackPosition = savedVideoState.playbackPosition
+				playWhenReady = savedVideoState.playWhenReady
+			}
+		}
 	}
 
 	override fun onPlaybackStateChanged(playbackState: Int) {
@@ -93,11 +121,11 @@ class VideoMediaViewerFragment : MediaViewerFragment(), Player.Listener {
 	}
 
 	@OptIn(UnstableApi::class)
-	private fun setPlayer() {
+	private fun setPlayer(playbackPosition: Long, playWhenReady: Boolean) {
 		exoPlayer = (requireActivity() as MediaViewerActivity).player ?: return
 		binding.playerView.player = exoPlayer
 		exoPlayer.addListener(this)
-		(requireActivity() as MediaViewerActivity).setMediaItem(item)
+		(requireActivity() as MediaViewerActivity).setMediaItem(item, playbackPosition, playWhenReady)
 	}
 
 	private fun clearPlayer() {
@@ -106,7 +134,6 @@ class VideoMediaViewerFragment : MediaViewerFragment(), Player.Listener {
 		binding.playerView.player = null
 	}
 
-	@OptIn(UnstableApi::class)
 	private fun toggleFullScreenAndOrientation() {
 		viewModel.isFullScreen = !viewModel.isFullScreen
 		toggleFullScreen(viewModel.isFullScreen)
@@ -130,10 +157,12 @@ class VideoMediaViewerFragment : MediaViewerFragment(), Player.Listener {
 	private fun toggleFullScreen(isFullScreen: Boolean) {
 		val fullScreenButton = binding.playerView.findViewById<ImageButton>(androidx.media3.ui.R.id.exo_fullscreen)
 		if (isFullScreen) {
+			Timber.d("Enter full screen")
 			fullScreenHelper.enterFullScreen(binding.root, window)
 			fullScreenButton.setImageResource(androidx.media3.ui.R.drawable.exo_ic_fullscreen_exit)
 		}
 		else {
+			Timber.d("Exit full screen")
 			fullScreenHelper.exitFullScreen(binding.root, window)
 			fullScreenButton.setImageResource(androidx.media3.ui.R.drawable.exo_ic_fullscreen_enter)
 		}

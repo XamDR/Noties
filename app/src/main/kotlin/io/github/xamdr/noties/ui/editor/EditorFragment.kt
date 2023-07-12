@@ -75,6 +75,7 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 			handleItemsToDelete(result.data)
 		}
 	}
+	private var titleInEditMode = false
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -187,7 +188,7 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 
 	private fun initializeAdapter(note: Note): ConcatAdapter {
 		val tasks = (note.toTaskList() + Task.Footer).toMutableList()
-		taskAdapter = TaskAdapter(tasks, itemTouchHelper)
+		taskAdapter = TaskAdapter(this, tasks, itemTouchHelper)
 		textAdapter = EditorTextAdapter(note, this@EditorFragment).apply {
 			setOnContentReceivedListener { uri -> addMediaItems(listOf(uri)) }
 		}
@@ -218,6 +219,7 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 		}
 		requireActivity().findViewById<MaterialToolbar>(R.id.toolbar).apply {
 			setOnClickListener {
+				titleInEditMode = true
 				binding.textInputLayout.slideVisibility(true, Gravity.TOP)
 				binding.title.showSoftKeyboard()
 				binding.title.setText(note.title)
@@ -225,11 +227,16 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 				supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_upward)
 			}
 			setNavigationOnClickListener {
-				binding.textInputLayout.slideVisibility(false, Gravity.TOP)
-				supportActionBar?.title = note.title.ifEmpty { getString(R.string.editor_fragment_label) }
-				supportActionBar?.setHomeAsUpIndicator(0)
-				if (note.id == 0L) binding.content.showSoftKeyboard()
-				else binding.title.hideSoftKeyboard()
+				if (titleInEditMode) {
+					titleInEditMode = false
+					binding.textInputLayout.slideVisibility(false, Gravity.TOP)
+					supportActionBar?.title = note.title.ifEmpty { getString(R.string.editor_fragment_label) }
+					supportActionBar?.setHomeAsUpIndicator(0)
+					if (note.id == 0L) binding.content.showSoftKeyboard() else binding.title.hideSoftKeyboard()
+				}
+				else {
+					navigateUp()
+				}
 			}
 		}
 		binding.title.addTextChangedListener(this)

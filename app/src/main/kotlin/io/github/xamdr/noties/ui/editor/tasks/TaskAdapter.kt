@@ -1,16 +1,22 @@
 package io.github.xamdr.noties.ui.editor.tasks
 
 import android.annotation.SuppressLint
+import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.savedstate.SavedStateRegistry
+import androidx.savedstate.SavedStateRegistryOwner
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.ItemTaskBinding
 import io.github.xamdr.noties.databinding.ItemTaskFooterBinding
@@ -19,8 +25,24 @@ import io.github.xamdr.noties.domain.model.Task
 import io.github.xamdr.noties.ui.helpers.*
 
 class TaskAdapter(
+	registryOwner: SavedStateRegistryOwner,
 	private val tasks: MutableList<Task>,
-	private val itemTouchHelper: ItemTouchHelper) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), SpanSizeLookupOwner {
+	private val itemTouchHelper: ItemTouchHelper) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
+	SpanSizeLookupOwner, SavedStateRegistry.SavedStateProvider {
+
+	init {
+		registryOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+			if (event == Lifecycle.Event.ON_CREATE) {
+				val registry = registryOwner.savedStateRegistry
+				registry.registerSavedStateProvider(PROVIDER, this)
+				val restoredState = registry.consumeRestoredStateForKey(PROVIDER)
+				if (restoredState != null && restoredState.containsKey(BUNDLE_TASKS)) {
+					val restoredTasks = restoredState.getParcelableArrayListCompat(BUNDLE_TASKS, Task::class.java)
+					submitTasks(restoredTasks)
+				}
+			}
+		})
+	}
 
 	inner class TaskViewHolder(private val binding: ItemTaskBinding) : RecyclerView.ViewHolder(binding.root), SimpleTextWatcher {
 
@@ -144,6 +166,10 @@ class TaskAdapter(
 		}
 	}
 
+	override fun saveState(): Bundle {
+		return bundleOf(BUNDLE_TASKS to ArrayList(tasks))
+	}
+
 	@SuppressLint("NotifyDataSetChanged")
 	fun submitTasks(tasks: MutableList<Task>) {
 		this.tasks.apply {
@@ -224,5 +250,7 @@ class TaskAdapter(
 		private const val TASK = R.layout.item_task
 		private const val FOOTER = R.layout.item_task_footer
 		private const val PAYLOAD_DONE = "PAYLOAD_DONE"
+		private const val BUNDLE_TASKS = "BUNDLE_TASKS"
+		private const val PROVIDER = "TASK_ADAPTER"
 	}
 }
