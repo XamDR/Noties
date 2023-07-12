@@ -12,13 +12,16 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import io.github.xamdr.noties.R
+import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.databinding.ItemNoteBinding
 import io.github.xamdr.noties.databinding.ItemProtectedNoteBinding
 import io.github.xamdr.noties.domain.model.Note
+import io.github.xamdr.noties.ui.editor.tasks.SpannableConverter
 import io.github.xamdr.noties.ui.helpers.blur
 import io.github.xamdr.noties.ui.helpers.estimateNumberChars
 import io.github.xamdr.noties.ui.helpers.setOnClickListener
-import io.github.xamdr.noties.ui.image.ImageLoader
+import io.github.xamdr.noties.ui.helpers.media.ImageLoader
+import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 
 class NoteAdapter(
 	private val onNoteClicked: (view: View?, note: Note) -> Unit,
@@ -49,12 +52,47 @@ class NoteAdapter(
 			binding.title.isVisible = note.title.isNotEmpty()
 			binding.title.text = note.title
 			binding.content.isVisible = note.text.isNotEmpty()
-			binding.content.text = if (note.text.length <= numberOfChars) note.text else note.text.substring(0, numberOfChars)
+			binding.content.text = formatContent(note)
 			binding.url.isVisible = note.urls.isNotEmpty()
 			binding.url.text = note.urls.size.toString()
-			binding.image.isVisible = note.getPreviewImage() != null
-			ImageLoader.load(binding.image, note.getPreviewImage(), 400)
+			binding.mediaContainer.isVisible = note.previewItem != null
+			when (note.previewItem?.mediaType) {
+				MediaType.Image -> {
+					binding.duration.isVisible = false
+					ImageLoader.load(binding.image, note.previewItem?.uri, 400)
+				}
+				MediaType.Video -> {
+					binding.duration.isVisible = true
+					binding.duration.text = note.previewItem?.metadata?.duration?.let { MediaHelper.formatDuration(it) }
+					if (note.previewItem?.metadata?.thumbnail != null) {
+						ImageLoader.load(binding.image, note.previewItem?.metadata?.thumbnail, 400)
+					}
+					else {
+						binding.image.setImageResource(R.drawable.ic_image_not_supported)
+					}
+				}
+				else -> {}
+			}
 			ViewCompat.setTransitionName(binding.root, note.id.toString())
+		}
+
+		private fun formatContent(note: Note): CharSequence {
+			if (note.isTaskList) {
+				return if (note.text.length <= numberOfChars) {
+					SpannableConverter.convertToSpannable(note.text)
+				}
+				else {
+					SpannableConverter.convertToSpannable(note.text.substring(0, numberOfChars))
+				}
+			}
+			else {
+				return if (note.text.length <= numberOfChars) {
+					note.text
+				}
+				else {
+					note.text.substring(0, numberOfChars)
+				}
+			}
 		}
 	}
 

@@ -2,7 +2,7 @@ package io.github.xamdr.noties
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
-import io.github.xamdr.noties.ui.image.BitmapCache
+import io.github.xamdr.noties.ui.helpers.BitmapCache
 import timber.log.Timber
 
 @HiltAndroidApp

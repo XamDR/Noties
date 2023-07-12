@@ -71,11 +71,10 @@
 	<string name="delete_notes_title">Delete notes</string>
 
 	<!-- Editor Fragment -->
-	<string name="editor_fragment_label">Editor</string>
+	<string name="editor_fragment_label">Title</string>
 	<string name="editor_content">Editor content</string>
 	<string name="placeholder">Write here…</string>
 	<string name="demo_content">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</string>
-	<string name="note_title">Title…</string>
 	<string name="toolbar_back_button_description">Back to Notes</string>
 	<string name="clear_note_title_text">Clear note title text</string>
 	<string name="note_modified_date">Last edit: %s</string>
@@ -104,6 +103,8 @@
 	<string name="remove_item">Remove todo item</string>
 	<string name="new_todo_item">Todo item</string>
 	<string name="hide_checkboxes">Hide checkboxes</string>
+	<string name="check_all_checkboxes">Check all checkboxes</string>
+	<string name="uncheck_all_checkboxes">Uncheck all checkboxes</string>
 	<string name="note_locked">Note locked</string>
 	<string name="note_unlocked">Note unlocked</string>
 	<string name="note_pinned">Note will be pinned</string>
@@ -111,30 +112,39 @@
 
 	<!-- Add attachment Fragment -->
 	<string name="text_editor_menu_fragment_label">Text editor menu attachments</string>
-	<string name="attach_images">Attach images</string>
-	<string name="attach_multimedia">Attach multimedia</string>
-	<string name="take_picture">Take a picture</string>
-	<string name="write_external_storage_permission_rationale">Noties needs permission to access your gallery in order to save the picture taken by the camera.</string>
-	<string name="take_video">Record a video</string>
+	<string name="attach_media">Attach multimedia </string>
+	<string name="take_picture">Take picture</string>
+	<string name="write_external_storage_permission_rationale">Noties needs permission to access your gallery in order to save the picture or video taken by the camera.</string>
+	<string name="take_video">Record video</string>
 	<string name="talk_to_write">Talk to write</string>
 	<string name="add_todo_list">Add to-do list</string>
 	<string name="add_reminder">Add reminder</string>
 	<string name="user_image">Image added by the user</string>
 	<string name="image_saved">Picture saved</string>
 	<string name="error_take_picture">No photo was taken.</string>
+	<string name="error_take_video">No video was recorded.</string>
 	<string name="permission_denied">Permission denied.</string>
 	<string name="image_attachment">Image attached to the note.</string>
 
-	<!-- Gallery Fragment -->
+	<!-- MediaViewer Fragment -->
 	<string name="share_item">Share</string>
 	<string name="copy_item">Copy</string>
-	<string name="download_item">Download</string>
+	<string name="download_item">Save</string>
+	<string name="download_video_message">Saving video…</string>
+	<string name="video_downloaded_message">Video saved in your device.</string>
+	<string name="image_downloaded_message">Image saved in your device.</string>
 	<string name="delete_item">Delete</string>
 	<string name="set_image_as">Set image as</string>
 	<string name="delete_all_items">Delete all images</string>
 	<string name="delete_all_items_question">Are you sure you want to delete all the images attached to this note?</string>
 	<string name="image_item">Image</string>
 	<string name="image_copied_msg">Image copied to clipboard</string>
+	<string name="error_video_playback">Error. This video cannot be played.</string>
+	<string name="print_image">Print image</string>
+	<string name="rotate">Rotate</string>
+	<string name="print_image_job_name">Image_%d</string>
+	<string name="error_print_image">Error. Image could not be printed.</string>
+	<string name="init_print_dialog">Preparing image…</string>
 
 	<!-- DateTime Picker Fragment -->
 	<string name="date">Date:</string>

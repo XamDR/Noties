@@ -18,9 +18,9 @@
 		android:foreground="?attr/selectableItemBackground"
 		android:gravity="center_vertical"
 		android:padding="8dp"
-		android:text="@string/attach_images"
+		android:text="@string/attach_media"
 		android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-		app:drawableStartCompat="@drawable/ic_attach_image" />
+		app:drawableStartCompat="@drawable/ic_attachment_media" />
 
 	<com.google.android.material.textview.MaterialTextView
 		android:id="@+id/take_picture"
@@ -36,7 +36,20 @@
 		app:drawableStartCompat="@drawable/ic_take_picture" />
 
 	<com.google.android.material.textview.MaterialTextView
-		android:id="@+id/add_todo_list"
+		android:id="@+id/take_video"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="8dp"
+		android:drawablePadding="8dp"
+		android:foreground="?attr/selectableItemBackground"
+		android:gravity="center_vertical"
+		android:padding="8dp"
+		android:text="@string/take_video"
+		android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+		app:drawableStartCompat="@drawable/ic_take_video" />
+
+	<com.google.android.material.textview.MaterialTextView
+		android:id="@+id/add_task_list"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="8dp"

@@ -1,14 +1,15 @@
 package io.github.xamdr.noties.ui.media
 
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import io.github.xamdr.noties.domain.model.Image
-import io.github.xamdr.noties.ui.helpers.onBackPressed
+import io.github.xamdr.noties.data.entity.media.MediaType
+import io.github.xamdr.noties.domain.model.MediaItem
 
 class MediaStateAdapter(
-	private val fragment: Fragment,
-	private val items: MutableList<Image>,
-	private val onItemRemoved: (position: Int) -> Unit) : FragmentStateAdapter(fragment) {
+	private val activity: FragmentActivity,
+	private val items: MutableList<MediaItem>,
+	private val onItemRemoved: (position: Int) -> Unit) : FragmentStateAdapter(activity) {
 
 	private val itemsId = items.map { it.id.toLong() }.toMutableList()
 
@@ -16,7 +17,11 @@ class MediaStateAdapter(
 
 	override fun createFragment(position: Int): Fragment {
 		val item = items[position]
-		return MediaPreviewFragment.newInstance(item)
+		return when (item.mediaType) {
+			MediaType.Image -> ImageMediaViewerFragment.newInstance(item)
+			MediaType.Video -> VideoMediaViewerFragment.newInstance(item)
+			MediaType.Audio -> throw IllegalArgumentException("Wrong mediatype: ${item.mediaType}")
+		}
 	}
 
 	override fun getItemId(position: Int) = items[position].id.toLong()
@@ -25,7 +30,7 @@ class MediaStateAdapter(
 
 	fun findFragmentByPosition(position: Int): Fragment? {
 		val tag = "f${getItemId(position)}"
-		return fragment.childFragmentManager.findFragmentByTag(tag)
+		return activity.supportFragmentManager.findFragmentByTag(tag)
 	}
 
 	fun removeFragment(position: Int) {
@@ -34,7 +39,7 @@ class MediaStateAdapter(
 		itemsId.removeAt(position)
 		notifyItemRemoved(position)
 		if (itemCount == 0) {
-			fragment.onBackPressed()
+			activity.onBackPressedDispatcher.onBackPressed()
 		}
 	}
 }

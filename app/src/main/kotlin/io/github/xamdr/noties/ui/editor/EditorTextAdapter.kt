@@ -34,18 +34,17 @@ class EditorTextAdapter(private var note: Note, private val listener: NoteConten
 
 		init {
 			if (note.id == 0L && note.isEmpty()) {
-				binding.root.post { binding.noteText.showSoftKeyboard() }
+				binding.root.post { binding.text.showSoftKeyboard() }
 			}
-			binding.noteText.setOnLinkClickedListener { url -> listener.onLinkClicked(url) }
+			binding.text.setOnLinkClickedListener { url -> listener.onLinkClicked(url) }
 			ViewCompat.setOnReceiveContentListener(
-				binding.noteText,
+				binding.text,
 				ImageContentReceiverListener.MIME_TYPES,
 				contentReceiverListener
 			)
 		}
 
 		fun bind(note: Note) {
-			binding.noteTitle.setText(note.title)
 			val text = note.text
 			if (text.length > TEXT_CHUNK_SIZE) {
 				listener.onNoteContentLoading()
@@ -56,26 +55,24 @@ class EditorTextAdapter(private var note: Note, private val listener: NoteConten
 				}
 				CoroutineScope(Dispatchers.Main).launch {
 					for (chunk in chunks) {
-						binding.noteText.append(chunk)
+						binding.text.append(chunk)
 						delay(100)
 					}
-					binding.noteText.setSelection(0)
+					binding.text.setSelection(0)
 					listener.onNoteContentLoaded()
 				}
 			}
 			else {
-				binding.noteText.setText(text)
+				binding.text.setText(text)
 			}
 		}
 
 		fun bindTextWatcher() {
-			binding.noteText.addTextChangedListener(this)
-			binding.noteTitle.addTextChangedListener(this)
+			binding.text.addTextChangedListener(this)
 		}
 
 		fun unbindTextWatcher() {
-			binding.noteText.removeTextChangedListener(this)
-			binding.noteTitle.removeTextChangedListener(this)
+			binding.text.removeTextChangedListener(this)
 		}
 
 		override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -88,10 +85,7 @@ class EditorTextAdapter(private var note: Note, private val listener: NoteConten
 
 		override fun afterTextChanged(s: Editable) {
 			runnable = handler.postDelayed(DELAY) {
-				when {
-					s === binding.noteText.editableText -> listener.onNoteTextChanged(s.toString())
-					s === binding.noteTitle.editableText -> listener.onNoteTitleChanged(s.toString())
-				}
+				listener.onNoteTextChanged(s.toString())
 			}
 		}
 	}

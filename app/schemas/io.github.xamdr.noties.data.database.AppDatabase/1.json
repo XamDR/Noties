@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "584ed28b1bb9b5c13f7393ede4081ca0",
+    "identityHash": "3a96e676d55d12064524879fb585ad22",
     "entities": [
       {
         "tableName": "Tags",
@@ -38,50 +38,6 @@
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Tags_name` ON `${TABLE_NAME}` (`name`)"
           }
         ],
-        "foreignKeys": []
-      },
-      {
-        "tableName": "Images",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uri` TEXT, `mime_type` TEXT, `alt_text` TEXT, `note_id` INTEGER NOT NULL)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "uri",
-            "columnName": "uri",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "mimeType",
-            "columnName": "mime_type",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "description",
-            "columnName": "alt_text",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "noteId",
-            "columnName": "note_id",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        },
-        "indices": [],
         "foreignKeys": []
       },
       {
@@ -169,12 +125,74 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "MediaItems",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uri` TEXT, `thumbnail_uri` TEXT, `mime_type` TEXT, `media_type` TEXT NOT NULL, `description` TEXT, `duration` INTEGER NOT NULL, `note_id` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "uri",
+            "columnName": "uri",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "thumbnailUri",
+            "columnName": "thumbnail_uri",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mimeType",
+            "columnName": "mime_type",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mediaType",
+            "columnName": "media_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "duration",
+            "columnName": "duration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "noteId",
+            "columnName": "note_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '584ed28b1bb9b5c13f7393ede4081ca0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3a96e676d55d12064524879fb585ad22')"
     ]
   }
 }

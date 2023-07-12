@@ -17,7 +17,7 @@ data class DatabaseNoteEntity(
 	@ColumnInfo(name = "is_protected") val isProtected: Boolean = false,
 	@ColumnInfo(name = "is_trashed") val isTrashed: Boolean = false,
 	@ColumnInfo(name = "is_pinned") val isPinned: Boolean = false,
-	@ColumnInfo(name = "is_todo_list") val isTodoList: Boolean = false,
+	@ColumnInfo(name = "is_todo_list") val isTaskList: Boolean = false,
 	@ColumnInfo(name = "reminder_date") val reminderDate: LocalDateTime? = null,
 	@ColumnInfo(name = "tags") val tags: List<String> = emptyList()) {
 
@@ -32,7 +32,7 @@ data class DatabaseNoteEntity(
 			isProtected = this.isProtected,
 			isTrashed = this.isTrashed,
 			isPinned = this.isPinned,
-			isTodoList = this.isTodoList,
+			isTaskList = this.isTaskList,
 			reminderDate = this.reminderDate,
 			tags = this.tags
 		)

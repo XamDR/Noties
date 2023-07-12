@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<item
+		android:id="@+id/share"
+		android:orderInCategory="0"
+		android:title="@string/share_item"
+		android:icon="@drawable/ic_share_content"
+		app:showAsAction="always"/>
+
+	<item
+		android:id="@+id/toggle_orientation"
+		android:orderInCategory="1"
+		android:title="@string/rotate"
+		android:icon="@drawable/ic_screen_rotation"
+		app:showAsAction="ifRoom"/>
+
+	<item
+		android:id="@+id/copy"
+		android:orderInCategory="2"
+		android:title="@string/copy_item"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/download"
+		android:orderInCategory="4"
+		android:title="@string/download_item"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/print"
+		android:orderInCategory="8"
+		android:title="@string/print_image"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/delete"
+		android:orderInCategory="16"
+		android:title="@string/delete_item"
+		app:showAsAction="never"/>
+
+	<item
+		android:id="@+id/set_as"
+		android:orderInCategory="32"
+		android:title="@string/set_image_as"
+		app:showAsAction="never"/>
+</menu>

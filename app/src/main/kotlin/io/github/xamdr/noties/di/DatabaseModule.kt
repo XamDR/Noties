@@ -7,13 +7,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.github.xamdr.noties.data.dao.ImageDao
 import io.github.xamdr.noties.data.dao.NoteDao
 import io.github.xamdr.noties.data.database.AppDatabase
 import io.github.xamdr.noties.data.dao.TagDao
-import io.github.xamdr.noties.data.repository.ImageRepository
+import io.github.xamdr.noties.data.dao.MediaDao
 import io.github.xamdr.noties.data.repository.NoteRepository
 import io.github.xamdr.noties.data.repository.TagRepository
+import io.github.xamdr.noties.data.repository.MediaItemRepository
 import javax.inject.Singleton
 
 @Module
@@ -33,16 +33,16 @@ object DatabaseModule {
 	fun providesNoteDao(db: AppDatabase) = db.noteDao()
 
 	@Provides
-	fun providesImageDao(db: AppDatabase) = db.imageDao()
+	fun providesMediaDao(db: AppDatabase) = db.mediaDao()
 
 	@Provides
 	fun providesTagRepository(tagDao: TagDao) = TagRepository(tagDao)
 
 	@Provides
-	fun providesImageRepository(imageDao: ImageDao) = ImageRepository(imageDao)
+	fun providesNoteRepository(noteDao: NoteDao) = NoteRepository(noteDao)
 
 	@Provides
-	fun providesNoteRepository(noteDao: NoteDao) = NoteRepository(noteDao)
+	fun providesMediaRepository(mediaDao: MediaDao) = MediaItemRepository(mediaDao)
 
 	private const val DATABASE_NAME = "App.db"
 }

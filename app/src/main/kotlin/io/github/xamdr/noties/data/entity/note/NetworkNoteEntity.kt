@@ -12,7 +12,7 @@ data class NetworkNoteEntity(
 	val isProtected: Boolean = false,
 	val isTrashed: Boolean = false,
 	val isPinned: Boolean = false,
-	val isTodoList: Boolean = false,
+	val isTaskList: Boolean = false,
 	val reminderDate: LocalDateTime? = null,
 	val tags: List<String> = emptyList()
 ) {
@@ -28,7 +28,7 @@ data class NetworkNoteEntity(
 			isProtected = this.isProtected,
 			isTrashed = this.isTrashed,
 			isPinned = this.isPinned,
-			isTodoList = this.isTodoList,
+			isTaskList = this.isTaskList,
 			reminderDate = this.reminderDate,
 			tags = this.tags
 		)

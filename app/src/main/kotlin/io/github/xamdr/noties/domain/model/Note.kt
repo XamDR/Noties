@@ -16,10 +16,10 @@ data class Note(
 	val isProtected: Boolean = false,
 	val isTrashed: Boolean = false,
 	val isPinned: Boolean = false,
-	val isTodoList: Boolean = false,
+	val isTaskList: Boolean = false,
 	val reminderDate: LocalDateTime? = null,
 	val tags: List<String> = emptyList(),
-	val images: List<Image> = emptyList()
+	val items: List<MediaItem> = emptyList()
 ) : Parcelable {
 
 	fun asDatabaseEntity(): DatabaseNoteEntity {
@@ -33,23 +33,24 @@ data class Note(
 			isProtected = this.isProtected,
 			isTrashed = this.isTrashed,
 			isPinned = this.isPinned,
-			isTodoList = this.isTodoList,
+			isTaskList = this.isTaskList,
 			reminderDate = this.reminderDate,
 			tags = this.tags
 		)
 	}
 
-	fun getPreviewImage() = images.firstOrNull()?.uri
+	val previewItem: MediaItem?
+		get() = items.firstOrNull()
 
-	fun isEmpty() = text.isEmpty() && images.isEmpty()
+	fun isEmpty() = text.isEmpty() && items.isEmpty()
 
-	fun toTodoList(): List<Todo.TodoItem> {
-		return if (text.isEmpty()) listOf(Todo.TodoItem())
+	fun toTaskList(): List<Task.Item> {
+		return if (text.isEmpty()) listOf(Task.Item())
 		else text.split(NEWLINE).map {
 			if (it.startsWith(PREFIX_DONE)) {
-				Todo.TodoItem(content = it.removePrefix(PREFIX_DONE), done = true)
+				Task.Item(content = it.removePrefix(PREFIX_DONE), done = true)
 			}
-			else Todo.TodoItem(content = it.removePrefix(PREFIX_NOT_DONE))
+			else Task.Item(content = it.removePrefix(PREFIX_NOT_DONE))
 		}
 	}
 
@@ -59,7 +60,7 @@ data class Note(
 		const val PREFIX_NOT_DONE = "- [ ] "
 		const val PREFIX_DONE = "- [x] "
 
-		fun create(note: Note, images: List<Image>): Note {
+		fun create(note: Note, items: List<MediaItem>): Note {
 			return Note(
 				id = note.id,
 				title = note.title,
@@ -70,10 +71,10 @@ data class Note(
 				isProtected = note.isProtected,
 				isTrashed = note.isTrashed,
 				isPinned = note.isPinned,
-				isTodoList = note.isTodoList,
+				isTaskList = note.isTaskList,
 				reminderDate = note.reminderDate,
 				tags = note.tags,
-				images = images
+				items = items
 			)
 		}
 	}

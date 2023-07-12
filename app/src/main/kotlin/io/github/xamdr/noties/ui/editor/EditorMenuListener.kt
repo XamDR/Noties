@@ -1,6 +1,8 @@
 package io.github.xamdr.noties.ui.editor
 
 interface EditorMenuListener {
-	fun onAttachMediaFile()
+	fun onAttachMediaFiles()
 	fun onTakePicture()
+	fun onTakeVideo()
+	fun onAddTaskList()
 }

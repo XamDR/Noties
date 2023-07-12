@@ -1,8 +1,8 @@
 package io.github.xamdr.noties.domain.usecase
 
-import io.github.xamdr.noties.data.repository.ImageRepository
+import io.github.xamdr.noties.data.repository.MediaItemRepository
 import io.github.xamdr.noties.data.repository.NoteRepository
-import io.github.xamdr.noties.domain.model.Image
+import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -11,16 +11,16 @@ import javax.inject.Inject
 
 class InsertNoteUseCase @Inject constructor(
 	private val noteRepository: NoteRepository,
-	private val imageRepository: ImageRepository) {
+	private val mediaItemRepository: MediaItemRepository) {
 
 	suspend operator fun invoke(note: Note) {
 		val id = noteRepository.insertNote(note.asDatabaseEntity())
-		val updatedImages = mutableListOf<Image>()
-		for (image in note.images) {
-			val updatedImage = image.copy(noteId = id)
-			updatedImages.add(updatedImage)
+		val updatedItems = mutableListOf<MediaItem>()
+		for (item in note.items) {
+			val updatedItem = item.copy(noteId = id)
+			updatedItems.add(updatedItem)
 		}
-		imageRepository.insertImages(updatedImages.map { it.asDatabaseEntity() })
+		mediaItemRepository.insertItems(updatedItems.map { it.asDatabaseEntity() })
 	}
 }
 
@@ -28,8 +28,8 @@ class GetNotesUseCase @Inject constructor(private val noteRepository: NoteReposi
 
 	operator fun invoke(tagName: String): Flow<List<Note>> {
 		return noteRepository.getNotesByTag(tagName).map { result ->
-			result.map { (note, images) ->
-				Note.create(note.asDomainModel(), images.map { it.asDomainModel() })
+			result.map { (note, items) ->
+				Note.create(note.asDomainModel(), items.map { it.asDomainModel() })
 			}
 		}
 	}
@@ -40,8 +40,8 @@ class GetNoteByIdUseCase @Inject constructor(private val noteRepository: NoteRep
 	suspend operator fun invoke(noteId: Long): Note {
 		val result = noteRepository.getNoteById(noteId).entries.firstOrNull() ?: return Note()
 		val note = result.key.asDomainModel()
-		val images = result.value.map { it.asDomainModel() }
-		return Note.create(note, images)
+		val items = result.value.map { it.asDomainModel() }
+		return Note.create(note, items)
 	}
 }
 
@@ -58,24 +58,24 @@ class GetAllNotesUseCase @Inject constructor(private val noteRepository: NoteRep
 
 class UpdateNoteUseCase @Inject constructor(
 	private val noteRepository: NoteRepository,
-	private val imageRepository: ImageRepository) {
+	private val mediaItemRepository: MediaItemRepository) {
 
 	suspend operator fun invoke(note: Note) {
 		val updatedNote = note.copy(modificationDate = LocalDateTime.now())
 		noteRepository.updateNote(updatedNote.asDatabaseEntity())
-		val newImages = note.images.filter { image -> image.id == 0 }.map { it.asDatabaseEntity() }
-		imageRepository.insertImages(newImages)
+		val newItems = note.items.filter { item -> item.id == 0 }.map { it.asDatabaseEntity() }
+		mediaItemRepository.insertItems(newItems)
 	}
 }
 
 class DeleteNotesUseCase @Inject constructor(
 	private val noteRepository: NoteRepository,
-	private val imageRepository: ImageRepository) {
+	private val mediaItemRepository: MediaItemRepository) {
 
 	suspend operator fun invoke(notes: List<Note>) {
 		for (note in notes) {
-			val images = note.images.map { it.asDatabaseEntity() }
-			imageRepository.deleteImages(images)
+			val items = note.items.map { it.asDatabaseEntity() }
+			mediaItemRepository.deleteItems(items)
 			noteRepository.deleteNote(note.asDatabaseEntity())
 		}
 	}
@@ -84,8 +84,8 @@ class DeleteNotesUseCase @Inject constructor(
 class GetTrashedNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
 	operator fun invoke(): Flow<List<Note>> {
 		return noteRepository.getTrashedNotes().map { result ->
-			result.map { (note, images) ->
-				Note.create(note.asDomainModel(), images.map { it.asDomainModel() })
+			result.map { (note, items) ->
+				Note.create(note.asDomainModel(), items.map { it.asDomainModel() })
 			}
 		}
 	}
@@ -93,13 +93,13 @@ class GetTrashedNotesUseCase @Inject constructor(private val noteRepository: Not
 
 class EmptyTrashUseCase @Inject constructor(
 	private val noteRepository: NoteRepository,
-	private val imageRepository: ImageRepository) {
+	private val mediaItemRepository: MediaItemRepository) {
 
 	suspend operator fun invoke(notes: List<Note>): Int {
 		val entities = notes.map { it.asDatabaseEntity() }
 		for (note in notes) {
-			val images = note.images.map { it.asDatabaseEntity() }
-			imageRepository.deleteImages(images)
+			val items = note.items.map { it.asDatabaseEntity() }
+			mediaItemRepository.deleteItems(items)
 		}
 		return noteRepository.deleteTrashedNotes(entities)
 	}

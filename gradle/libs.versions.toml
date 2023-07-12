@@ -22,12 +22,14 @@ material = "1.8.0"
 androidDesugarJdkLibs = "2.0.0"
 room = "2.5.1"
 hilt = "2.44"
-hilt-navigation = "1.0.0"
 shimmer = "0.5.0"
 gif = "1.2.24"
 junit = "4.13.2"
 kotlin = "1.8.0"
 timber = "5.0.1"
+media = "1.0.2"
+mediaUi = "1.0.2"
+coil = "2.4.0"
 
 [libraries]
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
@@ -55,11 +57,13 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
-hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation-fragment", version.ref = "hilt-navigation" }
 shimmer = { group = "com.facebook.shimmer", name = "shimmer", version.ref = "shimmer" }
 gif = { group = "pl.droidsonroids.gif", name = "android-gif-drawable", version.ref = "gif" }
 junit4 = { group = "junit", name = "junit", version.ref = "junit" }
-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber"}
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+media3 = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media" }
+media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "mediaUi" }
+coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

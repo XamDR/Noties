@@ -2,13 +2,13 @@ package io.github.xamdr.noties.data.database
 
 import android.net.Uri
 import androidx.room.TypeConverter
+import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.ui.helpers.Constants
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-class ZonedDateTimeToStringConverter {
-
+class LocalDateTimeToStringConverter {
 	@TypeConverter
 	fun fromLocalDateTime(dateTime: LocalDateTime?): String? {
 		val formatter = DateTimeFormatter.ofPattern(Constants.DATE_TIME_PATTERN).withZone(ZoneId.systemDefault())
@@ -29,7 +29,7 @@ class StringArrayToStringConverter {
 	@TypeConverter
 	fun toStringArray(value: String): List<String> = if (value.isEmpty()) emptyList() else value.split(DELIMITER)
 
-	companion object {
+	private companion object {
 		private const val SEPARATOR = "|"
 		private const val DELIMITER = SEPARATOR
 	}
@@ -41,4 +41,20 @@ class UriToStringConverter {
 
 	@TypeConverter
 	fun toUri(value: String?): Uri? = if (value != null) Uri.parse(value) else null
+}
+
+class MediaTypeToStringConverter {
+	@TypeConverter
+	fun fromMediaType(mediaType: MediaType): String = when (mediaType) {
+		MediaType.Audio -> "audio"
+		MediaType.Image -> "image"
+		MediaType.Video -> "video"
+	}
+
+	@TypeConverter
+	fun toMediaType(value: String): MediaType = when (value) {
+		"image" -> MediaType.Image
+		"video" -> MediaType.Video
+		else -> MediaType.Audio
+	}
 }

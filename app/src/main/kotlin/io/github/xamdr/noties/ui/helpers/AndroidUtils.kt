@@ -1,16 +1,16 @@
 package io.github.xamdr.noties.ui.helpers
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.Window
-import android.webkit.MimeTypeMap
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultRegistry
 import androidx.annotation.*
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
@@ -27,7 +27,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
@@ -84,6 +83,20 @@ fun <T : Parcelable> Bundle.getParcelableArrayListCompat(key: String, clazz: Cla
 	}
 }
 
+fun <T : Parcelable> Intent.getParcelableArrayListCompat(key: String, clazz: Class<T>): ArrayList<T> {
+	return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+		(this.getParcelableArrayListExtra(key, clazz) ?: emptyList<T>()) as ArrayList<T>
+	}
+	else {
+		@Suppress("DEPRECATION")
+		return (this.getParcelableArrayListExtra(key) ?: emptyList<T>()) as ArrayList<T>
+	}
+}
+
+fun FragmentActivity.launch(block: suspend CoroutineScope.() -> Unit): Job {
+	return this.lifecycleScope.launch(block = block)
+}
+
 fun Fragment.launch(block: suspend CoroutineScope.() -> Unit): Job {
 	return this.viewLifecycleOwner.lifecycleScope.launch(block = block)
 }
@@ -107,14 +120,6 @@ fun Fragment.onBackPressed() {
 	this.requireActivity().onBackPressedDispatcher.onBackPressed()
 }
 
-fun <T> Fragment.getNavigationResult(key: String): T? {
-	return this.findNavController().currentBackStackEntry?.savedStateHandle?.get(key)
-}
-
-fun <T> Fragment.setNavigationResult(key: String, value: T) {
-	this.findNavController().previousBackStackEntry?.savedStateHandle?.set(key, value)
-}
-
 fun NavController.tryNavigate(
 	@IdRes resId: Int,
 	args: Bundle? = null,
@@ -134,8 +139,15 @@ fun NavController.tryNavigate(
 val Fragment.supportActionBar: ActionBar?
 	get() = (this.activity as AppCompatActivity).supportActionBar
 
+val Fragment.activityResultRegistry: ActivityResultRegistry
+	get() = this.requireActivity().activityResultRegistry
+
 fun Fragment.addMenuProvider(provider: MenuProvider, owner: LifecycleOwner) {
 	this.requireActivity().addMenuProvider(provider, owner)
+}
+
+fun Fragment.addMenuProvider(provider: MenuProvider) {
+	this.requireActivity().addMenuProvider(provider)
 }
 
 fun Fragment.removeMenuProvider(provider: MenuProvider) {
@@ -167,9 +179,6 @@ fun DialogFragment.getPositiveButton(): Button {
 	return (requireDialog() as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
 }
 
-fun Context.getUriMimeType(uri: Uri): String? = this.contentResolver.getType(uri)
-
-fun Context.getUriExtension(uri: Uri): String? {
-	val mimeType = this.contentResolver.getType(uri)
-	return MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
+fun Context.isLandscape(): Boolean {
+	return this.resources.displayMetrics.heightPixels < this.resources.displayMetrics.widthPixels
 }

@@ -4,31 +4,70 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:background="@color/blue_600_alpha_60"
+	android:animateLayoutChanges="true"
 	tools:context=".ui.editor.EditorFragment">
 
-	<androidx.recyclerview.widget.RecyclerView
-		android:id="@+id/rv_content"
+	<com.google.android.material.textfield.TextInputLayout
+		android:id="@+id/text_input_layout"
 		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:contentDescription="@string/editor_content"
-		android:orientation="vertical"
-		android:scrollbars="none"
-		app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-		app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
+		android:layout_height="wrap_content"
+		android:theme="@style/ThemeOverlay.AppTheme.TextInputEditText.Outlined"
+		android:visibility="gone"
+		app:boxBackgroundMode="none"
+		app:hintEnabled="false"
+		app:layout_constraintBottom_toTopOf="@id/frame_layout"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent"
-		app:spanCount="@integer/span_count"
-		tools:listitem="@layout/item_text" />
+		tools:visibility="visible">
 
-	<com.google.android.material.progressindicator.CircularProgressIndicator
+		<com.google.android.material.textfield.TextInputEditText
+			android:id="@+id/title"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="@null"
+			android:hint="@string/editor_fragment_label"
+			android:imeOptions="flagNoFullscreen"
+			android:importantForAutofill="no"
+			android:inputType="textMultiLine|textCapSentences"
+			android:minHeight="48dp"
+			android:paddingStart="16dp"
+			android:paddingEnd="16dp"
+			android:scrollbars="none"
+			android:scrollHorizontally="false"
+			android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+			android:textCursorDrawable="@drawable/cursor_color"
+			android:textSize="20sp"
+			tools:text="Lorem Ipsum" />
+	</com.google.android.material.textfield.TextInputLayout>
+
+	<FrameLayout
+		android:id="@+id/frame_layout"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/text_input_layout">
+
+		<androidx.recyclerview.widget.RecyclerView
+			android:id="@+id/content"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:contentDescription="@string/editor_content"
+			android:orientation="vertical"
+			android:scrollbars="none"
+			app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+			app:spanCount="@integer/span_count"
+			tools:listitem="@layout/item_text" />
+	</FrameLayout>
+
+	<com.google.android.material.progressindicator.LinearProgressIndicator
 		android:id="@+id/progress_indicator"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:indeterminate="true"
 		android:visibility="gone"
-		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent"
@@ -42,10 +81,10 @@
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/rv_content">
+		app:layout_constraintTop_toBottomOf="@id/frame_layout">
 
 		<ImageButton
-			android:id="@+id/btn_add"
+			android:id="@+id/button_add"
 			android:layout_width="@dimen/bottom_app_bar_item_height"
 			android:layout_height="@dimen/bottom_app_bar_item_height"
 			android:layout_marginStart="8dp"
@@ -54,7 +93,7 @@
 			android:src="@drawable/ic_add_attachment" />
 
 		<TextView
-			android:id="@+id/txt_modification_date"
+			android:id="@+id/modification_date"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center"
@@ -66,7 +105,7 @@
 			tools:text="Última edición: 14/12/2021 22:20" />
 
 		<ImageButton
-			android:id="@+id/btn_color"
+			android:id="@+id/button_color"
 			android:layout_width="@dimen/bottom_app_bar_item_height"
 			android:layout_height="@dimen/bottom_app_bar_item_height"
 			android:layout_marginEnd="8dp"

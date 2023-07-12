@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.FragmentWelcomeBinding
+import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.tryNavigate
 import io.github.xamdr.noties.ui.settings.PreferenceStorage
 import java.io.File
@@ -51,9 +52,9 @@ class WelcomeFragment : Fragment() {
 	}
 
 	private fun createDirectories(context: Context) {
-		val imagesDir = File(context.filesDir, "images")
-		val audiosDir = File(context.filesDir, "audios")
-		val videosDir = File(context.filesDir, "videos")
+		val imagesDir = File(context.filesDir, Constants.DIRECTORY_IMAGES)
+		val audiosDir = File(context.filesDir, Constants.DIRECTORY_VIDEOS)
+		val videosDir = File(context.filesDir, Constants.DIRECTORY_AUDIOS)
 		if (!imagesDir.exists()) imagesDir.mkdir()
 		if (!audiosDir.exists()) audiosDir.mkdir()
 		if (!videosDir.exists()) videosDir.mkdir()

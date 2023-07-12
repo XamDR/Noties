@@ -1,56 +1,52 @@
 package io.github.xamdr.noties.ui.editor
 
-import android.Manifest
+import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
+import android.text.Editable
 import android.view.*
-import android.view.View.OnLayoutChangeListener
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.SharedElementCallback
-import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.core.view.doOnPreDraw
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialArcMotion
 import com.google.android.material.transition.MaterialContainerTransform
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
+import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.databinding.FragmentEditorBinding
-import io.github.xamdr.noties.domain.model.Image
+import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
-import io.github.xamdr.noties.ui.editor.todos.DragDropCallback
+import io.github.xamdr.noties.domain.model.Task
+import io.github.xamdr.noties.ui.editor.media.MediaItemAdapter
+import io.github.xamdr.noties.ui.editor.media.RecordVideoLauncher
+import io.github.xamdr.noties.ui.editor.media.TakePictureLauncher
+import io.github.xamdr.noties.ui.editor.tasks.DragDropCallback
+import io.github.xamdr.noties.ui.editor.tasks.TaskAdapter
 import io.github.xamdr.noties.ui.helpers.*
-import io.github.xamdr.noties.ui.image.BitmapCache
-import io.github.xamdr.noties.ui.image.BitmapHelper
-import io.github.xamdr.noties.ui.image.ImageAdapter
-import io.github.xamdr.noties.ui.image.ImageStorageManager
-import io.github.xamdr.noties.ui.media.MediaViewerViewModel
+import io.github.xamdr.noties.ui.helpers.media.MediaHelper
+import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
+import io.github.xamdr.noties.ui.media.MediaViewerActivity
 import timber.log.Timber
 import java.io.FileNotFoundException
 import com.google.android.material.R as Material
 
 @AndroidEntryPoint
-class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
+class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, EditorMenuListener {
 
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by viewModels<EditorViewModel>()
-	private val sharedViewModel by hiltNavGraphViewModels<MediaViewerViewModel>(R.id.nav_editor)
 	private val noteId by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getLong(Constants.BUNDLE_NOTE_ID, 0L)
 	}
@@ -58,38 +54,61 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 //		requireArguments().getInt(Constants.BUNDLE_TAG_ID, 0)
 //	}
 	private lateinit var note: Note
-	private lateinit var textAdapter: EditorTextAdapter
 	private lateinit var concatAdapter: ConcatAdapter
-	private val imageAdapter = ImageAdapter(this::navigateToMediaViewer)
+	private lateinit var textAdapter: EditorTextAdapter
+	private lateinit var taskAdapter: TaskAdapter
+	private val mediaItemAdapter = MediaItemAdapter(this::navigateToMediaViewer)
 	private val menuProvider = EditorMenuProvider()
 	private val itemTouchHelper = ItemTouchHelper(DragDropCallback())
 	private val pickeMediaLauncher = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
-		addImages(uris)
+		addMediaItems(uris)
 	}
-	private lateinit var cameraUri: Uri
-	private val takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-		savePicture(success)
-	}
-	private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-		onPermissionRequested(granted)
-	}
+	private lateinit var takePictureLauncher: TakePictureLauncher
+	private lateinit var recordVideoLauncher: RecordVideoLauncher
 	private val openFileLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
 		readFileContent(uri)
 	}
 	private var fileUri: Uri? = null
+	private val itemsToDelete = mutableListOf<MediaItem>()
+	private val mediaViewerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+		if (result.resultCode == Activity.RESULT_OK) {
+			handleItemsToDelete(result.data)
+		}
+	}
+	private var titleInEditMode = false
+
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		takePictureLauncher = TakePictureLauncher(
+			requireContext(),
+			activityResultRegistry,
+			this,
+			onSuccess = { cameraUri -> addMediaItems(listOf(cameraUri)) },
+			onError = { binding.root.showSnackbar(R.string.error_take_picture) }
+		)
+		recordVideoLauncher = RecordVideoLauncher(
+			requireContext(),
+			activityResultRegistry,
+			this,
+			onSuccess = { videoUri -> addMediaItems(listOf(videoUri)) },
+			onError = { binding.root.showSnackbar(R.string.error_take_video) }
+		)
+		lifecycle.addObserver(takePictureLauncher)
+		lifecycle.addObserver(recordVideoLauncher)
+	}
 
 	override fun onCreateView(inflater: LayoutInflater,
 							  container: ViewGroup?,
 							  savedInstanceState: Bundle?): View {
 		_binding = FragmentEditorBinding.inflate(inflater, container, false)
 		initTransitions(noteId)
-		prepareSharedElementExitTransition()
 		postponeEnterTransition()
 		return binding.root
 	}
 
 	override fun onDestroyView() {
 		super.onDestroyView()
+		binding.title.removeTextChangedListener(this)
 		_binding = null
 	}
 
@@ -97,12 +116,12 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		super.onViewCreated(view, savedInstanceState)
 		setupNote()
 		setupListeners()
-		onBackPressed { if (::note.isInitialized) saveNote(note) }
+		onBackPressed { saveNoteOnBackPress() }
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
 		super.onSaveInstanceState(outState)
-		if (note.text.length <= 65536) {
+		if (::note.isInitialized && note.text.length <= Constants.MAX_TEXT_LIMIT) {
 			viewModel.saveState(note)
 		}
 		else {
@@ -124,8 +143,8 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		requireActivity().invalidateMenu()
 	}
 
-	override fun onNoteTitleChanged(title: String) {
-		note = note.copy(title = title)
+	override fun afterTextChanged(s: Editable) {
+		note = note.copy(title = s.toString())
 	}
 
 	override fun onLinkClicked(url: String) {
@@ -134,28 +153,20 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		}
 	}
 
-	override fun onAttachMediaFile() = pickeMediaLauncher.launch(arrayOf("image/*"))
+	override fun onAttachMediaFiles() = pickeMediaLauncher.launch(arrayOf("image/*", "video/*"))
 
-	override fun onTakePicture() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-			takePicture()
-		}
-		else {
-			if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-				PackageManager.PERMISSION_GRANTED) {
-				PermissionRationaleDialog.createFor(
-					requireContext(),
-					R.string.write_external_storage_permission_rationale,
-					R.drawable.ic_external_storage
-				)
-				.setNegativeButton(R.string.not_now_button, null)
-				.setPositiveButton(R.string.continue_button) { _, _ ->
-					requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-				}.show()
-			}
-			else {
-				takePicture()
-			}
+	override fun onTakePicture() = takePictureLauncher.launch()
+
+	override fun onTakeVideo() = recordVideoLauncher.launch()
+
+	override fun onAddTaskList() {
+		if (concatAdapter.removeAdapter(textAdapter)) {
+			val tasks = (note.toTaskList() + Task.Footer).toMutableList()
+			taskAdapter.submitTasks(tasks)
+			concatAdapter.addAdapter(taskAdapter)
+			note = note.copy(isTaskList = true)
+			viewModel.isTaskList.value = true
+			requireActivity().invalidateMenu()
 		}
 	}
 
@@ -168,63 +179,67 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		launch {
 			if (!::note.isInitialized) {
 				note = viewModel.getNote(noteId)
+				viewModel.isTaskList.value = note.isTaskList
 			}
-			getNavigationResult<ArrayList<Image>>(Constants.BUNDLE_IMAGES)?.let { itemsToDelete ->
-				note = note.copy(images = note.images - itemsToDelete.toSet())
-				requireActivity().invalidateMenu()
-			}
-			textAdapter = EditorTextAdapter(note, this@EditorFragment).apply {
-				setOnContentReceivedListener { uri -> addImages(listOf(uri)) }
-			}
-			concatAdapter = ConcatAdapter(imageAdapter, textAdapter)
+			concatAdapter = initializeAdapter(note)
 			setupViews(note)
 		}
 	}
 
+	private fun initializeAdapter(note: Note): ConcatAdapter {
+		val tasks = (note.toTaskList() + Task.Footer).toMutableList()
+		taskAdapter = TaskAdapter(this, tasks, itemTouchHelper)
+		textAdapter = EditorTextAdapter(note, this@EditorFragment).apply {
+			setOnContentReceivedListener { uri -> addMediaItems(listOf(uri)) }
+		}
+		return if (note.isTaskList) ConcatAdapter(mediaItemAdapter, taskAdapter)
+			else ConcatAdapter(mediaItemAdapter, textAdapter)
+	}
+
 	private fun setupViews(note: Note) {
-		binding.rvContent.apply {
+		supportActionBar?.title = note.title.ifEmpty { getString(R.string.editor_fragment_label) }
+		binding.content.apply {
 			adapter = concatAdapter
 			(layoutManager as GridLayoutManager).spanSizeLookup =
 				ConcatSpanSizeLookup(Constants.SPAN_COUNT) { concatAdapter.adapters }
 			addItemTouchHelper(itemTouchHelper)
 		}
-		imageAdapter.submitList(note.images)
-		binding.txtModificationDate.text = DateTimeHelper.formatCurrentDateTime(note.modificationDate)
+		mediaItemAdapter.submitList(note.items)
+		binding.modificationDate.text = DateTimeHelper.formatCurrentDateTime(note.modificationDate)
 		binding.root.doOnPreDraw { startPostponedEnterTransition() }
-		if (sharedViewModel.currentPosition == 0) {
-			supportActionBar?.setTitle(R.string.editor_fragment_label)
-		}
 		addMenuProvider(menuProvider, viewLifecycleOwner)
 	}
 
 	private fun setupListeners() {
-		binding.btnAdd.setOnClickListener {
+		binding.buttonAdd.setOnClickListener {
 			val menuDialog = EditorMenuFragment().apply {
 				setEditorMenuListener(this@EditorFragment)
 			}
 			showDialog(menuDialog, Constants.MENU_DIALOG_TAG)
 		}
-		binding.rvContent.addOnLayoutChangeListener(object : OnLayoutChangeListener {
-			override fun onLayoutChange(
-				v: View?,
-				left: Int,
-				top: Int,
-				right: Int,
-				bottom: Int,
-				oldLeft: Int,
-				oldTop: Int,
-				oldRight: Int,
-				oldBottom: Int
-			) {
-				binding.rvContent.removeOnLayoutChangeListener(this)
-				val layoutManager = binding.rvContent.layoutManager ?: return
-				val viewAtPosition = layoutManager.findViewByPosition(sharedViewModel.currentPosition)
-				if (viewAtPosition == null ||
-					layoutManager.isViewPartiallyVisible(viewAtPosition, false, true)) {
-					binding.rvContent.post { layoutManager.scrollToPosition(sharedViewModel.currentPosition) }
+		requireActivity().findViewById<MaterialToolbar>(R.id.toolbar).apply {
+			setOnClickListener {
+				titleInEditMode = true
+				binding.textInputLayout.slideVisibility(true, Gravity.TOP)
+				binding.title.showSoftKeyboard()
+				binding.title.setText(note.title)
+				supportActionBar?.title = String.Empty
+				supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_upward)
+			}
+			setNavigationOnClickListener {
+				if (titleInEditMode) {
+					titleInEditMode = false
+					binding.textInputLayout.slideVisibility(false, Gravity.TOP)
+					supportActionBar?.title = note.title.ifEmpty { getString(R.string.editor_fragment_label) }
+					supportActionBar?.setHomeAsUpIndicator(0)
+					if (note.id == 0L) binding.content.showSoftKeyboard() else binding.title.hideSoftKeyboard()
+				}
+				else {
+					navigateUp()
 				}
 			}
-		})
+		}
+		binding.title.addTextChangedListener(this)
 	}
 
 	private fun initTransitions(noteId: Long) {
@@ -252,21 +267,28 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		}
 	}
 
+	private fun saveNoteOnBackPress() {
+		if (::note.isInitialized) {
+			if (note.isTaskList) {
+				note = note.copy(text = taskAdapter.convertItemsToString())
+			}
+			saveNote(note)
+		}
+	}
+
 	private fun saveNote(note: Note) {
 		launch {
 			Timber.d("Note: %s", note)
 			when (viewModel.saveNote(note, noteId)) {
 				NoteAction.DeleteEmptyNote -> {
-					ImageStorageManager.deleteImages(requireContext(), note.images)
+					MediaStorageManager.deleteItems(requireContext(), note.items)
 					binding.root.showSnackbar(R.string.empty_note_deleted).showOnTop()
 				}
 				NoteAction.InsertNote -> binding.root.showSnackbar(R.string.note_saved).showOnTop()
 				NoteAction.NoAction -> {}
 				NoteAction.UpdateNote -> {
-					getNavigationResult<ArrayList<Image>>(Constants.BUNDLE_IMAGES)?.let { itemsToDelete ->
-						ImageStorageManager.deleteImages(requireContext(), itemsToDelete)
-						viewModel.deleteImages(itemsToDelete)
-					}
+					MediaStorageManager.deleteItems(requireContext(), itemsToDelete)
+					viewModel.deleteItems(itemsToDelete)
 					binding.root.showSnackbar(R.string.note_updated).showOnTop()
 				}
 			}
@@ -274,70 +296,57 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		}
 	}
 
-	private fun addImages(uris: List<Uri>) {
+	private fun addMediaItems(uris: List<Uri>) {
 		if (uris.isEmpty()) return
 		launch {
-			val images = mutableListOf<Image>()
+			binding.progressIndicator.show()
+			val items = mutableListOf<MediaItem>()
 			for (uri in uris) {
-				val newUri = UriHelper.copyUri(requireContext(), uri)
-				val image = Image(
-					uri = newUri,
-					mimeType = requireContext().getUriMimeType(newUri),
-					noteId = note.id
-				)
-				images.add(image)
+				val newUri = MediaHelper.copyUri(requireContext(), uri)
+				val mimeType = MediaHelper.getMediaMimeType(requireContext(), newUri)
+				val item: MediaItem
+				if (MediaHelper.isImage(requireContext(), newUri)) {
+					item = MediaItem(
+						uri = newUri,
+						mimeType = mimeType,
+						mediaType = MediaType.Image,
+						noteId = note.id
+					)
+				}
+				else {
+					val metadata = MediaHelper.getMediaItemMetadata(requireContext(), newUri)
+					item = MediaItem(
+						uri = newUri,
+						mimeType = mimeType,
+						mediaType = MediaType.Video,
+						metadata = metadata,
+						noteId = note.id
+					)
+				}
+				items.add(item)
 			}
-			note = note.copy(images = note.images + images)
-			imageAdapter.submitList(note.images)
+			note = note.copy(items = note.items + items)
+			mediaItemAdapter.submitList(note.items)
+			binding.progressIndicator.hide()
 			requireActivity().invalidateMenu()
 		}
 	}
 
-	private fun takePicture() {
-		val savedUri = BitmapHelper.savePicture(requireContext()) ?: return
-		cameraUri = savedUri
-		takePictureLauncher.launch(cameraUri)
-	}
-
-	private fun savePicture(success: Boolean) {
-		if (success && ::cameraUri.isInitialized) {
-			addImages(listOf(cameraUri))
-		}
-		else {
-			binding.root.showSnackbar(R.string.error_take_picture)
-		}
-	}
-
-	private fun onPermissionRequested(granted: Boolean) {
-		if (granted) {
-			takePicture()
-		}
-		else {
-			binding.root.showSnackbar(R.string.permission_denied)
-		}
-	}
-
-	private fun prepareSharedElementExitTransition() {
-		setExitSharedElementCallback(object : SharedElementCallback() {
-			override fun onMapSharedElements(names: MutableList<String>?, sharedElements: MutableMap<String, View>?) {
-				if (sharedViewModel.currentPosition != RecyclerView.NO_POSITION) {
-					val viewHolder = binding.rvContent.findViewHolderForAdapterPosition(sharedViewModel.currentPosition)
-					if (viewHolder?.itemView == null) return
-					if (!names.isNullOrEmpty() && !sharedElements.isNullOrEmpty()) {
-						sharedElements[names[0]] = viewHolder.itemView.findViewById(R.id.image)
-					}
-				}
-			}
-		})
-	}
-
 	private fun navigateToMediaViewer(view: View, position: Int) {
 		BitmapCache.Instance.clear()
-		sharedViewModel.currentPosition = position
-		val args = bundleOf(Constants.BUNDLE_IMAGES to note.images)
-		val item = note.images[position]
-		val extras = FragmentNavigatorExtras(view to item.id.toString())
-		findNavController().tryNavigate(R.id.action_editor_media_viewer, args, null, extras)
+		val intent = Intent(requireContext(), MediaViewerActivity::class.java).apply {
+			putExtra(Constants.BUNDLE_ITEMS, ArrayList(note.items))
+			putExtra(Constants.BUNDLE_POSITION, position)
+		}
+		mediaViewerLauncher.launch(intent)
+	}
+
+	private fun handleItemsToDelete(data: Intent?) {
+		val items = data?.getParcelableArrayListCompat(Constants.BUNDLE_ITEMS_DELETE, MediaItem::class.java) ?: return
+		itemsToDelete.addAll(items)
+		note = note.copy(items = note.items - items.toSet())
+		mediaItemAdapter.submitList(note.items)
+		requireActivity().invalidateMenu()
 	}
 
 	override fun onNoteContentLoading() = ProgressDialogHelper.show(requireContext(), getString(R.string.loading_text))
@@ -352,6 +361,7 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 					val file = DocumentFile.fromSingleUri(requireContext(), uri)
 					val text = UriHelper.readTextFromUri(requireContext(), uri)
 					note = note.copy(title = file?.simpleName ?: String.Empty, text = text)
+					supportActionBar?.title = note.title
 					textAdapter.submitNote(note)
 					requireActivity().invalidateMenu()
 				}
@@ -363,15 +373,31 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 		}
 	}
 
+	private fun removeTaskList() {
+		if (concatAdapter.removeAdapter(taskAdapter)) {
+			note = note.copy(text = taskAdapter.joinToString(), isTaskList =  false)
+			viewModel.isTaskList.value = false
+			textAdapter.submitNote(note)
+			concatAdapter.addAdapter(textAdapter)
+			requireActivity().invalidateMenu()
+		}
+	}
+
+	private fun checkAllTasks() = taskAdapter.markAllTasksAsDone(true)
+
+	private fun uncheckAllTasks() = taskAdapter.markAllTasksAsDone(false)
+
 	private inner class EditorMenuProvider : MenuProvider {
 		override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
 			menuInflater.inflate(R.menu.menu_editor, menu)
 		}
 
 		override fun onPrepareMenu(menu: Menu) {
-			val menuItem = menu.findItem(R.id.share_content)
-			menuItem.isVisible = !note.isEmpty()
-			menuItem.isEnabled = !note.isEmpty()
+			menu.findItem(R.id.share_content).isActive = !note.isEmpty()
+			menu.findItem(R.id.open_file).isActive = !note.isTaskList
+			menu.findItem(R.id.hide_tasks).isActive = note.isTaskList
+			menu.findItem(R.id.check_tasks).isActive = note.isTaskList
+			menu.findItem(R.id.uncheck_tasks).isActive = note.isTaskList
 		}
 
 		override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -385,6 +411,15 @@ class EditorFragment : Fragment(), NoteContentListener, EditorMenuListener {
 				R.id.open_file -> {
 					binding.root.hideSoftKeyboard()
 					openFileLauncher.launch(arrayOf(Constants.MIME_TYPE_TEXT)); true
+				}
+				R.id.hide_tasks -> {
+					removeTaskList(); true
+				}
+				R.id.check_tasks -> {
+					checkAllTasks(); true
+				}
+				R.id.uncheck_tasks -> {
+					uncheckAllTasks(); true
 				}
 				else -> false
 			}

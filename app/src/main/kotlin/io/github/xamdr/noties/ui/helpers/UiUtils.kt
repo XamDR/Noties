@@ -11,6 +11,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.Window
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -22,9 +23,12 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.getSystemService
 import androidx.core.view.ViewCompat
+import androidx.core.view.isVisible
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Slide
+import androidx.transition.TransitionManager
 import com.google.android.material.behavior.SwipeDismissBehavior
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -188,4 +192,25 @@ fun TextView.estimateNumberChars(numLines: Int): Int {
 	val screenWidth = this.context.resources.displayMetrics.widthPixels
 	val numCharsPerLine = screenWidth / charWidth
 	return numCharsPerLine * numLines
+}
+
+fun View.onClick(action: (View) -> Unit) {
+	this.setOnClickListener(action)
+}
+
+var MenuItem.isActive: Boolean
+	get() = this.isVisible && this.isEnabled
+	set(value) {
+		this.isVisible = value
+		this.isEnabled = value
+	}
+
+fun View.slideVisibility(isVisible: Boolean, gravity: Int) {
+	val parent = this.parent as ViewGroup
+	val transition = Slide(gravity).apply {
+		duration = 250
+		addTarget(this@slideVisibility)
+	}
+	TransitionManager.beginDelayedTransition(parent, transition)
+	this.isVisible = isVisible
 }

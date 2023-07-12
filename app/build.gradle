@@ -87,7 +87,6 @@ dependencies {
 	// Hilt
 	implementation libs.hilt.android
 	kapt libs.hilt.compiler
-	implementation libs.hilt.navigation
 
 	// Exif Interface
 	implementation libs.androidx.exif
@@ -100,6 +99,13 @@ dependencies {
 
 	// Timber
 	implementation libs.timber
+
+	// Media3
+	implementation libs.media3
+	implementation libs.media3.ui
+
+	// Coil
+	implementation libs.coil
 
 	// Testing
 	testImplementation libs.junit4

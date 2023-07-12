@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content">
+
+	<ImageView
+		android:id="@+id/image"
+		android:layout_width="200dp"
+		android:layout_height="200dp"
+		android:adjustViewBounds="true"
+		android:importantForAccessibility="no"
+		android:scaleType="centerCrop"
+		tools:src="@drawable/ic_android" />
+
+	<!--	<TextView-->
+	<!--		android:id="@+id/duration"-->
+	<!--		android:layout_width="wrap_content"-->
+	<!--		android:layout_height="wrap_content"-->
+	<!--		android:layout_gravity="top|end"-->
+	<!--		android:layout_margin="8dp"-->
+	<!--		android:drawablePadding="8dp"-->
+	<!--		android:gravity="center"-->
+	<!--		android:visibility="gone"-->
+	<!--		app:drawableStartCompat="@drawable/ic_play_video"-->
+	<!--		tools:text="04:40"-->
+	<!--		tools:visibility="visible" />-->
+
+	<com.google.android.material.chip.Chip
+		android:id="@+id/duration"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="top|end"
+		android:layout_margin="8dp"
+		android:visibility="gone"
+		app:chipIcon="@drawable/ic_play_video"
+		app:chipStartPadding="8dp"
+		tools:text="04:40"
+		tools:visibility="visible" />
+</FrameLayout>
