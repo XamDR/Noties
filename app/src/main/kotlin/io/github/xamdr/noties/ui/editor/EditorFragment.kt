@@ -27,22 +27,29 @@ import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.databinding.FragmentEditorBinding
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
+import io.github.xamdr.noties.domain.model.Tag
 import io.github.xamdr.noties.domain.model.Task
 import io.github.xamdr.noties.ui.editor.media.MediaItemAdapter
 import io.github.xamdr.noties.ui.editor.media.RecordVideoLauncher
 import io.github.xamdr.noties.ui.editor.media.TakePictureLauncher
+import io.github.xamdr.noties.ui.editor.tags.ChipTagAdapter
+import io.github.xamdr.noties.ui.editor.tags.NoteFooterAdapter
 import io.github.xamdr.noties.ui.editor.tasks.DragDropCallback
 import io.github.xamdr.noties.ui.editor.tasks.TaskAdapter
 import io.github.xamdr.noties.ui.helpers.*
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
 import io.github.xamdr.noties.ui.media.MediaViewerActivity
+import io.github.xamdr.noties.ui.reminders.AlarmManagerHelper
+import io.github.xamdr.noties.ui.reminders.DateTimeListener
+import io.github.xamdr.noties.ui.reminders.DateTimePickerDialogFragment
 import timber.log.Timber
 import java.io.FileNotFoundException
+import java.time.Instant
 import com.google.android.material.R as Material
 
 @AndroidEntryPoint
-class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, EditorMenuListener {
+class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, EditorMenuListener, DateTimeListener {
 
 	private var _binding: FragmentEditorBinding? = null
 	private val binding get() = _binding!!
@@ -58,6 +65,8 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 	private lateinit var textAdapter: EditorTextAdapter
 	private lateinit var taskAdapter: TaskAdapter
 	private val mediaItemAdapter = MediaItemAdapter(this::navigateToMediaViewer)
+	private val tagAdapter = ChipTagAdapter()
+	private val footerAdapter = NoteFooterAdapter(tagAdapter)
 	private val menuProvider = EditorMenuProvider()
 	private val itemTouchHelper = ItemTouchHelper(DragDropCallback())
 	private val pickeMediaLauncher = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
@@ -170,6 +179,23 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 		}
 	}
 
+	override fun onAddReminder() {
+		val reminderDate = note.reminderDate ?: Instant.now().toEpochMilli()
+		val dateTimePickerDialog = DateTimePickerDialogFragment.newInstance(reminderDate).apply {
+			setDateTimeListener(this@EditorFragment)
+		}
+		showDialog(dateTimePickerDialog, Constants.DATE_TIME_PICKER_DIALOG_TAG)
+	}
+
+	override fun onDateTimeSet(dateTime: Instant) {
+		val value = dateTime.toEpochMilli()
+		val tag = Tag(name = DateTimeHelper.formatDateTime(value))
+		concatAdapter.addAdapter(footerAdapter)
+		tagAdapter.submitList(listOf(tag))
+		note = note.copy(reminderDate = value)
+		AlarmManagerHelper.setAlarm(requireContext(), note)
+	}
+
 	private fun navigateUp() {
 		binding.root.hideSoftKeyboard()
 		onBackPressed()
@@ -205,7 +231,8 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 			addItemTouchHelper(itemTouchHelper)
 		}
 		mediaItemAdapter.submitList(note.items)
-		binding.modificationDate.text = DateTimeHelper.formatCurrentDateTime(note.modificationDate)
+		binding.modificationDate.text = if (note.modificationDate == 0L) DateTimeHelper.formatDateTime(Instant.now().toEpochMilli())
+			else DateTimeHelper.formatDateTime(note.modificationDate)
 		binding.root.doOnPreDraw { startPostponedEnterTransition() }
 		addMenuProvider(menuProvider, viewLifecycleOwner)
 	}

@@ -35,6 +35,7 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 		binding.takePicture.onClick { onTakePicture() }
 		binding.takeVideo.onClick { onTakeVideo() }
 		binding.addTaskList.onClick { onAddTaskList() }
+		binding.addReminder.onClick { onAddReminder() }
 		viewModel.isTaskList.observe(viewLifecycleOwner) { binding.addTaskList.isVisible = it.not() }
 	}
 
@@ -59,6 +60,11 @@ class EditorMenuFragment : BottomSheetDialogFragment() {
 
 	private fun onAddTaskList() {
 		listener?.onAddTaskList()
+		dismiss()
+	}
+
+	private fun onAddReminder() {
+		listener?.onAddReminder()
 		dismiss()
 	}
 }

@@ -5,4 +5,5 @@ interface EditorMenuListener {
 	fun onTakePicture()
 	fun onTakeVideo()
 	fun onAddTaskList()
+	fun onAddReminder()
 }

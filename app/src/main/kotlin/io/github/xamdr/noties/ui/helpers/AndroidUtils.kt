@@ -35,6 +35,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.Serializable
 
 fun FragmentActivity.findNavController(@IdRes id: Int) =
 	(this.supportFragmentManager.findFragmentById(id) as NavHostFragment).navController
@@ -73,6 +74,17 @@ fun <T : Parcelable> Bundle.getParcelableCompat(key: String, clazz: Class<T>): T
 	}
 }
 
+@Suppress("UNCHECKED_CAST")
+fun <T : Serializable> Bundle.getSerializableCompat(key: String, clazz: Class<T>): T {
+	return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+		(this.getSerializable(key, clazz) ?: clazz.newInstance()) as T
+	}
+	else {
+		@Suppress("DEPRECATION")
+		(this.getSerializable(key) ?: clazz.newInstance()) as T
+	}
+}
+
 fun <T : Parcelable> Bundle.getParcelableArrayListCompat(key: String, clazz: Class<T>): ArrayList<T> {
 	return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 		(this.getParcelableArrayList(key, clazz) ?: emptyList<T>()) as ArrayList<T>
@@ -80,6 +92,17 @@ fun <T : Parcelable> Bundle.getParcelableArrayListCompat(key: String, clazz: Cla
 	else {
 		@Suppress("DEPRECATION")
 		return (this.getParcelableArrayList(key) ?: emptyList<T>()) as ArrayList<T>
+	}
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <T : Parcelable> Intent.getParcelableExtraCompat(key: String, clazz: Class<T>): T {
+	return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+		(this.getParcelableExtra(key, clazz) ?: clazz.newInstance()) as T
+	}
+	else {
+		@Suppress("DEPRECATION")
+		return (this.getParcelableExtra(key) ?: clazz.newInstance()) as T
 	}
 }
 

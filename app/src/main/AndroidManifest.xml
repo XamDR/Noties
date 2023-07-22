@@ -9,6 +9,7 @@
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<uses-permission android:name="android.permission.VIBRATE" />
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
+	<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:minSdkVersion="31"/>
 
 	<application
 		android:name="io.github.xamdr.noties.App"
@@ -51,7 +52,7 @@
 			android:windowSoftInputMode="stateAlwaysHidden"/>
 
 		<receiver
-			android:name=".ui.reminders.AlarmReceiver"
+			android:name=".ui.reminders.AlarmNotificationReceiver"
 			android:enabled="true"
 			android:exported="false"/>
 

@@ -1,53 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.gridlayout.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:padding="4dp"
-	app:alignmentMode="alignBounds"
-	app:columnCount="2"
-	app:rowOrderPreserved="false"
-	app:useDefaultMargins="true"
+	android:orientation="vertical"
 	tools:context="ui.reminders.DateTimePickerDialogFragment">
 
-	<TextView
-		android:id="@+id/date_picker_label"
-		android:layout_width="0dp"
+	<com.google.android.material.textfield.TextInputLayout
+		style="@style/Widget.App.ExposedDropdownMenu"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_margin="8dp"
-		android:labelFor="@id/spinner_date"
-		android:text="@string/date"
-		android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-		app:layout_columnWeight="0.5"
-		app:layout_gravity="center_vertical"/>
+		android:layout_margin="16dp"
+		android:hint="@string/date_hint">
 
-	<io.github.xamdr.noties.ui.views.DropDownView
-		android:id="@+id/spinner_date"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:layout_margin="8dp"
-		android:minHeight="48dp"
-		app:layout_columnWeight="1"
-		tools:ignore="DuplicateSpeakableTextCheck" />
+		<io.github.xamdr.noties.ui.views.MaterialSpinner
+			android:id="@+id/spinner_date"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" />
+	</com.google.android.material.textfield.TextInputLayout>
 
-	<TextView
-		android:id="@+id/time_picker_label"
-		android:layout_width="0dp"
+	<com.google.android.material.textfield.TextInputLayout
+		style="@style/Widget.App.ExposedDropdownMenu"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_margin="8dp"
-		android:labelFor="@id/spinner_time"
-		android:text="@string/time"
-		android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-		app:layout_columnWeight="0.5"
-		app:layout_gravity="center_vertical"/>
+		android:layout_margin="16dp"
+		android:hint="@string/time_hint">
 
-	<io.github.xamdr.noties.ui.views.DropDownView
-		android:id="@+id/spinner_time"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:layout_margin="8dp"
-		android:minHeight="48dp"
-		app:layout_columnWeight="1"
-		tools:ignore="DuplicateSpeakableTextCheck" />
-</androidx.gridlayout.widget.GridLayout>
+		<io.github.xamdr.noties.ui.views.MaterialSpinner
+			android:id="@+id/spinner_time"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" />
+	</com.google.android.material.textfield.TextInputLayout>
+</LinearLayout>

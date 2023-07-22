@@ -9,9 +9,12 @@ import java.util.Locale
 
 object DateTimeHelper {
 
-	fun formatCurrentDateTime(currentDateTime: LocalDateTime): String {
-		val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
-		return formatter.format(currentDateTime)
+	fun formatDateTime(value: Long): String {
+		val formatter = DateTimeFormatter
+			.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
+			.withZone(ZoneId.systemDefault())
+		val instant = Instant.ofEpochMilli(value)
+		return formatter.format(instant)
 	}
 
 	private fun getDateTimeWithoutYear(`when`: Long, zoneId: ZoneId, locale: Locale): String {

@@ -15,7 +15,6 @@ import io.github.xamdr.noties.data.entity.tag.DatabaseTagEntity
 	DatabaseNoteEntity::class,
 	DatabaseMediaItemEntity::class], version = 1)
 @TypeConverters(
-	LocalDateTimeToStringConverter::class,
 	StringArrayToStringConverter::class,
 	UriToStringConverter::class,
 	MediaTypeToStringConverter::class

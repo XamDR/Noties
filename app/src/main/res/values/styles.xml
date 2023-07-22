@@ -40,4 +40,13 @@
 		<item name="cornerSizeBottomLeft">0dp</item>
 		<item name="cornerSizeTopLeft">0dp</item>
 	</style>
+
+	<style name="Widget.App.ExposedDropdownMenu" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+		<item name="materialThemeOverlay">@style/ThemeOverlay.App.ExposedDropdownMenu</item>
+		<item name="hintTextColor">?attr/colorPrimary</item>
+	</style>
+
+	<style name="ThemeOverlay.App.ExposedDropdownMenu" parent="">
+		<item name="autoCompleteTextViewStyle">@style/Widget.Material3.AutoCompleteTextView.OutlinedBox</item>
+	</style>
 </resources>

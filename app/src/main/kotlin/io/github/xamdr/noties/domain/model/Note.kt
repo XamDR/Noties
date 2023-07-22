@@ -3,21 +3,20 @@ package io.github.xamdr.noties.domain.model
 import android.os.Parcelable
 import io.github.xamdr.noties.data.entity.note.DatabaseNoteEntity
 import kotlinx.parcelize.Parcelize
-import java.time.LocalDateTime
 
 @Parcelize
 data class Note(
 	val id: Long = 0L,
 	val title: String = String.Empty,
 	val text: String = String.Empty,
-	val modificationDate: LocalDateTime = LocalDateTime.now(),
+	val modificationDate: Long = 0,
 	val color: Int? = null,
 	val urls: List<String> = emptyList(),
 	val isProtected: Boolean = false,
 	val isTrashed: Boolean = false,
 	val isPinned: Boolean = false,
 	val isTaskList: Boolean = false,
-	val reminderDate: LocalDateTime? = null,
+	val reminderDate: Long? = null,
 	val tags: List<String> = emptyList(),
 	val items: List<MediaItem> = emptyList()
 ) : Parcelable {

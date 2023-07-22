@@ -1,53 +1,60 @@
 package io.github.xamdr.noties.ui.reminders
 
-import android.app.DatePickerDialog
 import android.app.Dialog
-import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
-import android.widget.DatePicker
-import android.widget.TimePicker
+import android.text.format.DateFormat
+import android.view.View
+import android.widget.AdapterView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.viewModels
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.DialogFragmentDatetimePickerBinding
-import io.github.xamdr.noties.ui.editor.EditorViewModel
+import io.github.xamdr.noties.ui.helpers.Constants
+import io.github.xamdr.noties.ui.views.MaterialSpinner
 import timber.log.Timber
 import java.time.*
 
-class DateTimePickerDialogFragment : DialogFragment(), DatePickerDialog.OnDateSetListener,
-	TimePickerDialog.OnTimeSetListener {
+class DateTimePickerDialogFragment : DialogFragment() {
 
 	private var _binding: DialogFragmentDatetimePickerBinding? = null
 	private val binding get() = _binding!!
-	private val viewModel by viewModels<EditorViewModel>({ requireParentFragment() })
+	private val reminderDate by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getLong(Constants.BUNDLE_REMINDER_DATE, 0L)
+	}
 	private lateinit var helper: DateTimePickerHelper
 	private lateinit var dateAdapter: ReminderDateAdapter
 	private lateinit var timeAdapter: ReminderTimeAdapter
-	private var selectedDate: LocalDate? = null
-	private var selectedTime: LocalTime? = null
+	private lateinit var spinnerDate: MaterialSpinner<ReminderDate>
+	private lateinit var spinnerTime: MaterialSpinner<ReminderTime>
+	private var listener: DateTimeListener? = null
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
 		helper = DateTimePickerHelper(context)
-		dateAdapter = ReminderDateAdapter(context, R.layout.spinner_date_item, helper.dates)
-		timeAdapter = ReminderTimeAdapter(context, R.layout.spinner_time_item, helper.times)
-		selectedDate = helper.dates[0].value
-		selectedTime = helper.times[0].value
+		dateAdapter = ReminderDateAdapter(context, R.layout.item_spinner_date, helper.dates)
+		timeAdapter = ReminderTimeAdapter(context, R.layout.item_spinner_time, helper.times)
 	}
 
+	@Suppress("UNCHECKED_CAST")
 	override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 		_binding = DialogFragmentDatetimePickerBinding.inflate(layoutInflater).apply {
-			spinnerDate.adapter = dateAdapter
-			spinnerTime.adapter = timeAdapter
+			this@DateTimePickerDialogFragment.spinnerDate = spinnerDate as MaterialSpinner<ReminderDate>
+			this@DateTimePickerDialogFragment.spinnerTime = spinnerTime as MaterialSpinner<ReminderTime>
+		}.also {
+			setAdapters()
+			onSpinnerItemClick(spinnerDate, spinnerTime)
 		}
-		onItemClick()
 		return MaterialAlertDialogBuilder(requireContext())
 			.setTitle(R.string.add_reminder)
 			.setView(binding.root)
 			.setNegativeButton(R.string.cancel_button, null)
-			.setPositiveButton(R.string.ok_button) { _, _ -> scheduleNotification() }
+			.setPositiveButton(R.string.ok_button) { _, _ -> onDateTimeSet() }
 			.create()
 	}
 
@@ -56,80 +63,101 @@ class DateTimePickerDialogFragment : DialogFragment(), DatePickerDialog.OnDateSe
 		_binding = null
 	}
 
-	override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-		selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
-		helper.dates[helper.dates.size - 1] = ReminderDate.CustomDate(getString(R.string.select_date), value = selectedDate)
-		dateAdapter.notifyDataSetChanged()
-		binding.spinnerDate.setSelection(helper.dates.size - 1)
+	fun setDateTimeListener(listener: DateTimeListener) {
+		this.listener = listener
 	}
 
-	override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-		selectedTime = LocalTime.of(hourOfDay, minute)
-		helper.times[helper.times.size - 1] = ReminderTime.CustomTime(getString(R.string.select_time), value = selectedTime)
-		timeAdapter.notifyDataSetChanged()
-		binding.spinnerTime.setSelection(helper.times.size - 1)
-	}
-
-	private fun scheduleNotification() {
-		if (selectedDate != null && selectedTime != null) {
-			val selectedDateTime = LocalDateTime.of(selectedDate, selectedTime)
-			Timber.d("SelectedDateTime: %s", selectedDateTime)
-//			viewModel.note = viewModel.note.copy(reminderDate = selectedDateTime)
-//			val delay = selectedDateTime.toInstant(ZoneOffset.of(ZoneId.systemDefault().id)).toEpochMilli()
-//			AlarmManagerHelper.setAlarmManager(requireContext(), delay, viewModel.note)
+	private fun onDateTimeSet() {
+		if (spinnerDate.selectedItem != null && spinnerTime.selectedItem != null) {
+			val selectedDate = spinnerDate.selectedItem?.value ?: return
+			val selectedTime = spinnerTime.selectedItem?.value ?: return
+			val instant = LocalDateTime.of(selectedDate, selectedTime).atZone(ZoneId.systemDefault()).toInstant()
+			Timber.d("Instant: $instant")
+			listener?.onDateTimeSet(instant)
 		}
 	}
 
-	private fun onItemClick() {
-		binding.spinnerDate.apply {
-			(adapter as ReminderDateAdapter).setOnItemClickListener { _, _, position, _ ->
-				hideDropDown()
+	private fun setAdapters() {
+		spinnerDate.setAdapter(dateAdapter)
+		spinnerTime.setAdapter(timeAdapter)
+	}
+
+	private fun onSpinnerItemClick(vararg spinners: MaterialSpinner<*>) {
+		spinners[0].setOnItemSelectedListener(object : MaterialSpinner.OnItemSelectedListener {
+			override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
 				if (position == helper.dates.size - 1) {
 					showDatePickerDialog()
 				}
-				else {
-					binding.spinnerDate.setSelection(position)
-					selectedDate = helper.dates[position].value
-				}
 			}
-		}
-		binding.spinnerTime.apply {
-			(adapter as ReminderTimeAdapter).setOnItemClickListener { _, _, position, _ ->
-				hideDropDown()
+		})
+		spinners[1].setOnItemSelectedListener(object : MaterialSpinner.OnItemSelectedListener {
+			override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
 				if (position == helper.times.size - 1) {
 					showTimePickerDialog()
 				}
-				else {
-					binding.spinnerTime.setSelection(position)
-					selectedTime = helper.times[position].value
-				}
 			}
-		}
+		})
 	}
 
 	private fun showDatePickerDialog() {
-//		val reminderDate = viewModel.note.reminderDate ?: LocalDateTime.now()
-//		DatePickerDialog(
-//			requireContext(),
-//			this,
-//			reminderDate.year,
-//			reminderDate.monthValue - 1,
-//			reminderDate.dayOfMonth
-//		).show()
+		val datePicker = MaterialDatePicker.Builder
+			.datePicker()
+			.setTitleText(R.string.select_date_title)
+			.setSelection(reminderDate)
+			.build()
+		datePicker.addOnPositiveButtonClickListener(object: MaterialPickerOnPositiveButtonClickListener<Long> {
+			override fun onPositiveButtonClick(selection: Long) {
+				datePicker.removeOnPositiveButtonClickListener(this)
+				onDateSet(selection)
+			}
+		})
+		datePicker.show(parentFragmentManager, DATE_PICKER_TAG)
+	}
+
+	private fun onDateSet(selection: Long) {
+		val selectedDate = Instant.ofEpochMilli(selection).atZone(ZoneId.systemDefault()).toLocalDate()
+		val customReminderDate = ReminderDate.CustomDate(getString(R.string.select_date), selectedDate)
+		helper.dates[helper.dates.size - 1] = customReminderDate
+		binding.spinnerDate.apply {
+			selectedItem = customReminderDate
+			setSelectedValue(customReminderDate.toString())
+		}
 	}
 
 	private fun showTimePickerDialog() {
-//		val reminderDate = viewModel.note.reminderDate ?: LocalDateTime.now()
-//		TimePickerDialog(
-//			requireContext(),
-//			this,
-//			reminderDate.hour,
-//			reminderDate.minute,
-//			DateFormat.is24HourFormat(requireContext())
-//		).show()
+		val isSystem24Hour = DateFormat.is24HourFormat(requireContext())
+		val clockFormat = if (isSystem24Hour) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H
+		val timePicker = MaterialTimePicker.Builder()
+			.setTitleText(R.string.select_time_title)
+			.setTimeFormat(clockFormat)
+			.setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK)
+//			.setHour(reminderDate.hour)
+//			.setMinute(reminderDate.minute)
+			.build()
+		timePicker.addOnPositiveButtonClickListener(object: View.OnClickListener {
+			override fun onClick(v: View?) {
+				timePicker.removeOnPositiveButtonClickListener(this)
+				onTimeSet(timePicker.hour, timePicker.minute)
+			}
+		})
+		timePicker.show(parentFragmentManager, TIME_PICKER_TAG)
 	}
 
-	private companion object {
-		private const val TAG = "DATE_TIME"
+	private fun onTimeSet(hour: Int, minute: Int) {
+		val selectedTime = LocalTime.of(hour, minute)
+		val customReminderTime = ReminderTime.CustomTime(getString(R.string.select_time), selectedTime)
+		helper.times[helper.times.size - 1] = customReminderTime
+		binding.spinnerTime.apply {
+			selectedItem = customReminderTime
+			setSelectedValue(customReminderTime.toString())
+		}
+	}
+
+	companion object {
+		private const val DATE_PICKER_TAG = "DATE_PICKER_TAG"
+		private const val TIME_PICKER_TAG = "TIME_PICKER_TAG"
+		fun newInstance(reminderDate: Long) = DateTimePickerDialogFragment().apply {
+			arguments = bundleOf(Constants.BUNDLE_REMINDER_DATE to reminderDate)
+		}
 	}
 }
