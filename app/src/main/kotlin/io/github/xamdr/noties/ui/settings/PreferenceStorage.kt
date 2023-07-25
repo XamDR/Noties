@@ -16,8 +16,11 @@ class PreferenceStorage @Inject constructor(@ApplicationContext context: Context
 
 	var layoutType by StringPreference(preferences, PREF_LAYOUT_NOTES, LayoutType.Linear.name)
 
+	var isExactAlarmEnabled by BooleanPreference(preferences, PREF_EXACT_ALARM, false)
+
 	companion object {
 		private const val PREF_ONBOARDING = "pref_onboarding"
 		private const val PREF_LAYOUT_NOTES = "pref_layout_notes"
+		private const val PREF_EXACT_ALARM = "pref_exact_alarm"
 	}
 }

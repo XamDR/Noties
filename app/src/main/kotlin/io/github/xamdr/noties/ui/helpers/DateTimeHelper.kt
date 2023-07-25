@@ -4,10 +4,13 @@ import java.time.*
 import java.time.chrono.IsoChronology
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
+import java.time.format.DateTimeParseException
 import java.time.format.FormatStyle
 import java.util.Locale
 
 object DateTimeHelper {
+
+	private val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
 
 	fun formatDateTime(value: Long): String {
 		val formatter = DateTimeFormatter
@@ -15,6 +18,30 @@ object DateTimeHelper {
 			.withZone(ZoneId.systemDefault())
 		val instant = Instant.ofEpochMilli(value)
 		return formatter.format(instant)
+	}
+
+	fun formatDate(value: Long): String {
+		val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+		val zonedDateTime = Instant.ofEpochMilli(value).atZone(ZoneId.systemDefault())
+		val localDate = zonedDateTime.toLocalDate()
+		return formatter.format(localDate)
+	}
+
+	fun formatTime(value: Long): String {
+		val formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+		val zonedDateTime = Instant.ofEpochMilli(value).atZone(ZoneId.systemDefault())
+		val localTime = zonedDateTime.toLocalTime()
+		return formatter.format(localTime)
+	}
+
+	fun isValidDate(input: String): Boolean {
+		return try {
+			LocalDateTime.parse(input, formatter)
+			true
+		}
+		catch (e: DateTimeParseException) {
+			false
+		}
 	}
 
 	private fun getDateTimeWithoutYear(`when`: Long, zoneId: ZoneId, locale: Locale): String {

@@ -11,7 +11,7 @@ import androidx.core.os.postDelayed
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.github.xamdr.noties.databinding.ItemTextBinding
+import io.github.xamdr.noties.databinding.ItemEditorContentBinding
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.*
 import kotlinx.coroutines.CoroutineScope
@@ -19,12 +19,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class EditorTextAdapter(private var note: Note, private val listener: NoteContentListener) :
-	RecyclerView.Adapter<EditorTextAdapter.EditorTextViewHolder>(), SpanSizeLookupOwner {
+class EditorContentAdapter(private var note: Note, private val listener: NoteContentListener) :
+	RecyclerView.Adapter<EditorContentAdapter.EditorTextViewHolder>(), SpanSizeLookupOwner {
 
 	private val handler = Handler(Looper.getMainLooper())
 
-	inner class EditorTextViewHolder(private val binding: ItemTextBinding) :
+	inner class EditorTextViewHolder(private val binding: ItemEditorContentBinding) :
 		RecyclerView.ViewHolder(binding.root), TextWatcher {
 
 		private val contentReceiverListener = ImageContentReceiverListener { uri, _ ->
@@ -91,7 +91,7 @@ class EditorTextAdapter(private var note: Note, private val listener: NoteConten
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EditorTextViewHolder {
-		val binding = ItemTextBinding.inflate(
+		val binding = ItemEditorContentBinding.inflate(
 			LayoutInflater.from(parent.context),
 			parent,
 			false

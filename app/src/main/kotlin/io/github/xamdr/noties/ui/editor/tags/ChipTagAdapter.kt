@@ -2,18 +2,31 @@ package io.github.xamdr.noties.ui.editor.tags
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.ItemChipTagBinding
 import io.github.xamdr.noties.domain.model.Tag
+import io.github.xamdr.noties.ui.helpers.DateTimeHelper
+import io.github.xamdr.noties.ui.helpers.onClick
 
-class ChipTagAdapter : ListAdapter<Tag, ChipTagAdapter.ChipTagViewHolder>(TagCallback) {
+class ChipTagAdapter(private val onChipClick: () -> Unit) : ListAdapter<Tag, ChipTagAdapter.ChipTagViewHolder>(TagCallback) {
 
 	inner class ChipTagViewHolder(private val binding: ItemChipTagBinding) : RecyclerView.ViewHolder(binding.root) {
 
+		init {
+			binding.chip.onClick { onChipClick() }
+		}
+
 		fun bind(tag: Tag) {
-			binding.chip.text = tag.name
+			binding.chip.apply {
+				text = tag.name
+				chipIcon = if (DateTimeHelper.isValidDate(tag.name)) {
+					ContextCompat.getDrawable(this.context, R.drawable.ic_alarm)
+				} else null
+			}
 		}
 	}
 
@@ -25,6 +38,12 @@ class ChipTagAdapter : ListAdapter<Tag, ChipTagAdapter.ChipTagViewHolder>(TagCal
 	override fun onBindViewHolder(holder: ChipTagViewHolder, position: Int) {
 		val tag = getItem(position)
 		holder.bind(tag)
+	}
+
+	fun removeTagAt(position: Int) {
+		val list = currentList.toMutableList()
+		list.removeAt(position)
+		submitList(list)
 	}
 
 	object TagCallback : DiffUtil.ItemCallback<Tag>() {

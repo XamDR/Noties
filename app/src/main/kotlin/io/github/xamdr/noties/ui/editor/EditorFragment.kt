@@ -1,8 +1,10 @@
 package io.github.xamdr.noties.ui.editor
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.view.*
@@ -33,7 +35,7 @@ import io.github.xamdr.noties.ui.editor.media.MediaItemAdapter
 import io.github.xamdr.noties.ui.editor.media.RecordVideoLauncher
 import io.github.xamdr.noties.ui.editor.media.TakePictureLauncher
 import io.github.xamdr.noties.ui.editor.tags.ChipTagAdapter
-import io.github.xamdr.noties.ui.editor.tags.NoteFooterAdapter
+import io.github.xamdr.noties.ui.editor.tags.EditorFooterAdapter
 import io.github.xamdr.noties.ui.editor.tasks.DragDropCallback
 import io.github.xamdr.noties.ui.editor.tasks.TaskAdapter
 import io.github.xamdr.noties.ui.helpers.*
@@ -43,9 +45,11 @@ import io.github.xamdr.noties.ui.media.MediaViewerActivity
 import io.github.xamdr.noties.ui.reminders.AlarmManagerHelper
 import io.github.xamdr.noties.ui.reminders.DateTimeListener
 import io.github.xamdr.noties.ui.reminders.DateTimePickerDialogFragment
+import io.github.xamdr.noties.ui.settings.PreferenceStorage
 import timber.log.Timber
 import java.io.FileNotFoundException
 import java.time.Instant
+import javax.inject.Inject
 import com.google.android.material.R as Material
 
 @AndroidEntryPoint
@@ -62,11 +66,11 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 //	}
 	private lateinit var note: Note
 	private lateinit var concatAdapter: ConcatAdapter
-	private lateinit var textAdapter: EditorTextAdapter
+	private lateinit var contentAdapter: EditorContentAdapter
 	private lateinit var taskAdapter: TaskAdapter
 	private val mediaItemAdapter = MediaItemAdapter(this::navigateToMediaViewer)
-	private val tagAdapter = ChipTagAdapter()
-	private val footerAdapter = NoteFooterAdapter(tagAdapter)
+	private val tagAdapter = ChipTagAdapter(this::showReminderDialog)
+	private val footerAdapter = EditorFooterAdapter(tagAdapter)
 	private val menuProvider = EditorMenuProvider()
 	private val itemTouchHelper = ItemTouchHelper(DragDropCallback())
 	private val pickeMediaLauncher = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
@@ -84,6 +88,8 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 			handleItemsToDelete(result.data)
 		}
 	}
+	private lateinit var postNotificationPermissionLauncher: PermissionLauncher
+	@Inject lateinit var preferenceStorage: PreferenceStorage
 	private var titleInEditMode = false
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,8 +108,15 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 			onSuccess = { videoUri -> addMediaItems(listOf(videoUri)) },
 			onError = { binding.root.showSnackbar(R.string.error_take_video) }
 		)
+		postNotificationPermissionLauncher = PermissionLauncher(
+			requireContext(),
+			activityResultRegistry,
+			onPermissionGranted = { showReminderDialog() },
+			onPermissionDenied = { requireContext().showToast(R.string.permission_denied) }
+		)
 		lifecycle.addObserver(takePictureLauncher)
 		lifecycle.addObserver(recordVideoLauncher)
+		lifecycle.addObserver(postNotificationPermissionLauncher)
 	}
 
 	override fun onCreateView(inflater: LayoutInflater,
@@ -169,7 +182,7 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 	override fun onTakeVideo() = recordVideoLauncher.launch()
 
 	override fun onAddTaskList() {
-		if (concatAdapter.removeAdapter(textAdapter)) {
+		if (concatAdapter.removeAdapter(contentAdapter)) {
 			val tasks = (note.toTaskList() + Task.Footer).toMutableList()
 			taskAdapter.submitTasks(tasks)
 			concatAdapter.addAdapter(taskAdapter)
@@ -180,20 +193,33 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 	}
 
 	override fun onAddReminder() {
-		val reminderDate = note.reminderDate ?: Instant.now().toEpochMilli()
-		val dateTimePickerDialog = DateTimePickerDialogFragment.newInstance(reminderDate).apply {
-			setDateTimeListener(this@EditorFragment)
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			postNotificationPermissionLauncher.executeOrLaunch(
+				Manifest.permission.POST_NOTIFICATIONS,
+				R.string.post_notifications_permission_rationale,
+				R.drawable.ic_add_reminder
+			)
 		}
-		showDialog(dateTimePickerDialog, Constants.DATE_TIME_PICKER_DIALOG_TAG)
+		else {
+			showReminderDialog()
+		}
 	}
 
-	override fun onDateTimeSet(dateTime: Instant) {
+	override fun onReminderDateSet(dateTime: Instant) {
 		val value = dateTime.toEpochMilli()
 		val tag = Tag(name = DateTimeHelper.formatDateTime(value))
-		concatAdapter.addAdapter(footerAdapter)
+		if (!concatAdapter.adapters.contains(footerAdapter)) {
+			concatAdapter.addAdapter(footerAdapter)
+		}
 		tagAdapter.submitList(listOf(tag))
 		note = note.copy(reminderDate = value)
-		AlarmManagerHelper.setAlarm(requireContext(), note)
+		AlarmManagerHelper.setAlarm(requireContext(), note, preferenceStorage.isExactAlarmEnabled)
+	}
+
+	override fun onReminderDateDeleted() {
+		tagAdapter.removeTagAt(0)
+		note = note.copy(reminderDate = null)
+
 	}
 
 	private fun navigateUp() {
@@ -215,11 +241,11 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 	private fun initializeAdapter(note: Note): ConcatAdapter {
 		val tasks = (note.toTaskList() + Task.Footer).toMutableList()
 		taskAdapter = TaskAdapter(this, tasks, itemTouchHelper)
-		textAdapter = EditorTextAdapter(note, this@EditorFragment).apply {
+		contentAdapter = EditorContentAdapter(note, this@EditorFragment).apply {
 			setOnContentReceivedListener { uri -> addMediaItems(listOf(uri)) }
 		}
 		return if (note.isTaskList) ConcatAdapter(mediaItemAdapter, taskAdapter)
-			else ConcatAdapter(mediaItemAdapter, textAdapter)
+			else ConcatAdapter(mediaItemAdapter, contentAdapter)
 	}
 
 	private fun setupViews(note: Note) {
@@ -231,6 +257,11 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 			addItemTouchHelper(itemTouchHelper)
 		}
 		mediaItemAdapter.submitList(note.items)
+		if (note.reminderDate != null) {
+			concatAdapter.addAdapter(footerAdapter)
+			val tag = Tag(name = DateTimeHelper.formatDateTime(note.reminderDate))
+			tagAdapter.submitList(listOf(tag))
+		}
 		binding.modificationDate.text = if (note.modificationDate == 0L) DateTimeHelper.formatDateTime(Instant.now().toEpochMilli())
 			else DateTimeHelper.formatDateTime(note.modificationDate)
 		binding.root.doOnPreDraw { startPostponedEnterTransition() }
@@ -389,7 +420,7 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 					val text = UriHelper.readTextFromUri(requireContext(), uri)
 					note = note.copy(title = file?.simpleName ?: String.Empty, text = text)
 					supportActionBar?.title = note.title
-					textAdapter.submitNote(note)
+					contentAdapter.submitNote(note)
 					requireActivity().invalidateMenu()
 				}
 			}
@@ -404,8 +435,8 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 		if (concatAdapter.removeAdapter(taskAdapter)) {
 			note = note.copy(text = taskAdapter.joinToString(), isTaskList =  false)
 			viewModel.isTaskList.value = false
-			textAdapter.submitNote(note)
-			concatAdapter.addAdapter(textAdapter)
+			contentAdapter.submitNote(note)
+			concatAdapter.addAdapter(contentAdapter)
 			requireActivity().invalidateMenu()
 		}
 	}
@@ -413,6 +444,14 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 	private fun checkAllTasks() = taskAdapter.markAllTasksAsDone(true)
 
 	private fun uncheckAllTasks() = taskAdapter.markAllTasksAsDone(false)
+
+	private fun showReminderDialog() {
+		val reminderDate = note.reminderDate ?: 0L
+		val dateTimePickerDialog = DateTimePickerDialogFragment.newInstance(reminderDate).apply {
+			listener = this@EditorFragment
+		}
+		showDialog(dateTimePickerDialog, Constants.DATE_TIME_PICKER_DIALOG_TAG)
+	}
 
 	private inner class EditorMenuProvider : MenuProvider {
 		override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {

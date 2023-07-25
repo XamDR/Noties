@@ -3,11 +3,11 @@ package io.github.xamdr.noties.ui.editor.tags
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import io.github.xamdr.noties.databinding.ItemNoteFooterBinding
+import io.github.xamdr.noties.databinding.ItemEditorFooterBinding
 
-class NoteFooterAdapter(private val tagAdapter: ChipTagAdapter) : RecyclerView.Adapter<NoteFooterAdapter.NoteFooterViewHolder>() {
+class EditorFooterAdapter(private val tagAdapter: ChipTagAdapter) : RecyclerView.Adapter<EditorFooterAdapter.NoteFooterViewHolder>() {
 
-	class NoteFooterViewHolder(private val binding: ItemNoteFooterBinding) : RecyclerView.ViewHolder(binding.root) {
+	class NoteFooterViewHolder(private val binding: ItemEditorFooterBinding) : RecyclerView.ViewHolder(binding.root) {
 
 		fun setAdapter(tagAdapter: ChipTagAdapter) {
 			binding.recyclerViewFooter.adapter = tagAdapter
@@ -15,7 +15,7 @@ class NoteFooterAdapter(private val tagAdapter: ChipTagAdapter) : RecyclerView.A
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteFooterViewHolder {
-		val binding = ItemNoteFooterBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+		val binding = ItemEditorFooterBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 		return NoteFooterViewHolder(binding).apply { setAdapter(tagAdapter) }
 	}
 

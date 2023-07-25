@@ -31,4 +31,13 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content" />
 	</com.google.android.material.textfield.TextInputLayout>
+
+	<com.google.android.material.checkbox.MaterialCheckBox
+		android:id="@+id/exact_alarm_pref"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginHorizontal="16dp"
+		android:text="@string/exact_alarm_message"
+		android:visibility="gone"
+		tools:visibility="visible" />
 </LinearLayout>
