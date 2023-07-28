@@ -65,4 +65,9 @@ object AlarmManagerHelper {
 			)
 		}
 	}
+
+	fun cancelAlarm(context: Context, pendingIntent: PendingIntent) {
+		val alarmManager = context.getSystemService<AlarmManager>() ?: return
+		alarmManager.cancel(pendingIntent)
+	}
 }
