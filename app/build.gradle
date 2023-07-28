@@ -4,6 +4,7 @@ plugins {
 	id 'kotlin-parcelize'
 	id 'dagger.hilt.android.plugin'
 	id 'kotlin-kapt'
+	id 'com.google.devtools.ksp'
 }
 
 def versionMajor = 1
@@ -68,7 +69,6 @@ dependencies {
 	implementation libs.androidx.core.splashscreen
 	implementation libs.androidx.asyncLayoutInflater
 	implementation libs.androidx.constraintLayout
-	implementation libs.androidx.gridLayout
 	implementation libs.androidx.lifecycle.livedata.ktx
 	implementation libs.androidx.lifecycle.runtime.ktx
 	implementation libs.androidx.navigation.fragment.ktx
@@ -81,7 +81,7 @@ dependencies {
 
 	// Room
 	implementation libs.room.runtime
-	kapt libs.room.compiler
+	ksp libs.room.compiler
 	implementation libs.room.ktx
 
 	// Hilt
