@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin = "7.4.2"
+androidGradlePlugin = "8.1.0"
 androidxActivity = "1.7.0"
 androidxAppCompat = "1.5.1"
 androidxCore = "1.9.0"
@@ -19,8 +19,8 @@ androidxJunit = "1.1.5"
 androidxEspresso = "3.5.1"
 material = "1.8.0"
 androidDesugarJdkLibs = "2.0.0"
-room = "2.5.1"
-hilt = "2.44"
+room = "2.5.2"
+hilt = "2.47"
 shimmer = "0.5.0"
 gif = "1.2.24"
 junit = "4.13.2"
@@ -29,7 +29,7 @@ timber = "5.0.1"
 media = "1.0.2"
 mediaUi = "1.0.2"
 coil = "2.4.0"
-ksp = "1.8.10-1.0.9"
+ksp = "1.9.0-1.0.12"
 
 [libraries]
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
