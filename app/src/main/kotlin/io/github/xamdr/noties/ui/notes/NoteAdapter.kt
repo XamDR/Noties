@@ -20,9 +20,10 @@ import io.github.xamdr.noties.ui.editor.tasks.SpannableConverter
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.blur
 import io.github.xamdr.noties.ui.helpers.estimateNumberChars
-import io.github.xamdr.noties.ui.helpers.setOnClickListener
 import io.github.xamdr.noties.ui.helpers.media.ImageLoader
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
+import io.github.xamdr.noties.ui.helpers.setOnClickListener
+import io.github.xamdr.noties.ui.helpers.strikethrough
 
 class NoteAdapter(
 	private val onNoteClicked: (view: View?, note: Note) -> Unit,
@@ -56,7 +57,10 @@ class NoteAdapter(
 			binding.content.text = formatContent(note)
 			binding.chipGroup.isVisible = note.reminderDate != null
 			binding.chipReminderDate.isVisible = note.reminderDate != null
-			binding.chipReminderDate.text = note.reminderDate?.let { DateTimeHelper.formatDateTime(it) }
+			note.reminderDate?.let { value ->
+				binding.chipReminderDate.text = DateTimeHelper.formatDateTime(value)
+				binding.chipReminderDate.strikethrough(DateTimeHelper.isPast(value))
+			}
 			binding.mediaContainer.isVisible = note.previewItem != null
 			when (note.previewItem?.mediaType) {
 				MediaType.Image -> {

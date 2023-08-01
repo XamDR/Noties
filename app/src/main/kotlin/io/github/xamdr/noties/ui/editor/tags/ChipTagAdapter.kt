@@ -11,6 +11,7 @@ import io.github.xamdr.noties.databinding.ItemChipTagBinding
 import io.github.xamdr.noties.domain.model.Tag
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.onClick
+import io.github.xamdr.noties.ui.helpers.strikethrough
 
 class ChipTagAdapter(private val onChipClick: () -> Unit) : ListAdapter<Tag, ChipTagAdapter.ChipTagViewHolder>(TagCallback) {
 
@@ -26,6 +27,7 @@ class ChipTagAdapter(private val onChipClick: () -> Unit) : ListAdapter<Tag, Chi
 				chipIcon = if (DateTimeHelper.isValidDate(tag.name)) {
 					ContextCompat.getDrawable(this.context, R.drawable.ic_alarm)
 				} else null
+				strikethrough(DateTimeHelper.isPast(tag.name))
 			}
 		}
 	}

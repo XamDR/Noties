@@ -167,10 +167,8 @@
 	<string name="exact_alarm_permission_rationale">In order to allow Noties to deliver reminders on time make sure to enable it in your device alarm and reminders settings.</string>
 
 	<!-- Notifications -->
-	<string name="create_notification">Create notification</string>
-	<string name="channel_name">MyChannel</string>
-	<string name="channel_description">My description</string>
-	<string name="notification_text">Esta es una notificación</string>
+	<string name="noties_channel_description">Noties notifications</string>
+	<string name="notification_text">This is a Noties notification.</string>
 
 	<!-- Settings Fragment -->
 	<string name="settings_fragment_label">Settings</string>

@@ -3,10 +3,9 @@ package io.github.xamdr.noties.ui.reminders
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import java.time.LocalDate
-import java.time.LocalTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,7 +19,7 @@ class DateTimePickerViewModel @Inject constructor() : ViewModel() {
 			reminderDateState.update { ReminderDateState.ReminderDateNotSet }
 		}
 		else {
-			if (date.value.isBefore(LocalDate.now()) || time.value.isBefore(LocalTime.now())) {
+			if (DateTimeHelper.isPast(date.value, time.value)) {
 				reminderDateState.update { ReminderDateState.ReminderDateInvalid }
 			}
 			else {

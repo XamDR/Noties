@@ -10,12 +10,11 @@ import java.util.Locale
 
 object DateTimeHelper {
 
-	private val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
+	private val formatter = DateTimeFormatter
+		.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
+		.withZone(ZoneId.systemDefault())
 
 	fun formatDateTime(value: Long): String {
-		val formatter = DateTimeFormatter
-			.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
-			.withZone(ZoneId.systemDefault())
 		val instant = Instant.ofEpochMilli(value)
 		return formatter.format(instant)
 	}
@@ -42,6 +41,23 @@ object DateTimeHelper {
 		catch (e: DateTimeParseException) {
 			false
 		}
+	}
+
+	fun isPast(localDate: LocalDate, localTime: LocalTime): Boolean {
+		return localDate.isBefore(LocalDate.now()) ||
+				(localDate.isEqual(LocalDate.now()) && localTime.isBefore(LocalTime.now()))
+	}
+
+	fun isPast(value: Long): Boolean {
+		val instant = Instant.ofEpochMilli(value)
+		val localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate()
+		val localTime = instant.atZone(ZoneId.systemDefault()).toLocalTime()
+		return isPast(localDate, localTime)
+	}
+
+	fun isPast(input: String): Boolean {
+		val localDateTime = LocalDateTime.parse(input, formatter)
+		return isPast(localDateTime.toLocalDate(), localDateTime.toLocalTime())
 	}
 
 	private fun getDateTimeWithoutYear(`when`: Long, zoneId: ZoneId, locale: Locale): String {

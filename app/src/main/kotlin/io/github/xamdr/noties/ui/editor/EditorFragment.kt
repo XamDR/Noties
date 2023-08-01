@@ -111,6 +111,7 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 		postNotificationPermissionLauncher = PermissionLauncher(
 			requireContext(),
 			activityResultRegistry,
+			Constants.NOTIFICATION_PERMISSION_KEY,
 			onPermissionGranted = { showReminderDialog() },
 			onPermissionDenied = { requireContext().showToast(R.string.permission_denied) }
 		)
@@ -165,14 +166,18 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 		requireActivity().invalidateMenu()
 	}
 
-	override fun afterTextChanged(s: Editable) {
-		note = note.copy(title = s.toString())
-	}
+	override fun onNoteContentLoading() = ProgressDialogHelper.show(requireContext(), getString(R.string.loading_text))
+
+	override fun onNoteContentLoaded() = ProgressDialogHelper.dismiss()
 
 	override fun onLinkClicked(url: String) {
 		binding.root.showSnackbarWithAction(url, actionText = R.string.open_url) {
 			startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
 		}
+	}
+
+	override fun afterTextChanged(s: Editable) {
+		note = note.copy(title = s.toString())
 	}
 
 	override fun onAttachMediaFiles() = pickeMediaLauncher.launch(arrayOf("image/*", "video/*"))
@@ -213,13 +218,12 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 		}
 		tagAdapter.submitList(listOf(tag))
 		note = note.copy(reminderDate = value)
-		AlarmManagerHelper.setAlarm(requireContext(), note, preferenceStorage.isExactAlarmEnabled)
 	}
 
 	override fun onReminderDateDeleted() {
 		tagAdapter.removeTagAt(0)
 		note = note.copy(reminderDate = null)
-
+		AlarmManagerHelper.cancelAlarm(requireContext(), note)
 	}
 
 	private fun navigateUp() {
@@ -342,9 +346,17 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 					MediaStorageManager.deleteItems(requireContext(), note.items)
 					binding.root.showSnackbar(R.string.empty_note_deleted).showOnTop()
 				}
-				NoteAction.InsertNote -> binding.root.showSnackbar(R.string.note_saved).showOnTop()
+				NoteAction.InsertNote -> {
+					if (note.reminderDate != null) {
+						AlarmManagerHelper.setAlarm(requireContext(), note, preferenceStorage.isExactAlarmEnabled)
+					}
+					binding.root.showSnackbar(R.string.note_saved).showOnTop()
+				}
 				NoteAction.NoAction -> {}
 				NoteAction.UpdateNote -> {
+					if (note.reminderDate != null) {
+						AlarmManagerHelper.setAlarm(requireContext(), note, preferenceStorage.isExactAlarmEnabled)
+					}
 					MediaStorageManager.deleteItems(requireContext(), itemsToDelete)
 					viewModel.deleteItems(itemsToDelete)
 					binding.root.showSnackbar(R.string.note_updated).showOnTop()
@@ -406,10 +418,6 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 		mediaItemAdapter.submitList(note.items)
 		requireActivity().invalidateMenu()
 	}
-
-	override fun onNoteContentLoading() = ProgressDialogHelper.show(requireContext(), getString(R.string.loading_text))
-
-	override fun onNoteContentLoaded() = ProgressDialogHelper.dismiss()
 
 	private fun readFileContent(uri: Uri?) {
 		if (uri != null) {

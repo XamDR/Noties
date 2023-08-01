@@ -12,6 +12,8 @@ import io.github.xamdr.noties.ui.helpers.Constants
 
 object AlarmManagerHelper {
 
+	private val pendingIntents = mutableMapOf<Long, PendingIntent>()
+
 	fun canScheduleExactAlarms(context: Context): Boolean {
 		val alarmManager = context.getSystemService<AlarmManager>()
 		return when {
@@ -27,15 +29,16 @@ object AlarmManagerHelper {
 
 	fun setAlarm(context: Context, note: Note, isExactAlarmEnabled: Boolean) {
 		val intent = Intent(context, AlarmNotificationReceiver::class.java).apply {
-			putExtra(Constants.BUNDLE_NOTIFICATION_ID, (0..999).random())
+			putExtra(Constants.BUNDLE_NOTIFICATION_ID, note.id.toInt())
 			putExtra(Constants.BUNDLE_NOTE_NOTIFICATION, note)
 		}
 		val pendingIntent = PendingIntent.getBroadcast(
 			context,
-			Constants.PENDING_INTENT_REQUEST_CODE,
+			note.id.toInt(),
 			intent,
 			PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
 		)
+		pendingIntents[note.id] = pendingIntent
 		val alarmManager = context.getSystemService<AlarmManager>() ?: return
 		val triggerAtMillis = note.reminderDate ?: return
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -66,8 +69,9 @@ object AlarmManagerHelper {
 		}
 	}
 
-	fun cancelAlarm(context: Context, pendingIntent: PendingIntent) {
+	fun cancelAlarm(context: Context, note: Note) {
 		val alarmManager = context.getSystemService<AlarmManager>() ?: return
+		val pendingIntent = pendingIntents[note.id]
 		alarmManager.cancel(pendingIntent)
 	}
 }

@@ -38,4 +38,8 @@ class NoteRepository(private val noteDao: NoteDao) {
 	suspend fun deleteTrashedNotes(notes: List<DatabaseNoteEntity>): Int {
 		return noteDao.deleteNotes(notes)
 	}
+
+	suspend fun getNotesWithReminder(): List<DatabaseNoteEntity> {
+		return noteDao.getNotesWithReminder()
+	}
 }

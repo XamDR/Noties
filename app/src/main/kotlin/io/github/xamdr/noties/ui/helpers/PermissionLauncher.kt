@@ -17,13 +17,14 @@ import javax.inject.Inject
 class PermissionLauncher @Inject constructor(
 	@ApplicationContext private val context: Context,
 	private val registry: ActivityResultRegistry,
+	private val registryKey: String,
 	private val onPermissionGranted: () -> Unit,
 	private val onPermissionDenied: () -> Unit) : DefaultLifecycleObserver {
 
 	private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
 	override fun onCreate(owner: LifecycleOwner) {
-		permissionLauncher = registry.register(PERMISSION_LAUNCHER_KEY, ActivityResultContracts.RequestPermission()) { granted ->
+		permissionLauncher = registry.register(registryKey, ActivityResultContracts.RequestPermission()) { granted ->
 			if (granted) {
 				onPermissionGranted()
 			}
@@ -44,9 +45,5 @@ class PermissionLauncher @Inject constructor(
 		else {
 			onPermissionGranted()
 		}
-	}
-
-	private companion object {
-		private const val PERMISSION_LAUNCHER_KEY = "PERMISSION_LAUNCHER_KEY"
 	}
 }
