@@ -63,8 +63,4 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 		}
 		setupActionBarWithNavController(navController, appBarConfiguration)
 	}
-
-	companion object {
-		const val CHANNEL_ID = "NOTIES_CHANNEL"
-	}
 }

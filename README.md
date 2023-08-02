@@ -5,12 +5,12 @@ A free and open-source note taking app inspired by Google Keep made with Modern 
 
 ## Jetpack Libraries:
 - Dagger-Hilt
-- Flow and coroutines
-- LiveData and DataBinding
+- Flows and Coroutines
+- LiveData and ViewBinding
 - Material 3
 - Navigation Component
 - Room
 - Splash Screen
 - ViewModel
 
-The app is designed around the MVVM, Clean Code and Single Activity architectures.
+The app is designed around the Clean Code, MVVM and Single Activity architectures.

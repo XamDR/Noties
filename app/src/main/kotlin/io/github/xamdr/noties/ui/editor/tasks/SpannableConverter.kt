@@ -28,7 +28,7 @@ object SpannableConverter {
 
 	private fun List<SpannableStringBuilder>.toBulletedList(): CharSequence {
 		val builder = SpannableStringBuilder()
-		for (i in 0 until this.size) {
+		for (i in indices) {
 			val line = this[i].append(if (i < this.size - 1) NEWLINE else String.Empty)
 			val spannable = SpannableString(line)
 			spannable[0, spannable.length] = BulletSpan(16) // SPAN_INCLUSIVE_EXCLUSIVE

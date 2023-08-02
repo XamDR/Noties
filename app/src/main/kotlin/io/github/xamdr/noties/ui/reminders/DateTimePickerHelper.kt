@@ -15,7 +15,6 @@ class DateTimePickerHelper(context: Context) {
 	)
 
 	val times = mutableListOf(
-		ReminderTime.FiveMinutes(name = context.getString(R.string.five_minutes), value = addFiveMinutes()),
 		ReminderTime.TenMinutes(name = context.getString(R.string.ten_minutes), value = addTenMinutes()),
 		ReminderTime.FifteenMinutes(name = context.getString(R.string.fifteen_minutes), value = addFifteenMinutes()),
 		ReminderTime.ThirtyMinutes(name = context.getString(R.string.thirty_minutes), value = addThirtyMinutes()),
@@ -28,8 +27,6 @@ class DateTimePickerHelper(context: Context) {
 	private fun tomorrow() = LocalDate.now().plusDays(1)
 
 	private fun nextWeek() = LocalDate.now().plusDays(7)
-
-	private fun addFiveMinutes() = LocalTime.now().plusMinutes(5)
 
 	private fun addTenMinutes() = LocalTime.now().plusMinutes(10)
 

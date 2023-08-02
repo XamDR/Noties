@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "3a96e676d55d12064524879fb585ad22",
+    "identityHash": "05147b988050b66df56f87084c3d9602",
     "entities": [
       {
         "tableName": "Tags",
@@ -42,7 +42,7 @@
       },
       {
         "tableName": "Notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `modification_date` TEXT NOT NULL, `color` INTEGER, `urls` TEXT NOT NULL, `is_protected` INTEGER NOT NULL, `is_trashed` INTEGER NOT NULL, `is_pinned` INTEGER NOT NULL, `is_todo_list` INTEGER NOT NULL, `reminder_date` TEXT, `tags` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `modification_date` INTEGER NOT NULL, `color` INTEGER, `urls` TEXT NOT NULL, `is_protected` INTEGER NOT NULL, `is_trashed` INTEGER NOT NULL, `is_pinned` INTEGER NOT NULL, `is_todo_list` INTEGER NOT NULL, `reminder_date` INTEGER, `tags` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -65,7 +65,7 @@
           {
             "fieldPath": "modificationDate",
             "columnName": "modification_date",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -99,7 +99,7 @@
             "notNull": true
           },
           {
-            "fieldPath": "isTodoList",
+            "fieldPath": "isTaskList",
             "columnName": "is_todo_list",
             "affinity": "INTEGER",
             "notNull": true
@@ -107,7 +107,7 @@
           {
             "fieldPath": "reminderDate",
             "columnName": "reminder_date",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": false
           },
           {
@@ -192,7 +192,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3a96e676d55d12064524879fb585ad22')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '05147b988050b66df56f87084c3d9602')"
     ]
   }
 }

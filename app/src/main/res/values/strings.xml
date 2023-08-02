@@ -9,6 +9,8 @@
 	<string name="continue_button">Continue</string>
 	<string name="save_button">Save</string>
 	<string name="move_button">Move</string>
+	<string name="go_to_settings_button">Go to settings</string>
+	<string name="delete_button">Delete</string>
 
 	<!-- Welcome Fragment -->
 	<string name="onboarding_message">Noties is a note taking app that will help you to take notes, make to-do lists and add attachments like images or audios.</string>
@@ -125,6 +127,7 @@
 	<string name="error_take_video">No video was recorded.</string>
 	<string name="permission_denied">Permission denied.</string>
 	<string name="image_attachment">Image attached to the note.</string>
+	<string name="post_notifications_permission_rationale">Noties needs permission to post notifications for the reminders.</string>
 
 	<!-- MediaViewer Fragment -->
 	<string name="share_item">Share</string>
@@ -147,24 +150,25 @@
 	<string name="init_print_dialog">Preparing image…</string>
 
 	<!-- DateTime Picker Fragment -->
-	<string name="date">Date:</string>
-	<string name="time">Time:</string>
+	<string name="date_hint">Reminder date</string>
+	<string name="time_hint">Reminder time</string>
 	<string name="today">Today</string>
 	<string name="tomorrow">Tomorrow</string>
 	<string name="next_week">Next week</string>
+	<string name="select_date_title">Select a date</string>
 	<string name="select_date">Select a date…</string>
-	<string name="five_minutes">5 minutes</string>
 	<string name="ten_minutes">10 minutes</string>
 	<string name="fifteen_minutes">15 minutes</string>
 	<string name="thirty_minutes">30 minutes</string>
 	<string name="one_hour">1 hour</string>
+	<string name="select_time_title">Select a time</string>
 	<string name="select_time">Select a time…</string>
+	<string name="exact_alarm_message">Exact reminder</string>
+	<string name="exact_alarm_permission_rationale">In order to allow Noties to deliver reminders on time make sure to enable it in your device alarm and reminders settings.</string>
 
 	<!-- Notifications -->
-	<string name="create_notification">Create notification</string>
-	<string name="channel_name">MyChannel</string>
-	<string name="channel_description">My description</string>
-	<string name="notification_text">Esta es una notificación</string>
+	<string name="noties_channel_description">Noties notifications</string>
+	<string name="notification_text">This is a Noties notification.</string>
 
 	<!-- Settings Fragment -->
 	<string name="settings_fragment_label">Settings</string>

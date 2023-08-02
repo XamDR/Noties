@@ -17,6 +17,7 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryOwner
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.xamdr.noties.R
+import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.PermissionLauncher
 import io.github.xamdr.noties.ui.helpers.getParcelableCompat
 import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
@@ -56,7 +57,10 @@ class RecordVideoLauncher @Inject constructor(
 				onError()
 			}
 		}
-		externalStoragePermissionLauncher = PermissionLauncher(context, registry,
+		externalStoragePermissionLauncher = PermissionLauncher(
+			context,
+			registry,
+			Constants.EXTERNAL_STORAGE_PERMISSION_KEY,
 			onPermissionGranted = { recordVideo() },
 			onPermissionDenied = { context.showToast(R.string.permission_denied) }
 		)

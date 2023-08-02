@@ -4,14 +4,60 @@ import java.time.*
 import java.time.chrono.IsoChronology
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
+import java.time.format.DateTimeParseException
 import java.time.format.FormatStyle
 import java.util.Locale
 
 object DateTimeHelper {
 
-	fun formatCurrentDateTime(currentDateTime: LocalDateTime): String {
-		val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
-		return formatter.format(currentDateTime)
+	private val formatter = DateTimeFormatter
+		.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
+		.withZone(ZoneId.systemDefault())
+
+	fun formatDateTime(value: Long): String {
+		val instant = Instant.ofEpochMilli(value)
+		return formatter.format(instant)
+	}
+
+	fun formatDate(value: Long): String {
+		val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+		val zonedDateTime = Instant.ofEpochMilli(value).atZone(ZoneId.systemDefault())
+		val localDate = zonedDateTime.toLocalDate()
+		return formatter.format(localDate)
+	}
+
+	fun formatTime(value: Long): String {
+		val formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+		val zonedDateTime = Instant.ofEpochMilli(value).atZone(ZoneId.systemDefault())
+		val localTime = zonedDateTime.toLocalTime()
+		return formatter.format(localTime)
+	}
+
+	fun isValidDate(input: String): Boolean {
+		return try {
+			LocalDateTime.parse(input, formatter)
+			true
+		}
+		catch (e: DateTimeParseException) {
+			false
+		}
+	}
+
+	fun isPast(localDate: LocalDate, localTime: LocalTime): Boolean {
+		return localDate.isBefore(LocalDate.now()) ||
+				(localDate.isEqual(LocalDate.now()) && localTime.isBefore(LocalTime.now()))
+	}
+
+	fun isPast(value: Long): Boolean {
+		val instant = Instant.ofEpochMilli(value)
+		val localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate()
+		val localTime = instant.atZone(ZoneId.systemDefault()).toLocalTime()
+		return isPast(localDate, localTime)
+	}
+
+	fun isPast(input: String): Boolean {
+		val localDateTime = LocalDateTime.parse(input, formatter)
+		return isPast(localDateTime.toLocalDate(), localDateTime.toLocalTime())
 	}
 
 	private fun getDateTimeWithoutYear(`when`: Long, zoneId: ZoneId, locale: Locale): String {

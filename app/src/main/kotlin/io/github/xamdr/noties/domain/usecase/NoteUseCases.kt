@@ -6,7 +6,7 @@ import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.time.LocalDateTime
+import java.time.Instant
 import javax.inject.Inject
 
 class InsertNoteUseCase @Inject constructor(
@@ -14,9 +14,10 @@ class InsertNoteUseCase @Inject constructor(
 	private val mediaItemRepository: MediaItemRepository) {
 
 	suspend operator fun invoke(note: Note) {
-		val id = noteRepository.insertNote(note.asDatabaseEntity())
+		val newNote = note.copy(modificationDate = Instant.now().toEpochMilli())
+		val id = noteRepository.insertNote(newNote.asDatabaseEntity())
 		val updatedItems = mutableListOf<MediaItem>()
-		for (item in note.items) {
+		for (item in newNote.items) {
 			val updatedItem = item.copy(noteId = id)
 			updatedItems.add(updatedItem)
 		}
@@ -61,7 +62,7 @@ class UpdateNoteUseCase @Inject constructor(
 	private val mediaItemRepository: MediaItemRepository) {
 
 	suspend operator fun invoke(note: Note) {
-		val updatedNote = note.copy(modificationDate = LocalDateTime.now())
+		val updatedNote = note.copy(modificationDate = Instant.now().toEpochMilli())
 		noteRepository.updateNote(updatedNote.asDatabaseEntity())
 		val newItems = note.items.filter { item -> item.id == 0 }.map { it.asDatabaseEntity() }
 		mediaItemRepository.insertItems(newItems)

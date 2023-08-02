@@ -39,4 +39,7 @@ interface NoteDao {
 			"WHERE Notes.is_trashed = 1 " +
 			"ORDER BY Notes.id DESC")
 	fun getTrashedNotes(): Flow<Map<DatabaseNoteEntity, List<DatabaseMediaItemEntity>>>
+
+	@Query("SELECT * FROM Notes WHERE reminder_date IS NOT NULL")
+	suspend fun getNotesWithReminder(): List<DatabaseNoteEntity>
 }

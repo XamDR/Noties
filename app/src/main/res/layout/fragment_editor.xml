@@ -59,7 +59,7 @@
 			android:scrollbars="none"
 			app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
 			app:spanCount="@integer/span_count"
-			tools:listitem="@layout/item_text" />
+			tools:listitem="@layout/item_editor_content" />
 	</FrameLayout>
 
 	<com.google.android.material.progressindicator.LinearProgressIndicator
