@@ -223,7 +223,7 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 	override fun onReminderDateDeleted() {
 		tagAdapter.removeTagAt(0)
 		note = note.copy(reminderDate = null)
-		AlarmManagerHelper.cancelAlarm(requireContext(), note)
+		AlarmManagerHelper.cancelAlarm(requireContext(), note.id)
 	}
 
 	private fun navigateUp() {
@@ -343,6 +343,9 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 			Timber.d("Note: %s", note)
 			when (viewModel.saveNote(note, noteId)) {
 				NoteAction.DeleteEmptyNote -> {
+					if (note.reminderDate != null) {
+						AlarmManagerHelper.cancelAlarm(requireContext(), note.id)
+					}
 					MediaStorageManager.deleteItems(requireContext(), note.items)
 					binding.root.showSnackbar(R.string.empty_note_deleted).showOnTop()
 				}

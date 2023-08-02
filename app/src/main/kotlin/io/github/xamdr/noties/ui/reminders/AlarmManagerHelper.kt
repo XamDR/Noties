@@ -12,8 +12,6 @@ import io.github.xamdr.noties.ui.helpers.Constants
 
 object AlarmManagerHelper {
 
-	private val pendingIntents = mutableMapOf<Long, PendingIntent>()
-
 	fun canScheduleExactAlarms(context: Context): Boolean {
 		val alarmManager = context.getSystemService<AlarmManager>()
 		return when {
@@ -38,7 +36,6 @@ object AlarmManagerHelper {
 			intent,
 			PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
 		)
-		pendingIntents[note.id] = pendingIntent
 		val alarmManager = context.getSystemService<AlarmManager>() ?: return
 		val triggerAtMillis = note.reminderDate ?: return
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -69,9 +66,15 @@ object AlarmManagerHelper {
 		}
 	}
 
-	fun cancelAlarm(context: Context, note: Note) {
+	fun cancelAlarm(context: Context, noteId: Long) {
 		val alarmManager = context.getSystemService<AlarmManager>() ?: return
-		val pendingIntent = pendingIntents[note.id]
+		val intent = Intent(context, AlarmNotificationReceiver::class.java)
+		val pendingIntent = PendingIntent.getBroadcast(
+			context,
+			noteId.toInt(),
+			intent,
+			PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+		)
 		alarmManager.cancel(pendingIntent)
 	}
 }
