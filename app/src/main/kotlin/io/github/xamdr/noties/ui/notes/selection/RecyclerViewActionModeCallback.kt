@@ -9,6 +9,7 @@ import io.github.xamdr.noties.ui.notes.NoteAdapter
 class RecyclerViewActionModeCallback(private val adapter: NoteAdapter) : ActionMode.Callback {
 
 	var isVisible = false
+	var onActionModeDone: () -> Unit = {}
 
 	override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
 		val inflater = mode.menuInflater
@@ -36,10 +37,4 @@ class RecyclerViewActionModeCallback(private val adapter: NoteAdapter) : ActionM
 		isVisible = false
 		onActionModeDone()
 	}
-
-	fun setOnActionModeDoneListener(callback: () -> Unit) {
-		onActionModeDone = callback
-	}
-
-	private var onActionModeDone: () -> Unit = {}
 }

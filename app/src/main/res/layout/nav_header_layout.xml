@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
+    android:paddingLeft="@dimen/nav_header_padding"
+    android:paddingTop="8dp"
+    android:paddingRight="@dimen/nav_header_padding"
+    android:paddingBottom="8dp">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/user_wallpaper"
+        tools:src="@tools:sample/avatars" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:alpha="0.5"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/set_wallpaper"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        android:src="@drawable/ic_wallpaper" />
+</FrameLayout>

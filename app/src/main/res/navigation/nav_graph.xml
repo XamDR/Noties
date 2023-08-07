@@ -41,13 +41,27 @@
 			app:destination="@id/nav_tags" />
 
 		<action
-			android:id="@+id/action_notes_to_self"
-			app:destination="@id/nav_notes"
-			app:popUpTo="@id/nav_notes"/>
-
-		<action
 			android:id="@+id/action_notes_to_settings"
 			app:destination="@id/nav_settings" />
+	</fragment>
+
+	<fragment
+		android:id="@+id/nav_editor"
+		android:name="io.github.xamdr.noties.ui.editor.EditorFragment"
+		android:label=""
+		tools:layout="@layout/fragment_editor">
+
+		<argument
+			android:name="ShowToolbar"
+			android:defaultValue="true" />
+
+		<action
+			android:id="@+id/action_editor_media_viewer"
+			app:destination="@id/nav_media_viewer" />
+
+		<action
+			android:id="@+id/action_editor_to_tags"
+			app:destination="@id/nav_tags" />
 	</fragment>
 
 	<fragment
@@ -59,13 +73,6 @@
 		<argument
 			android:name="ShowToolbar"
 			android:defaultValue="true" />
-
-		<action
-			android:id="@+id/action_tags_to_notes"
-			app:destination="@id/nav_notes"
-			app:popUpTo="@id/nav_graph"
-			app:popUpToInclusive="true" />
-
 	</fragment>
 
 	<fragment
@@ -76,25 +83,6 @@
 		<argument
 			android:name="ShowToolbar"
 			android:defaultValue="true" />
-	</fragment>
-
-	<fragment
-		android:id="@+id/nav_editor"
-		android:name="io.github.xamdr.noties.ui.editor.EditorFragment"
-		android:label="{title}"
-		tools:layout="@layout/fragment_editor">
-
-		<argument
-			android:name="title"
-			app:argType="string"/>
-
-		<argument
-			android:name="ShowToolbar"
-			android:defaultValue="true" />
-
-		<action
-			android:id="@+id/action_editor_media_viewer"
-			app:destination="@id/nav_media_viewer" />
 	</fragment>
 
 	<activity

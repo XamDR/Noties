@@ -7,7 +7,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.MenuProvider
 import androidx.core.view.doOnPreDraw
@@ -38,9 +44,36 @@ import io.github.xamdr.noties.ui.editor.tags.ChipTagAdapter
 import io.github.xamdr.noties.ui.editor.tags.EditorFooterAdapter
 import io.github.xamdr.noties.ui.editor.tasks.DragDropCallback
 import io.github.xamdr.noties.ui.editor.tasks.TaskAdapter
-import io.github.xamdr.noties.ui.helpers.*
+import io.github.xamdr.noties.ui.helpers.BitmapCache
+import io.github.xamdr.noties.ui.helpers.ConcatSpanSizeLookup
+import io.github.xamdr.noties.ui.helpers.Constants
+import io.github.xamdr.noties.ui.helpers.DateTimeHelper
+import io.github.xamdr.noties.ui.helpers.PermissionLauncher
+import io.github.xamdr.noties.ui.helpers.ProgressDialogHelper
+import io.github.xamdr.noties.ui.helpers.ShareHelper
+import io.github.xamdr.noties.ui.helpers.SimpleTextWatcher
+import io.github.xamdr.noties.ui.helpers.UriHelper
+import io.github.xamdr.noties.ui.helpers.activityResultRegistry
+import io.github.xamdr.noties.ui.helpers.addItemTouchHelper
+import io.github.xamdr.noties.ui.helpers.addMenuProvider
+import io.github.xamdr.noties.ui.helpers.getParcelableArrayListCompat
+import io.github.xamdr.noties.ui.helpers.getParcelableCompat
+import io.github.xamdr.noties.ui.helpers.getThemeColor
+import io.github.xamdr.noties.ui.helpers.hideSoftKeyboard
+import io.github.xamdr.noties.ui.helpers.isActive
+import io.github.xamdr.noties.ui.helpers.launch
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
+import io.github.xamdr.noties.ui.helpers.onBackPressed
+import io.github.xamdr.noties.ui.helpers.showDialog
+import io.github.xamdr.noties.ui.helpers.showOnTop
+import io.github.xamdr.noties.ui.helpers.showSnackbar
+import io.github.xamdr.noties.ui.helpers.showSnackbarWithAction
+import io.github.xamdr.noties.ui.helpers.showSoftKeyboard
+import io.github.xamdr.noties.ui.helpers.showToast
+import io.github.xamdr.noties.ui.helpers.simpleName
+import io.github.xamdr.noties.ui.helpers.slideVisibility
+import io.github.xamdr.noties.ui.helpers.supportActionBar
 import io.github.xamdr.noties.ui.media.MediaViewerActivity
 import io.github.xamdr.noties.ui.reminders.AlarmManagerHelper
 import io.github.xamdr.noties.ui.reminders.DateTimeListener
@@ -202,7 +235,7 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 			postNotificationPermissionLauncher.executeOrLaunch(
 				Manifest.permission.POST_NOTIFICATIONS,
 				R.string.post_notifications_permission_rationale,
-				R.drawable.ic_add_reminder
+				R.drawable.ic_reminder
 			)
 		}
 		else {

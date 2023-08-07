@@ -1,13 +1,17 @@
 package io.github.xamdr.noties.ui
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.ActivityMainBinding
@@ -17,7 +21,7 @@ import io.github.xamdr.noties.ui.settings.PreferenceStorage
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
+class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener, NavigationView.OnNavigationItemSelectedListener {
 
 	private val binding by lazy(LazyThreadSafetyMode.NONE) { ActivityMainBinding.inflate(layoutInflater) }
 	private val navController by lazy(LazyThreadSafetyMode.NONE) { findNavController(R.id.nav_host_fragment) }
@@ -35,6 +39,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 	override fun onStart() {
 		super.onStart()
 		navController.addOnDestinationChangedListener(this)
+		binding.navView.setNavigationItemSelectedListener(this)
 	}
 
 	override fun onStop() {
@@ -49,6 +54,16 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 	{
 		if (arguments != null) {
 			binding.toolbar.isVisible = arguments.getBoolean("ShowToolbar")
+		}
+	}
+
+	override fun onNavigationItemSelected(item: MenuItem): Boolean {
+		binding.drawerLayout.closeDrawer(GravityCompat.START, true)
+		return when (item.itemId) {
+			R.id.nav_settings -> {
+				navController.navigate(R.id.action_notes_to_settings); true
+			}
+			else -> NavigationUI.onNavDestinationSelected(item, navController)
 		}
 	}
 

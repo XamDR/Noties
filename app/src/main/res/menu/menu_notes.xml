@@ -1,46 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
-	tools:context=".ui.notes.NotesFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.notes.NotesFragment">
 
-	<item
-		android:id="@+id/nav_tags"
-		android:icon="@drawable/ic_edit_tag"
-		android:orderInCategory="1"
-		android:title="@string/tags_fragment_label"
-		app:showAsAction="always"
+    <item
+        android:id="@+id/action_change_layout"
+        android:orderInCategory="0"
+        android:title=""
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_set_account"
+        android:icon="@drawable/ic_user_account"
+        android:orderInCategory="4"
+        android:title="@string/set_user_account"
+        android:visible="false"
+        app:showAsAction="always"
 		tools:ignore="AlwaysShowAction" />
-
-	<item
-		android:id="@+id/change_notes_layout"
-		android:orderInCategory="5"
-		android:title="@string/change_layout"
-		app:showAsAction="never">
-
-		<menu>
-			<group android:checkableBehavior="single">
-				<item
-					android:id="@+id/action_layout_linear"
-					android:title="@string/set_grid_layout"
-					android:orderInCategory="0"/>
-				<item
-					android:id="@+id/action_layout_grid"
-					android:title="@string/set_linear_layout"
-					android:orderInCategory="5"/>
-			</group>
-		</menu>
-	</item>
-
-	<item
-		android:id="@+id/nav_trash"
-		android:orderInCategory="10"
-		android:title="@string/recycle_bin_fragment_label"
-		app:showAsAction="never" />
-
-	<item
-		android:id="@+id/nav_settings"
-		android:orderInCategory="15"
-		android:title="@string/action_settings"
-		app:showAsAction="never" />
 </menu>

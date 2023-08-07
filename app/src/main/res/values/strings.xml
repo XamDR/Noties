@@ -12,11 +12,17 @@
 	<string name="go_to_settings_button">Go to settings</string>
 	<string name="delete_button">Delete</string>
 
+	<!-- Navigation Drawer -->
+	<string name="all_notes">All Notes</string>
+	<string name="reminders">Reminders</string>
+	<string name="protected_notes">Protected Notes</string>
+	<string name="archived_notes">Archived Notes</string>
+
 	<!-- Welcome Fragment -->
 	<string name="onboarding_message">Noties is a note taking app that will help you to take notes, make to-do lists and add attachments like images or audios.</string>
 
 	<!-- Notes Fragment -->
-	<string name="notes_fragment_label">All Notes</string>
+	<string name="notes_fragment_label">Notes</string>
 	<string name="urls_fragment_label">Urls</string>
 	<string name="make_todo_list">Make to-do list</string>
 	<string name="add_note">Add a new note.</string>
@@ -28,9 +34,9 @@
 	<string name="sort_by_content">By content</string>
 	<string name="sort_by_last_edit">By last edit</string>
 	<string name="sort_by_title">By title</string>
-	<string name="change_layout">Change layout</string>
-	<string name="set_linear_layout">Linear</string>
-	<string name="set_grid_layout">Grid</string>
+	<string name="linear_layout_view">Single column view</string>
+	<string name="grid_layout_view">Multicolumn view</string>
+	<string name="set_user_account">Set account</string>
 	<string name="empty_note_deleted">Empty note deleted</string>
 	<string name="error_no_auth">Error. The device is not secured with a PIN, pattern or password.</string>
 	<string name="confirme_device_credential_title">Protected note</string>
@@ -111,6 +117,7 @@
 	<string name="note_unlocked">Note unlocked</string>
 	<string name="note_pinned">Note will be pinned</string>
 	<string name="note_unpinned">Note will be unpinned</string>
+	<string name="loading_text">Loading text…</string>
 
 	<!-- Add attachment Fragment -->
 	<string name="text_editor_menu_fragment_label">Text editor menu attachments</string>
@@ -204,7 +211,8 @@
 	<string name="error_play_audio">Error playing audio file</string>
 	<string name="error_record_speech">Error recording speech</string>
 	<string name="recording_finished">Recording finished</string>
-	<string name="loading_text">Loading text…</string>
+	<string name="user_wallpaper">Wallpaper</string>
+	<string name="set_wallpaper">Set wallpaper</string>
 
 	<!-- Plurals -->
 	<plurals name="note_count">
