@@ -25,6 +25,6 @@
 		android:text="@string/empty_tags_message"
 		android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
 		android:textStyle="bold"
-		app:drawableTopCompat="@drawable/ic_edit_tag"
+		app:drawableTopCompat="@drawable/ic_tag"
 		tools:visibility="gone" />
 </FrameLayout>

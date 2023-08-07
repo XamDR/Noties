@@ -63,7 +63,6 @@ fun Context.showToast(@StringRes text: Int, duration: Int = Toast.LENGTH_SHORT):
 
 fun Context.getIntArray(@ArrayRes resId: Int) = this.resources.getIntArray(resId)
 
-@Suppress("UNCHECKED_CAST")
 fun <T : Parcelable> Bundle.getParcelableCompat(key: String, clazz: Class<T>): T {
 	return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 		(this.getParcelable(key, clazz) ?: clazz.newInstance()) as T
@@ -95,7 +94,6 @@ fun <T : Parcelable> Bundle.getParcelableArrayListCompat(key: String, clazz: Cla
 	}
 }
 
-@Suppress("UNCHECKED_CAST")
 fun <T : Parcelable> Intent.getParcelableExtraCompat(key: String, clazz: Class<T>): T {
 	return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 		(this.getParcelableExtra(key, clazz) ?: clazz.newInstance()) as T
@@ -175,6 +173,13 @@ fun Fragment.addMenuProvider(provider: MenuProvider) {
 
 fun Fragment.removeMenuProvider(provider: MenuProvider) {
 	this.requireActivity().removeMenuProvider(provider)
+}
+
+fun AppCompatActivity.showDialog(dialog: DialogFragment, tag: String) {
+	val previousDialog = this.supportFragmentManager.findFragmentByTag(tag)
+	if (previousDialog == null) {
+		dialog.show(supportFragmentManager, tag)
+	}
 }
 
 fun Fragment.showDialog(dialog: DialogFragment, tag: String) {

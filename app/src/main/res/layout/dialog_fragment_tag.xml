@@ -11,7 +11,7 @@
 	app:boxStrokeColor="@color/text_input_layout_stroke_color"
 	app:endIconMode="clear_text"
 	app:errorEnabled="true"
-	app:startIconDrawable="@drawable/ic_edit_tag"
+	app:startIconDrawable="@drawable/ic_tag"
 	style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
 	tools:context="ui.tags.TagDialogFragment">
 

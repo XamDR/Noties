@@ -12,17 +12,19 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.DialogFragmentTagBinding
 import io.github.xamdr.noties.domain.model.Tag
 import io.github.xamdr.noties.ui.helpers.*
 import timber.log.Timber
 
+@AndroidEntryPoint
 class TagDialogFragment : DialogFragment() {
 
 	private var _binding: DialogFragmentTagBinding? = null
 	private val binding get() = _binding!!
-	private val viewModel by viewModels<TagsViewModel>({ requireParentFragment() })
+	private val viewModel by viewModels<TagDialogViewModel>()
 	private val tag by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getParcelableCompat(Constants.BUNDLE_TAG, Tag::class.java)
 	}

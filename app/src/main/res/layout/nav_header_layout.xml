@@ -2,19 +2,19 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="160dp"
-    android:paddingLeft="@dimen/nav_header_padding"
-    android:paddingTop="8dp"
-    android:paddingRight="@dimen/nav_header_padding"
-    android:paddingBottom="8dp">
+    android:layout_height="@dimen/nav_header_height">
 
     <ImageView
+        android:id="@+id/wallpaper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:adjustViewBounds="true"
         android:contentDescription="@string/user_wallpaper"
+        android:scaleType="centerCrop"
         tools:src="@tools:sample/avatars" />
 
     <ImageButton
+        android:id="@+id/set_wallpaper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"

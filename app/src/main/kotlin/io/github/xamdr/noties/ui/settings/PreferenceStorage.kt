@@ -18,9 +18,12 @@ class PreferenceStorage @Inject constructor(@ApplicationContext context: Context
 
 	var isExactAlarmEnabled by BooleanPreference(preferences, PREF_EXACT_ALARM, false)
 
+	var wallpaper by StringPreference(preferences, PREF_WALLPAPER, String.Empty)
+
 	companion object {
 		private const val PREF_ONBOARDING = "pref_onboarding"
 		private const val PREF_LAYOUT_NOTES = "pref_layout_notes"
 		private const val PREF_EXACT_ALARM = "pref_exact_alarm"
+		private const val PREF_WALLPAPER = "pref_wallpaper"
 	}
 }

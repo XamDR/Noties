@@ -196,7 +196,6 @@ class NotesFragment : Fragment(), Toolbar.OnMenuItemClickListener {
 
 	private fun submitList(tagName: String) {
 		viewModel.getNotesByTag(tagName).observe(viewLifecycleOwner) { notes ->
-//			if (tagName.isNotEmpty()) supportActionBar?.title = tag.name
 			buildUIForNotes()
 			noteAdapter.submitList(notes)
 			binding.root.doOnPreDraw { startPostponedEnterTransition() }
