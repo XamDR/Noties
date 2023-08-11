@@ -96,10 +96,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 	override fun onSupportNavigateUp() = navController.navigateUp() || super.onSupportNavigateUp()
 
 	private fun setupNavigation() {
-		val appBarConfiguration = AppBarConfiguration(emptySet())
+		val appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_all_notes))
 		navController.graph = navController.navInflater.inflate(R.navigation.nav_graph).apply {
 			setStartDestination(
-				if (preferenceStorage.isOnboardingCompleted) R.id.nav_notes else R.id.nav_welcome
+				if (preferenceStorage.isOnboardingCompleted) R.id.nav_all_notes else R.id.nav_welcome
 			)
 		}
 		setupActionBarWithNavController(navController, appBarConfiguration)
