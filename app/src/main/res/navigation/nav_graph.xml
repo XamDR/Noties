@@ -8,12 +8,7 @@
 	<fragment
 		android:id="@+id/nav_welcome"
 		android:name="io.github.xamdr.noties.ui.onboarding.WelcomeFragment"
-		android:label=""
-		tools:layout="@layout/fragment_welcome">
-
-		<argument
-			android:name="ShowToolbar"
-			android:defaultValue="false" />
+		android:label="">
 
 		<action
 			android:id="@+id/action_welcome_to_notes"
@@ -25,12 +20,7 @@
 	<fragment
 		android:id="@+id/nav_all_notes"
 		android:name="io.github.xamdr.noties.ui.notes.NotesFragment"
-		android:label=""
-		tools:layout="@layout/fragment_notes">
-
-		<argument
-			android:name="ShowToolbar"
-			android:defaultValue="false" />
+		android:label="">
 
 		<action
 			android:id="@+id/action_notes_to_editor"
@@ -48,12 +38,7 @@
 	<fragment
 		android:id="@+id/nav_editor"
 		android:name="io.github.xamdr.noties.ui.editor.EditorFragment"
-		android:label=""
-		tools:layout="@layout/fragment_editor">
-
-		<argument
-			android:name="ShowToolbar"
-			android:defaultValue="true" />
+		android:label="">
 
 		<action
 			android:id="@+id/action_editor_media_viewer"
@@ -67,23 +52,12 @@
 	<fragment
 		android:id="@+id/nav_tags"
 		android:name="io.github.xamdr.noties.ui.tags.TagsFragment"
-		android:label="@string/tags_fragment_label"
-		tools:layout="@layout/fragment_tags">
-
-		<argument
-			android:name="ShowToolbar"
-			android:defaultValue="true" />
-	</fragment>
+		android:label="@string/tags_fragment_label" />
 
 	<fragment
 		android:id="@+id/nav_settings"
 		android:name="io.github.xamdr.noties.ui.settings.SettingsFragment"
-		android:label="@string/settings_fragment_label">
-
-		<argument
-			android:name="ShowToolbar"
-			android:defaultValue="true" />
-	</fragment>
+		android:label="@string/settings_fragment_label" />
 
 	<activity
 		android:id="@+id/nav_media_viewer"

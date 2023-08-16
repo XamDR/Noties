@@ -15,7 +15,7 @@ def versionPatch = 0
 
 android {
 	namespace 'io.github.xamdr.noties'
-	compileSdk 33
+	compileSdk 34
 
 	defaultConfig {
 		applicationId "io.github.xamdr.noties"
@@ -56,6 +56,10 @@ android {
 	}
 	buildFeatures {
 		viewBinding true
+		compose true
+	}
+	composeOptions {
+		kotlinCompilerExtensionVersion = "1.5.0"
 	}
 	tasks.withType(KotlinCompile).configureEach {
 		kotlinOptions.freeCompilerArgs += ["-Xallow-kotlin-package"]
@@ -107,9 +111,24 @@ dependencies {
 	// Coil
 	implementation libs.coil
 
+	// Compose
+	implementation libs.activity.compose
+	implementation platform(libs.compose.bom)
+	implementation libs.ui
+	implementation libs.ui.graphics
+	implementation libs.ui.tooling.preview
+	implementation libs.material3
+	implementation libs.material.icons.extended
+	implementation libs.coil.compose
+
 	// Testing
 	testImplementation libs.junit4
 	androidTestImplementation libs.androidx.core.testing
 	androidTestImplementation libs.androidx.junit.testing
 	androidTestImplementation libs.androidx.espresso.testing
+	androidTestImplementation platform(libs.compose.bom)
+	androidTestImplementation libs.ui.test.junit4
+
+	debugImplementation libs.ui.tooling
+	debugImplementation libs.ui.test.manifest
 }

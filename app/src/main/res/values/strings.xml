@@ -19,7 +19,7 @@
 	<string name="archived_notes">Archived Notes</string>
 
 	<!-- Welcome Fragment -->
-	<string name="onboarding_message">Noties is a note taking app that will help you to take notes, make to-do lists and add attachments like images or audios.</string>
+	<string name="onboarding_message">Noties is a note taking app that will help you to take notes, make to-do lists and add attachments like images, videos or audios.</string>
 
 	<!-- Notes Fragment -->
 	<string name="notes_fragment_label">Notes</string>

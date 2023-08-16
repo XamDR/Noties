@@ -55,12 +55,12 @@ object NotificationHelper {
 						MediaType.Image -> {
 							val bitmap = getBimap(context, mediaItem.uri)
 							setLargeIcon(bitmap)
-							setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap).bigLargeIcon(null))
+							setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap))
 						}
 						MediaType.Video -> {
 							val bitmap = getBimap(context, mediaItem.metadata.thumbnail)
 							setLargeIcon(bitmap)
-							setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap).bigLargeIcon(null))
+							setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap))
 						}
 					}
 				}
