@@ -14,9 +14,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
 
+	@Inject lateinit var preferenceStorage: PreferenceStorage
 	private val binding by lazy(LazyThreadSafetyMode.NONE) { ActivityMainBinding.inflate(layoutInflater) }
 	private val navController by lazy(LazyThreadSafetyMode.NONE) { findNavController(R.id.nav_host_fragment) }
-	@Inject lateinit var preferenceStorage: PreferenceStorage
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		installSplashScreen()

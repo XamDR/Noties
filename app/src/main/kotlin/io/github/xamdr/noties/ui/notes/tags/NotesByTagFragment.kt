@@ -16,9 +16,7 @@ import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.addMenuProvider
 import io.github.xamdr.noties.ui.helpers.launch
-import io.github.xamdr.noties.ui.helpers.show
 import io.github.xamdr.noties.ui.helpers.showDialog
-import io.github.xamdr.noties.ui.helpers.supportActionBar
 import io.github.xamdr.noties.ui.notes.recyclebin.EmptyRecycleBinDialogFragment
 
 class NotesByTagFragment : Fragment() {
@@ -43,7 +41,7 @@ class NotesByTagFragment : Fragment() {
 
 	private fun buildUIForTrashedNotes(trashedNotes: List<Note>) {
 		binding.fab.isVisible = false
-		supportActionBar?.show(getString(R.string.recycle_bin_fragment_label))
+//		supportActionBar?.show(getString(R.string.recycle_bin_fragment_label))
 		if (trashedNotes.isNotEmpty()) addMenuProvider(menuProvider, viewLifecycleOwner)
 		binding.emptyView.setText(R.string.empty_recycle_bin)
 	}

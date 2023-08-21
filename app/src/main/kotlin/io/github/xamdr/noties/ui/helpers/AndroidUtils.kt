@@ -16,7 +16,6 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.view.ActionMode
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -35,7 +34,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.Serializable
 
 fun FragmentActivity.findNavController(@IdRes id: Int) =
 	(this.supportFragmentManager.findFragmentById(id) as NavHostFragment).navController
@@ -63,24 +61,13 @@ fun Context.showToast(@StringRes text: Int, duration: Int = Toast.LENGTH_SHORT):
 
 fun Context.getIntArray(@ArrayRes resId: Int) = this.resources.getIntArray(resId)
 
+@Suppress("DEPRECATION")
 fun <T : Parcelable> Bundle.getParcelableCompat(key: String, clazz: Class<T>): T {
 	return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 		(this.getParcelable(key, clazz) ?: clazz.newInstance()) as T
 	}
 	else {
-		@Suppress("DEPRECATION")
 		(this.getParcelable(key) ?: clazz.newInstance()) as T
-	}
-}
-
-@Suppress("UNCHECKED_CAST")
-fun <T : Serializable> Bundle.getSerializableCompat(key: String, clazz: Class<T>): T {
-	return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-		(this.getSerializable(key, clazz) ?: clazz.newInstance()) as T
-	}
-	else {
-		@Suppress("DEPRECATION")
-		(this.getSerializable(key) ?: clazz.newInstance()) as T
 	}
 }
 
@@ -94,12 +81,12 @@ fun <T : Parcelable> Bundle.getParcelableArrayListCompat(key: String, clazz: Cla
 	}
 }
 
+@Suppress("DEPRECATION")
 fun <T : Parcelable> Intent.getParcelableExtraCompat(key: String, clazz: Class<T>): T {
 	return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 		(this.getParcelableExtra(key, clazz) ?: clazz.newInstance()) as T
 	}
 	else {
-		@Suppress("DEPRECATION")
 		return (this.getParcelableExtra(key) ?: clazz.newInstance()) as T
 	}
 }
@@ -175,22 +162,11 @@ fun Fragment.removeMenuProvider(provider: MenuProvider) {
 	this.requireActivity().removeMenuProvider(provider)
 }
 
-fun AppCompatActivity.showDialog(dialog: DialogFragment, tag: String) {
-	val previousDialog = this.supportFragmentManager.findFragmentByTag(tag)
-	if (previousDialog == null) {
-		dialog.show(supportFragmentManager, tag)
-	}
-}
-
 fun Fragment.showDialog(dialog: DialogFragment, tag: String) {
 	val previousDialog = this.childFragmentManager.findFragmentByTag(tag)
 	if (previousDialog == null) {
 		dialog.show(childFragmentManager, tag)
 	}
-}
-
-fun Fragment.startActionMode(callback: ActionMode.Callback): ActionMode? {
-	return (this.requireActivity() as AppCompatActivity).startSupportActionMode(callback)
 }
 
 val Fragment.window: Window

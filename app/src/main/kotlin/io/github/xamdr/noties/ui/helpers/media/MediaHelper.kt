@@ -55,7 +55,8 @@ object MediaHelper {
 		}
 	}
 
-	fun formatDuration(duration: Long): String {
+	fun formatDuration(duration: Long?): String {
+		if (duration == null) return String.Empty
 		val second = (duration / 1000).toInt()
 		val seconds = second % 60
 		val minutes = second / 60 % 60

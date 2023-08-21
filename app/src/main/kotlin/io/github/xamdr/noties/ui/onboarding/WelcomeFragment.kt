@@ -42,8 +42,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class WelcomeFragment : Fragment() {
 
-	@Inject
-	lateinit var preferenceStorage: PreferenceStorage
+	@Inject lateinit var preferenceStorage: PreferenceStorage
 
 	override fun onAttach(context: Context) {
 		super.onAttach(context)
@@ -57,62 +56,60 @@ class WelcomeFragment : Fragment() {
 	): View {
 		return ComposeView(requireContext()).apply {
 			setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-			setContent {
-				NotiesTheme {
-					Welcome()
-				}
-			}
+			setContent { WelcomeFragmentContent() }
 		}
 	}
 
 	@Composable
-	fun Welcome() {
-		val configuration = LocalConfiguration.current
-		val padding = if (configuration.screenHeightDp >= 800) 32.dp else 16.dp
-		val iconSize = if (configuration.screenHeightDp >= 800) 192.dp else 144.dp
+	fun WelcomeFragmentContent() {
+		NotiesTheme {
+			val configuration = LocalConfiguration.current
+			val padding = if (configuration.screenHeightDp >= 800) 32.dp else 16.dp
+			val iconSize = if (configuration.screenHeightDp >= 800) 192.dp else 144.dp
 
-		Column(
-			modifier = Modifier
-				.fillMaxSize()
-				.padding(16.dp),
-			horizontalAlignment = Alignment.CenterHorizontally,
-			verticalArrangement = Arrangement.Center
-		) {
-			Text(
-				text = stringResource(id = R.string.app_name),
-				style = MaterialTheme.typography.titleLarge,
-				fontWeight = FontWeight.Bold,
-				modifier = Modifier.padding(padding),
-			)
-			Icon(
-				imageVector = Icons.Outlined.Article,
-				contentDescription = null,
+			Column(
 				modifier = Modifier
-					.size(iconSize)
-					.padding(padding)
-			)
-			Text(
-				text = stringResource(id = R.string.onboarding_message),
-				style = MaterialTheme.typography.bodyLarge,
-				textAlign = TextAlign.Justify,
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(padding)
-			)
-			Button(
-				onClick = { navigateToMainScreen() },
-				modifier = Modifier.padding(padding)
+					.fillMaxSize()
+					.padding(16.dp),
+				horizontalAlignment = Alignment.CenterHorizontally,
+				verticalArrangement = Arrangement.Center
 			) {
 				Text(
-					stringResource(id = R.string.continue_button)
+					text = stringResource(id = R.string.app_name),
+					style = MaterialTheme.typography.titleLarge,
+					fontWeight = FontWeight.Bold,
+					modifier = Modifier.padding(padding),
 				)
+				Icon(
+					imageVector = Icons.Outlined.Article,
+					contentDescription = null,
+					modifier = Modifier
+						.size(iconSize)
+						.padding(padding)
+				)
+				Text(
+					text = stringResource(id = R.string.onboarding_message),
+					style = MaterialTheme.typography.bodyLarge,
+					textAlign = TextAlign.Justify,
+					modifier = Modifier
+						.fillMaxWidth()
+						.padding(padding)
+				)
+				Button(
+					onClick = { navigateToMainScreen() },
+					modifier = Modifier.padding(padding)
+				) {
+					Text(
+						stringResource(id = R.string.continue_button)
+					)
+				}
 			}
 		}
 	}
 
 	@DevicePreviews
 	@Composable
-	private fun WelcomePreview() = NotiesTheme { Welcome() }
+	private fun WelcomePreview() = WelcomeFragmentContent()
 
 	private fun navigateToMainScreen() {
 		findNavController().tryNavigate(R.id.action_welcome_to_notes)

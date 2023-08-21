@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -25,7 +24,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
-import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialArcMotion
 import com.google.android.material.transition.MaterialContainerTransform
@@ -69,11 +67,8 @@ import io.github.xamdr.noties.ui.helpers.showDialog
 import io.github.xamdr.noties.ui.helpers.showOnTop
 import io.github.xamdr.noties.ui.helpers.showSnackbar
 import io.github.xamdr.noties.ui.helpers.showSnackbarWithAction
-import io.github.xamdr.noties.ui.helpers.showSoftKeyboard
 import io.github.xamdr.noties.ui.helpers.showToast
 import io.github.xamdr.noties.ui.helpers.simpleName
-import io.github.xamdr.noties.ui.helpers.slideVisibility
-import io.github.xamdr.noties.ui.helpers.supportActionBar
 import io.github.xamdr.noties.ui.media.MediaViewerActivity
 import io.github.xamdr.noties.ui.reminders.AlarmManagerHelper
 import io.github.xamdr.noties.ui.reminders.DateTimeListener
@@ -286,7 +281,7 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 	}
 
 	private fun setupViews(note: Note) {
-		supportActionBar?.title = note.title.ifEmpty { getString(R.string.editor_fragment_label) }
+//		supportActionBar?.title = note.title.ifEmpty { getString(R.string.editor_fragment_label) }
 		binding.content.apply {
 			adapter = concatAdapter
 			(layoutManager as GridLayoutManager).spanSizeLookup =
@@ -312,28 +307,28 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 			}
 			showDialog(menuDialog, Constants.MENU_DIALOG_TAG)
 		}
-		requireActivity().findViewById<MaterialToolbar>(R.id.toolbar).apply {
-			setOnClickListener {
-				titleInEditMode = true
-				binding.textInputLayout.slideVisibility(true, Gravity.TOP)
-				binding.title.showSoftKeyboard()
-				binding.title.setText(note.title)
-				supportActionBar?.title = String.Empty
-				supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_upward)
-			}
-			setNavigationOnClickListener {
-				if (titleInEditMode) {
-					titleInEditMode = false
-					binding.textInputLayout.slideVisibility(false, Gravity.TOP)
-					supportActionBar?.title = note.title.ifEmpty { getString(R.string.editor_fragment_label) }
-					supportActionBar?.setHomeAsUpIndicator(0)
-					if (note.id == 0L) binding.content.showSoftKeyboard() else binding.title.hideSoftKeyboard()
-				}
-				else {
-					navigateUp()
-				}
-			}
-		}
+//		requireActivity().findViewById<MaterialToolbar>(R.id.toolbar).apply {
+//			setOnClickListener {
+//				titleInEditMode = true
+//				binding.textInputLayout.slideVisibility(true, Gravity.TOP)
+//				binding.title.showSoftKeyboard()
+//				binding.title.setText(note.title)
+//				supportActionBar?.title = String.Empty
+//				supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_upward)
+//			}
+//			setNavigationOnClickListener {
+//				if (titleInEditMode) {
+//					titleInEditMode = false
+//					binding.textInputLayout.slideVisibility(false, Gravity.TOP)
+//					supportActionBar?.title = note.title.ifEmpty { getString(R.string.editor_fragment_label) }
+//					supportActionBar?.setHomeAsUpIndicator(0)
+//					if (note.id == 0L) binding.content.showSoftKeyboard() else binding.title.hideSoftKeyboard()
+//				}
+//				else {
+//					navigateUp()
+//				}
+//			}
+//		}
 		binding.title.addTextChangedListener(this)
 	}
 
@@ -463,7 +458,7 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 					val file = DocumentFile.fromSingleUri(requireContext(), uri)
 					val text = UriHelper.readTextFromUri(requireContext(), uri)
 					note = note.copy(title = file?.simpleName ?: String.Empty, text = text)
-					supportActionBar?.title = note.title
+//					supportActionBar?.title = note.title
 					contentAdapter.submitNote(note)
 					requireActivity().invalidateMenu()
 				}

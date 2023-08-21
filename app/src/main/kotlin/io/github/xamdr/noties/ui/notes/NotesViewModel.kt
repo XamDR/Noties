@@ -5,12 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.xamdr.noties.domain.model.Note
-import io.github.xamdr.noties.domain.usecase.*
+import io.github.xamdr.noties.domain.usecase.DeleteNotesUseCase
+import io.github.xamdr.noties.domain.usecase.EmptyTrashUseCase
+import io.github.xamdr.noties.domain.usecase.GetAllNotesUseCase
+import io.github.xamdr.noties.domain.usecase.GetTrashedNotesUseCase
+import io.github.xamdr.noties.domain.usecase.MoveNotesToTrashUseCase
+import io.github.xamdr.noties.domain.usecase.RestoreNotesUseCase
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 @HiltViewModel
 class NotesViewModel @Inject constructor(
-	private val getNotesUseCase: GetNotesUseCase,
 	private val getAllNotesUseCase: GetAllNotesUseCase,
 	private val getTrashedNotesUseCase: GetTrashedNotesUseCase,
 	private val moveNotesToTrashUseCase: MoveNotesToTrashUseCase,
@@ -18,10 +23,7 @@ class NotesViewModel @Inject constructor(
 	private val deleteNotesUseCase: DeleteNotesUseCase,
 	private val emptyTrashUseCase: EmptyTrashUseCase) : ViewModel() {
 
-	fun getNotesByTag(tagName: String): LiveData<List<Note>> {
-		return ((if (tagName.isEmpty()) getAllNotesUseCase() else getNotesUseCase(tagName)))
-			.asLiveData()
-	}
+	fun getAllNotes(): Flow<List<Note>> = getAllNotesUseCase()
 
 	fun getTrashedNotes(): LiveData<List<Note>> = getTrashedNotesUseCase().asLiveData()
 
