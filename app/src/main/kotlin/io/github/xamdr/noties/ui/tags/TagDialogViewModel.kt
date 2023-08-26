@@ -1,7 +1,6 @@
 package io.github.xamdr.noties.ui.tags
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.xamdr.noties.domain.model.Tag
@@ -9,6 +8,7 @@ import io.github.xamdr.noties.domain.usecase.CreateTagUseCase
 import io.github.xamdr.noties.domain.usecase.GetTagNamesUseCase
 import io.github.xamdr.noties.domain.usecase.UpdateTagUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,7 +20,7 @@ class TagDialogViewModel @Inject constructor(
 	private val getTagNamesUseCase: GetTagNamesUseCase,) : ViewModel() {
 
 	private val tagNameState: MutableStateFlow<TagNameState> = MutableStateFlow(TagNameState.EmptyOrUpdatingName)
-	val nameState = tagNameState.asLiveData()
+	val nameState = tagNameState.asStateFlow()
 
 	private val names = mutableSetOf<String>()
 
