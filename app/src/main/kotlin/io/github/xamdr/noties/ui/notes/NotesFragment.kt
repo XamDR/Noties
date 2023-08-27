@@ -66,6 +66,7 @@ class NotesFragment : Fragment() {
 				drawerState = drawerState,
 				viewModel = viewModel,
 				preferenceStorage = preferenceStorage,
+				navController = findNavController(),
 				onCreateTag = { openDialog = true }
 			) {
 				NotesScreen(

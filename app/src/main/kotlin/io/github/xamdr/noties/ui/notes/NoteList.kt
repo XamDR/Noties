@@ -1,6 +1,7 @@
 package io.github.xamdr.noties.ui.notes
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,10 +18,17 @@ import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DismissValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,9 +46,14 @@ import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.theme.NotiesTheme
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun NoteList(modifier: Modifier, notes: List<Note>) {
+fun NoteList(modifier: Modifier, notes: List<Note>, viewModel: NotesViewModel, onNoteMovedToTrash: (Note) -> Unit) {
+	val scope = rememberCoroutineScope()
+
 	LazyColumn(
 		modifier = modifier,
 		contentPadding = PaddingValues(16.dp),
@@ -49,12 +62,36 @@ fun NoteList(modifier: Modifier, notes: List<Note>) {
 		items(
 			count = notes.size,
 			key = { index -> notes[index].id.toInt() }
-		) { index -> NoteItem(note = notes[index]) }
+		) { index ->
+			val currentNote by rememberUpdatedState(newValue = notes[index])
+			val dismissState = rememberDismissState(confirmValueChange = { dissmissValue ->
+				when (dissmissValue) {
+					DismissValue.DismissedToEnd -> {
+						Timber.d("Note archived")
+						true
+					}
+					DismissValue.DismissedToStart -> {
+						scope.launch {
+							val result = viewModel.moveNotesToTrash(listOf(currentNote))
+							onNoteMovedToTrash(result.single())
+						}
+						true
+					}
+					else -> false
+				}
+			})
+			SwipeToDismiss(
+				state = dismissState,
+				background = {},
+				dismissContent = { NoteItem(note = notes[index]) },
+				modifier = Modifier.animateItemPlacement()
+			)
+		}
 	}
 }
 
 @Composable
-private fun NoteList() {
+fun NoteList(modifier: Modifier) {
 	val notes = listOf(
 		Note(id = 0, title = "Lorem Ipsum", text = stringResource(id = R.string.demo_content)),
 		Note(id = 1, title = "Lorem Ipsum", text = stringResource(id = R.string.demo_content)),
@@ -63,7 +100,7 @@ private fun NoteList() {
 		Note(id = 4, title = "Lorem Ipsum", text = stringResource(id = R.string.demo_content)),
 	)
 	LazyColumn(
-		modifier = Modifier,
+		modifier = modifier,
 		contentPadding = PaddingValues(16.dp),
 		verticalArrangement = Arrangement.spacedBy(16.dp),
 	) {
@@ -78,7 +115,7 @@ private fun NoteList() {
 @Composable
 private fun NoteListPreview() {
 	NotiesTheme {
-		NoteList()
+		NoteList(Modifier)
 	}
 }
 

@@ -17,9 +17,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -28,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.theme.NotiesTheme
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,6 +50,10 @@ fun NotesScreen(
 	searchContent: @Composable (ColumnScope.() -> Unit)
 ) {
 	val notes by viewModel.getAllNotes().collectAsStateWithLifecycle(initialValue = null)
+	val scope = rememberCoroutineScope()
+	val snackbarHostState = remember { SnackbarHostState() }
+	val message = stringResource(id = R.string.deleted_note)
+	val actionLabel = stringResource(id = R.string.undo)
 
 	Scaffold(
 		topBar = {
@@ -76,12 +86,13 @@ fun NotesScreen(
 				content = searchContent
 			)
 		},
-		floatingActionButtonPosition = FabPosition.End,
+		snackbarHost = { SnackbarHost(snackbarHostState) },
 		floatingActionButton = {
 			FloatingActionButton(onClick = onFabClick) {
 				Icon(imageVector = Icons.Outlined.Add, contentDescription = stringResource(id = R.string.add_note))
 			}
 		},
+		floatingActionButtonPosition = FabPosition.End,
 		content = { innerPadding ->
 			if (notes.isNullOrEmpty()) {
 				Box(
@@ -98,7 +109,18 @@ fun NotesScreen(
 			}
 			else {
 				notes?.let {
-					NoteList(modifier = Modifier.padding(innerPadding), notes = it)
+					NoteList(
+						modifier = Modifier.padding(innerPadding),
+						notes = it,
+						viewModel = viewModel
+					) { trashedNote ->
+						scope.launch {
+							when (snackbarHostState.showSnackbar(message = message, actionLabel = actionLabel)) {
+								SnackbarResult.ActionPerformed -> viewModel.restoreNotes(listOf(trashedNote))
+								else -> {}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -146,10 +168,7 @@ private fun NotesScreen() {
 			}
 		},
 		content = { innerPadding ->
-			NoteList(
-				modifier = Modifier.padding(innerPadding),
-				notes = emptyList()
-			)
+			NoteList(modifier = Modifier.padding(innerPadding))
 		}
 	)
 }

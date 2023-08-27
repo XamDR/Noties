@@ -41,6 +41,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import io.github.xamdr.noties.R
@@ -55,6 +56,7 @@ fun NavigationDrawer(
 	drawerState: DrawerState,
 	viewModel: NotesViewModel,
 	preferenceStorage: PreferenceStorage,
+	navController: NavController,
 	onCreateTag: () -> Unit,
 	content: @Composable () -> Unit
 ) {
@@ -115,7 +117,12 @@ fun NavigationDrawer(
 								onCreateTag()
 							}
 							else {
-								scope.launch { drawerState.close() }
+								scope.launch {
+									drawerState.close()
+									when (item.id) {
+										R.string.settings -> navController.navigate(R.id.action_notes_to_settings)
+									}
+								}
 							}
 						}
 					}
