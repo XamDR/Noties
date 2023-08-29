@@ -12,21 +12,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.Tag
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.showSoftKeyboardOnFocus
 import io.github.xamdr.noties.ui.theme.NotiesTheme
+import kotlinx.coroutines.launch
 
 @Composable
-fun TagDialog(tag: Tag, viewModel: TagDialogViewModel, onCancel: () -> Unit, onSave: (tagName: String) -> Unit) {
+fun TagDialog(
+	tag: Tag,
+	onCancel: () -> Unit,
+	onSave: (tagName: String) -> Unit,
+	viewModel: TagDialogViewModel = hiltViewModel(),
+) {
+	val scope = rememberCoroutineScope()
 	val tagNameState by viewModel.nameState.collectAsStateWithLifecycle(initialValue = TagNameState.EmptyOrUpdatingName)
 	var isConfirmButtonEnabled by rememberSaveable { mutableStateOf(false) }
 	var showError by rememberSaveable { mutableStateOf(false) }
@@ -47,18 +56,29 @@ fun TagDialog(tag: Tag, viewModel: TagDialogViewModel, onCancel: () -> Unit, onS
 		}
 	}
 
+	suspend fun createTag(tagName: String) {
+		val newTag = Tag(name = tagName)
+		viewModel.createTag(newTag)
+		onSave(tagName)
+	}
+
+	fun onDismiss() {
+		viewModel.clearNameState()
+		onCancel()
+	}
+
 	AlertDialog(
 		onDismissRequest = {},
 		confirmButton = {
 			TextButton(
-				onClick = { onSave(tagName) },
+				onClick = { scope.launch { createTag(tagName) } },
 				enabled = isConfirmButtonEnabled
 			) {
 				Text(text = stringResource(id = R.string.save_button))
 			}
 		},
 		dismissButton = {
-			TextButton(onClick = onCancel) {
+			TextButton(onClick = { onDismiss() }) {
 				Text(text = stringResource(id = R.string.cancel_button))
 			}
 		},
@@ -70,7 +90,6 @@ fun TagDialog(tag: Tag, viewModel: TagDialogViewModel, onCancel: () -> Unit, onS
 					tagName = s
 					viewModel.onTagNameChanged(s)
 				},
-//				modifier = Modifier.focusRequester(focusRequester),
 				modifier = Modifier.showSoftKeyboardOnFocus(focusRequester),
 				label = { Text(text = stringResource(id = R.string.tag_name)) },
 				leadingIcon = {

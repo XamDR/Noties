@@ -41,24 +41,24 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.settings.PreferenceStorage
+import io.github.xamdr.noties.ui.tags.TagDialogViewModel
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
 
 @Composable
 fun NavigationDrawer(
 	drawerState: DrawerState,
-	viewModel: NotesViewModel,
 	preferenceStorage: PreferenceStorage,
-	navController: NavController,
-	onCreateTag: () -> Unit,
-	content: @Composable () -> Unit
+	onItemClick: (item: DrawerItem) -> Unit,
+	content: @Composable () -> Unit,
+	viewModel: TagDialogViewModel = hiltViewModel()
 ) {
 	val context = LocalContext.current
 	val scope = rememberCoroutineScope()
@@ -113,17 +113,7 @@ fun NavigationDrawer(
 							selected = item == selectedItem
 						) {
 							selectedItem = item
-							if (item.id == R.string.create_tag) {
-								onCreateTag()
-							}
-							else {
-								scope.launch {
-									drawerState.close()
-									when (item.id) {
-										R.string.settings -> navController.navigate(R.id.action_notes_to_settings)
-									}
-								}
-							}
+							onItemClick(selectedItem)
 						}
 					}
 				}

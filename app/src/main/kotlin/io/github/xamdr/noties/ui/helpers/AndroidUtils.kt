@@ -59,6 +59,9 @@ fun Fragment.inflateTransition(@TransitionRes resId: Int): Transition =
 fun Context.showToast(@StringRes text: Int, duration: Int = Toast.LENGTH_SHORT): Toast =
 	Toast.makeText(this.applicationContext, text, duration).also { it.show() }
 
+fun Context.showToast(text: String, duration: Int = Toast.LENGTH_SHORT): Toast =
+	Toast.makeText(this.applicationContext, text, duration).also { it.show() }
+
 fun Context.getIntArray(@ArrayRes resId: Int) = this.resources.getIntArray(resId)
 
 @Suppress("DEPRECATION")

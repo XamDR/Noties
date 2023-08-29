@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,14 +45,15 @@ import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.theme.NotiesTheme
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun NoteList(modifier: Modifier, notes: List<Note>, viewModel: NotesViewModel, onNoteMovedToTrash: (Note) -> Unit) {
-	val scope = rememberCoroutineScope()
-
+fun NoteList(
+	modifier: Modifier,
+	notes: List<Note>,
+	onNoteMovedToTrash: (Note) -> Unit
+) {
 	LazyColumn(
 		modifier = modifier,
 		contentPadding = PaddingValues(16.dp),
@@ -67,15 +67,10 @@ fun NoteList(modifier: Modifier, notes: List<Note>, viewModel: NotesViewModel, o
 			val dismissState = rememberDismissState(confirmValueChange = { dissmissValue ->
 				when (dissmissValue) {
 					DismissValue.DismissedToEnd -> {
-						Timber.d("Note archived")
-						true
+						Timber.d("Note archived"); true
 					}
 					DismissValue.DismissedToStart -> {
-						scope.launch {
-							val result = viewModel.moveNotesToTrash(listOf(currentNote))
-							onNoteMovedToTrash(result.single())
-						}
-						true
+						onNoteMovedToTrash(currentNote); true
 					}
 					else -> false
 				}

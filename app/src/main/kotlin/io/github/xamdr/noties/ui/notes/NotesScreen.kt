@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
@@ -46,10 +47,10 @@ fun NotesScreen(
 	onLeadingIconClick: () -> Unit,
 	onTrailingIconClick: () -> Unit,
 	onFabClick: () -> Unit,
-	viewModel: NotesViewModel,
-	searchContent: @Composable (ColumnScope.() -> Unit)
+	searchContent: @Composable (ColumnScope.() -> Unit),
+	viewModel: NotesViewModel = hiltViewModel()
 ) {
-	val notes by viewModel.getAllNotes().collectAsStateWithLifecycle(initialValue = null)
+	val notes by viewModel.getNotesByTag(String.Empty).collectAsStateWithLifecycle(initialValue = null)
 	val scope = rememberCoroutineScope()
 	val snackbarHostState = remember { SnackbarHostState() }
 	val message = stringResource(id = R.string.deleted_note)
@@ -111,12 +112,12 @@ fun NotesScreen(
 				notes?.let {
 					NoteList(
 						modifier = Modifier.padding(innerPadding),
-						notes = it,
-						viewModel = viewModel
-					) { trashedNote ->
+						notes = it
+					) { note ->
 						scope.launch {
+							val noteMovedToTrash = viewModel.moveNotesToTrash(listOf(note))
 							when (snackbarHostState.showSnackbar(message = message, actionLabel = actionLabel)) {
-								SnackbarResult.ActionPerformed -> viewModel.restoreNotes(listOf(trashedNote))
+								SnackbarResult.ActionPerformed -> viewModel.restoreNotes(noteMovedToTrash)
 								else -> {}
 							}
 						}

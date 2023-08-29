@@ -55,6 +55,7 @@
 	<string name="edit_tag_name">Edit name</string>
 	<string name="delete_tag">Delete tag</string>
 	<string name="delete_notes_message">The notes inside this tag have been moved to the trash.</string>
+	<string name="tag_created">Tag %s created</string>
 
 	<!-- RecycleBin Fragment -->
 	<string name="recycle_bin">Trash</string>
