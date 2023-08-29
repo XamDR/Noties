@@ -83,7 +83,8 @@ class NotesFragment : Fragment() {
 						onActiveChange = {},
 						onLeadingIconClick = { scope.launch { drawerState.open() } },
 						onTrailingIconClick = {},
-						onFabClick = { navigateToEditor() },
+						onFabClick = ::navigateToEditor,
+						onItemClick = ::navigateToEditor,
 						searchContent = {
 
 						}

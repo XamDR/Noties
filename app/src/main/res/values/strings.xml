@@ -215,6 +215,7 @@
 	<string name="user_wallpaper">Wallpaper</string>
 	<string name="set_wallpaper">Set wallpaper</string>
 	<string name="locked_notes">Locked notes</string>
+	<string name="no_wallpaper">No wallpaper</string>
 
 	<!-- Plurals -->
 	<plurals name="note_count">

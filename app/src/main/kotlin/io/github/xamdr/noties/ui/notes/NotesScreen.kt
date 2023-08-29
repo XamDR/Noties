@@ -1,13 +1,16 @@
 package io.github.xamdr.noties.ui.notes
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Article
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,11 +30,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.xamdr.noties.R
+import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
@@ -47,6 +52,7 @@ fun NotesScreen(
 	onLeadingIconClick: () -> Unit,
 	onTrailingIconClick: () -> Unit,
 	onFabClick: () -> Unit,
+	onItemClick: (Note) -> Unit,
 	searchContent: @Composable (ColumnScope.() -> Unit),
 	viewModel: NotesViewModel = hiltViewModel()
 ) {
@@ -55,6 +61,7 @@ fun NotesScreen(
 	val snackbarHostState = remember { SnackbarHostState() }
 	val message = stringResource(id = R.string.deleted_note)
 	val actionLabel = stringResource(id = R.string.undo)
+	val iconSize = if (LocalConfiguration.current.screenHeightDp >= 600) 128.dp else 64.dp
 
 	Scaffold(
 		topBar = {
@@ -104,7 +111,16 @@ fun NotesScreen(
 						CircularProgressIndicator()
 					}
 					else {
-						Text(text = stringResource(id = R.string.empty_notes_message))
+						Column(
+							horizontalAlignment = Alignment.CenterHorizontally,
+						) {
+							Icon(
+								imageVector = Icons.Outlined.Article,
+								contentDescription = null,
+								modifier = Modifier.size(iconSize)
+							)
+							Text(text = stringResource(id = R.string.empty_notes_message))
+						}
 					}
 				}
 			}
@@ -112,7 +128,8 @@ fun NotesScreen(
 				notes?.let {
 					NoteList(
 						modifier = Modifier.padding(innerPadding),
-						notes = it
+						notes = it,
+						onNoteClick = onItemClick
 					) { note ->
 						scope.launch {
 							val noteMovedToTrash = viewModel.moveNotesToTrash(listOf(note))

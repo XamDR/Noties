@@ -37,6 +37,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -56,13 +57,13 @@ import kotlinx.coroutines.launch
 fun NavigationDrawer(
 	drawerState: DrawerState,
 	preferenceStorage: PreferenceStorage,
-	onItemClick: (item: DrawerItem) -> Unit,
+	onItemClick: (DrawerItem) -> Unit,
 	content: @Composable () -> Unit,
 	viewModel: TagDialogViewModel = hiltViewModel()
 ) {
 	val context = LocalContext.current
 	val scope = rememberCoroutineScope()
-	var wallpaperUri by remember { mutableStateOf<Uri?>(Uri.parse(preferenceStorage.wallpaper)) }
+	var wallpaperUri by remember { mutableStateOf<Uri>(Uri.parse(preferenceStorage.wallpaper)) }
 
 	fun setWallpaper(uri: Uri?) {
 		scope.launch {
@@ -129,7 +130,7 @@ private fun NavigationDrawer() {
 		drawerState = DrawerState(DrawerValue.Open),
 		drawerContent = {
 			ModalDrawerSheet {
-				DrawerHeader()
+				DrawerHeader(src = Icons.Outlined.Android)
 				DEFAULT_DRAWER_ITEMS.forEach { item ->
 					DrawerItem(
 						item = item,
@@ -148,19 +149,27 @@ private fun NavigationDrawer() {
 private fun NavigationDrawerPreview() = NotiesTheme { NavigationDrawer() }
 
 @Composable
-private fun DrawerHeader(src: Any?, onSetWallpaper: () -> Unit) {
+private fun DrawerHeader(src: Uri, onSetWallpaper: () -> Unit) {
 	Box(
 		modifier = Modifier
 			.fillMaxWidth()
 			.height(176.dp)
 	) {
-		AsyncImage(
-			contentScale = ContentScale.Crop,
-			model = ImageRequest.Builder(LocalContext.current)
-				.data(src)
-				.build(),
-			contentDescription = stringResource(id = R.string.user_wallpaper)
-		)
+		if (src == Uri.EMPTY) {
+			Text(
+				text = stringResource(id = R.string.no_wallpaper),
+				modifier = Modifier.align(Alignment.Center)
+			)
+		}
+		else {
+			AsyncImage(
+				contentScale = ContentScale.Crop,
+				model = ImageRequest.Builder(LocalContext.current)
+					.data(src)
+					.build(),
+				contentDescription = stringResource(id = R.string.user_wallpaper)
+			)
+		}
 		IconButton(
 			onClick = onSetWallpaper,
 			modifier = Modifier
@@ -177,18 +186,26 @@ private fun DrawerHeader(src: Any?, onSetWallpaper: () -> Unit) {
 }
 
 @Composable
-private fun DrawerHeader() {
+private fun DrawerHeader(src: ImageVector? = null) {
 	Box(
 		modifier = Modifier
 			.fillMaxWidth()
 			.height(176.dp)
 	) {
-		Image(
-			imageVector = Icons.Outlined.Android,
-			contentDescription = null,
-			contentScale = ContentScale.Crop,
-			modifier = Modifier.fillMaxWidth()
-		)
+		if (src == null) {
+			Text(
+				text = stringResource(id = R.string.no_wallpaper),
+				modifier = Modifier.align(Alignment.Center)
+			)
+		}
+		else {
+			Image(
+				imageVector = src,
+				contentDescription = null,
+				contentScale = ContentScale.Crop,
+				modifier = Modifier.fillMaxWidth()
+			)
+		}
 		IconButton(
 			onClick = {},
 			modifier = Modifier

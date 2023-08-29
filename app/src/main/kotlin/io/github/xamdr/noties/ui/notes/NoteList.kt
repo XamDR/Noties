@@ -16,12 +16,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.PlayCircle
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
@@ -52,6 +52,7 @@ import timber.log.Timber
 fun NoteList(
 	modifier: Modifier,
 	notes: List<Note>,
+	onNoteClick: (Note) -> Unit,
 	onNoteMovedToTrash: (Note) -> Unit
 ) {
 	LazyColumn(
@@ -78,7 +79,7 @@ fun NoteList(
 			SwipeToDismiss(
 				state = dismissState,
 				background = {},
-				dismissContent = { NoteItem(note = notes[index]) },
+				dismissContent = { NoteItem(note = notes[index], onClick = onNoteClick) },
 				modifier = Modifier.animateItemPlacement()
 			)
 		}
@@ -114,14 +115,16 @@ private fun NoteListPreview() {
 	}
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NoteItem(note: Note) {
-	Card(
+private fun NoteItem(note: Note, onClick: (note: Note) -> Unit) {
+	OutlinedCard(
 		modifier = Modifier.fillMaxWidth(),
 		shape = RoundedCornerShape(8.dp),
 		colors = CardDefaults.cardColors(containerColor = Color.Transparent),
 		elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-		border = BorderStroke(width = 1.5.dp, color = MaterialTheme.colorScheme.surfaceVariant)
+		border = BorderStroke(width = 1.5.dp, color = MaterialTheme.colorScheme.surfaceVariant),
+		onClick = { onClick(note) }
 	) {
 		Column {
 			if (note.previewItem != null) {
@@ -193,7 +196,7 @@ private fun NoteItem(note: Note) {
 
 @Composable
 private fun NoteItem() {
-	Card(
+	OutlinedCard(
 		modifier = Modifier.fillMaxWidth(),
 		shape = RoundedCornerShape(8.dp),
 		colors = CardDefaults.cardColors(containerColor = Color.Transparent),

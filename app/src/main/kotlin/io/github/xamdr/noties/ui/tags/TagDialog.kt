@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 fun TagDialog(
 	tag: Tag,
 	onCancel: () -> Unit,
-	onSave: (tagName: String) -> Unit,
+	onSave: (String) -> Unit,
 	viewModel: TagDialogViewModel = hiltViewModel(),
 ) {
 	val scope = rememberCoroutineScope()
