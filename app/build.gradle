@@ -71,16 +71,13 @@ dependencies {
 	implementation libs.androidx.appcompat
 	implementation libs.androidx.core.ktx
 	implementation libs.androidx.core.splashscreen
-	implementation libs.androidx.asyncLayoutInflater
 	implementation libs.androidx.constraintLayout
 	implementation libs.androidx.lifecycle.livedata.ktx
 	implementation libs.androidx.lifecycle.runtime.ktx
 	implementation libs.androidx.lifecycle.runtime.compose
 	implementation libs.androidx.navigation.fragment.ktx
-	implementation libs.androidx.navigation.ui.ktx
 	implementation libs.androidx.preference.ktx
 	implementation libs.androidx.recyclerview
-	implementation libs.androidx.recyclerview.selection
 	implementation libs.material
 	coreLibraryDesugaring libs.android.desugarJdkLibs
 
@@ -109,9 +106,6 @@ dependencies {
 	// Media3
 	implementation libs.media3
 	implementation libs.media3.ui
-
-	// Coil
-	implementation libs.coil
 
 	// Compose
 	implementation libs.activity.compose

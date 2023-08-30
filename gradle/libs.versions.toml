@@ -1,18 +1,15 @@
 [versions]
-androidGradlePlugin = "8.1.0"
+androidGradlePlugin = "8.1.1"
 androidxActivity = "1.7.0"
 androidxAppCompat = "1.5.1"
 androidxCore = "1.9.0"
 androidxCoreSplashscreen = "1.0.0"
-androidxAsyncLayoutInflater = "1.0.0"
 androidxConstraintLayout = "2.1.4"
 androidxLifecycleLivedata = "2.6.1"
 androidxLifecycleRuntime = "2.6.1"
 androidxNavigationFragment = "2.5.3"
-androidxNavigationUi = "2.5.3"
 androidxPreference = "1.2.0"
 androidxRecyclerView = "1.3.0"
-androidxRecyclerViewSelection = "1.1.0"
 androidxExifInterace = "1.3.6"
 androidxCoreTesting = "2.2.0"
 androidxJunit = "1.1.5"
@@ -40,16 +37,13 @@ androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", ve
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppCompat" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxCoreSplashscreen" }
-androidx-asyncLayoutInflater = { group = "androidx.asynclayoutinflater", name = "asynclayoutinflater", version.ref = "androidxAsyncLayoutInflater" }
 androidx-constraintLayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidxConstraintLayout" }
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidxLifecycleLivedata" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidxLifecycleRuntime" }
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycleRuntime" }
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "androidxNavigationFragment" }
-androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "androidxNavigationUi" }
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "androidxPreference" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "androidxRecyclerView" }
-androidx-recyclerview-selection = { group = "androidx.recyclerview", name = "recyclerview-selection", version.ref = "androidxRecyclerViewSelection" }
 androidx-exif = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "androidxExifInterace" }
 androidx-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidxCoreTesting" }
 androidx-junit-testing = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
@@ -66,7 +60,6 @@ junit4 = { group = "junit", name = "junit", version.ref = "junit" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 media3 = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media" }
 media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "mediaUi" }
-coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 ui = { group = "androidx.compose.ui", name = "ui" }
