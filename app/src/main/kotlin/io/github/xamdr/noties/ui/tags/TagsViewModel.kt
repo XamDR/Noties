@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TagDialogViewModel @Inject constructor(
+class TagsViewModel @Inject constructor(
 	private val createTagUseCase: CreateTagUseCase,
 	private val getTagsUseCase: GetTagsUseCase,
 	private val getTagNamesUseCase: GetTagNamesUseCase,

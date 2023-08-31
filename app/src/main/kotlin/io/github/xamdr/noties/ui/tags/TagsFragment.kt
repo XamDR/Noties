@@ -4,12 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
+import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 @AndroidEntryPoint
 class TagsFragment : Fragment() {
@@ -27,7 +30,16 @@ class TagsFragment : Fragment() {
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 		return ComposeView(requireContext()).apply {
 			setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-			setContent {  }
+			setContent { TagsFragmentContent() }
+		}
+	}
+
+	@Composable
+	private fun TagsFragmentContent() {
+		NotiesTheme {
+			TagsScreen(
+				onNavigationIconClick = { findNavController().popBackStack() }
+			)
 		}
 	}
 }

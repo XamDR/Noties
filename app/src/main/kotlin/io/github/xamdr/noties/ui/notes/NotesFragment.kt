@@ -65,7 +65,7 @@ class NotesFragment : Fragment() {
 				preferenceStorage = preferenceStorage,
 				onItemClick = { item ->
 					scope.launch {
-						if (item.id == R.string.create_tag) {
+						if (item.id == R.id.create_tag) {
 							openDialog = true
 						}
 						else {
@@ -117,7 +117,7 @@ class NotesFragment : Fragment() {
 
 	private fun onItemClick(item: DrawerItem) {
 		when (item.id) {
-			R.string.settings -> findNavController().tryNavigate(R.id.action_notes_to_settings)
+			R.id.settings -> findNavController().tryNavigate(R.id.action_notes_to_settings)
 		}
 	}
 }

@@ -49,7 +49,7 @@ import io.github.xamdr.noties.R
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.settings.PreferenceStorage
-import io.github.xamdr.noties.ui.tags.TagDialogViewModel
+import io.github.xamdr.noties.ui.tags.TagsViewModel
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
 
@@ -59,7 +59,7 @@ fun NavigationDrawer(
 	preferenceStorage: PreferenceStorage,
 	onItemClick: (DrawerItem) -> Unit,
 	content: @Composable () -> Unit,
-	viewModel: TagDialogViewModel = hiltViewModel()
+	viewModel: TagsViewModel = hiltViewModel()
 ) {
 	val context = LocalContext.current
 	val scope = rememberCoroutineScope()

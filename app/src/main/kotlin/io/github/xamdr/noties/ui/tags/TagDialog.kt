@@ -33,7 +33,7 @@ fun TagDialog(
 	tag: Tag,
 	onCancel: () -> Unit,
 	onSave: (String) -> Unit,
-	viewModel: TagDialogViewModel = hiltViewModel(),
+	viewModel: TagsViewModel = hiltViewModel(),
 ) {
 	val scope = rememberCoroutineScope()
 	val tagNameState by viewModel.nameState.collectAsStateWithLifecycle(initialValue = TagNameState.EmptyOrUpdatingName)

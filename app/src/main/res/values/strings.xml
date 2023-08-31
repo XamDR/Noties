@@ -17,6 +17,9 @@
 	<string name="reminders">Reminders</string>
 	<string name="protected_notes">Protected Notes</string>
 	<string name="archived_notes">Archived Notes</string>
+	<string name="user_wallpaper">Wallpaper</string>
+	<string name="set_wallpaper">Set wallpaper</string>
+	<string name="no_wallpaper">No wallpaper</string>
 
 	<!-- Welcome Fragment -->
 	<string name="onboarding_message">Noties is a note taking app that will help you to take notes, make to-do lists and add attachments like images, videos or audios.</string>
@@ -56,6 +59,7 @@
 	<string name="delete_tag">Delete tag</string>
 	<string name="delete_notes_message">The notes inside this tag have been moved to the trash.</string>
 	<string name="tag_created">Tag %s created</string>
+	<string name="back_button_description">Back to notes</string>
 
 	<!-- RecycleBin Fragment -->
 	<string name="recycle_bin">Trash</string>
@@ -212,10 +216,6 @@
 	<string name="error_play_audio">Error playing audio file</string>
 	<string name="error_record_speech">Error recording speech</string>
 	<string name="recording_finished">Recording finished</string>
-	<string name="user_wallpaper">Wallpaper</string>
-	<string name="set_wallpaper">Set wallpaper</string>
-	<string name="locked_notes">Locked notes</string>
-	<string name="no_wallpaper">No wallpaper</string>
 
 	<!-- Plurals -->
 	<plurals name="note_count">

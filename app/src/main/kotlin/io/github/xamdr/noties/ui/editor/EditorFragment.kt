@@ -19,14 +19,10 @@ import androidx.core.view.doOnPreDraw
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
-import com.google.android.material.color.MaterialColors
-import com.google.android.material.transition.MaterialArcMotion
-import com.google.android.material.transition.MaterialContainerTransform
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.data.entity.media.MediaType
@@ -56,7 +52,6 @@ import io.github.xamdr.noties.ui.helpers.addItemTouchHelper
 import io.github.xamdr.noties.ui.helpers.addMenuProvider
 import io.github.xamdr.noties.ui.helpers.getParcelableArrayListCompat
 import io.github.xamdr.noties.ui.helpers.getParcelableCompat
-import io.github.xamdr.noties.ui.helpers.getThemeColor
 import io.github.xamdr.noties.ui.helpers.hideSoftKeyboard
 import io.github.xamdr.noties.ui.helpers.isActive
 import io.github.xamdr.noties.ui.helpers.launch
@@ -78,7 +73,6 @@ import timber.log.Timber
 import java.io.FileNotFoundException
 import java.time.Instant
 import javax.inject.Inject
-import com.google.android.material.R as Material
 
 @AndroidEntryPoint
 class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, EditorMenuListener, DateTimeListener {
@@ -152,7 +146,7 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 							  container: ViewGroup?,
 							  savedInstanceState: Bundle?): View {
 		_binding = FragmentEditorBinding.inflate(inflater, container, false)
-		initTransitions(noteId)
+//		initTransitions(noteId)
 		postponeEnterTransition()
 		return binding.root
 	}
@@ -332,30 +326,30 @@ class EditorFragment : Fragment(), NoteContentListener, SimpleTextWatcher, Edito
 		binding.title.addTextChangedListener(this)
 	}
 
-	private fun initTransitions(noteId: Long) {
-		if (noteId == 0L) {
-			enterTransition = MaterialContainerTransform().apply {
-				startView = requireActivity().findViewById(R.id.fab)
-				addTarget(binding.root)
-				endContainerColor = requireContext().getThemeColor(R.attr.colorSurface)
-				setAllContainerColors(MaterialColors.getColor(binding.root, Material.attr.colorSurface))
-				setPathMotion(MaterialArcMotion())
-				duration = resources.getInteger(R.integer.motion_duration_large).toLong()
-				interpolator = FastOutSlowInInterpolator()
-				fadeMode = MaterialContainerTransform.FADE_MODE_IN
-			}
-		}
-		else {
-			binding.root.transitionName = noteId.toString()
-			sharedElementEnterTransition = MaterialContainerTransform().apply {
-				drawingViewId = R.id.nav_host_fragment
-				duration = resources.getInteger(R.integer.motion_duration_large).toLong()
-				interpolator = FastOutSlowInInterpolator()
-				fadeMode = MaterialContainerTransform.FADE_MODE_IN
-				setAllContainerColors(MaterialColors.getColor(binding.root, Material.attr.colorSurface))
-			}
-		}
-	}
+//	private fun initTransitions(noteId: Long) {
+//		if (noteId == 0L) {
+//			enterTransition = MaterialContainerTransform().apply {
+//				startView = requireActivity().findViewById(R.id.fab)
+//				addTarget(binding.root)
+//				endContainerColor = requireContext().getThemeColor(R.attr.colorSurface)
+//				setAllContainerColors(MaterialColors.getColor(binding.root, Material.attr.colorSurface))
+//				setPathMotion(MaterialArcMotion())
+//				duration = resources.getInteger(R.integer.motion_duration_large).toLong()
+//				interpolator = FastOutSlowInInterpolator()
+//				fadeMode = MaterialContainerTransform.FADE_MODE_IN
+//			}
+//		}
+//		else {
+//			binding.root.transitionName = noteId.toString()
+//			sharedElementEnterTransition = MaterialContainerTransform().apply {
+//				drawingViewId = R.id.nav_host_fragment
+//				duration = resources.getInteger(R.integer.motion_duration_large).toLong()
+//				interpolator = FastOutSlowInInterpolator()
+//				fadeMode = MaterialContainerTransform.FADE_MODE_IN
+//				setAllContainerColors(MaterialColors.getColor(binding.root, Material.attr.colorSurface))
+//			}
+//		}
+//	}
 
 	private fun saveNoteOnBackPress() {
 		if (::note.isInitialized) {

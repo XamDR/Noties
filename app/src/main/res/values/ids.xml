@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<item name="create_notebook" type="id"/>
+	<item name="all_notes" type="id"/>
+	<item name="reminders" type="id"/>
+	<item name="protected_notes" type="id"/>
+	<item name="tags" type="id"/>
+	<item name="create_tag" type="id"/>
+	<item name="archived_notes" type="id"/>
+	<item name="recycle_bin" type="id"/>
+	<item name="settings" type="id"/>
 </resources>

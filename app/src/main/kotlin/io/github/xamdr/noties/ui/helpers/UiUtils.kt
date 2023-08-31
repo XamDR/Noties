@@ -219,3 +219,9 @@ fun View.slideVisibility(isVisible: Boolean, gravity: Int) {
 
 val SubMenu.items: List<MenuItem>
 	get() = this.iterator().asSequence().toList()
+
+fun Context.getDimensionFromAttrs(attr: Int): Float {
+	return TypedValue().apply {
+		theme.resolveAttribute(attr, this, true)
+	}.getDimension(resources.displayMetrics)
+}
