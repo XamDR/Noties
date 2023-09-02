@@ -193,14 +193,14 @@
 	<string name="mode_night_yes">Dark</string>
 	<string name="mode_night_follow_system">System default</string>
 	<string name="mode_night_auto_battery">Set by Battery Saver</string>
-	<string name="editor">Editor</string>
+	<string name="editor_header">Editor</string>
 	<string name="editor_style">Paper Style</string>
 	<string name="blank_style">Blank paper</string>
 	<string name="striped_style">Striped paper</string>
 	<string name="font_size">Font Size</string>
 	<string name="enable_links">Detect hyperlinks</string>
-	<string name="summary_on">Enabled</string>
-	<string name="summary_off">Disabled</string>
+	<string name="links_enabled">Enabled</string>
+	<string name="links_disabled">Disabled</string>
 	<string name="color_item">Color item</string>
 	<string name="app_color">App Color</string>
 	<string name="color_chosen">Color chosen</string>
@@ -216,6 +216,7 @@
 	<string name="error_play_audio">Error playing audio file</string>
 	<string name="error_record_speech">Error recording speech</string>
 	<string name="recording_finished">Recording finished</string>
+	<string name="developer_name">Max Díaz (xamdrsolutions@gmail.com)</string>
 
 	<!-- Plurals -->
 	<plurals name="note_count">

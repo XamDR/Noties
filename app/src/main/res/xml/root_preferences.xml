@@ -24,7 +24,7 @@
 	</PreferenceCategory>
 
 	<PreferenceCategory
-		app:title="@string/editor"
+		app:title="@string/editor_header"
 		app:iconSpaceReserved="false">
 
 		<io.github.xamdr.noties.ui.settings.preferences.EditorStylePreference
@@ -38,8 +38,8 @@
 		<SwitchPreferenceCompat
 			app:defaultValue="true"
 			app:key="auto_link"
-			app:summaryOn="@string/summary_on"
-			app:summaryOff="@string/summary_off"
+			app:summaryOn="@string/links_enabled"
+			app:summaryOff="@string/links_disabled"
 			app:title="@string/enable_links"
 			app:icon="@drawable/ic_link"/>
 	</PreferenceCategory>
@@ -51,7 +51,7 @@
 		<Preference
 			app:key="developer"
 			app:title="@string/developer"
-			app:summary="Max Díaz (xamdrsolutions@gmail.com)"
+			app:summary="@string/developer_name"
 			app:icon="@drawable/ic_dev"/>
 
 		<Preference
