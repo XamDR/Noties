@@ -7,26 +7,39 @@ import kotlin.reflect.KProperty
 
 class BooleanPreference(
 	private val preferences: Lazy<SharedPreferences>,
-	private val name: String,
+	private val key: String,
 	private val defaultValue: Boolean) : ReadWriteProperty<Any, Boolean> {
 
 	override fun getValue(thisRef: Any, property: KProperty<*>) =
-		preferences.value.getBoolean(name, defaultValue)
+		preferences.value.getBoolean(key, defaultValue)
 
 	override fun setValue(thisRef: Any, property: KProperty<*>, value: Boolean) {
-		preferences.value.edit { putBoolean(name, value) }
+		preferences.value.edit { putBoolean(key, value) }
+	}
+}
+
+class IntegerPreference(
+	private val preferences: Lazy<SharedPreferences>,
+	private val key: String,
+	private val defaultValue: Int) : ReadWriteProperty<Any, Int> {
+
+	override fun getValue(thisRef: Any, property: KProperty<*>) =
+		preferences.value.getInt(key, defaultValue)
+
+	override fun setValue(thisRef: Any, property: KProperty<*>, value: Int) {
+		preferences.value.edit { putInt(key, value) }
 	}
 }
 
 class StringPreference(
 	private val preferences: Lazy<SharedPreferences>,
-	private val name: String,
+	private val key: String,
 	private val defaultValue: String) : ReadWriteProperty<Any, String> {
 
 	override fun getValue(thisRef: Any, property: KProperty<*>) =
-		preferences.value.getString(name, defaultValue) ?: defaultValue
+		preferences.value.getString(key, defaultValue) ?: defaultValue
 
 	override fun setValue(thisRef: Any, property: KProperty<*>, value: String) {
-		preferences.value.edit { putString(name, value) }
+		preferences.value.edit { putString(key, value) }
 	}
 }

@@ -14,14 +14,17 @@ import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 @Composable
-fun PreferenceList(modifier: Modifier, items: List<PreferenceItem>) {
+fun PreferenceList(
+	modifier: Modifier,
+	items: List<PreferenceItem>
+) {
 	LazyColumn(
 		modifier = modifier,
 		contentPadding = PaddingValues(16.dp),
 		verticalArrangement = Arrangement.spacedBy(16.dp),
 	) {
 		items(
-			key = { index -> items[index].title },
+			key = null,
 			count = items.size
 		) { index -> PreferenceItem(item = items[index]) }
 	}
@@ -41,38 +44,36 @@ private fun PreferenceItem(item: PreferenceItem) {
 	when (item) {
 		is PreferenceItem.Category -> {
 			Text(
-				text = stringResource(id = item.title),
+				text = stringResource(id = item.category.title),
 				modifier = Modifier.padding(horizontal = 16.dp),
 				style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
 			)
 		}
-		is PreferenceItem.Setting -> {
-			when (item.type) {
-				PreferenceType.Color -> {}
-				PreferenceType.Default -> {
-					DefaultPreference(
-						title = item.title,
-						summary = item.summary,
-						icon = item.icon
-					)
-				}
-				PreferenceType.List -> {
-					ListPreference(
-						title = item.title,
-						summary = item.summary,
-						icon = item.icon,
-						entries = emptyList()
-					)
-				}
-				PreferenceType.Switch -> {
-					SwitchPreference(
-						title = item.title,
-						summary = item.summary,
-						icon = item.icon,
-						key = item.key
-					)
-				}
-			}
+		is PreferenceItem.ColorPreference -> {}
+		is PreferenceItem.ListPreference -> {
+			ListPreference(
+				title = item.preference.title,
+				dialogTitle = item.dialogTitle,
+				icon = item.preference.icon,
+				key = item.preference.key,
+				entries = item.entries
+			)
+		}
+		is PreferenceItem.SimplePreference -> {
+			SimplePreference(
+				title = item.preference.title,
+				summary = item.preference.summary,
+				icon = item.preference.icon
+			)
+		}
+		is PreferenceItem.SwitchPreference -> {
+			SwitchPreference(
+				title = item.preference.title,
+				summaryOn = item.summaryOn,
+				summaryOff = item.summaryOff,
+				icon = item.preference.icon,
+				key = item.preference.key
+			)
 		}
 	}
 }

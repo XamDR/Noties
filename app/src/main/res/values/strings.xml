@@ -189,6 +189,7 @@
 	<string name="version">Version</string>
 	<string name="personalization_header">Personalization</string>
 	<string name="app_theme_title">App Theme</string>
+	<string name="app_theme_dialog_title">Choose theme</string>
 	<string name="mode_night_no">Light</string>
 	<string name="mode_night_yes">Dark</string>
 	<string name="mode_night_follow_system">System default</string>

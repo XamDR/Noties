@@ -1,6 +1,7 @@
 package io.github.xamdr.noties.ui.settings
 
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BrightnessMedium
 import androidx.compose.material.icons.outlined.Info
@@ -8,62 +9,86 @@ import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.core.os.BuildCompat
 import io.github.xamdr.noties.R
 
-sealed class PreferenceItem(@StringRes open val title: Int) {
-	data class Category(@StringRes override val title: Int) : PreferenceItem(title)
-	data class Setting(
-		@StringRes override val title: Int,
-		val icon: ImageVector,
-		@StringRes val summary: Int,
-		val type: PreferenceType,
-		val key: String) : PreferenceItem(title)
+data class Preference(
+	val key: String,
+	@StringRes val title: Int,
+	@StringRes val summary: Int = 0,
+	val icon: ImageVector
+)
+
+data class PreferenceCategory(@StringRes val title: Int)
+
+sealed interface PreferenceItem {
+	data class Category(val category: PreferenceCategory) : PreferenceItem
+
+	data class SimplePreference(val preference: Preference) : PreferenceItem
+
+	data class SwitchPreference(
+		val preference: Preference,
+		val summaryOn: Int,
+		val summaryOff: Int) : PreferenceItem
+
+	data class ListPreference(
+		val preference: Preference,
+		val dialogTitle: Int,
+		val entries: Map<Int, Int>) : PreferenceItem
+
+	data class ColorPreference(val preference: Preference, val entries: List<String>) : PreferenceItem
 }
 
-sealed interface PreferenceType {
-	data object Default : PreferenceType
-	data object Switch : PreferenceType
-	data object List : PreferenceType
-	data object Color : PreferenceType
-}
-
+@Suppress("DEPRECATION")
 val DEFAULT_SETTINGS = listOf(
-	PreferenceItem.Category(title = R.string.personalization_header),
-	PreferenceItem.Setting(
-		title = R.string.app_theme_title,
-		icon = Icons.Outlined.BrightnessMedium,
-		summary = R.string.mode_night_follow_system,
-		type = PreferenceType.List,
-		key = PreferenceStorage.PREF_APP_THEME
+	PreferenceItem.Category(category = PreferenceCategory(title = R.string.personalization_header)),
+	PreferenceItem.ListPreference(
+		preference = Preference(
+			key = PreferenceStorage.PREF_APP_THEME,
+			title = R.string.app_theme_title,
+			icon = Icons.Outlined.BrightnessMedium,
+		),
+		dialogTitle = R.string.app_theme_dialog_title,
+		entries = mapOf(
+			AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM + 1 to
+					if (BuildCompat.isAtLeastQ()) R.string.mode_night_follow_system else R.string.mode_night_auto_battery,
+			AppCompatDelegate.MODE_NIGHT_NO to R.string.mode_night_no,
+			AppCompatDelegate.MODE_NIGHT_YES to R.string.mode_night_yes
+		)
 	),
-	PreferenceItem.Setting(
-		title = R.string.app_color,
-		icon = Icons.Outlined.Palette,
-		summary = 0,
-		type = PreferenceType.Color,
-		key = PreferenceStorage.PREF_APP_COLOR
+	PreferenceItem.ColorPreference(
+		preference = Preference(
+			key = PreferenceStorage.PREF_APP_COLOR,
+			title = R.string.app_color,
+			icon = Icons.Outlined.Palette
+		),
+		entries = emptyList()
 	),
-	PreferenceItem.Category(title = R.string.editor_header),
-	PreferenceItem.Setting(
-		title = R.string.enable_links,
-		icon = Icons.Outlined.Link,
-		summary = R.string.links_enabled,
-		type = PreferenceType.Switch,
-		key = PreferenceStorage.PREF_HIPERLINKS_ENABLED
+	PreferenceItem.Category(category = PreferenceCategory(title = R.string.editor_header)),
+	PreferenceItem.SwitchPreference(
+		preference = Preference(
+			key = PreferenceStorage.PREF_HIPERLINKS_ENABLED,
+			title = R.string.enable_links,
+			icon = Icons.Outlined.Link
+		),
+		summaryOn = R.string.links_enabled,
+		summaryOff = R.string.links_disabled
 	),
-	PreferenceItem.Category(title = R.string.about_header),
-	PreferenceItem.Setting(
-		title = R.string.developer,
-		icon = Icons.Outlined.Person,
-		summary = R.string.developer_name,
-		type = PreferenceType.Default,
-		key = String.Empty
+	PreferenceItem.Category(category = PreferenceCategory(title = R.string.about_header)),
+	PreferenceItem.SimplePreference(
+		preference = Preference(
+			key = String.Empty,
+			title = R.string.developer,
+			summary = R.string.developer_name,
+			icon = Icons.Outlined.Person
+		)
 	),
-	PreferenceItem.Setting(
-		title = R.string.version,
-		icon = Icons.Outlined.Info,
-		summary = R.string.app_version,
-		type = PreferenceType.Default,
-		key = String.Empty
+	PreferenceItem.SimplePreference(
+		preference = Preference(
+			key = String.Empty,
+			title = R.string.version,
+			summary = R.string.app_version,
+			icon = Icons.Outlined.Info,
+		)
 	)
 )
