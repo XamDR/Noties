@@ -12,17 +12,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(
-	onNavigationIconClick: () -> Unit,
-	viewModel: SettingsViewModel = hiltViewModel()
-) {
+fun SettingsScreen(onNavigationIconClick: () -> Unit) {
 	Scaffold(
 		topBar = {
 			TopAppBar(
@@ -64,10 +60,7 @@ private fun SettingsScreen() {
 			)
 		},
 		content = { innerPadding ->
-			PreferenceList(
-				modifier = Modifier.padding(innerPadding),
-				items = DEFAULT_SETTINGS
-			)
+			PreferenceList(modifier = Modifier.padding(innerPadding))
 		}
 	)
 }

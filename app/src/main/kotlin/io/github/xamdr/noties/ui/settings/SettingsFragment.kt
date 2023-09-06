@@ -32,9 +32,7 @@ class SettingsFragment : Fragment() {
 	@Composable
 	private fun SettingsFragmentContent() {
 		NotiesTheme {
-			SettingsScreen(
-				onNavigationIconClick = { findNavController().popBackStack() }
-			)
+			SettingsScreen { findNavController().popBackStack() }
 		}
 	}
 }

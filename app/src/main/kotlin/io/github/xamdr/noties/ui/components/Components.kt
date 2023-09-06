@@ -1,6 +1,10 @@
 package io.github.xamdr.noties.ui.components
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,8 +13,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -18,10 +24,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
@@ -97,6 +106,37 @@ private fun RadioButtonGroupPreview() {
 			items = items,
 			selectedItem = items[0],
 			onClick = {}
+		)
+	}
+}
+
+@Composable
+fun CircularShapedBox(
+	color: Color,
+	size: Dp,
+	modifier: Modifier = Modifier,
+	onClick: () -> Unit = {},
+	content: @Composable BoxScope.() -> Unit = {},
+) {
+	Box(
+		modifier = modifier
+			.clip(CircleShape)
+			.size(size)
+			.background(color = color, shape = CircleShape)
+			.clickable(onClick = onClick),
+		contentAlignment= Alignment.Center,
+		content = content
+	)
+}
+
+@DevicePreviews
+@Composable
+private fun CircularShapedBoxPreview() {
+	CircularShapedBox(color = Color.Blue, size = 48.dp) {
+		Icon(
+			imageVector = Icons.Outlined.Check,
+			contentDescription = null,
+			modifier = Modifier.size(32.dp)
 		)
 	}
 }

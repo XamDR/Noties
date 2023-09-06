@@ -36,7 +36,10 @@ sealed interface PreferenceItem {
 		val dialogTitle: Int,
 		val entries: Map<Int, Int>) : PreferenceItem
 
-	data class ColorPreference(val preference: Preference, val entries: List<String>) : PreferenceItem
+	data class ColorPreference(
+		val preference: Preference,
+		val dialogTitle: Int,
+		val entries: List<Int>) : PreferenceItem
 }
 
 @Suppress("DEPRECATION")
@@ -59,10 +62,21 @@ val DEFAULT_SETTINGS = listOf(
 	PreferenceItem.ColorPreference(
 		preference = Preference(
 			key = PreferenceStorage.PREF_APP_COLOR,
-			title = R.string.app_color,
+			title = R.string.app_color_title,
 			icon = Icons.Outlined.Palette
 		),
-		entries = emptyList()
+		dialogTitle = R.string.app_color_dialog_title,
+		entries = listOf(
+			R.color.blue_600,
+			R.color.red_600,
+			R.color.pink_600,
+			R.color.purple_600,
+			R.color.teal_600,
+			R.color.green_600,
+			R.color.yellow_200,
+			R.color.brown_600,
+			R.color.gray_700
+		)
 	),
 	PreferenceItem.Category(category = PreferenceCategory(title = R.string.editor_header)),
 	PreferenceItem.SwitchPreference(
@@ -92,3 +106,4 @@ val DEFAULT_SETTINGS = listOf(
 		)
 	)
 )
+
