@@ -106,4 +106,3 @@ val DEFAULT_SETTINGS = listOf(
 		)
 	)
 )
-
