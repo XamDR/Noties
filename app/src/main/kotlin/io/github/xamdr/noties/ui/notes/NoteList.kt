@@ -1,5 +1,7 @@
 package io.github.xamdr.noties.ui.notes
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -9,14 +11,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
+import androidx.compose.material.icons.outlined.Archive
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DismissDirection
+import androidx.compose.material3.DismissState
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -78,13 +87,93 @@ fun NoteList(
 			})
 			SwipeToDismiss(
 				state = dismissState,
-				background = {},
+				background = { DismissBackground(dismissState) },
 				dismissContent = { NoteItem(note = notes[index], onClick = onNoteClick) },
 				modifier = Modifier.animateItemPlacement()
 			)
 		}
 	}
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DismissBackground(state: DismissState) {
+	val direction = state.dismissDirection ?: return
+	val alignment = when (direction) {
+		DismissDirection.StartToEnd -> Alignment.CenterStart
+		DismissDirection.EndToStart -> Alignment.CenterEnd
+	}
+	val icon = when(state.targetValue) {
+		DismissValue.Default -> null
+		DismissValue.DismissedToEnd -> Icons.Outlined.Archive
+		DismissValue.DismissedToStart -> Icons.Outlined.Delete
+	}
+	val scale by animateFloatAsState(
+		targetValue = if (state.targetValue == DismissValue.Default) 0.75f else 1f,
+		label = "scale"
+	)
+	val text = when(direction) {
+		DismissDirection.StartToEnd -> stringResource(id = R.string.archive_note)
+		DismissDirection.EndToStart -> stringResource(id = R.string.delete_note)
+	}
+	val color by animateColorAsState(
+		targetValue = when (state.targetValue) {
+			DismissValue.Default -> Color.Transparent
+			DismissValue.DismissedToEnd -> Color.Green.copy(alpha = 0.5f)
+			DismissValue.DismissedToStart -> Color.Red.copy(alpha = 0.5f)
+		},
+		label = "color"
+	)
+	Box(
+		modifier = Modifier
+			.fillMaxSize()
+			.background(color = color, shape = RoundedCornerShape(16.dp))
+			.padding(horizontal = 16.dp),
+		contentAlignment = alignment
+	) {
+		Row(
+			horizontalArrangement = Arrangement.spacedBy(4.dp),
+			verticalAlignment = Alignment.CenterVertically
+		) {
+			if (icon != null) {
+				Icon(
+					imageVector = icon,
+					contentDescription = null,
+					modifier = Modifier
+						.size(32.dp)
+						.scale(scale)
+				)
+				Text(text = text)
+			}
+		}
+	}
+}
+
+@Composable
+private fun DismissBackground() {
+	Box(
+		modifier = Modifier
+			.background(color = Color.Red, shape = RoundedCornerShape(16.dp))
+			.padding(horizontal = 16.dp),
+		contentAlignment = Alignment.CenterEnd
+	) {
+		Row(
+			horizontalArrangement = Arrangement.spacedBy(4.dp),
+			verticalAlignment = Alignment.CenterVertically
+		) {
+			Icon(
+				imageVector = Icons.Outlined.Delete,
+				contentDescription = null,
+				modifier = Modifier.size(32.dp)
+			)
+			Text(text = "Delete")
+		}
+	}
+}
+
+@DevicePreviews
+@Composable
+private fun DismissBackgroundPreview() = NotiesTheme { DismissBackground() }
 
 @Composable
 fun NoteList(modifier: Modifier) {
@@ -109,18 +198,14 @@ fun NoteList(modifier: Modifier) {
 
 @DevicePreviews
 @Composable
-private fun NoteListPreview() {
-	NotiesTheme {
-		NoteList(Modifier)
-	}
-}
+private fun NoteListPreview() = NotiesTheme { NoteList(Modifier) }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NoteItem(note: Note, onClick: (note: Note) -> Unit) {
 	OutlinedCard(
 		modifier = Modifier.fillMaxWidth(),
-		shape = RoundedCornerShape(8.dp),
+		shape = RoundedCornerShape(16.dp),
 		colors = CardDefaults.cardColors(containerColor = Color.Transparent),
 		elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
 		border = BorderStroke(width = 1.5.dp, color = MaterialTheme.colorScheme.surfaceVariant),
@@ -198,7 +283,7 @@ private fun NoteItem(note: Note, onClick: (note: Note) -> Unit) {
 private fun NoteItem() {
 	OutlinedCard(
 		modifier = Modifier.fillMaxWidth(),
-		shape = RoundedCornerShape(8.dp),
+		shape = RoundedCornerShape(16.dp),
 		colors = CardDefaults.cardColors(containerColor = Color.Transparent),
 		elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
 		border = BorderStroke(width = 1.5.dp, color = MaterialTheme.colorScheme.surfaceVariant)
