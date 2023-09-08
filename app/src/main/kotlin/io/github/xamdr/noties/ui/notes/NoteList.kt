@@ -1,6 +1,5 @@
 package io.github.xamdr.noties.ui.notes
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -116,18 +115,10 @@ private fun DismissBackground(state: DismissState) {
 		DismissDirection.StartToEnd -> stringResource(id = R.string.archive_note)
 		DismissDirection.EndToStart -> stringResource(id = R.string.delete_note)
 	}
-	val color by animateColorAsState(
-		targetValue = when (state.targetValue) {
-			DismissValue.Default -> Color.Transparent
-			DismissValue.DismissedToEnd -> Color.Green.copy(alpha = 0.5f)
-			DismissValue.DismissedToStart -> Color.Red.copy(alpha = 0.5f)
-		},
-		label = "color"
-	)
 	Box(
 		modifier = Modifier
 			.fillMaxSize()
-			.background(color = color, shape = RoundedCornerShape(16.dp))
+			.background(color = Color.Transparent, shape = RoundedCornerShape(16.dp))
 			.padding(horizontal = 16.dp),
 		contentAlignment = alignment
 	) {
@@ -153,7 +144,7 @@ private fun DismissBackground(state: DismissState) {
 private fun DismissBackground() {
 	Box(
 		modifier = Modifier
-			.background(color = Color.Red, shape = RoundedCornerShape(16.dp))
+			.background(color = Color.Transparent, shape = RoundedCornerShape(16.dp))
 			.padding(horizontal = 16.dp),
 		contentAlignment = Alignment.CenterEnd
 	) {
