@@ -172,7 +172,7 @@ private fun TextBoxPreview() {
 	NotiesTheme {
 		TextBox(
 			placeholder = stringResource(id = R.string.placeholder),
-			value = String.Empty,
+			value = "",
 			onValueChange = {},
 			modifier = Modifier.fillMaxWidth()
 		)

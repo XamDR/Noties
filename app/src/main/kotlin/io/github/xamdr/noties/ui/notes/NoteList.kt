@@ -182,8 +182,9 @@ fun NoteList(modifier: Modifier) {
 	) {
 		items(
 			count = notes.size,
-			key = { index -> notes[index].id.toInt() }
-		) { NoteItem() }
+			key = { index -> notes[index].id.toInt() },
+			itemContent = { NoteItem() }
+		)
 	}
 }
 

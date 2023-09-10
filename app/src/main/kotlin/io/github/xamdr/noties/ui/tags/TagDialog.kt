@@ -144,8 +144,4 @@ private fun TagDialog() {
 
 @DevicePreviews
 @Composable
-private fun TagDialogPreview() {
-	NotiesTheme {
-		TagDialog()
-	}
-}
+private fun TagDialogPreview() = NotiesTheme { TagDialog() }
