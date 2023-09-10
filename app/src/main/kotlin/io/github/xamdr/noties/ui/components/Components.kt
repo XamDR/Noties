@@ -14,11 +14,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +33,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.xamdr.noties.R
@@ -137,6 +141,40 @@ private fun CircularShapedBoxPreview() {
 			imageVector = Icons.Outlined.Check,
 			contentDescription = null,
 			modifier = Modifier.size(32.dp)
+		)
+	}
+}
+
+@Composable
+fun TextBox(
+	placeholder: String,
+	value: String,
+	onValueChange: (String) -> Unit,
+	modifier: Modifier
+) {
+	OutlinedTextField(
+		value = value,
+		onValueChange = onValueChange,
+		modifier = modifier,
+		placeholder = { Text(text = placeholder) },
+		singleLine = false,
+		keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+		colors = OutlinedTextFieldDefaults.colors(
+			focusedBorderColor = Color.Transparent,
+			unfocusedBorderColor = Color.Transparent
+		)
+	)
+}
+
+@DevicePreviews
+@Composable
+private fun TextBoxPreview() {
+	NotiesTheme {
+		TextBox(
+			placeholder = stringResource(id = R.string.placeholder),
+			value = String.Empty,
+			onValueChange = {},
+			modifier = Modifier.fillMaxWidth()
 		)
 	}
 }

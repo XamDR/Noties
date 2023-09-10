@@ -26,7 +26,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:background="@null"
-			android:hint="@string/editor_fragment_label"
+			android:hint="@string/editor"
 			android:imeOptions="flagNoFullscreen"
 			android:importantForAutofill="no"
 			android:inputType="textMultiLine|textCapSentences"
