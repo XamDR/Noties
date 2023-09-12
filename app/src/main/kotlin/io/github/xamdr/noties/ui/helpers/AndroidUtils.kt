@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
@@ -188,4 +189,12 @@ fun DialogFragment.getPositiveButton(): Button {
 
 fun Context.isLandscape(): Boolean {
 	return this.resources.displayMetrics.heightPixels < this.resources.displayMetrics.widthPixels
+}
+
+fun <T : Parcelable> Fragment.getNavigationResult(key: String): T? {
+	return this.findNavController().currentBackStackEntry?.savedStateHandle?.get(key)
+}
+
+fun <T : Parcelable> Fragment.setNavigationResult(key: String, value: T) {
+	this.findNavController().previousBackStackEntry?.savedStateHandle?.set(key, value)
 }

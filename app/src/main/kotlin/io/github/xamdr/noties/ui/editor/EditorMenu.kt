@@ -24,7 +24,10 @@ import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditorMenuBottomSheet(sheetState: SheetState) {
+fun EditorMenuBottomSheet(
+	sheetState: SheetState,
+	onItemClick: (EditorMenuItem) -> Unit,
+) {
 	ModalBottomSheet(
 		onDismissRequest = {},
 		sheetState = sheetState,
@@ -37,42 +40,56 @@ fun EditorMenuBottomSheet(sheetState: SheetState) {
 			)
 		}
 	) {
-		EditorMenu()
-	}
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@DevicePreviews
-@Composable
-private fun EditorMenuBottomSheetPreview() {
-	NotiesTheme {
-		EditorMenuBottomSheet(
-			sheetState = SheetState(
-				skipPartiallyExpanded = true,
-				initialValue = SheetValue.Expanded
-			)
-		)
-	}
-}
-
-@Composable
-private fun EditorMenu() {
-	Column {
-		EDITOR_MENU_ITEMS.forEach { item ->
-			EditorMenuItem(item = item, onClick = {})
+		Column {
+			EDITOR_MENU_ITEMS.forEach { item ->
+				EditorMenuItem(
+					item = item,
+					onClick = { onItemClick(item) }
+				)
+			}
 		}
 	}
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EditorMenuItem(item: EditorMenuItem, onClick: (EditorMenuItem) -> Unit) {
+private fun EditorMenuBottomSheet() {
+	ModalBottomSheet(
+		onDismissRequest = {},
+		sheetState = SheetState(
+			skipPartiallyExpanded = true,
+			initialValue = SheetValue.Expanded
+		),
+		dragHandle = {
+			Divider(
+				modifier = Modifier
+					.fillMaxWidth(0.2f)
+					.padding(8.dp),
+				thickness = 4.dp
+			)
+		}
+	) {
+		Column {
+			EDITOR_MENU_ITEMS.forEach { item ->
+				EditorMenuItem(item = item, onClick = {})
+			}
+		}
+	}
+}
+
+@DevicePreviews
+@Composable
+private fun EditorMenuBottomSheetPreview() = NotiesTheme { EditorMenuBottomSheet() }
+
+@Composable
+private fun EditorMenuItem(item: EditorMenuItem, onClick: () -> Unit) {
 	Row(
 		horizontalArrangement = Arrangement.spacedBy(16.dp),
 		verticalAlignment = Alignment.CenterVertically,
 		modifier = Modifier
 			.fillMaxWidth()
 			.padding(16.dp)
-			.clickable { onClick(item) }
+			.clickable(onClick = onClick)
 	) {
 		Icon(imageVector = item.icon, contentDescription = null)
 		Text(

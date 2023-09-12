@@ -24,6 +24,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.components.EmptyView
+import io.github.xamdr.noties.ui.editor.NoteAction
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
@@ -52,6 +54,7 @@ fun NotesScreen(
 	onTrailingIconClick: () -> Unit,
 	onFabClick: () -> Unit,
 	onItemClick: (Note) -> Unit,
+	noteAction: NoteAction,
 	searchContent: @Composable (ColumnScope.() -> Unit),
 	viewModel: NotesViewModel = hiltViewModel()
 ) {
@@ -60,6 +63,17 @@ fun NotesScreen(
 	val snackbarHostState = remember { SnackbarHostState() }
 	val message = stringResource(id = R.string.deleted_note)
 	val actionLabel = stringResource(id = R.string.undo)
+	val noteSavedMessage = stringResource(id = R.string.note_saved)
+	val noteUpdatedMessage = stringResource(id = R.string.note_updated)
+
+	LaunchedEffect(key1 = Unit) {
+		when (noteAction) {
+			NoteAction.DeleteEmptyNote -> {}
+			NoteAction.InsertNote -> snackbarHostState.showSnackbar(noteSavedMessage)
+			NoteAction.NoAction -> {}
+			NoteAction.UpdateNote -> snackbarHostState.showSnackbar(noteUpdatedMessage)
+		}
+	}
 
 	Scaffold(
 		topBar = {

@@ -18,8 +18,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -48,31 +46,21 @@ import kotlinx.coroutines.launch
 fun EditorScreen(
 	onNavigationIconClick: () -> Unit,
 	noteId: Long,
-	onBack: () -> Unit,
+	onNoteAction: (NoteAction) -> Unit,
+	onAddAttachmentIconClick: () -> Unit,
+	onPickColorIconClick: () -> Unit,
 	viewModel: EditorViewModel = hiltViewModel()
 ) {
 	var titleInEditMode by rememberSaveable { mutableStateOf(false) }
 	var note by remember { mutableStateOf(Note()) }
-	val snackbarHostState = remember { SnackbarHostState() }
-	val noteSavedMessage = stringResource(id = R.string.note_saved)
-	val noteUpdatedMessage = stringResource(id = R.string.note_updated)
-	val emptyNoteDeletedMessage = stringResource(id = R.string.empty_note_deleted)
 	val coroutineScope = rememberCoroutineScope()
 
 	LaunchedEffect(key1 = Unit) {
-		coroutineScope.launch {
-			note = viewModel.getNote(noteId)
-		}
+		coroutineScope.launch { note = viewModel.getNote(noteId) }
 	}
 	BackHandler {
 		coroutineScope.launch {
-			when (viewModel.saveNote(note, noteId)) {
-				NoteAction.DeleteEmptyNote -> snackbarHostState.showSnackbar(emptyNoteDeletedMessage)
-				NoteAction.InsertNote -> snackbarHostState.showSnackbar(noteSavedMessage)
-				NoteAction.NoAction -> {}
-				NoteAction.UpdateNote -> snackbarHostState.showSnackbar(noteUpdatedMessage)
-			}
-			onBack()
+			onNoteAction(viewModel.saveNote(note, noteId))
 		}
 	}
 	Scaffold(
@@ -80,7 +68,7 @@ fun EditorScreen(
 			TopAppBar(
 				title = {
 					Text(
-						text = stringResource(id = R.string.editor),
+						text = note.title.ifEmpty { stringResource(id = R.string.editor) },
 						modifier = Modifier.clickable { titleInEditMode = titleInEditMode.not() }
 					)
 				},
@@ -94,7 +82,6 @@ fun EditorScreen(
 				}
 			)
 		},
-		snackbarHost = { SnackbarHost(snackbarHostState) },
 		content = { innerPadding ->
 			Column(
 				modifier = Modifier
@@ -117,8 +104,8 @@ fun EditorScreen(
 					onNoteContentChange = { text -> note = note.copy(text = text) }
 				)
 				EditorToolbar(
-					onAddAttachmentIconClick = {},
-					onPickColorIconClick = {},
+					onAddAttachmentIconClick = onAddAttachmentIconClick,
+					onPickColorIconClick = onPickColorIconClick,
 					dateModified = String.Empty
 				)
 			}

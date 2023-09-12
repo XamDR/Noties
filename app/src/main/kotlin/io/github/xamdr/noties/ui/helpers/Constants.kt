@@ -4,6 +4,7 @@ object Constants {
 	const val ARG_TITLE = "title"
 	const val BUNDLE_NOTE_ID = "BUNDLE_NOTE_ID"
 	const val BUNDLE_NOTE = "BUNDLE_NOTE"
+	const val BUNDLE_ACTION = "BUNDLE_ACTION"
 	const val BUNDLE_TAG_ID = "BUNDLE_TAG_ID"
 	const val BUNDLE_TAG = "BUNDLE_TAG"
 	const val BUNDLE_SELECTION = "BUNDLE_SELECTION"

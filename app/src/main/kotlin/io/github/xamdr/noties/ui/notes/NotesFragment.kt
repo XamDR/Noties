@@ -23,7 +23,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.domain.model.Tag
+import io.github.xamdr.noties.ui.editor.NoteAction
 import io.github.xamdr.noties.ui.helpers.Constants
+import io.github.xamdr.noties.ui.helpers.getNavigationResult
 import io.github.xamdr.noties.ui.helpers.inflateTransition
 import io.github.xamdr.noties.ui.helpers.showToast
 import io.github.xamdr.noties.ui.helpers.tryNavigate
@@ -59,6 +61,7 @@ class NotesFragment : Fragment() {
 			val scope = rememberCoroutineScope()
 			val drawerState = DrawerState(DrawerValue.Closed)
 			var openDialog by rememberSaveable { mutableStateOf(false) }
+			val noteAction = getNavigationResult<NoteAction>(Constants.BUNDLE_ACTION) ?: NoteAction.NoAction
 
 			NavigationDrawer(
 				drawerState = drawerState,
@@ -85,6 +88,7 @@ class NotesFragment : Fragment() {
 						onTrailingIconClick = {},
 						onFabClick = ::navigateToEditor,
 						onItemClick = ::navigateToEditor,
+						noteAction = noteAction,
 						searchContent = {
 
 						}
