@@ -1,9 +1,11 @@
 package io.github.xamdr.noties.ui.editor
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -34,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,7 +45,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.xamdr.noties.R
-import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.Constants
@@ -80,23 +82,10 @@ fun EditorScreen(
 		onResult = ::addItems
 	)
 
-	fun onItemCopied(mediaItem: MediaItem, index: Int) {
-		note = note.copy(items = note.items + mediaItem)
-		items[index] = GridItem.Media(data = mediaItem)
-	}
-
-	val mediaViewerLauncher = rememberLauncherForActivityResult(
+	val mediaViewer = rememberLauncherForActivityResult(
 		contract = ActivityResultContracts.StartActivityForResult(),
 		onResult = {}
 	)
-
-	fun navigateToMediaViewer(position: Int) {
-		val intent = Intent(context, MediaViewerActivity::class.java).apply {
-			putExtra(Constants.BUNDLE_ITEMS, ArrayList(note.items))
-			putExtra(Constants.BUNDLE_POSITION, position)
-		}
-		mediaViewerLauncher.launch(intent)
-	}
 
 	LaunchedEffect(key1 = Unit) {
 		coroutineScope.launch {
@@ -106,6 +95,7 @@ fun EditorScreen(
 	}
 	BackHandler {
 		coroutineScope.launch {
+			note = addMediaItems(note, items)
 			onNoteAction(viewModel.saveNote(note, noteId))
 		}
 	}
@@ -149,8 +139,8 @@ fun EditorScreen(
 					note = note,
 					items = items,
 					onNoteContentChange = { text -> note = note.copy(text = text) },
-					onItemCopied = ::onItemCopied,
-					onItemClick = ::navigateToMediaViewer
+					onItemCopied = { mediaItem, index -> items[index] = GridItem.Media(data = mediaItem) },
+					onItemClick = { position -> navigateToMediaViewer(context, mediaViewer, note, position) }
 				)
 				EditorToolbar(
 					onAddAttachmentIconClick = { openMenu = true },
@@ -170,6 +160,27 @@ fun EditorScreen(
 			}
 		}
 	)
+}
+
+private fun addMediaItems(note: Note, items: SnapshotStateList<GridItem>): Note {
+	val mediaItems = items
+		.filterIsInstance<GridItem.Media>()
+		.map { it.data }
+		.filter { it.id == 0 }
+	return note.copy(items = note.items + mediaItems)
+}
+
+private fun navigateToMediaViewer(
+	context: Context,
+	launcher: ActivityResultLauncher<Intent>,
+	note: Note,
+	position: Int
+) {
+	val intent = Intent(context, MediaViewerActivity::class.java).apply {
+		putExtra(Constants.BUNDLE_ITEMS, ArrayList(note.items))
+		putExtra(Constants.BUNDLE_POSITION, position)
+	}
+	launcher.launch(intent)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
