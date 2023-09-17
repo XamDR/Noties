@@ -17,10 +17,7 @@ class InsertNoteUseCase @Inject constructor(
 		val newNote = note.copy(modificationDate = Instant.now().toEpochMilli())
 		val id = noteRepository.insertNote(newNote.asDatabaseEntity())
 		val updatedItems = mutableListOf<MediaItem>()
-		for (item in newNote.items) {
-			val updatedItem = item.copy(noteId = id)
-			updatedItems.add(updatedItem)
-		}
+		newNote.items.forEach { item -> updatedItems.add(item.copy(noteId = id)) }
 		mediaItemRepository.insertItems(updatedItems.map { it.asDatabaseEntity() })
 	}
 }
@@ -64,8 +61,11 @@ class UpdateNoteUseCase @Inject constructor(
 	suspend operator fun invoke(note: Note) {
 		val updatedNote = note.copy(modificationDate = Instant.now().toEpochMilli())
 		noteRepository.updateNote(updatedNote.asDatabaseEntity())
-		val newItems = note.items.filter { item -> item.id == 0 }.map { it.asDatabaseEntity() }
-		mediaItemRepository.insertItems(newItems)
+		val newItems = mutableListOf<MediaItem>()
+		note.items
+			.filter { item -> item.id == 0 }
+			.forEach { newItem -> newItems.add(newItem.copy(noteId = note.id)) }
+		mediaItemRepository.insertItems(newItems.map { it.asDatabaseEntity() })
 	}
 }
 

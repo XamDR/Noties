@@ -10,7 +10,7 @@ import io.github.xamdr.noties.domain.model.MediaItemMetadata
 @Entity(tableName = "MediaItems")
 data class DatabaseMediaItemEntity(
 	@PrimaryKey(autoGenerate = true) val id: Int = 0,
-	@ColumnInfo(name = "uri") val uri: Uri? = null,
+	@ColumnInfo(name = "uri") val uri: Uri = Uri.EMPTY,
 	@ColumnInfo(name = "thumbnail_uri") val thumbnailUri: Uri? = null,
 	@ColumnInfo(name = "mime_type") val mimeType: String? = null,
 	@ColumnInfo(name = "media_type") val mediaType: MediaType = MediaType.Image,

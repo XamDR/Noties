@@ -217,7 +217,8 @@ private fun NoteItem(note: Note, onClick: (note: Note) -> Unit) {
 								else note.previewItem?.metadata?.thumbnail ?: R.drawable.ic_image_not_supported
 							)
 							.build(),
-						contentDescription = stringResource(id = R.string.user_generated_image)
+						contentDescription = stringResource(id = R.string.user_generated_image),
+						modifier = Modifier.fillMaxWidth()
 					)
 					if (note.previewItem?.mediaType == MediaType.Video) {
 						Box(

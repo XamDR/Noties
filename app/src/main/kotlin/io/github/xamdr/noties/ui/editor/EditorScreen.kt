@@ -1,6 +1,10 @@
 package io.github.xamdr.noties.ui.editor
 
+import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,11 +22,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -30,16 +36,22 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.xamdr.noties.R
+import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.components.TextBox
+import io.github.xamdr.noties.ui.helpers.Constants
+import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
+import io.github.xamdr.noties.ui.media.MediaViewerActivity
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
+import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,16 +59,50 @@ fun EditorScreen(
 	onNavigationIconClick: () -> Unit,
 	noteId: Long,
 	onNoteAction: (NoteAction) -> Unit,
-	onAddAttachmentIconClick: () -> Unit,
-	onPickColorIconClick: () -> Unit,
 	viewModel: EditorViewModel = hiltViewModel()
 ) {
-	var titleInEditMode by rememberSaveable { mutableStateOf(false) }
 	var note by remember { mutableStateOf(Note()) }
+	val context = LocalContext.current
+	var titleInEditMode by rememberSaveable { mutableStateOf(value = false) }
+	var openMenu by rememberSaveable { mutableStateOf(value = false) }
 	val coroutineScope = rememberCoroutineScope()
+	val items = remember { mutableStateListOf<GridItem>() }
+	val modificationDate = if (note.modificationDate == 0L) DateTimeHelper.formatDateTime(Instant.now().toEpochMilli())
+		else DateTimeHelper.formatDateTime(note.modificationDate)
+
+	fun addItems(uris: List<Uri>) {
+		if (uris.isEmpty()) return
+		uris.forEach { uri -> items.add(GridItem.AndroidUri(src = uri)) }
+	}
+
+	val pickMediaLauncher = rememberLauncherForActivityResult(
+		contract = ActivityResultContracts.OpenMultipleDocuments(),
+		onResult = ::addItems
+	)
+
+	fun onItemCopied(mediaItem: MediaItem, index: Int) {
+		note = note.copy(items = note.items + mediaItem)
+		items[index] = GridItem.Media(data = mediaItem)
+	}
+
+	val mediaViewerLauncher = rememberLauncherForActivityResult(
+		contract = ActivityResultContracts.StartActivityForResult(),
+		onResult = {}
+	)
+
+	fun navigateToMediaViewer(position: Int) {
+		val intent = Intent(context, MediaViewerActivity::class.java).apply {
+			putExtra(Constants.BUNDLE_ITEMS, ArrayList(note.items))
+			putExtra(Constants.BUNDLE_POSITION, position)
+		}
+		mediaViewerLauncher.launch(intent)
+	}
 
 	LaunchedEffect(key1 = Unit) {
-		coroutineScope.launch { note = viewModel.getNote(noteId) }
+		coroutineScope.launch {
+			note = viewModel.getNote(noteId)
+			items.addAll(note.items.map(GridItem::Media))
+		}
 	}
 	BackHandler {
 		coroutineScope.launch {
@@ -101,13 +147,26 @@ fun EditorScreen(
 						.weight(1f)
 						.fillMaxWidth(),
 					note = note,
-					onNoteContentChange = { text -> note = note.copy(text = text) }
+					items = items,
+					onNoteContentChange = { text -> note = note.copy(text = text) },
+					onItemCopied = ::onItemCopied,
+					onItemClick = ::navigateToMediaViewer
 				)
 				EditorToolbar(
-					onAddAttachmentIconClick = onAddAttachmentIconClick,
-					onPickColorIconClick = onPickColorIconClick,
-					dateModified = String.Empty
+					onAddAttachmentIconClick = { openMenu = true },
+					onPickColorIconClick = {},
+					dateModified = modificationDate
 				)
+			}
+			if (openMenu) {
+				EditorMenuBottomSheet(
+					sheetState = SheetState(skipPartiallyExpanded = true)
+				) { item ->
+					openMenu = false
+					when (item.id) {
+						R.id.attach_media -> pickMediaLauncher.launch(arrayOf("image/*", "video/*"))
+					}
+				}
 			}
 		}
 	)

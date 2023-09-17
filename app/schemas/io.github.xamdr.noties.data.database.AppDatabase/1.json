@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "05147b988050b66df56f87084c3d9602",
+    "identityHash": "bd34be33920e531dbaea6adcb08ebc28",
     "entities": [
       {
         "tableName": "Tags",
@@ -128,7 +128,7 @@
       },
       {
         "tableName": "MediaItems",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uri` TEXT, `thumbnail_uri` TEXT, `mime_type` TEXT, `media_type` TEXT NOT NULL, `description` TEXT, `duration` INTEGER NOT NULL, `note_id` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uri` TEXT NOT NULL, `thumbnail_uri` TEXT, `mime_type` TEXT, `media_type` TEXT NOT NULL, `description` TEXT, `duration` INTEGER NOT NULL, `note_id` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -140,7 +140,7 @@
             "fieldPath": "uri",
             "columnName": "uri",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "thumbnailUri",
@@ -192,7 +192,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '05147b988050b66df56f87084c3d9602')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bd34be33920e531dbaea6adcb08ebc28')"
     ]
   }
 }

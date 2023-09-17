@@ -9,7 +9,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class MediaItem(
 	val id: Int = 0,
-	val uri: Uri? = null,
+	val uri: Uri = Uri.EMPTY,
 	val mimeType: String? = null,
 	val mediaType: MediaType = MediaType.Image,
 	val metadata: MediaItemMetadata = MediaItemMetadata(),

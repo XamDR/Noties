@@ -4,7 +4,7 @@ import android.net.Uri
 
 data class NetworkMediaItemEntity(
 	val id: Int = 0,
-	val uri: Uri? = null,
+	val uri: Uri = Uri.EMPTY,
 	val thumbnailUri: Uri? = null,
 	val mimeType: String? = null,
 	val mediaType: MediaType = MediaType.Image,
