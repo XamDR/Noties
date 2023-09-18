@@ -5,6 +5,8 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,17 +25,19 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.IntSize
 
 fun Modifier.showSoftKeyboardOnFocus(focusRequester: FocusRequester): Modifier {
-	return this.focusRequester(focusRequester).then(composed {
-		val windowInfo = LocalWindowInfo.current
-		LaunchedEffect(windowInfo) {
-			snapshotFlow { windowInfo.isWindowFocused }.collect { isWindowFocused ->
-				if (isWindowFocused) {
-					focusRequester.requestFocus()
+	return this
+		.focusRequester(focusRequester)
+		.then(composed {
+			val windowInfo = LocalWindowInfo.current
+			LaunchedEffect(windowInfo) {
+				snapshotFlow { windowInfo.isWindowFocused }.collect { isWindowFocused ->
+					if (isWindowFocused) {
+						focusRequester.requestFocus()
+					}
 				}
 			}
-		}
-		this@showSoftKeyboardOnFocus
-	})
+			this@showSoftKeyboardOnFocus
+		})
 }
 
 fun Modifier.shimmer(highlightColor: Color): Modifier = this.composed {
@@ -57,3 +61,15 @@ fun Modifier.shimmer(highlightColor: Color): Modifier = this.composed {
 		)
 	).onGloballyPositioned { size = it.size }
 }
+
+fun Modifier.clickableWithoutRipple(onClick: () -> Unit) = composed(
+	factory = {
+		this.then(
+			Modifier.clickable(
+				interactionSource = remember { MutableInteractionSource() },
+				indication = null,
+				onClick = onClick
+			)
+		)
+	}
+)

@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.ui.helpers.Constants
+import io.github.xamdr.noties.ui.helpers.onBackPressed
 import io.github.xamdr.noties.ui.helpers.setNavigationResult
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
@@ -34,7 +35,7 @@ class EditorFragment : Fragment() {
 	private fun EditorFragmentContent() {
 		NotiesTheme {
 			EditorScreen(
-				onNavigationIconClick = {},
+				onNavigationIconClick = ::onBackPressed,
 				noteId = noteId,
 				onNoteAction = ::onNoteAction
 			)

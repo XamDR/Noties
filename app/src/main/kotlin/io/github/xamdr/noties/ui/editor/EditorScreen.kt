@@ -8,7 +8,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddBox
 import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -50,6 +50,7 @@ import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
+import io.github.xamdr.noties.ui.helpers.clickableWithoutRipple
 import io.github.xamdr.noties.ui.media.MediaViewerActivity
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
@@ -105,13 +106,15 @@ fun EditorScreen(
 				title = {
 					Text(
 						text = note.title.ifEmpty { stringResource(id = R.string.editor) },
-						modifier = Modifier.clickable { titleInEditMode = titleInEditMode.not() }
+						modifier = Modifier.clickableWithoutRipple { titleInEditMode = titleInEditMode.not() }
 					)
 				},
 				navigationIcon = {
-					IconButton(onClick = onNavigationIconClick) {
+					IconButton(onClick = {
+						if (titleInEditMode) titleInEditMode = false else onNavigationIconClick()
+					}) {
 						Icon(
-							imageVector = Icons.Outlined.ArrowBack,
+							imageVector = if (titleInEditMode) Icons.Outlined.ArrowUpward else Icons.Outlined.ArrowBack,
 							contentDescription = stringResource(id = R.string.back_button_description)
 						)
 					}
@@ -155,6 +158,7 @@ fun EditorScreen(
 					openMenu = false
 					when (item.id) {
 						R.id.attach_media -> pickMediaLauncher.launch(arrayOf("image/*", "video/*"))
+						R.id.take_picture -> {}
 					}
 				}
 			}

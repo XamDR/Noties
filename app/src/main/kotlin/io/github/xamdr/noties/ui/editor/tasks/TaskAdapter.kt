@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
+import android.text.TextWatcher
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.CompoundButton
@@ -12,7 +13,6 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.savedstate.SavedStateRegistry
@@ -28,7 +28,7 @@ class TaskAdapter(
 	registryOwner: SavedStateRegistryOwner,
 	private val tasks: MutableList<Task>,
 	private val itemTouchHelper: ItemTouchHelper) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
-	SpanSizeLookupOwner, SavedStateRegistry.SavedStateProvider {
+	SavedStateRegistry.SavedStateProvider {
 
 	init {
 		registryOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
@@ -44,7 +44,7 @@ class TaskAdapter(
 		})
 	}
 
-	inner class TaskViewHolder(private val binding: ItemTaskBinding) : RecyclerView.ViewHolder(binding.root), SimpleTextWatcher {
+	inner class TaskViewHolder(private val binding: ItemTaskBinding) : RecyclerView.ViewHolder(binding.root), TextWatcher {
 
 		init {
 			startDragging(binding.dragItem, this, itemTouchHelper)
@@ -76,6 +76,10 @@ class TaskAdapter(
 		fun unbindTextWatcher() {
 			binding.taskItem.removeTextChangedListener(this)
 		}
+
+		override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+		override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
 		override fun afterTextChanged(s: Editable) {
 			val currentTask = binding.root.tag as? Task.Item ?: return
@@ -146,10 +150,6 @@ class TaskAdapter(
 	override fun getItemViewType(position: Int) = when (tasks[position]) {
 		is Task.Item -> TASK
 		is Task.Footer -> FOOTER
-	}
-
-	override fun getSpanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
-		override fun getSpanSize(position: Int) = Constants.SPAN_COUNT
 	}
 
 	override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
