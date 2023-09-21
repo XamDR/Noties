@@ -83,7 +83,7 @@ fun EditorScreen(
 		onResult = ::addItems
 	)
 
-	val mediaViewer = rememberLauncherForActivityResult(
+	val mediaViewerLauncher = rememberLauncherForActivityResult(
 		contract = ActivityResultContracts.StartActivityForResult(),
 		onResult = {}
 	)
@@ -143,7 +143,7 @@ fun EditorScreen(
 					items = items,
 					onNoteContentChange = { text -> note = note.copy(text = text) },
 					onItemCopied = { mediaItem, index -> items[index] = GridItem.Media(data = mediaItem) },
-					onItemClick = { position -> navigateToMediaViewer(context, mediaViewer, note, position) }
+					onItemClick = { position -> navigateToMediaViewer(context, mediaViewerLauncher, note, position) }
 				)
 				EditorToolbar(
 					onAddAttachmentIconClick = { openMenu = true },

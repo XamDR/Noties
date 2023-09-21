@@ -94,9 +94,6 @@ dependencies {
 	// Exif Interface
 	implementation libs.androidx.exif
 
-	// Shimmer effect
-	implementation libs.shimmer
-
 	// Gif support
 	implementation libs.gif
 
