@@ -6,6 +6,7 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.graphics.PorterDuff
 import android.widget.ProgressBar
+import androidx.annotation.StringRes
 import com.google.android.material.color.MaterialColors
 import io.github.xamdr.noties.R
 import timber.log.Timber
@@ -14,11 +15,11 @@ object ProgressDialogHelper {
 
 	private lateinit var progressDialog: ProgressDialog
 
-	fun show(context: Context, message: CharSequence, cancelable: Boolean = false) {
+	fun show(context: Context, @StringRes message: Int, cancelable: Boolean = false) {
 		progressDialog = ProgressDialog(context)
 		progressDialog.apply {
 			setCancelable(cancelable)
-			setMessage(message)
+			setMessage(context.getString(message))
 			show()
 			tintProgressBar(this)
 		}

@@ -1,6 +1,8 @@
 package io.github.xamdr.noties.ui.helpers
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
@@ -197,4 +199,9 @@ fun <T : Parcelable> Fragment.getNavigationResult(key: String): T? {
 
 fun <T : Parcelable> Fragment.setNavigationResult(key: String, value: T) {
 	this.findNavController().previousBackStackEntry?.savedStateHandle?.set(key, value)
+}
+
+tailrec fun Context.findActivity(): Activity? = when (this) {
+	is Activity -> this
+	else -> (this as? ContextWrapper)?.baseContext?.findActivity()
 }

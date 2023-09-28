@@ -62,6 +62,7 @@
 	<string name="delete_notes_message">The notes inside this tag have been moved to the trash.</string>
 	<string name="tag_created">Tag %s created</string>
 	<string name="back_button_description">Back to notes</string>
+	<string name="back_to_editor">Back to editor</string>
 
 	<!-- RecycleBin Fragment -->
 	<string name="recycle_bin">Trash</string>

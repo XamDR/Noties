@@ -5,8 +5,10 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.addCallback
+import androidx.activity.compose.setContent
 import androidx.annotation.OptIn
-import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.Composable
+import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.ContentDataSource
@@ -18,33 +20,26 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import io.github.xamdr.noties.data.entity.media.MediaType
-import io.github.xamdr.noties.databinding.ActivityMediaViewerBinding
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.helpers.*
+import io.github.xamdr.noties.ui.theme.NotiesTheme
 import timber.log.Timber
 import androidx.media3.common.MediaItem as ExoMediaItem
 
-class MediaViewerActivity : AppCompatActivity() {
+class MediaViewerActivity : FragmentActivity() {
 
-	private val binding by lazy(LazyThreadSafetyMode.NONE) { ActivityMediaViewerBinding.inflate(layoutInflater) }
 	private val items by lazy(LazyThreadSafetyMode.NONE) {
 		intent.getParcelableArrayListCompat(Constants.BUNDLE_ITEMS, MediaItem::class.java)
 	}
 	private val position by lazy(LazyThreadSafetyMode.NONE) {
 		intent.getIntExtra(Constants.BUNDLE_POSITION, 0)
 	}
-	private lateinit var pageChangedCallback: PageChangedCallback
 	private val itemsToDelete = mutableListOf<MediaItem>()
-	private lateinit var mediaStateAdapter: MediaStateAdapter
 	var player: ExoPlayer? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		setContentView(binding.root)
-		setSupportActionBar(binding.toolbar)
-		supportActionBar?.setDisplayHomeAsUpEnabled(true)
-		setupViewPager()
-		navigateUp()
+		setContent { MediaViewerActivityContent() }
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
@@ -63,9 +58,6 @@ class MediaViewerActivity : AppCompatActivity() {
 
 	override fun onStart() {
 		super.onStart()
-		pageChangedCallback = PageChangedCallback(this, items.size).apply {
-			onPageSelected(position)
-		}
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 			initializePlayer()
 		}
@@ -80,7 +72,6 @@ class MediaViewerActivity : AppCompatActivity() {
 
 	override fun onResume() {
 		super.onResume()
-		binding.pager.registerOnPageChangeCallback(pageChangedCallback)
 		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
 			initializePlayer()
 		}
@@ -88,7 +79,6 @@ class MediaViewerActivity : AppCompatActivity() {
 
 	override fun onPause() {
 		super.onPause()
-		binding.pager.unregisterOnPageChangeCallback(pageChangedCallback)
 		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
 			releasePlayer()
 		}
@@ -104,15 +94,22 @@ class MediaViewerActivity : AppCompatActivity() {
 		}
 	}
 
-	fun deleteMediaItem() = mediaStateAdapter.removeFragment(binding.pager.currentItem)
-
-	private fun setupViewPager() {
-		mediaStateAdapter = MediaStateAdapter(this, items, this::onItemRemoved)
-		binding.pager.apply {
-			adapter = mediaStateAdapter
-			setCurrentItem(position, false)
+	@Composable
+	private fun MediaViewerActivityContent() {
+		NotiesTheme {
+			MediaViewerScreen(items = items, startIndex = 0, window = window)
 		}
 	}
+
+//	fun deleteMediaItem() = mediaStateAdapter.removeFragment(binding.pager.currentItem)
+
+//	private fun setupViewPager() {
+//		mediaStateAdapter = MediaStateAdapter(this, items, this::onItemRemoved)
+//		binding.pager.apply {
+//			adapter = mediaStateAdapter
+//			setCurrentItem(position, false)
+//		}
+//	}
 
 	private fun initializePlayer() {
 		if (items.any { it.mediaType == MediaType.Video }) {
@@ -125,7 +122,12 @@ class MediaViewerActivity : AppCompatActivity() {
 	private fun buildPlayer() {
 		val mediaSourceFactory = ProgressiveMediaSource.Factory { ContentDataSource(this) }
 		val loadControl = DefaultLoadControl.Builder()
-			.setBufferDurationsMs(MIN_BUFFER_MS, MAX_BUFFER_MS, BUFFER_FOR_PLAYBACK_MS, BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS)
+			.setBufferDurationsMs(
+				MIN_BUFFER_MS,
+				MAX_BUFFER_MS,
+				BUFFER_FOR_PLAYBACK_MS,
+				BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
+			)
 			.build()
 		player = ExoPlayer.Builder(this)
 			.setRenderersFactory(DefaultRenderersFactory(this))
@@ -147,20 +149,20 @@ class MediaViewerActivity : AppCompatActivity() {
 		}
 	}
 
-	private fun onItemRemoved(position: Int) {
-		val itemToDelete = items[position]
-		val newItems = items - itemToDelete
-		if (newItems.isNotEmpty()) {
-			pageChangedCallback.apply {
-				size = newItems.size
-				onPageSelected(position)
-			}
-			if (newItems.none { it.mediaType == MediaType.Video }) {
-				releasePlayer()
-			}
-		}
-		itemsToDelete.add(itemToDelete)
-	}
+//	private fun onItemRemoved(position: Int) {
+//		val itemToDelete = items[position]
+//		val newItems = items - itemToDelete
+//		if (newItems.isNotEmpty()) {
+//			pageChangedCallback.apply {
+//				size = newItems.size
+//				onPageSelected(position)
+//			}
+//			if (newItems.none { it.mediaType == MediaType.Video }) {
+//				releasePlayer()
+//			}
+//		}
+//		itemsToDelete.add(itemToDelete)
+//	}
 
 	private fun navigateUp() {
 		onBackPressedDispatcher.addCallback(this) {
