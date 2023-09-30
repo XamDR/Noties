@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.xamdr.noties.R
+import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.Constants
@@ -143,7 +144,9 @@ fun EditorScreen(
 					items = items,
 					onNoteContentChange = { text -> note = note.copy(text = text) },
 					onItemCopied = { mediaItem, index -> items[index] = GridItem.Media(data = mediaItem) },
-					onItemClick = { position -> navigateToMediaViewer(context, mediaViewerLauncher, note, position) }
+					onItemClick = { position ->
+						navigateToMediaViewer(context, mediaViewerLauncher, getMediaItems(items), position)
+					}
 				)
 				EditorToolbar(
 					onAddAttachmentIconClick = { openMenu = true },
@@ -166,22 +169,23 @@ fun EditorScreen(
 	)
 }
 
+private fun getMediaItems(items: SnapshotStateList<GridItem>): List<MediaItem> {
+	return items.filterIsInstance<GridItem.Media>().map { it.data }
+}
+
 private fun addMediaItems(note: Note, items: SnapshotStateList<GridItem>): Note {
-	val mediaItems = items
-		.filterIsInstance<GridItem.Media>()
-		.map { it.data }
-		.filter { it.id == 0 }
+	val mediaItems = getMediaItems(items).filter { it.id == 0 }
 	return note.copy(items = note.items + mediaItems)
 }
 
 private fun navigateToMediaViewer(
 	context: Context,
 	launcher: ActivityResultLauncher<Intent>,
-	note: Note,
+	items: List<MediaItem>,
 	position: Int
 ) {
 	val intent = Intent(context, MediaViewerActivity::class.java).apply {
-		putExtra(Constants.BUNDLE_ITEMS, ArrayList(note.items))
+		putExtra(Constants.BUNDLE_ITEMS, ArrayList(items))
 		putExtra(Constants.BUNDLE_POSITION, position)
 	}
 	launcher.launch(intent)

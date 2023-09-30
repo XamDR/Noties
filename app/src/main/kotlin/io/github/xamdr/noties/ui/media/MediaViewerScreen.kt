@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.media3.exoplayer.ExoPlayer
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.domain.model.MediaItem
@@ -47,7 +48,14 @@ import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MediaViewerScreen(items: List<MediaItem>, startIndex: Int, window: Window) {
+fun MediaViewerScreen(
+	items: List<MediaItem>,
+	startIndex: Int,
+	window: Window,
+	player: ExoPlayer?,
+	videoState: VideoState,
+	onNavigationIconClick: () -> Unit
+) {
 	val pagerState = rememberPagerState(
 		initialPage = startIndex,
 		pageCount = { items.size }
@@ -70,8 +78,13 @@ fun MediaViewerScreen(items: List<MediaItem>, startIndex: Int, window: Window) {
 	Box {
 		HorizontalPager(state = pagerState) { index ->
 			when (items[index].mediaType) {
-				MediaType.Image -> ImageScreen(items[index], onClick = ::toggleFullScreen)
-				MediaType.Video -> VideoScreen()
+				MediaType.Image -> ImageScreen(item = items[index], onClick = ::toggleFullScreen)
+				MediaType.Video -> VideoScreen(
+					item = items[index],
+					player = player,
+					videoState = videoState,
+					window = window
+				)
 				MediaType.Audio -> {}
 			}
 		}
@@ -89,7 +102,7 @@ fun MediaViewerScreen(items: List<MediaItem>, startIndex: Int, window: Window) {
 			TopAppBar(
 				title = { Text(text = "${pagerState.currentPage + 1}/${items.size}") },
 				navigationIcon = {
-					IconButton(onClick = {}) {
+					IconButton(onClick = onNavigationIconClick) {
 						Icon(
 							imageVector = Icons.Outlined.ArrowBack,
 							contentDescription = stringResource(id = R.string.back_to_editor)

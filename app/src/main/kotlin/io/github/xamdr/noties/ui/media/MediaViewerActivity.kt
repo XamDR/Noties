@@ -24,10 +24,10 @@ import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.helpers.*
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import timber.log.Timber
-import androidx.media3.common.MediaItem as ExoMediaItem
 
 class MediaViewerActivity : FragmentActivity() {
 
+	var player: ExoPlayer? = null
 	private val items by lazy(LazyThreadSafetyMode.NONE) {
 		intent.getParcelableArrayListCompat(Constants.BUNDLE_ITEMS, MediaItem::class.java)
 	}
@@ -35,7 +35,7 @@ class MediaViewerActivity : FragmentActivity() {
 		intent.getIntExtra(Constants.BUNDLE_POSITION, 0)
 	}
 	private val itemsToDelete = mutableListOf<MediaItem>()
-	var player: ExoPlayer? = null
+	private val videoState = VideoState()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -84,32 +84,19 @@ class MediaViewerActivity : FragmentActivity() {
 		}
 	}
 
-	fun setMediaItem(item: MediaItem, playbackPosition: Long, playWhenReady: Boolean) {
-		val uri = item.uri ?: return
-		player?.apply {
-			setMediaItem(ExoMediaItem.fromUri(uri))
-			seekTo(playbackPosition)
-			prepare()
-			setPlayWhenReady(playWhenReady)
-		}
-	}
-
 	@Composable
 	private fun MediaViewerActivityContent() {
 		NotiesTheme {
-			MediaViewerScreen(items = items, startIndex = 0, window = window)
+			MediaViewerScreen(
+				items = items,
+				startIndex = position,
+				window = window,
+				player = player,
+				videoState = videoState,
+				onNavigationIconClick = ::navigateUp
+			)
 		}
 	}
-
-//	fun deleteMediaItem() = mediaStateAdapter.removeFragment(binding.pager.currentItem)
-
-//	private fun setupViewPager() {
-//		mediaStateAdapter = MediaStateAdapter(this, items, this::onItemRemoved)
-//		binding.pager.apply {
-//			adapter = mediaStateAdapter
-//			setCurrentItem(position, false)
-//		}
-//	}
 
 	private fun initializePlayer() {
 		if (items.any { it.mediaType == MediaType.Video }) {
@@ -148,21 +135,6 @@ class MediaViewerActivity : FragmentActivity() {
 			Timber.d("ExoPlayer instance released")
 		}
 	}
-
-//	private fun onItemRemoved(position: Int) {
-//		val itemToDelete = items[position]
-//		val newItems = items - itemToDelete
-//		if (newItems.isNotEmpty()) {
-//			pageChangedCallback.apply {
-//				size = newItems.size
-//				onPageSelected(position)
-//			}
-//			if (newItems.none { it.mediaType == MediaType.Video }) {
-//				releasePlayer()
-//			}
-//		}
-//		itemsToDelete.add(itemToDelete)
-//	}
 
 	private fun navigateUp() {
 		onBackPressedDispatcher.addCallback(this) {
