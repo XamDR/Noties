@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import androidx.annotation.StringRes
 import androidx.core.app.ShareCompat
 import androidx.print.PrintHelper
 import io.github.xamdr.noties.R
@@ -17,6 +18,11 @@ import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
 import io.github.xamdr.noties.ui.helpers.showToast
 import timber.log.Timber
 import java.io.FileNotFoundException
+
+data class ActionItem(
+	@StringRes val title: Int,
+	val action: () -> Unit
+)
 
 fun shareMediaItem(item: MediaItem, context: Context) {
 	ShareCompat.IntentBuilder(context)

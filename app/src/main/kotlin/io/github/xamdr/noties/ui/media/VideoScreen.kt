@@ -36,6 +36,7 @@ import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.showToast
 import io.github.xamdr.noties.ui.theme.NotiesTheme
+import timber.log.Timber
 import androidx.media3.common.MediaItem as ExoMediaItem
 
 @Composable
@@ -61,6 +62,7 @@ fun VideoScreen(item: MediaItem, player: ExoPlayer?, videoState: VideoState, win
 
 		val observer = LifecycleEventObserver { _, event ->
 			if (event == Lifecycle.Event.ON_RESUME) {
+				Timber.d("ON_RESUME")
 				player?.let {
 					setPlayer(
 						player = it,
@@ -73,6 +75,7 @@ fun VideoScreen(item: MediaItem, player: ExoPlayer?, videoState: VideoState, win
 				window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 			}
 			else if (event == Lifecycle.Event.ON_PAUSE) {
+				Timber.d("ON_PAUSE")
 				player?.let { clearPlayer(player = it, listener = listener) }
 				window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 			}
@@ -104,7 +107,13 @@ fun VideoScreen(item: MediaItem, player: ExoPlayer?, videoState: VideoState, win
 				},
 				modifier = Modifier
 					.fillMaxSize()
-					.padding(8.dp)
+					.padding(8.dp),
+				onReset = {
+
+				},
+				update = {
+
+				}
 			)
 		}
 	}

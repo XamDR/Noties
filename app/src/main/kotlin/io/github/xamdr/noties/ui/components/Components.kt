@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
@@ -18,13 +19,22 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +48,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
+import io.github.xamdr.noties.ui.media.ActionItem
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 @Composable
@@ -176,5 +187,50 @@ private fun TextBoxPreview() {
 			onValueChange = {},
 			modifier = Modifier.fillMaxWidth()
 		)
+	}
+}
+
+@Composable
+fun OverflowMenu(items: List<ActionItem>) {
+	var overflowMenuExpanded by rememberSaveable { mutableStateOf(false) }
+
+	Box(
+		modifier = Modifier.wrapContentSize()
+	) {
+		IconButton(onClick = { overflowMenuExpanded = true }) {
+			Icon(
+				imageVector = Icons.Outlined.MoreVert,
+				contentDescription = stringResource(id = R.string.more_options)
+			)
+		}
+		DropdownMenu(
+			expanded = overflowMenuExpanded,
+			onDismissRequest = { overflowMenuExpanded = false },
+		) {
+			for (item in items) {
+				key(item.hashCode()) {
+					DropdownMenuItem(
+						text = { Text(text = stringResource(id = item.title)) },
+						onClick = {
+							overflowMenuExpanded = false
+							item.action()
+						}
+					)
+				}
+			}
+		}
+	}
+}
+
+@DevicePreviews
+@Composable
+private fun OverflowMenuPreview() {
+	val items = listOf(
+		ActionItem(title = R.string.copy_image, action = {}),
+		ActionItem(title = R.string.download_item, action = {}),
+		ActionItem(title = R.string.print_image, action = {})
+	)
+	NotiesTheme {
+		OverflowMenu(items)
 	}
 }

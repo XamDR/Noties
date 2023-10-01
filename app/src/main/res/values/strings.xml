@@ -146,7 +146,7 @@
 
 	<!-- MediaViewer Fragment -->
 	<string name="share_item">Share</string>
-	<string name="copy_item">Copy</string>
+	<string name="copy_image">Copy</string>
 	<string name="download_item">Save</string>
 	<string name="download_video_message">Saving video…</string>
 	<string name="video_downloaded_message">Video saved in your device.</string>

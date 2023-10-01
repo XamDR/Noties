@@ -1,5 +1,6 @@
 package io.github.xamdr.noties.ui.media
 
+import android.content.Context
 import android.view.View
 import android.view.Window
 import androidx.compose.animation.AnimatedVisibility
@@ -29,6 +30,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -42,9 +44,12 @@ import androidx.media3.exoplayer.ExoPlayer
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.domain.model.MediaItem
+import io.github.xamdr.noties.ui.components.OverflowMenu
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.findActivity
 import io.github.xamdr.noties.ui.theme.NotiesTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -64,6 +69,8 @@ fun MediaViewerScreen(
 	val context = LocalContext.current
 	val activity = context.findActivity() ?: return
 	val view = LocalView.current
+	val scope = rememberCoroutineScope()
+	val overflowItems = getOverflowItems(currentItem, context, scope)
 	var isFullScreen by rememberSaveable { mutableStateOf(value = false) }
 
 	fun toggleFullScreen() {
@@ -124,12 +131,33 @@ fun MediaViewerScreen(
 							)
 						}
 					}
+					OverflowMenu(items = overflowItems)
 				},
 				colors = TopAppBarDefaults.topAppBarColors(
 					containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
 				)
 			)
 		}
+	}
+}
+
+private fun getOverflowItems(
+	item: MediaItem,
+	context: Context,
+	scope: CoroutineScope
+): List<ActionItem> {
+	return if (item.mediaType == MediaType.Image) {
+		listOf(
+			ActionItem(title = R.string.copy_image, action = { copyImageToClipboard(item, context) }),
+			ActionItem(title = R.string.download_item, action = { scope.launch { downloadMediaItem(item, context) } }),
+			ActionItem(title = R.string.print_image, action = { printImage(item, context) }),
+			ActionItem(title = R.string.set_image_as, action = { setImageAs(item, context) })
+		)
+	}
+	else {
+		listOf(
+			ActionItem(title = R.string.download_item, action = { scope.launch { downloadMediaItem(item, context) } }),
+		)
 	}
 }
 
