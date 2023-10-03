@@ -9,7 +9,6 @@ import android.provider.Settings
 import android.view.*
 import android.widget.ImageButton
 import androidx.annotation.OptIn
-import androidx.core.os.bundleOf
 import androidx.core.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -19,7 +18,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.databinding.FragmentMediaVideoViewerBinding
-import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.helpers.*
 import timber.log.Timber
 
@@ -28,7 +26,6 @@ class VideoMediaViewerFragment : Fragment(), Player.Listener {
 	private var _binding: FragmentMediaVideoViewerBinding? = null
 	private val binding get() = _binding!!
 	private val viewModel by activityViewModels<MediaViewerViewModel>()
-//	private val menuProvider = VideoMediaMenuProvider()
 	private lateinit var exoPlayer: ExoPlayer
 	private lateinit var settingsObserver: OrientationSettingsObserver
 	private val videoState = VideoState()
@@ -60,25 +57,7 @@ class VideoMediaViewerFragment : Fragment(), Player.Listener {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-//		if (item.mediaType == MediaType.Video) {
-//			ImageLoader.load(binding.thumbnail, item.metadata.thumbnail, 800)
-//		}
 		binding.playerView.setFullscreenButtonClickListener { toggleFullScreenAndOrientation() }
-	}
-
-	override fun onResume() {
-		super.onResume()
-//		addMenuProvider(menuProvider)
-		setPlayer(videoState.playbackPosition, videoState.playWhenReady)
-		binding.root.doOnAttach { toggleFullScreen(viewModel.isFullScreen) }
-		window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-	}
-
-	override fun onPause() {
-		super.onPause()
-//		removeMenuProvider(menuProvider)
-		clearPlayer()
-		window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
@@ -119,20 +98,6 @@ class VideoMediaViewerFragment : Fragment(), Player.Listener {
 		binding.thumbnail.setImageResource(R.drawable.ic_image_not_supported)
 	}
 
-	@OptIn(UnstableApi::class)
-	private fun setPlayer(playbackPosition: Long, playWhenReady: Boolean) {
-		exoPlayer = (requireActivity() as MediaViewerActivity).player ?: return
-		binding.playerView.player = exoPlayer
-		exoPlayer.addListener(this)
-//		(requireActivity() as MediaViewerActivity).setMediaItem(item, playbackPosition, playWhenReady)
-	}
-
-	private fun clearPlayer() {
-		exoPlayer.pause()
-		exoPlayer.removeListener(this)
-		binding.playerView.player = null
-	}
-
 	private fun toggleFullScreenAndOrientation() {
 		viewModel.isFullScreen = !viewModel.isFullScreen
 		toggleFullScreen(viewModel.isFullScreen)
@@ -164,36 +129,6 @@ class VideoMediaViewerFragment : Fragment(), Player.Listener {
 			Timber.d("Exit full screen")
 //			fullScreenHelper.exitFullScreen(binding.root, window)
 			fullScreenButton.setImageResource(androidx.media3.ui.R.drawable.exo_ic_fullscreen_enter)
-		}
-	}
-
-//	private inner class VideoMediaMenuProvider : MenuProvider {
-//		override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-//			menuInflater.inflate(R.menu.menu_media_video_viewer, menu)
-//		}
-//
-//		override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-//			return when (menuItem.itemId) {
-//				android.R.id.home -> {
-//					onBackPressed(); true
-//				}
-//				R.id.share -> {
-//					shareMediaItem(); true
-//				}
-//				R.id.download -> {
-//					downloadMediaItem(); true
-//				}
-//				R.id.delete -> {
-//					deleteMediaItem(); true
-//				}
-//				else -> false
-//			}
-//		}
-//	}
-
-	companion object {
-		fun newInstance(item: MediaItem) = VideoMediaViewerFragment().apply {
-			arguments = bundleOf(Constants.BUNDLE_MEDIA_ITEM to item)
 		}
 	}
 }

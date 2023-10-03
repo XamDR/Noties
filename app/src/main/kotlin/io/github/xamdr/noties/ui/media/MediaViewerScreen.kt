@@ -40,7 +40,6 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.media3.exoplayer.ExoPlayer
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.domain.model.MediaItem
@@ -57,8 +56,6 @@ fun MediaViewerScreen(
 	items: List<MediaItem>,
 	startIndex: Int,
 	window: Window,
-	player: ExoPlayer?,
-	videoState: VideoState,
 	onNavigationIconClick: () -> Unit
 ) {
 	val pagerState = rememberPagerState(
@@ -83,13 +80,18 @@ fun MediaViewerScreen(
 	}
 
 	Box {
-		HorizontalPager(state = pagerState) { index ->
+		HorizontalPager(
+			state = pagerState,
+			key = { index -> items[index].id }
+		) { index ->
 			when (items[index].mediaType) {
-				MediaType.Image -> ImageScreen(item = items[index], onClick = ::toggleFullScreen)
+				MediaType.Image -> ImageScreen(
+					item = items[index],
+					onClick = ::toggleFullScreen
+				)
 				MediaType.Video -> VideoScreen(
 					item = items[index],
-					player = player,
-					videoState = videoState,
+					playWhenReady = index == pagerState.currentPage,
 					window = window
 				)
 				MediaType.Audio -> {}

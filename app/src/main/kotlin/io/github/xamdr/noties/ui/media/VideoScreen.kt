@@ -1,7 +1,9 @@
 package io.github.xamdr.noties.ui.media
 
+import android.annotation.SuppressLint
 import android.view.Window
 import android.view.WindowManager
+import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -27,6 +30,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.Listener
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import coil.compose.AsyncImage
@@ -36,17 +40,52 @@ import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.showToast
 import io.github.xamdr.noties.ui.theme.NotiesTheme
-import timber.log.Timber
 import androidx.media3.common.MediaItem as ExoMediaItem
 
+//private const val MIN_BUFFER_MS = 1000
+//private const val MAX_BUFFER_MS = 2000
+//private const val BUFFER_FOR_PLAYBACK_MS = 1000
+//private const val BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS = 1000
+
+@SuppressLint("OpaqueUnitKey")
 @Composable
-fun VideoScreen(item: MediaItem, player: ExoPlayer?, videoState: VideoState, window: Window) {
+fun VideoScreen(
+	item: MediaItem,
+	playWhenReady: Boolean,
+	window: Window
+) {
 	val context = LocalContext.current
-	val lifecycleOwner = LocalLifecycleOwner.current
+	val exoPlayer = rememberPlayer(item = item, playWhenReady = playWhenReady)
 	var isThumbnailVisible by rememberSaveable { mutableStateOf(value = false) }
 	var isPlayerViewVisible by rememberSaveable { mutableStateOf(value = false) }
 
-	DisposableEffect(key1 = lifecycleOwner) {
+	DisposableEffect(
+		Box {
+			if (isThumbnailVisible) {
+				AsyncImage(
+					model = ImageRequest.Builder(LocalContext.current)
+						.data(item.metadata.thumbnail ?: Icons.Outlined.ImageNotSupported)
+						.build(),
+					contentDescription = null,
+					modifier = Modifier
+						.fillMaxSize()
+						.padding(8.dp),
+					alignment = Alignment.Center,
+					contentScale = ContentScale.Fit
+				)
+			}
+			if (isPlayerViewVisible) {
+				AndroidView(
+					modifier = Modifier
+						.fillMaxSize()
+						.padding(8.dp),
+					factory = { context ->
+						PlayerView(context).apply { player = exoPlayer }
+					}
+				)
+			}
+		}
+	) {
 		val listener = object : Listener {
 			override fun onPlaybackStateChanged(playbackState: Int) {
 				super.onPlaybackStateChanged(playbackState)
@@ -59,86 +98,59 @@ fun VideoScreen(item: MediaItem, player: ExoPlayer?, videoState: VideoState, win
 				context.showToast(R.string.error_video_playback)
 			}
 		}
+		exoPlayer.addListener(listener)
+		onDispose { clearPlayer(exoPlayer, listener) }
+	}
 
+	val lifecycleOwner = LocalLifecycleOwner.current
+
+	DisposableEffect(key1 = lifecycleOwner) {
 		val observer = LifecycleEventObserver { _, event ->
-			if (event == Lifecycle.Event.ON_RESUME) {
-				Timber.d("ON_RESUME")
-				player?.let {
-					setPlayer(
-						player = it,
-						item = item,
-						playbackPosition = videoState.playbackPosition,
-						playWhenReady = videoState.playWhenReady,
-						listener = listener
-					)
+			when (event) {
+				Lifecycle.Event.ON_RESUME -> {
+					exoPlayer.play()
+					window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 				}
-				window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-			}
-			else if (event == Lifecycle.Event.ON_PAUSE) {
-				Timber.d("ON_PAUSE")
-				player?.let { clearPlayer(player = it, listener = listener) }
-				window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+				Lifecycle.Event.ON_PAUSE -> {
+					exoPlayer.pause()
+					window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+				}
+				else -> {}
 			}
 		}
 		lifecycleOwner.lifecycle.addObserver(observer)
-
-		onDispose {
-			lifecycleOwner.lifecycle.removeObserver(observer)
-		}
-	}
-	Box {
-		if (isThumbnailVisible) {
-			AsyncImage(
-				model = ImageRequest.Builder(LocalContext.current)
-					.data(item.metadata.thumbnail ?: Icons.Outlined.ImageNotSupported)
-					.build(),
-				contentDescription = null,
-				modifier = Modifier
-					.fillMaxSize()
-					.padding(8.dp),
-				alignment = Alignment.Center,
-				contentScale = ContentScale.Fit
-			)
-		}
-		if (isPlayerViewVisible) {
-			AndroidView(
-				factory = { context ->
-					PlayerView(context).apply { this.player = player }
-				},
-				modifier = Modifier
-					.fillMaxSize()
-					.padding(8.dp),
-				onReset = {
-
-				},
-				update = {
-
-				}
-			)
-		}
+		onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
 	}
 }
 
-private fun setPlayer(
-	player: ExoPlayer,
-	item: MediaItem,
-	playbackPosition: Long,
-	playWhenReady: Boolean,
-	listener: Listener
-) {
-	player.apply {
-		setMediaItem(ExoMediaItem.fromUri(item.uri))
-		seekTo(playbackPosition)
-		prepare()
-		setPlayWhenReady(playWhenReady)
-		addListener(listener)
+@OptIn(UnstableApi::class)
+@Composable
+private fun rememberPlayer(item: MediaItem, playWhenReady: Boolean): ExoPlayer {
+	val context = LocalContext.current
+//	val mediaSourceFactory = ProgressiveMediaSource.Factory { ContentDataSource(context) }
+//	val loadControl = DefaultLoadControl.Builder()
+//		.setBufferDurationsMs(
+//			MIN_BUFFER_MS,
+//			MAX_BUFFER_MS,
+//			BUFFER_FOR_PLAYBACK_MS,
+//			BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
+//		)
+//		.build()
+
+	val exoPlayer = remember(key1 = context) {
+		ExoPlayer.Builder(context).build().apply {
+			setMediaItem(ExoMediaItem.fromUri(item.uri))
+			prepare()
+			setPlayWhenReady(playWhenReady)
+		}
 	}
+	return exoPlayer
 }
 
 private fun clearPlayer(player: ExoPlayer, listener: Listener) {
 	player.apply {
-		pause()
 		removeListener(listener)
+		release()
 	}
 }
 
