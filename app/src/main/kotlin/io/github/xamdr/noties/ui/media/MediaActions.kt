@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.app.ShareCompat
 import androidx.print.PrintHelper
 import io.github.xamdr.noties.R
@@ -21,7 +22,8 @@ import java.io.FileNotFoundException
 
 data class ActionItem(
 	@StringRes val title: Int,
-	val action: () -> Unit
+	val action: () -> Unit,
+	val icon: ImageVector
 )
 
 fun shareMediaItem(item: MediaItem, context: Context) {

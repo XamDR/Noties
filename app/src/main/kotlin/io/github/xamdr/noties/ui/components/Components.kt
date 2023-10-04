@@ -214,7 +214,9 @@ fun OverflowMenu(items: List<ActionItem>) {
 						onClick = {
 							overflowMenuExpanded = false
 							item.action()
-						}
+						},
+						leadingIcon = { Icon(imageVector = item.icon, contentDescription = null) },
+						modifier = Modifier.padding(start = 8.dp, top = 0.dp, bottom = 0.dp, end = 32.dp)
 					)
 				}
 			}
@@ -226,11 +228,17 @@ fun OverflowMenu(items: List<ActionItem>) {
 @Composable
 private fun OverflowMenuPreview() {
 	val items = listOf(
-		ActionItem(title = R.string.copy_image, action = {}),
-		ActionItem(title = R.string.download_item, action = {}),
-		ActionItem(title = R.string.print_image, action = {})
+		ActionItem(title = R.string.copy_image, action = {}, icon = Icons.Outlined.Android)
 	)
 	NotiesTheme {
-		OverflowMenu(items)
+		for (item in items) {
+			key(item.hashCode()) {
+				DropdownMenuItem(
+					text = { Text(text = stringResource(id = item.title)) },
+					onClick = { item.action() },
+					leadingIcon = { Icon(imageVector = item.icon, contentDescription = null) }
+				)
+			}
+		}
 	}
 }

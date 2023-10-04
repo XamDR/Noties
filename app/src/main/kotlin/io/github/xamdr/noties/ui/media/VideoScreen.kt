@@ -37,11 +37,9 @@ import androidx.media3.common.util.RepeatModeUtil
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.findActivity
-import io.github.xamdr.noties.ui.helpers.showToast
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import timber.log.Timber
 import androidx.media3.common.MediaItem as ExoMediaItem
@@ -59,6 +57,7 @@ fun VideoScreen(
 	playWhenReady: Boolean,
 	window: Window,
 	onFullScreen: () -> Unit,
+	onPlayerError: () -> Unit
 ) {
 	val context = LocalContext.current
 	val activity = context.findActivity() ?: return
@@ -96,7 +95,7 @@ fun VideoScreen(
 			override fun onPlayerError(error: PlaybackException) {
 				super.onPlayerError(error)
 				Timber.e(error)
-				context.showToast(R.string.error_video_playback)
+				onPlayerError()
 			}
 		}
 		exoPlayer.addListener(listener)

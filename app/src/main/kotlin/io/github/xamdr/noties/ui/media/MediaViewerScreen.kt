@@ -13,23 +13,30 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.Print
+import androidx.compose.material.icons.outlined.SaveAlt
 import androidx.compose.material.icons.outlined.ScreenRotation
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -67,7 +74,9 @@ fun MediaViewerScreen(
 	val activity = context.findActivity() ?: return
 	val view = LocalView.current
 	val scope = rememberCoroutineScope()
+	val snackbarHostState = remember { SnackbarHostState() }
 	val overflowItems = getOverflowItems(currentItem, context, scope)
+	val errorPlaybackMsg = stringResource(id = R.string.error_video_playback)
 	var isFullScreen by rememberSaveable { mutableStateOf(value = false) }
 
 	fun toggleFullScreen() {
@@ -79,69 +88,77 @@ fun MediaViewerScreen(
 		}
 	}
 
-	Box {
-		HorizontalPager(
-			state = pagerState,
-			key = { index -> items[index].id }
-		) { index ->
-			when (items[index].mediaType) {
-				MediaType.Image -> ImageScreen(
-					item = items[index],
-					onClick = ::toggleFullScreen
+	fun onPlayerError() {
+		scope.launch { snackbarHostState.showSnackbar(errorPlaybackMsg) }
+	}
+
+	Scaffold(
+		topBar = {
+			AnimatedVisibility(
+				visible = isFullScreen.not(),
+				enter = slideInVertically(
+					initialOffsetY = { fullHeight -> -fullHeight },
+					animationSpec = tween(durationMillis = 250, easing = LinearOutSlowInEasing)
+				),
+				exit = slideOutVertically(
+					targetOffsetY = { fullHeight -> -fullHeight },
+					animationSpec = tween(durationMillis = 400, easing = FastOutLinearInEasing)
 				)
-				MediaType.Video -> VideoScreen(
-					item = items[index],
-					playWhenReady = index == pagerState.currentPage,
-					onFullScreen = ::toggleFullScreen,
-					window = window,
-				)
-				MediaType.Audio -> {}
-			}
-		}
-		AnimatedVisibility(
-			visible = isFullScreen.not(),
-			enter = slideInVertically(
-				initialOffsetY = { fullHeight -> -fullHeight },
-				animationSpec = tween(durationMillis = 250, easing = LinearOutSlowInEasing)
-			),
-			exit = slideOutVertically(
-				targetOffsetY = { fullHeight -> -fullHeight },
-				animationSpec = tween(durationMillis = 400, easing = FastOutLinearInEasing)
-			)
-		) {
-			TopAppBar(
-				title = { Text(text = "${pagerState.currentPage + 1}/${items.size}") },
-				navigationIcon = {
-					IconButton(onClick = onNavigationIconClick) {
-						Icon(
-							imageVector = Icons.Outlined.ArrowBack,
-							contentDescription = stringResource(id = R.string.back_to_editor)
-						)
-					}
-				},
-				actions = {
-					IconButton(onClick = { shareMediaItem(currentItem, context) }) {
-						Icon(
-							imageVector = Icons.Outlined.Share,
-							contentDescription = stringResource(id = R.string.share_item)
-						)
-					}
-					if (currentItem.mediaType == MediaType.Image) {
-						IconButton(onClick = { toggleScreenOrientation(context, activity) }) {
+			) {
+				TopAppBar(
+					title = { Text(text = "${pagerState.currentPage + 1}/${items.size}") },
+					navigationIcon = {
+						IconButton(onClick = onNavigationIconClick) {
 							Icon(
-								imageVector = Icons.Outlined.ScreenRotation,
-								contentDescription = stringResource(id = R.string.rotate)
+								imageVector = Icons.Outlined.ArrowBack,
+								contentDescription = stringResource(id = R.string.back_to_editor)
 							)
 						}
+					},
+					actions = {
+						IconButton(onClick = { shareMediaItem(currentItem, context) }) {
+							Icon(
+								imageVector = Icons.Outlined.Share,
+								contentDescription = stringResource(id = R.string.share_item)
+							)
+						}
+						if (currentItem.mediaType == MediaType.Image) {
+							IconButton(onClick = { toggleScreenOrientation(context, activity) }) {
+								Icon(
+									imageVector = Icons.Outlined.ScreenRotation,
+									contentDescription = stringResource(id = R.string.rotate)
+								)
+							}
+						}
+						OverflowMenu(items = overflowItems)
 					}
-					OverflowMenu(items = overflowItems)
-				},
-				colors = TopAppBarDefaults.topAppBarColors(
-					containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
 				)
-			)
+			}
+		},
+		snackbarHost = { SnackbarHost(snackbarHostState) },
+		content = { innerPadding ->
+			HorizontalPager(
+				state = pagerState,
+				key = { index -> items[index].uri },
+				modifier = Modifier.padding(innerPadding)
+			) { index ->
+				when (items[index].mediaType) {
+					MediaType.Image -> ImageScreen(
+						item = items[index],
+						onClick = ::toggleFullScreen
+					)
+					MediaType.Video -> VideoScreen(
+						item = items[index],
+						playWhenReady = index == pagerState.currentPage,
+						window = window,
+						onFullScreen = ::toggleFullScreen,
+						onPlayerError = ::onPlayerError
+					)
+					MediaType.Audio -> {}
+				}
+			}
 		}
-	}
+	)
 }
 
 private fun getOverflowItems(
@@ -151,15 +168,35 @@ private fun getOverflowItems(
 ): List<ActionItem> {
 	return if (item.mediaType == MediaType.Image) {
 		listOf(
-			ActionItem(title = R.string.copy_image, action = { copyImageToClipboard(item, context) }),
-			ActionItem(title = R.string.download_item, action = { scope.launch { downloadMediaItem(item, context) } }),
-			ActionItem(title = R.string.print_image, action = { printImage(item, context) }),
-			ActionItem(title = R.string.set_image_as, action = { setImageAs(item, context) })
+			ActionItem(
+				title = R.string.copy_image,
+				action = { copyImageToClipboard(item, context) },
+				icon = Icons.Outlined.ContentCopy
+			),
+			ActionItem(
+				title = R.string.download_item,
+				action = { scope.launch { downloadMediaItem(item, context) } },
+				icon = Icons.Outlined.SaveAlt
+			),
+			ActionItem(
+				title = R.string.print_image,
+				action = { printImage(item, context) },
+				icon = Icons.Outlined.Print
+			),
+			ActionItem(
+				title = R.string.set_image_as,
+				action = { setImageAs(item, context) },
+				icon = Icons.Outlined.Image
+			)
 		)
 	}
 	else {
 		listOf(
-			ActionItem(title = R.string.download_item, action = { scope.launch { downloadMediaItem(item, context) } }),
+			ActionItem(
+				title = R.string.download_item,
+				action = { scope.launch { downloadMediaItem(item, context) } },
+				icon = Icons.Outlined.SaveAlt
+			),
 		)
 	}
 }
