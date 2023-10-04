@@ -1,8 +1,12 @@
 package io.github.xamdr.noties.ui.media
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.Window
 import android.view.WindowManager
+import android.widget.FrameLayout
 import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -10,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
-import androidx.compose.material.icons.outlined.ImageNotSupported
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -30,16 +33,17 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.Listener
+import androidx.media3.common.util.RepeatModeUtil
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
+import io.github.xamdr.noties.ui.helpers.findActivity
 import io.github.xamdr.noties.ui.helpers.showToast
 import io.github.xamdr.noties.ui.theme.NotiesTheme
+import timber.log.Timber
 import androidx.media3.common.MediaItem as ExoMediaItem
 
 //private const val MIN_BUFFER_MS = 1000
@@ -48,74 +52,71 @@ import androidx.media3.common.MediaItem as ExoMediaItem
 //private const val BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS = 1000
 
 @SuppressLint("OpaqueUnitKey")
+@OptIn(UnstableApi::class)
 @Composable
 fun VideoScreen(
 	item: MediaItem,
 	playWhenReady: Boolean,
-	window: Window
+	window: Window,
+	onFullScreen: () -> Unit,
 ) {
 	val context = LocalContext.current
+	val activity = context.findActivity() ?: return
 	val exoPlayer = rememberPlayer(item = item, playWhenReady = playWhenReady)
-	var isThumbnailVisible by rememberSaveable { mutableStateOf(value = false) }
-	var isPlayerViewVisible by rememberSaveable { mutableStateOf(value = false) }
+	var isPlaying by rememberSaveable { mutableStateOf(playWhenReady) }
+
+	fun toggleFullScreenAndOrientation() {
+		onFullScreen()
+		toggleScreenOrientationIfNecessary(exoPlayer, context, activity)
+	}
 
 	DisposableEffect(
 		Box {
-			if (isThumbnailVisible) {
-				AsyncImage(
-					model = ImageRequest.Builder(LocalContext.current)
-						.data(item.metadata.thumbnail ?: Icons.Outlined.ImageNotSupported)
-						.build(),
-					contentDescription = null,
-					modifier = Modifier
-						.fillMaxSize()
-						.padding(8.dp),
-					alignment = Alignment.Center,
-					contentScale = ContentScale.Fit
-				)
-			}
-			if (isPlayerViewVisible) {
-				AndroidView(
-					modifier = Modifier
-						.fillMaxSize()
-						.padding(8.dp),
-					factory = { context ->
-						PlayerView(context).apply { player = exoPlayer }
+			AndroidView(
+				factory = { context ->
+					PlayerView(context).apply {
+						player = exoPlayer
+						layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+						artworkDisplayMode = PlayerView.ARTWORK_DISPLAY_MODE_OFF
+						setShowNextButton(false)
+						setShowPreviousButton(false)
+						setRepeatToggleModes(RepeatModeUtil.REPEAT_TOGGLE_MODE_ONE)
+						setFullscreenButtonClickListener { toggleFullScreenAndOrientation() }
 					}
-				)
-			}
+				}
+			)
 		}
 	) {
 		val listener = object : Listener {
-			override fun onPlaybackStateChanged(playbackState: Int) {
-				super.onPlaybackStateChanged(playbackState)
-				isThumbnailVisible = playbackState <= Player.STATE_BUFFERING && isPlayerViewVisible.not()
-				isPlayerViewVisible = playbackState > Player.STATE_IDLE && isThumbnailVisible.not()
+			override fun onEvents(player: Player, events: Player.Events) {
+				super.onEvents(player, events)
+				isPlaying = player.isPlaying
 			}
 
 			override fun onPlayerError(error: PlaybackException) {
 				super.onPlayerError(error)
+				Timber.e(error)
 				context.showToast(R.string.error_video_playback)
 			}
 		}
 		exoPlayer.addListener(listener)
-		onDispose { clearPlayer(exoPlayer, listener) }
+		onDispose {
+			exoPlayer.removeListener(listener)
+			exoPlayer.release()
+		}
 	}
 
 	val lifecycleOwner = LocalLifecycleOwner.current
 
 	DisposableEffect(key1 = lifecycleOwner) {
 		val observer = LifecycleEventObserver { _, event ->
-			when (event) {
-				Lifecycle.Event.ON_RESUME -> {
-					exoPlayer.play()
-					window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-				}
-				Lifecycle.Event.ON_PAUSE -> {
-					exoPlayer.pause()
-					window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-				}
-				else -> {}
+			if (event == Lifecycle.Event.ON_RESUME && isPlaying) {
+				exoPlayer.play()
+				window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+			}
+			else if (event == Lifecycle.Event.ON_PAUSE) {
+				exoPlayer.pause()
+				window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 			}
 		}
 		lifecycleOwner.lifecycle.addObserver(observer)
@@ -127,16 +128,6 @@ fun VideoScreen(
 @Composable
 private fun rememberPlayer(item: MediaItem, playWhenReady: Boolean): ExoPlayer {
 	val context = LocalContext.current
-//	val mediaSourceFactory = ProgressiveMediaSource.Factory { ContentDataSource(context) }
-//	val loadControl = DefaultLoadControl.Builder()
-//		.setBufferDurationsMs(
-//			MIN_BUFFER_MS,
-//			MAX_BUFFER_MS,
-//			BUFFER_FOR_PLAYBACK_MS,
-//			BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
-//		)
-//		.build()
-
 	val exoPlayer = remember(key1 = context) {
 		ExoPlayer.Builder(context).build().apply {
 			setMediaItem(ExoMediaItem.fromUri(item.uri))
@@ -147,10 +138,14 @@ private fun rememberPlayer(item: MediaItem, playWhenReady: Boolean): ExoPlayer {
 	return exoPlayer
 }
 
-private fun clearPlayer(player: ExoPlayer, listener: Listener) {
-	player.apply {
-		removeListener(listener)
-		release()
+@OptIn(UnstableApi::class)
+private fun toggleScreenOrientationIfNecessary(exoPlayer: ExoPlayer, context: Context, activity: Activity) {
+	exoPlayer.videoFormat?.let { format ->
+		val width = format.width
+		val height = format.height
+		if (width > height) {
+			toggleScreenOrientation(context, activity)
+		}
 	}
 }
 

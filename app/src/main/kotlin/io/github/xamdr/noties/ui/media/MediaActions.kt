@@ -34,7 +34,7 @@ fun shareMediaItem(item: MediaItem, context: Context) {
 
 fun toggleScreenOrientation(context: Context, activity: Activity) {
 	val newOrientation = if (context.isLandscape()) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-	else ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+		else ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
 	activity.requestedOrientation = newOrientation
 }
 

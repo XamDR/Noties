@@ -92,7 +92,8 @@ fun MediaViewerScreen(
 				MediaType.Video -> VideoScreen(
 					item = items[index],
 					playWhenReady = index == pagerState.currentPage,
-					window = window
+					onFullScreen = ::toggleFullScreen,
+					window = window,
 				)
 				MediaType.Audio -> {}
 			}
