@@ -25,6 +25,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -73,6 +75,7 @@ fun EditorScreen(
 	val items = remember { mutableStateListOf<GridItem>() }
 	val modificationDate = if (note.modificationDate == 0L) DateTimeHelper.formatDateTime(Instant.now().toEpochMilli())
 		else DateTimeHelper.formatDateTime(note.modificationDate)
+	val snackbarHostState = remember { SnackbarHostState() }
 
 	fun addItems(uris: List<Uri>) {
 		if (uris.isEmpty()) return
@@ -122,6 +125,7 @@ fun EditorScreen(
 				}
 			)
 		},
+		snackbarHost = { SnackbarHost(snackbarHostState) },
 		content = { innerPadding ->
 			Column(
 				modifier = Modifier
@@ -156,12 +160,13 @@ fun EditorScreen(
 			}
 			if (openMenu) {
 				EditorMenuBottomSheet(
-					sheetState = SheetState(skipPartiallyExpanded = true)
+					sheetState = SheetState(skipPartiallyExpanded = true),
+					onDismissRequest = { openMenu = false }
 				) { item ->
 					openMenu = false
 					when (item.id) {
 						R.id.attach_media -> pickMediaLauncher.launch(arrayOf("image/*", "video/*"))
-						R.id.take_picture -> {}
+						R.id.take_picture -> {} //takePictureLauncher.launch()
 					}
 				}
 			}

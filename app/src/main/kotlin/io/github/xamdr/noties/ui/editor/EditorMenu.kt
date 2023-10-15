@@ -26,10 +26,11 @@ import io.github.xamdr.noties.ui.theme.NotiesTheme
 @Composable
 fun EditorMenuBottomSheet(
 	sheetState: SheetState,
+	onDismissRequest: () -> Unit,
 	onItemClick: (EditorMenuItem) -> Unit,
 ) {
 	ModalBottomSheet(
-		onDismissRequest = {},
+		onDismissRequest = onDismissRequest,
 		sheetState = sheetState,
 		dragHandle = {
 			Divider(
@@ -88,14 +89,20 @@ private fun EditorMenuItem(item: EditorMenuItem, onClick: () -> Unit) {
 		verticalAlignment = Alignment.CenterVertically,
 		modifier = Modifier
 			.fillMaxWidth()
-			.padding(16.dp)
+			.padding(vertical = 8.dp)
 			.clickable(onClick = onClick)
 	) {
-		Icon(imageVector = item.icon, contentDescription = null)
+		Icon(
+			imageVector = item.icon,
+			contentDescription = null,
+			modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 4.dp)
+		)
 		Text(
 			text = stringResource(id = item.description),
 			style = MaterialTheme.typography.titleMedium,
-			modifier = Modifier.weight(1f)
+			modifier = Modifier
+				.weight(1f)
+				.padding(start = 4.dp, top = 8.dp, bottom = 8.dp, end = 16.dp)
 		)
 	}
 }

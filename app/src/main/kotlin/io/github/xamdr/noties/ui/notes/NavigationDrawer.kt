@@ -94,7 +94,6 @@ fun NavigationDrawer(
 	ModalNavigationDrawer(
 		modifier = Modifier,
 		drawerState = drawerState,
-		gesturesEnabled = false,
 		drawerContent = {
 			ModalDrawerSheet {
 				DrawerHeader(src = wallpaperUri) {

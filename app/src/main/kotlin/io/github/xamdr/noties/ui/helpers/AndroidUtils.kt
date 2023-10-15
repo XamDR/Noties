@@ -11,6 +11,7 @@ import android.os.Parcelable
 import android.view.Window
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultRegistry
 import androidx.annotation.*
@@ -201,7 +202,7 @@ fun <T : Parcelable> Fragment.setNavigationResult(key: String, value: T) {
 	this.findNavController().previousBackStackEntry?.savedStateHandle?.set(key, value)
 }
 
-tailrec fun Context.findActivity(): Activity? = when (this) {
-	is Activity -> this
+tailrec fun Context.findActivity(): ComponentActivity? = when (this) {
+	is ComponentActivity -> this
 	else -> (this as? ContextWrapper)?.baseContext?.findActivity()
 }
