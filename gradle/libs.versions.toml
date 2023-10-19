@@ -29,6 +29,7 @@ ksp = "1.9.0-1.0.12"
 activity-compose = "1.7.2"
 compose-bom = "2023.09.00"
 hilt-compose = "1.0.0"
+uiUtil = "1.5.3"
 
 [libraries]
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
@@ -47,6 +48,7 @@ androidx-exif = { group = "androidx.exifinterface", name = "exifinterface", vers
 androidx-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidxCoreTesting" }
 androidx-junit-testing = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
 androidx-espresso-testing = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
+androidx-ui-util = { module = "androidx.compose.ui:ui-util", version.ref = "uiUtil" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
