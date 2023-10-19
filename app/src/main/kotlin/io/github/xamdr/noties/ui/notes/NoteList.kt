@@ -5,6 +5,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +23,7 @@ import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissState
@@ -34,7 +37,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -60,9 +68,29 @@ import timber.log.Timber
 fun NoteList(
 	modifier: Modifier,
 	notes: List<Note>,
+	inSelectionMode: Boolean,
 	onNoteClick: (Note) -> Unit,
+	onNoteLongClick: () -> Unit,
 	onNoteMovedToTrash: (Note) -> Unit
 ) {
+	val selectedIds = remember { mutableStateListOf<Long>() }
+	var selected by rememberSaveable { mutableStateOf(value = false) }
+
+	fun onClick(note: Note) {
+		if (inSelectionMode) {
+			selected = !selected
+			if (selected) {
+				selectedIds.add(note.id)
+			}
+			else {
+				selectedIds.remove(note.id)
+			}
+		}
+		else {
+			onNoteClick(note)
+		}
+	}
+
 	LazyColumn(
 		modifier = modifier,
 		contentPadding = PaddingValues(16.dp),
@@ -72,6 +100,7 @@ fun NoteList(
 			count = notes.size,
 			key = { index -> notes[index].id.toInt() }
 		) { index ->
+			selected = selectedIds.contains(notes[index].id)
 			val currentNote by rememberUpdatedState(newValue = notes[index])
 			val dismissState = rememberDismissState(confirmValueChange = { dissmissValue ->
 				when (dissmissValue) {
@@ -87,7 +116,17 @@ fun NoteList(
 			SwipeToDismiss(
 				state = dismissState,
 				background = { DismissBackground(dismissState) },
-				dismissContent = { NoteItem(note = notes[index], onClick = onNoteClick) },
+				dismissContent = {
+					NoteItem(
+						note = notes[index],
+						selected = selected,
+						onClick = ::onClick,
+						onLongClick = {
+							onNoteLongClick()
+							selectedIds.add(notes[index].id)
+						}
+					)
+				},
 				modifier = Modifier.animateItemPlacement()
 			)
 		}
@@ -192,16 +231,32 @@ fun NoteList(modifier: Modifier) {
 @Composable
 private fun NoteListPreview() = NotiesTheme { NoteList(Modifier) }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun NoteItem(note: Note, onClick: (note: Note) -> Unit) {
+private fun NoteItem(
+	note: Note,
+	selected: Boolean,
+	onClick: (note: Note) -> Unit,
+	onLongClick: () -> Unit
+) {
 	OutlinedCard(
-		modifier = Modifier.fillMaxWidth(),
 		shape = RoundedCornerShape(16.dp),
 		colors = CardDefaults.cardColors(containerColor = Color.Transparent),
 		elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-		border = BorderStroke(width = 1.5.dp, color = MaterialTheme.colorScheme.surfaceVariant),
-		onClick = { onClick(note) }
+		border = BorderStroke(
+			width = 1.5.dp,
+			color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+		),
+		modifier = Modifier
+			.fillMaxWidth()
+			.combinedClickable(
+				interactionSource = remember { MutableInteractionSource() },
+				indication = rememberRipple(),
+				onClickLabel = stringResource(id = R.string.navigate_editor),
+				onClick = { onClick(note) },
+				onLongClickLabel = stringResource(id = R.string.enter_multiselection_mode),
+				onLongClick = onLongClick
+			)
 	) {
 		Column {
 			if (note.previewItem != null) {

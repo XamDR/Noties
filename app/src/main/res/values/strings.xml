@@ -47,6 +47,8 @@
 	<string name="confirme_device_credential_title">Protected note</string>
 	<string name="confirme_device_credential_desc">To continue, please unlock your device to see the contents of this note.</string>
 	<string name="error_auth">Error. Unable to verify your identity.</string>
+	<string name="navigate_editor">Navigate to editor</string>
+	<string name="enter_multiselection_mode">Enter multiselection mode</string>
 
 	<!-- Tags Fragment -->
 	<string name="tags">Tags</string>
@@ -84,7 +86,7 @@
 	<string name="move_notes_title">Move notes to</string>
 	<string name="select_all">Select all</string>
 	<string name="delete_notes_question"><![CDATA[Are you sure you want to <b>delete permanently</b> the selected notes?]]></string>
-	<string name="delete_notes_title">Delete notes</string>
+	<string name="exit_multiselection_mode">Exit multiselection mode</string>
 
 	<!-- Editor Fragment -->
 	<string name="editor">Title</string>

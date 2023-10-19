@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Article
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material3.CircularProgressIndicator
@@ -23,11 +24,16 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -66,6 +72,9 @@ fun NotesScreen(
 	val noteSavedMessage = stringResource(id = R.string.note_saved)
 	val noteUpdatedMessage = stringResource(id = R.string.note_updated)
 
+	var inSelectionMode by rememberSaveable { mutableStateOf(value = false) }
+	var selectedNotes by rememberSaveable { mutableIntStateOf(value = 0) }
+
 	LaunchedEffect(key1 = Unit) {
 		when (noteAction) {
 			NoteAction.DeleteEmptyNote -> {}
@@ -77,34 +86,54 @@ fun NotesScreen(
 
 	Scaffold(
 		topBar = {
-			SearchBar(
-				query = query,
-				onQueryChange = onQueryChange,
-				onSearch = onSearch,
-				active = active,
-				onActiveChange = onActiveChange,
-				placeholder = { Text(text = stringResource(id = R.string.search_notes)) },
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(8.dp),
-				leadingIcon = {
-					IconButton(onClick = onLeadingIconClick) {
-						Icon(
-							imageVector = Icons.Filled.Menu,
-							contentDescription = "Open drawer"
-						)
+			if (inSelectionMode.not()) {
+				SearchBar(
+					query = query,
+					onQueryChange = onQueryChange,
+					onSearch = onSearch,
+					active = active,
+					onActiveChange = onActiveChange,
+					placeholder = { Text(text = stringResource(id = R.string.search_notes)) },
+					modifier = Modifier
+						.fillMaxWidth()
+						.padding(8.dp),
+					leadingIcon = {
+						IconButton(onClick = onLeadingIconClick) {
+							Icon(
+								imageVector = Icons.Filled.Menu,
+								contentDescription = "Open drawer"
+							)
+						}
+					},
+					trailingIcon = {
+						IconButton(onClick = onTrailingIconClick) {
+							Icon(
+								imageVector = Icons.Outlined.GridView,
+								contentDescription = stringResource(id = R.string.grid_layout_view)
+							)
+						}
+					},
+					content = searchContent
+				)
+			}
+			else {
+				TopAppBar(
+					title = { Text(text = "$selectedNotes/${notes?.size}") },
+					navigationIcon = {
+						IconButton(
+							onClick = {
+								inSelectionMode = false
+								selectedNotes = 0
+							}
+						) {
+							Icon(
+								imageVector = Icons.Outlined.ArrowBack,
+								contentDescription = stringResource(id = R.string.exit_multiselection_mode)
+							)
+						}
 					}
-				},
-				trailingIcon = {
-					IconButton(onClick = onTrailingIconClick) {
-						Icon(
-							imageVector = Icons.Outlined.GridView,
-							contentDescription = stringResource(id = R.string.grid_layout_view)
-						)
-					}
-				},
-				content = searchContent
-			)
+				)
+			}
 		},
 		snackbarHost = { SnackbarHost(snackbarHostState) },
 		floatingActionButton = {
@@ -135,7 +164,16 @@ fun NotesScreen(
 					NoteList(
 						modifier = Modifier.padding(innerPadding),
 						notes = it,
-						onNoteClick = onItemClick
+						inSelectionMode = inSelectionMode,
+						onNoteClick = { note ->
+							if (inSelectionMode) {
+								selectedNotes++
+							}
+							else {
+								onItemClick(note)
+							}
+						},
+						onNoteLongClick = { inSelectionMode = true }
 					) { note ->
 						scope.launch {
 							val noteMovedToTrash = viewModel.moveNotesToTrash(listOf(note))
