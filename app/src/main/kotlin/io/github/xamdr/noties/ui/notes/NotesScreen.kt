@@ -27,13 +27,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -45,6 +42,7 @@ import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.components.EmptyView
 import io.github.xamdr.noties.ui.editor.NoteAction
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
+import io.github.xamdr.noties.ui.helpers.rememberMutableStateList
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
 
@@ -73,8 +71,8 @@ fun NotesScreen(
 	val noteSavedMessage = stringResource(id = R.string.note_saved)
 	val noteUpdatedMessage = stringResource(id = R.string.note_updated)
 
-	var inSelectionMode by rememberSaveable { mutableStateOf(value = false) }
-	var selectedNotes by rememberSaveable { mutableIntStateOf(value = 0) }
+	val selectedIds = rememberMutableStateList<Long>()
+	val inSelectionMode by remember { derivedStateOf { selectedIds.isNotEmpty() } }
 
 	LaunchedEffect(key1 = Unit) {
 		when (noteAction) {
@@ -119,14 +117,9 @@ fun NotesScreen(
 			}
 			else {
 				TopAppBar(
-					title = { Text(text = "$selectedNotes/${notes?.size}") },
+					title = { Text(text = "${selectedIds.size}/${notes?.size}") },
 					navigationIcon = {
-						IconButton(
-							onClick = {
-								inSelectionMode = false
-								selectedNotes = 0
-							}
-						) {
+						IconButton(onClick = { selectedIds.clear() }) {
 							Icon(
 								imageVector = Icons.Outlined.ArrowBack,
 								contentDescription = stringResource(id = R.string.exit_multiselection_mode)
@@ -165,13 +158,9 @@ fun NotesScreen(
 					NoteList(
 						modifier = Modifier.padding(innerPadding),
 						notes = it,
+						selectedIds = selectedIds,
 						inSelectionMode = inSelectionMode,
 						onNoteClick = onItemClick,
-						onNoteLongClick = { inSelectionMode = true },
-						onNoteSelected = { selected ->
-							if (selected) selectedNotes++ else selectedNotes--
-							if (selectedNotes == 0) inSelectionMode = false
-						},
 						onNoteMovedToTrash = { note ->
 							scope.launch {
 								val noteMovedToTrash = viewModel.moveNotesToTrash(listOf(note))

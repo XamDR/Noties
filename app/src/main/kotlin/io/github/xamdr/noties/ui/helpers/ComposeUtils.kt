@@ -7,12 +7,17 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusRequester
@@ -73,3 +78,13 @@ fun Modifier.clickableWithoutRipple(onClick: () -> Unit) = composed(
 		)
 	}
 )
+
+@Composable
+fun <T: Any> rememberMutableStateList(vararg elements: T): SnapshotStateList<T> {
+	return rememberSaveable(saver = listSaver(
+		save = { it.toList() },
+		restore = { it.toMutableStateList() }
+	)) {
+		elements.toList().toMutableStateList()
+	}
+}

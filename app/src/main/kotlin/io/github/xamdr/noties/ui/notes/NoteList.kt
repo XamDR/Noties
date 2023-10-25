@@ -37,11 +37,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -66,36 +63,26 @@ import io.github.xamdr.noties.ui.theme.NotiesTheme
 fun NoteList(
 	modifier: Modifier,
 	notes: List<Note>,
+	selectedIds: MutableList<Long>,
 	inSelectionMode: Boolean,
 	onNoteClick: (Note) -> Unit,
-	onNoteLongClick: () -> Unit,
-	onNoteSelected: (selected: Boolean) -> Unit,
 	onNoteMovedToTrash: (Note) -> Unit,
 	onNoteArchived: (Note) -> Unit
 ) {
-	var selectedIds by rememberSaveable { mutableStateOf(emptySet<Long>()) }
-
 	fun onClick(note: Note, selected: Boolean) {
 		if (inSelectionMode) {
 			var tempSelected = selected
 			tempSelected = !tempSelected
 			if (tempSelected) {
-				selectedIds += note.id
+				selectedIds.add(note.id)
 			}
 			else {
-				selectedIds -= note.id
+				selectedIds.remove(note.id)
 			}
-			onNoteSelected(tempSelected)
 		}
 		else {
 			onNoteClick(note)
 		}
-	}
-
-	fun onLongClick(note: Note) {
-		onNoteLongClick()
-		selectedIds += note.id
-		onNoteSelected(true)
 	}
 
 	LazyColumn(
@@ -128,7 +115,7 @@ fun NoteList(
 						note = notes[index],
 						selected = selected,
 						onClick = { note -> onClick(note, selected) },
-						onLongClick = { onLongClick(notes[index]) }
+						onLongClick = { selectedIds.add(notes[index].id) }
 					)
 				},
 				modifier = Modifier.animateItemPlacement()
