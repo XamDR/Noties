@@ -36,7 +36,7 @@ object NotificationHelper {
 			PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
 		)
 		val `when` = note.reminderDate ?: Instant.now().toEpochMilli()
-		val contentText = if (note.isTaskList) SpannableConverter.convertToSpannable(note.text) else note.text
+		val contentText = if (note.hasTaskList) SpannableConverter.convertToSpannable(note.text) else note.text
 		return NotificationCompat.Builder(context, CHANNEL_ID)
 			.setSmallIcon(R.drawable.ic_noties_notification)
 			.setContentTitle(note.title.ifEmpty { context.getString(R.string.app_name) })

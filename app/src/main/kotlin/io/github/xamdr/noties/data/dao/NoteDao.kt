@@ -13,7 +13,7 @@ interface NoteDao {
 
 	@Query("SELECT * FROM Notes " +
 			"LEFT JOIN MediaItems ON Notes.id = MediaItems.note_id " +
-			"WHERE instr(Notes.tags, :tagName) AND Notes.is_trashed <> 1 " +
+			"WHERE instr(Notes.tags, :tagName) AND Notes.trashed <> 1 " +
 			"ORDER BY Notes.id DESC")
 	fun getNotesByTag(tagName: String): Flow<Map<DatabaseNoteEntity, List<DatabaseMediaItemEntity>>>
 
@@ -24,7 +24,7 @@ interface NoteDao {
 
 	@Query("SELECT * FROM Notes " +
 			"LEFT JOIN MediaItems ON Notes.id = MediaItems.note_id " +
-			"WHERE Notes.is_trashed <> 1 " +
+			"WHERE Notes.trashed <> 1 " +
 			"ORDER BY Notes.id DESC")
 	fun getAllNotes(): Flow<Map<DatabaseNoteEntity, List<DatabaseMediaItemEntity>>>
 
@@ -36,7 +36,7 @@ interface NoteDao {
 
 	@Query("SELECT * FROM Notes " +
 			"LEFT JOIN MediaItems ON Notes.id = MediaItems.note_id " +
-			"WHERE Notes.is_trashed = 1 " +
+			"WHERE Notes.trashed = 1 " +
 			"ORDER BY Notes.id DESC")
 	fun getTrashedNotes(): Flow<Map<DatabaseNoteEntity, List<DatabaseMediaItemEntity>>>
 

@@ -43,7 +43,7 @@ object MediaStorageManager {
 		"$directory/$fileName"
 	}
 
-	@Suppress("DEPRECATION")
+
 	fun savePicture(context: Context): Uri? {
 		val fileName = buildString {
 			append("IMG_")
@@ -100,7 +100,6 @@ object MediaStorageManager {
 		}
 	}
 
-	@Suppress("DEPRECATION")
 	fun saveVideo(context: Context): Uri? {
 		val fileName = buildString {
 			append("VID_")
@@ -159,7 +158,7 @@ object MediaStorageManager {
 
 	fun deleteItems(context: Context, items: List<MediaItem>) {
 		for (item in items) {
-			val fileName = item.uri?.let { DocumentFile.fromSingleUri(context, it)?.name }
+			val fileName = item.uri.let { DocumentFile.fromSingleUri(context, it)?.name }
 			val thumbnailFileName = item.metadata.thumbnail?.let { DocumentFile.fromSingleUri(context, it)?.name }
 			fileName?.let {
 				val result = deleteItem(context, it, MediaHelper.isImage(context, item.uri))

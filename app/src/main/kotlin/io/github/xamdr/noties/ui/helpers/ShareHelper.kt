@@ -31,7 +31,7 @@ object ShareHelper {
 			.setText(text)
 			.setChooserTitle(R.string.chooser_dialog_title)
 		for (item in items) {
-			item.uri?.let { shareIntent.addStream(it) }
+			item.uri.let { shareIntent.addStream(it) }
 		}
 		shareIntent.startChooser()
 	}

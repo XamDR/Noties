@@ -13,12 +13,14 @@ data class DatabaseNoteEntity(
 	@ColumnInfo(name = "modification_date") val modificationDate: Long = 0,
 	@ColumnInfo(name = "color") val color: Int? = null,
 	@ColumnInfo(name = "urls") val urls: List<String> = emptyList(),
-	@ColumnInfo(name = "is_protected") val isProtected: Boolean = false,
-	@ColumnInfo(name = "is_trashed") val isTrashed: Boolean = false,
-	@ColumnInfo(name = "is_pinned") val isPinned: Boolean = false,
-	@ColumnInfo(name = "is_todo_list") val isTaskList: Boolean = false,
+	@ColumnInfo(name = "protected") val protected: Boolean = false,
+	@ColumnInfo(name = "trashed") val trashed: Boolean = false,
+	@ColumnInfo(name = "archived") val archived: Boolean = false,
+	@ColumnInfo(name = "pinned") val pinned: Boolean = false,
+	@ColumnInfo(name = "has_task_list") val hasTaskList: Boolean = false,
 	@ColumnInfo(name = "reminder_date") val reminderDate: Long? = null,
-	@ColumnInfo(name = "tags") val tags: List<String> = emptyList()) {
+	@ColumnInfo(name = "tags") val tags: List<String> = emptyList()
+) {
 
 	fun asDomainModel(): Note {
 		return Note(
@@ -28,10 +30,10 @@ data class DatabaseNoteEntity(
 			modificationDate = this.modificationDate,
 			color = this.color,
 			urls = this.urls,
-			isProtected = this.isProtected,
-			isTrashed = this.isTrashed,
-			isPinned = this.isPinned,
-			isTaskList = this.isTaskList,
+			protected = this.protected,
+			trashed = this.trashed,
+			pinned = this.pinned,
+			hasTaskList = this.hasTaskList,
 			reminderDate = this.reminderDate,
 			tags = this.tags
 		)

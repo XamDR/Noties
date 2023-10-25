@@ -67,7 +67,8 @@ fun NotesScreen(
 	val notes by viewModel.getNotesByTag(String.Empty).collectAsStateWithLifecycle(initialValue = null)
 	val scope = rememberCoroutineScope()
 	val snackbarHostState = remember { SnackbarHostState() }
-	val message = stringResource(id = R.string.deleted_note)
+	val deleteNoteMessage = stringResource(id = R.string.deleted_note)
+	val archivedNoteMessage = stringResource(id = R.string.archived_note)
 	val actionLabel = stringResource(id = R.string.undo)
 	val noteSavedMessage = stringResource(id = R.string.note_saved)
 	val noteUpdatedMessage = stringResource(id = R.string.note_updated)
@@ -165,28 +166,39 @@ fun NotesScreen(
 						modifier = Modifier.padding(innerPadding),
 						notes = it,
 						inSelectionMode = inSelectionMode,
-						onNoteClick = { note ->
-							if (inSelectionMode) {
-								selectedNotes++
-							}
-							else {
-								onItemClick(note)
+						onNoteClick = onItemClick,
+						onNoteLongClick = { inSelectionMode = true },
+						onNoteSelected = { selected ->
+							if (selected) selectedNotes++ else selectedNotes--
+							if (selectedNotes == 0) inSelectionMode = false
+						},
+						onNoteMovedToTrash = { note ->
+							scope.launch {
+								val noteMovedToTrash = viewModel.moveNotesToTrash(listOf(note))
+								when (snackbarHostState.showSnackbar(
+									message = deleteNoteMessage,
+									actionLabel = actionLabel,
+									duration = SnackbarDuration.Short
+								)) {
+									SnackbarResult.ActionPerformed -> viewModel.restoreNotesFromTrash(noteMovedToTrash)
+									else -> {}
+								}
 							}
 						},
-						onNoteLongClick = { inSelectionMode = true }
-					) { note ->
-						scope.launch {
-							val noteMovedToTrash = viewModel.moveNotesToTrash(listOf(note))
-							when (snackbarHostState.showSnackbar(
-								message = message,
-								actionLabel = actionLabel,
-								duration = SnackbarDuration.Short))
-							{
-								SnackbarResult.ActionPerformed -> viewModel.restoreNotes(noteMovedToTrash)
-								else -> {}
+						onNoteArchived = { note ->
+							scope.launch {
+								val archivedNote = viewModel.archiveNotes(listOf(note))
+								when (snackbarHostState.showSnackbar(
+									message = archivedNoteMessage,
+									actionLabel = actionLabel,
+									duration = SnackbarDuration.Short
+								)) {
+									SnackbarResult.ActionPerformed -> viewModel.restoreNotesArchived(archivedNote)
+									else -> {}
+								}
 							}
 						}
-					}
+					)
 				}
 			}
 		}

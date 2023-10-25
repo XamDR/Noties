@@ -7,10 +7,11 @@ data class NetworkNoteEntity(
 	val modificationDate: Long = 0,
 	val color: Int? = null,
 	val urls: List<String> = emptyList(),
-	val isProtected: Boolean = false,
-	val isTrashed: Boolean = false,
-	val isPinned: Boolean = false,
-	val isTaskList: Boolean = false,
+	val protected: Boolean = false,
+	val trashed: Boolean = false,
+	val archived: Boolean = false,
+	val pinned: Boolean = false,
+	val hasTaskList: Boolean = false,
 	val reminderDate: Long? = null,
 	val tags: List<String> = emptyList()
 ) {
@@ -23,10 +24,11 @@ data class NetworkNoteEntity(
 			modificationDate = this.modificationDate,
 			color = this.color,
 			urls = this.urls,
-			isProtected = this.isProtected,
-			isTrashed = this.isTrashed,
-			isPinned = this.isPinned,
-			isTaskList = this.isTaskList,
+			protected = this.protected,
+			trashed = this.trashed,
+			archived = this.archived,
+			pinned = this.pinned,
+			hasTaskList = this.hasTaskList,
 			reminderDate = this.reminderDate,
 			tags = this.tags
 		)

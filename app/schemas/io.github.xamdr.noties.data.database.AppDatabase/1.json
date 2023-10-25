@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "bd34be33920e531dbaea6adcb08ebc28",
+    "identityHash": "2c31d76ed2df8432e2c4e7da7ef21f7d",
     "entities": [
       {
         "tableName": "Tags",
@@ -42,7 +42,7 @@
       },
       {
         "tableName": "Notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `modification_date` INTEGER NOT NULL, `color` INTEGER, `urls` TEXT NOT NULL, `is_protected` INTEGER NOT NULL, `is_trashed` INTEGER NOT NULL, `is_pinned` INTEGER NOT NULL, `is_todo_list` INTEGER NOT NULL, `reminder_date` INTEGER, `tags` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `modification_date` INTEGER NOT NULL, `color` INTEGER, `urls` TEXT NOT NULL, `protected` INTEGER NOT NULL, `trashed` INTEGER NOT NULL, `archived` INTEGER NOT NULL, `pinned` INTEGER NOT NULL, `has_task_list` INTEGER NOT NULL, `reminder_date` INTEGER, `tags` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -81,26 +81,32 @@
             "notNull": true
           },
           {
-            "fieldPath": "isProtected",
-            "columnName": "is_protected",
+            "fieldPath": "protected",
+            "columnName": "protected",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "isTrashed",
-            "columnName": "is_trashed",
+            "fieldPath": "trashed",
+            "columnName": "trashed",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "isPinned",
-            "columnName": "is_pinned",
+            "fieldPath": "archived",
+            "columnName": "archived",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "isTaskList",
-            "columnName": "is_todo_list",
+            "fieldPath": "pinned",
+            "columnName": "pinned",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasTaskList",
+            "columnName": "has_task_list",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -192,7 +198,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bd34be33920e531dbaea6adcb08ebc28')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2c31d76ed2df8432e2c4e7da7ef21f7d')"
     ]
   }
 }

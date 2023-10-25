@@ -37,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -61,7 +60,6 @@ import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.theme.NotiesTheme
-import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -71,24 +69,33 @@ fun NoteList(
 	inSelectionMode: Boolean,
 	onNoteClick: (Note) -> Unit,
 	onNoteLongClick: () -> Unit,
-	onNoteMovedToTrash: (Note) -> Unit
+	onNoteSelected: (selected: Boolean) -> Unit,
+	onNoteMovedToTrash: (Note) -> Unit,
+	onNoteArchived: (Note) -> Unit
 ) {
-	val selectedIds = remember { mutableStateListOf<Long>() }
-	var selected by rememberSaveable { mutableStateOf(value = false) }
+	var selectedIds by rememberSaveable { mutableStateOf(emptySet<Long>()) }
 
-	fun onClick(note: Note) {
+	fun onClick(note: Note, selected: Boolean) {
 		if (inSelectionMode) {
-			selected = !selected
-			if (selected) {
-				selectedIds.add(note.id)
+			var tempSelected = selected
+			tempSelected = !tempSelected
+			if (tempSelected) {
+				selectedIds += note.id
 			}
 			else {
-				selectedIds.remove(note.id)
+				selectedIds -= note.id
 			}
+			onNoteSelected(tempSelected)
 		}
 		else {
 			onNoteClick(note)
 		}
+	}
+
+	fun onLongClick(note: Note) {
+		onNoteLongClick()
+		selectedIds += note.id
+		onNoteSelected(true)
 	}
 
 	LazyColumn(
@@ -100,12 +107,12 @@ fun NoteList(
 			count = notes.size,
 			key = { index -> notes[index].id.toInt() }
 		) { index ->
-			selected = selectedIds.contains(notes[index].id)
+			val selected = selectedIds.contains(notes[index].id)
 			val currentNote by rememberUpdatedState(newValue = notes[index])
 			val dismissState = rememberDismissState(confirmValueChange = { dissmissValue ->
 				when (dissmissValue) {
 					DismissValue.DismissedToEnd -> {
-						Timber.d("Note archived"); true
+						onNoteArchived(currentNote); true
 					}
 					DismissValue.DismissedToStart -> {
 						onNoteMovedToTrash(currentNote); true
@@ -120,11 +127,8 @@ fun NoteList(
 					NoteItem(
 						note = notes[index],
 						selected = selected,
-						onClick = ::onClick,
-						onLongClick = {
-							onNoteLongClick()
-							selectedIds.add(notes[index].id)
-						}
+						onClick = { note -> onClick(note, selected) },
+						onLongClick = { onLongClick(notes[index]) }
 					)
 				},
 				modifier = Modifier.animateItemPlacement()

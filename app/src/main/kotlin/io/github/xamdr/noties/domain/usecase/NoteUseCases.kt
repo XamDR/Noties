@@ -111,7 +111,7 @@ class MoveNotesToTrashUseCase @Inject constructor(private val noteRepository: No
 	suspend operator fun invoke(notes: List<Note>): List<Note> {
 		val trashedNotes = mutableListOf<Note>()
 		for (note in notes) {
-			val trashedNote = note.copy(isTrashed =  true)
+			val trashedNote = note.copy(trashed = true)
 			noteRepository.updateNote(trashedNote.asDatabaseEntity())
 			trashedNotes.add(trashedNote)
 		}
@@ -119,11 +119,24 @@ class MoveNotesToTrashUseCase @Inject constructor(private val noteRepository: No
 	}
 }
 
+class ArchiveNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
+
+	suspend operator fun invoke(notes: List<Note>): List<Note> {
+		val archivedNotes = mutableListOf<Note>()
+		for (note in notes) {
+			val archivedNote = note.copy(archived = true)
+			noteRepository.updateNote(archivedNote.asDatabaseEntity())
+			archivedNotes.add(archivedNote)
+		}
+		return archivedNotes
+	}
+}
+
 class RestoreNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
 
-	suspend operator fun invoke(notes: List<Note>) {
+	suspend operator fun invoke(notes: List<Note>, fromTrash: Boolean) {
 		for (note in notes) {
-			val restoredNote = note.copy(isTrashed = false)
+			val restoredNote = if (fromTrash) note.copy(trashed = false) else note.copy(archived = false)
 			noteRepository.updateNote(restoredNote.asDatabaseEntity())
 		}
 	}
