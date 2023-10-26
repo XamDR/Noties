@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Article
+import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,10 +30,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,6 +47,7 @@ import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.components.EmptyView
 import io.github.xamdr.noties.ui.editor.NoteAction
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
+import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
 import io.github.xamdr.noties.ui.helpers.rememberMutableStateList
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
@@ -63,6 +69,7 @@ fun NotesScreen(
 	viewModel: NotesViewModel = hiltViewModel()
 ) {
 	val notes by viewModel.getNotesByTag(String.Empty).collectAsStateWithLifecycle(initialValue = null)
+	val context = LocalContext.current
 	val scope = rememberCoroutineScope()
 	val snackbarHostState = remember { SnackbarHostState() }
 	val deleteNoteMessage = stringResource(id = R.string.deleted_note)
@@ -73,6 +80,7 @@ fun NotesScreen(
 
 	val selectedIds = rememberMutableStateList<Long>()
 	val inSelectionMode by remember { derivedStateOf { selectedIds.isNotEmpty() } }
+	var showDeleteNotesDialog by rememberSaveable { mutableStateOf(value = false) }
 
 	LaunchedEffect(key1 = Unit) {
 		when (noteAction) {
@@ -80,6 +88,16 @@ fun NotesScreen(
 			NoteAction.InsertNote -> snackbarHostState.showSnackbar(noteSavedMessage)
 			NoteAction.NoAction -> {}
 			NoteAction.UpdateNote -> snackbarHostState.showSnackbar(noteUpdatedMessage)
+		}
+	}
+
+	fun deleteNotes() {
+		scope.launch {
+			viewModel.deleteNotes(selectedIds)
+			val selectedNotes = notes?.filter { note -> selectedIds.contains(note.id) }
+			selectedNotes?.forEach { note -> MediaStorageManager.deleteItems(context, note.items) }
+			showDeleteNotesDialog = false
+			selectedIds.clear()
 		}
 	}
 
@@ -123,6 +141,14 @@ fun NotesScreen(
 							Icon(
 								imageVector = Icons.Outlined.ArrowBack,
 								contentDescription = stringResource(id = R.string.exit_multiselection_mode)
+							)
+						}
+					},
+					actions = {
+						IconButton(onClick = { showDeleteNotesDialog = true }) {
+							Icon(
+								imageVector = Icons.Outlined.DeleteForever,
+								contentDescription = stringResource(id = R.string.delete_notes)
 							)
 						}
 					}
@@ -189,6 +215,12 @@ fun NotesScreen(
 						}
 					)
 				}
+			}
+			if (showDeleteNotesDialog) {
+				DeleteNotesDialog(
+					onDeleteNotes = ::deleteNotes,
+					onDismiss = { showDeleteNotesDialog = false }
+				)
 			}
 		}
 	)

@@ -39,5 +39,5 @@ class NotesViewModel @Inject constructor(
 
 	suspend fun emptyRecycleBin(notes: List<Note>): Int = emptyTrashUseCase(notes)
 
-	suspend fun deleteNotes(notes: List<Note>) = deleteNotesUseCase(notes)
+	suspend fun deleteNotes(ids: List<Long>) = deleteNotesUseCase(ids)
 }

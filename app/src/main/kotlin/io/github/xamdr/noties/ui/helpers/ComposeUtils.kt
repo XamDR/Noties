@@ -1,5 +1,8 @@
 package io.github.xamdr.noties.ui.helpers
 
+import android.text.Annotation
+import android.text.SpannedString
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -26,8 +29,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.IntSize
+import androidx.core.text.getSpans
 
 fun Modifier.showSoftKeyboardOnFocus(focusRequester: FocusRequester): Modifier {
 	return this
@@ -87,4 +94,27 @@ fun <T: Any> rememberMutableStateList(vararg elements: T): SnapshotStateList<T> 
 	)) {
 		elements.toList().toMutableStateList()
 	}
+}
+
+@Composable
+fun annotatedStringResource(
+	@StringRes id: Int,
+	spanStyles: (Annotation) -> SpanStyle? = { null }
+): AnnotatedString {
+	val resources = LocalContext.current.resources
+	val spannedString = SpannedString(resources.getText(id))
+	val resultBuilder = AnnotatedString.Builder()
+	resultBuilder.append(spannedString.toString())
+	spannedString.getSpans<Annotation>(0, spannedString.length).forEach { annotation ->
+		val spanStart = spannedString.getSpanStart(annotation)
+		val spanEnd = spannedString.getSpanEnd(annotation)
+		resultBuilder.addStringAnnotation(
+			tag = annotation.key,
+			annotation = annotation.value,
+			start = spanStart,
+			end = spanEnd
+		)
+		spanStyles(annotation)?.let { resultBuilder.addStyle(it, spanStart, spanEnd) }
+	}
+	return resultBuilder.toAnnotatedString()
 }

@@ -47,7 +47,7 @@ class EditorViewModel @Inject constructor(
 		val originalNote = getNoteById(noteId)
 		return if (note != originalNote) {
 			if (note.isEmpty()) {
-				deleteNotesUseCase(listOf(note))
+				deleteNotesUseCase(listOf(note.id))
 				NoteAction.DeleteEmptyNote
 			}
 			else {

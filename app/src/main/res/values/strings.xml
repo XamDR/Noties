@@ -86,7 +86,8 @@
 	<string name="move_note">Move notes…</string>
 	<string name="move_notes_title">Move notes to</string>
 	<string name="select_all">Select all</string>
-	<string name="delete_notes_question"><![CDATA[Are you sure you want to <b>delete permanently</b> the selected notes?]]></string>
+	<string name="delete_notes_title">Delete notes</string>
+	<string name="delete_notes_question">Are you sure you want to <annotation format="bold">delete permanently</annotation> the selected notes?</string>
 	<string name="exit_multiselection_mode">Exit multiselection mode</string>
 
 	<!-- Editor Fragment -->

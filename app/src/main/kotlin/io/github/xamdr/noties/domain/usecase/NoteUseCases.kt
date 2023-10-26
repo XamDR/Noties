@@ -73,11 +73,13 @@ class DeleteNotesUseCase @Inject constructor(
 	private val noteRepository: NoteRepository,
 	private val mediaItemRepository: MediaItemRepository) {
 
-	suspend operator fun invoke(notes: List<Note>) {
-		for (note in notes) {
-			val items = note.items.map { it.asDatabaseEntity() }
+	suspend operator fun invoke(ids: List<Long>) {
+		ids.forEach { id ->
+			val result = noteRepository.getNoteById(id).entries.first()
+			val note = result.key
+			val items = result.value
 			mediaItemRepository.deleteItems(items)
-			noteRepository.deleteNote(note.asDatabaseEntity())
+			noteRepository.deleteNote(note)
 		}
 	}
 }
