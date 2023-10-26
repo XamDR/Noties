@@ -24,7 +24,7 @@ interface NoteDao {
 
 	@Query("SELECT * FROM Notes " +
 			"LEFT JOIN MediaItems ON Notes.id = MediaItems.note_id " +
-			"WHERE Notes.trashed <> 1 " +
+			"WHERE Notes.trashed <> 1 AND Notes.archived <> 1 " +
 			"ORDER BY Notes.id DESC")
 	fun getAllNotes(): Flow<Map<DatabaseNoteEntity, List<DatabaseMediaItemEntity>>>
 
@@ -39,6 +39,12 @@ interface NoteDao {
 			"WHERE Notes.trashed = 1 " +
 			"ORDER BY Notes.id DESC")
 	fun getTrashedNotes(): Flow<Map<DatabaseNoteEntity, List<DatabaseMediaItemEntity>>>
+
+	@Query("SELECT * FROM Notes " +
+			"LEFT JOIN MediaItems ON Notes.id = MediaItems.note_id " +
+			"WHERE Notes.archived = 1 " +
+			"ORDER BY Notes.id DESC")
+	fun getArchivedNotes(): Flow<Map<DatabaseNoteEntity, List<DatabaseMediaItemEntity>>>
 
 	@Query("SELECT * FROM Notes WHERE reminder_date IS NOT NULL")
 	suspend fun getNotesWithReminder(): List<DatabaseNoteEntity>

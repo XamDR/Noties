@@ -135,7 +135,7 @@ fun NotesScreen(
 			}
 			else {
 				TopAppBar(
-					title = { Text(text = "${selectedIds.size}/${notes?.size}") },
+					title = { Text(text = "${selectedIds.size}") },
 					navigationIcon = {
 						IconButton(onClick = { selectedIds.clear() }) {
 							Icon(

@@ -19,6 +19,7 @@ import androidx.compose.material.icons.outlined.AddBox
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +56,7 @@ import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
+import io.github.xamdr.noties.ui.helpers.ShareHelper
 import io.github.xamdr.noties.ui.helpers.clickableWithoutRipple
 import io.github.xamdr.noties.ui.media.MediaViewerActivity
 import io.github.xamdr.noties.ui.theme.NotiesTheme
@@ -72,15 +75,23 @@ fun EditorScreen(
 	val context = LocalContext.current
 	var titleInEditMode by rememberSaveable { mutableStateOf(value = false) }
 	var openMenu by rememberSaveable { mutableStateOf(value = false) }
-	val coroutineScope = rememberCoroutineScope()
+	val scope = rememberCoroutineScope()
 	val items = remember { mutableStateListOf<GridItem>() }
 	val modificationDate = if (note.modificationDate == 0L) DateTimeHelper.formatDateTime(Instant.now().toEpochMilli())
 		else DateTimeHelper.formatDateTime(note.modificationDate)
 	val snackbarHostState = remember { SnackbarHostState() }
+	val noteEmpty by remember { derivedStateOf { note.isEmpty() } }
 
 	fun addItems(uris: List<Uri>) {
 		if (uris.isEmpty()) return
 		uris.forEach { uri -> items.add(GridItem.AndroidUri(src = uri)) }
+	}
+
+	fun onItemCopied(mediaItem: MediaItem, index: Int) {
+		items[index] = GridItem.Media(data = mediaItem)
+		if (items.all { it is GridItem.Media }) {
+			note = addMediaItems(note, items)
+		}
 	}
 
 	val pickMediaLauncher = rememberLauncherForActivityResult(
@@ -94,16 +105,13 @@ fun EditorScreen(
 	)
 
 	LaunchedEffect(key1 = Unit) {
-		coroutineScope.launch {
+		scope.launch {
 			note = viewModel.getNote(noteId)
 			items.addAll(note.items.map(GridItem::Media))
 		}
 	}
 	BackHandler {
-		coroutineScope.launch {
-			note = addMediaItems(note, items)
-			onNoteAction(viewModel.saveNote(note, noteId))
-		}
+		scope.launch { onNoteAction(viewModel.saveNote(note, noteId)) }
 	}
 	Scaffold(
 		topBar = {
@@ -124,6 +132,16 @@ fun EditorScreen(
 							imageVector = if (titleInEditMode) Icons.Outlined.ArrowUpward else Icons.Outlined.ArrowBack,
 							contentDescription = stringResource(id = R.string.back_button_description)
 						)
+					}
+				},
+				actions = {
+					if (noteEmpty.not()) {
+						IconButton(onClick = { ShareHelper.shareContent(context, note) }) {
+							Icon(
+								imageVector = Icons.Outlined.Share,
+								contentDescription = stringResource(id = R.string.share_content)
+							)
+						}
 					}
 				}
 			)
@@ -150,7 +168,7 @@ fun EditorScreen(
 					note = note,
 					items = items,
 					onNoteContentChange = { text -> note = note.copy(text = text) },
-					onItemCopied = { mediaItem, index -> items[index] = GridItem.Media(data = mediaItem) },
+					onItemCopied = ::onItemCopied,
 					onItemClick = { position ->
 						navigateToMediaViewer(context, mediaViewerLauncher, getMediaItems(items), position)
 					}

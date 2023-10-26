@@ -32,6 +32,7 @@ data class Note(
 			urls = this.urls,
 			protected = this.protected,
 			trashed = this.trashed,
+			archived = this.archived,
 			pinned = this.pinned,
 			hasTaskList = this.hasTaskList,
 			reminderDate = this.reminderDate,
