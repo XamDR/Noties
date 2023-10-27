@@ -68,7 +68,7 @@ fun TagDialog(
 	}
 
 	AlertDialog(
-		onDismissRequest = {},
+		onDismissRequest = ::onDismiss,
 		confirmButton = {
 			TextButton(
 				onClick = { scope.launch { createTag(tagName) } },
@@ -78,7 +78,7 @@ fun TagDialog(
 			}
 		},
 		dismissButton = {
-			TextButton(onClick = { onDismiss() }) {
+			TextButton(onClick = ::onDismiss) {
 				Text(text = stringResource(id = R.string.cancel_button))
 			}
 		},
