@@ -99,6 +99,7 @@
 	<string name="clear_note_title_text">Clear note title text</string>
 	<string name="note_modified_date">Last edit: %s</string>
 	<string name="add_attachment">Add attachment</string>
+	<string name="add_tags">Add tags</string>
 	<string name="pick_note_color">Pick color for note</string>
 	<string name="color">Color</string>
 	<string name="share_content">Share content</string>

@@ -18,6 +18,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddBox
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ArrowUpward
+import androidx.compose.material.icons.outlined.FileOpen
+import androidx.compose.material.icons.outlined.NewLabel
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,26 +50,34 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.documentfile.provider.DocumentFile
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
+import io.github.xamdr.noties.ui.components.OverflowMenu
 import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.ShareHelper
+import io.github.xamdr.noties.ui.helpers.UriHelper
 import io.github.xamdr.noties.ui.helpers.clickableWithoutRipple
+import io.github.xamdr.noties.ui.helpers.simpleName
+import io.github.xamdr.noties.ui.media.ActionItem
 import io.github.xamdr.noties.ui.media.MediaViewerActivity
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.io.FileNotFoundException
 import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorScreen(
-	onNavigationIconClick: () -> Unit,
 	noteId: Long,
+	onNavigationIconClick: () -> Unit,
+	onNavigatoToTags: () -> Unit,
 	onNoteAction: (NoteAction) -> Unit,
 	viewModel: EditorViewModel = hiltViewModel()
 ) {
@@ -81,6 +91,7 @@ fun EditorScreen(
 		else DateTimeHelper.formatDateTime(note.modificationDate)
 	val snackbarHostState = remember { SnackbarHostState() }
 	val noteEmpty by remember { derivedStateOf { note.isEmpty() } }
+	val errorOpenFile = stringResource(id = R.string.error_open_file)
 
 	fun addItems(uris: List<Uri>) {
 		if (uris.isEmpty()) return
@@ -94,6 +105,17 @@ fun EditorScreen(
 		}
 	}
 
+	fun openFile(uri: Uri?) {
+		scope.launch {
+			readFileContent(
+				uri = uri,
+				context = context,
+				onFileSuccess = { note = it },
+				onFileError = { this.launch { snackbarHostState.showSnackbar(errorOpenFile) } }
+			)
+		}
+	}
+
 	val pickMediaLauncher = rememberLauncherForActivityResult(
 		contract = ActivityResultContracts.OpenMultipleDocuments(),
 		onResult = ::addItems
@@ -102,6 +124,24 @@ fun EditorScreen(
 	val mediaViewerLauncher = rememberLauncherForActivityResult(
 		contract = ActivityResultContracts.StartActivityForResult(),
 		onResult = {}
+	)
+
+	val openFileLauncher = rememberLauncherForActivityResult(
+		contract = ActivityResultContracts.OpenDocument(),
+		onResult = ::openFile
+	)
+
+	val overflowItems = listOf(
+		ActionItem(
+			title = R.string.open_file,
+			action = { openFileLauncher.launch(arrayOf(Constants.MIME_TYPE_TEXT)) },
+			icon = Icons.Outlined.FileOpen
+		),
+		ActionItem(
+			title = R.string.add_tags,
+			action = onNavigatoToTags,
+			icon = Icons.Outlined.NewLabel
+		),
 	)
 
 	LaunchedEffect(key1 = Unit) {
@@ -143,6 +183,7 @@ fun EditorScreen(
 							)
 						}
 					}
+					OverflowMenu(items = overflowItems)
 				}
 			)
 		},
@@ -291,4 +332,26 @@ private fun EditorToolbar(
 			)
 		}
 	}
+}
+
+private suspend fun readFileContent(
+	uri: Uri?,
+	context: Context,
+	onFileSuccess: (Note) -> Unit,
+	onFileError: () -> Unit
+): Note? {
+	if (uri != null) {
+		try {
+			val file = DocumentFile.fromSingleUri(context, uri)
+			val text = UriHelper.readTextFromUri(context, uri)
+			return Note(title = file?.simpleName ?: String.Empty, text = text).also {
+				onFileSuccess(it)
+			}
+		}
+		catch (e: FileNotFoundException) {
+			Timber.e(e)
+			onFileError()
+		}
+	}
+	return null
 }

@@ -9,10 +9,13 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.xamdr.noties.R
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.onBackPressed
 import io.github.xamdr.noties.ui.helpers.setNavigationResult
+import io.github.xamdr.noties.ui.helpers.tryNavigate
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 @AndroidEntryPoint
@@ -35,8 +38,9 @@ class EditorFragment : Fragment() {
 	private fun EditorFragmentContent() {
 		NotiesTheme {
 			EditorScreen(
-				onNavigationIconClick = ::onBackPressed,
 				noteId = noteId,
+				onNavigationIconClick = ::onBackPressed,
+				onNavigatoToTags = ::navigateToTags,
 				onNoteAction = ::onNoteAction
 			)
 		}
@@ -45,5 +49,15 @@ class EditorFragment : Fragment() {
 	private fun onNoteAction(action: NoteAction) {
 		setNavigationResult(Constants.BUNDLE_ACTION, action)
 		findNavController().popBackStack()
+	}
+
+	private fun navigateToTags() {
+		exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
+			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
+		}
+		reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
+			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
+		}
+		findNavController().tryNavigate(R.id.action_editor_to_tags)
 	}
 }
