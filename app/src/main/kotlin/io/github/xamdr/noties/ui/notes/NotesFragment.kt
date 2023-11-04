@@ -55,30 +55,37 @@ class NotesFragment : Fragment() {
 	}
 
 	@Composable
-	private fun NotesFragmentContent() {
+	fun NotesFragmentContent() {
 		NotiesTheme {
 			val context = LocalContext.current
 			val scope = rememberCoroutineScope()
 			val drawerState = DrawerState(DrawerValue.Closed)
-			var openDialog by rememberSaveable { mutableStateOf(false) }
+			var openDialog by rememberSaveable { mutableStateOf(value = false) }
 			val noteAction = getNavigationResult<NoteAction>(Constants.BUNDLE_ACTION) ?: NoteAction.NoAction
+			var screen by rememberSaveable { mutableStateOf(value = Screen()) }
 
 			NavigationDrawer(
 				drawerState = drawerState,
 				preferenceStorage = preferenceStorage,
 				onItemClick = { item ->
 					scope.launch {
-						if (item.id == R.id.create_tag) {
-							openDialog = true
-						}
-						else {
-							drawerState.close()
-							onItemClick(item)
+						when (item.id) {
+							R.id.create_tag -> openDialog = true
+							else -> {
+								drawerState.close()
+								if (item.id == R.id.settings) {
+									findNavController().tryNavigate(R.id.action_notes_to_settings)
+								}
+								else {
+									screen = onItemClick(item)
+								}
+							}
 						}
 					}
 				},
 				content = {
 					NotesScreen(
+						screen = screen,
 						query = "",
 						onQueryChange = {},
 						onSearch = {},
@@ -86,6 +93,7 @@ class NotesFragment : Fragment() {
 						onActiveChange = {},
 						onLeadingIconClick = { scope.launch { drawerState.open() } },
 						onTrailingIconClick = {},
+						onNavigationIconClick = { screen = Screen() },
 						onFabClick = ::navigateToEditor,
 						onItemClick = ::navigateToEditor,
 						noteAction = noteAction,
@@ -119,9 +127,19 @@ class NotesFragment : Fragment() {
 		findNavController().tryNavigate(R.id.action_notes_to_editor, args)
 	}
 
-	private fun onItemClick(item: DrawerItem) {
-		when (item.id) {
-			R.id.settings -> findNavController().tryNavigate(R.id.action_notes_to_settings)
+	private fun onItemClick(item: DrawerItem): Screen {
+		return when (item) {
+			is DrawerItem.DefaultItem -> {
+				when (item.id) {
+					R.id.reminders -> Screen(type = ScreenType.Reminder, title = getString(item.label))
+					R.id.protected_notes -> Screen(type = ScreenType.Protected, title = getString(item.label))
+					R.id.archived_notes -> Screen(type = ScreenType.Archived, title = getString(item.label))
+					R.id.recycle_bin -> Screen(type = ScreenType.Trash, title = getString(item.label))
+					else -> throw IllegalArgumentException("Invalid ${item.id}.")
+				}
+			}
+			is DrawerItem.TagItem -> Screen(type = ScreenType.Tag, title = item.label)
+			else -> throw IllegalArgumentException("$item shouldn't be clickable.")
 		}
 	}
 }

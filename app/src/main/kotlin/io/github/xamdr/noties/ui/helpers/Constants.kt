@@ -5,8 +5,8 @@ object Constants {
 	const val BUNDLE_NOTE_ID = "BUNDLE_NOTE_ID"
 	const val BUNDLE_NOTE = "BUNDLE_NOTE"
 	const val BUNDLE_ACTION = "BUNDLE_ACTION"
-	const val BUNDLE_TAG_ID = "BUNDLE_TAG_ID"
-	const val BUNDLE_TAG = "BUNDLE_TAG"
+	const val BUNDLE_MAIN_SCREEN = "BUNDLE_MAIN_SCREEN"
+	const val BUNDLE_TAG_NAME = "BUNDLE_TAG_NAME"
 	const val BUNDLE_SELECTION = "BUNDLE_SELECTION"
 	const val BUNDLE_ACTION_MODE = "BUNDLE_ACTION_MODE"
 	const val TAG_DIALOG = "TAG_DIALOG"
@@ -22,6 +22,7 @@ object Constants {
 	const val REQUEST_KEY = "REQUEST_KEY"
 	const val SPAN_COUNT = 2
 	const val MIME_TYPE_IMAGE = "image/*"
+	const val MIME_TYPE_VIDEO = "video/*"
 	const val MIME_TYPE_TEXT = "text/plain"
 	const val BUNDLE_RECYCLE_BIN = "BUNDLE_RECYCLE_BIN"
 	const val DELETE_NOTES_DIALOG_TAG = "DELETE_NOTES_DIALOG_TAG"

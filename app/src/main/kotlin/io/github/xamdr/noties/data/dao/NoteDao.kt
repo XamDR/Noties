@@ -40,6 +40,9 @@ interface NoteDao {
 			"ORDER BY Notes.id DESC")
 	fun getTrashedNotes(): Flow<Map<DatabaseNoteEntity, List<DatabaseMediaItemEntity>>>
 
+	@Query("DELETE FROM Notes WHERE Notes.trashed = 1")
+	suspend fun deleteTrashedNotes(): Int
+
 	@Query("SELECT * FROM Notes " +
 			"LEFT JOIN MediaItems ON Notes.id = MediaItems.note_id " +
 			"WHERE Notes.archived = 1 " +

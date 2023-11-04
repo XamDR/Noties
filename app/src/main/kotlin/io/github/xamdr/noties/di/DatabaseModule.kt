@@ -7,13 +7,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.github.xamdr.noties.data.dao.NoteDao
-import io.github.xamdr.noties.data.database.AppDatabase
-import io.github.xamdr.noties.data.dao.TagDao
 import io.github.xamdr.noties.data.dao.MediaDao
+import io.github.xamdr.noties.data.dao.NoteDao
+import io.github.xamdr.noties.data.dao.TagDao
+import io.github.xamdr.noties.data.database.AppDatabase
+import io.github.xamdr.noties.data.repository.MediaItemRepository
 import io.github.xamdr.noties.data.repository.NoteRepository
 import io.github.xamdr.noties.data.repository.TagRepository
-import io.github.xamdr.noties.data.repository.MediaItemRepository
 import javax.inject.Singleton
 
 @Module

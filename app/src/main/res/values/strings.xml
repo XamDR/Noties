@@ -60,7 +60,7 @@
 	<string name="new_tag">New tag</string>
 	<string name="tag_name">Tag name</string>
 	<string name="error_message_tag_duplicate">The tag already exists</string>
-	<string name="edit_tag_name">Edit name</string>
+	<string name="rename_tag">Rename tag</string>
 	<string name="delete_tag">Delete tag</string>
 	<string name="delete_notes_message">The notes inside this tag have been moved to the trash.</string>
 	<string name="tag_created">Tag %s created</string>

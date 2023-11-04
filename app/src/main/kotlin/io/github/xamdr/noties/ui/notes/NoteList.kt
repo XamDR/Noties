@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -240,6 +241,7 @@ private fun NoteItem(
 		),
 		modifier = Modifier
 			.fillMaxWidth()
+			.clip(RoundedCornerShape(16.dp))
 			.combinedClickable(
 				interactionSource = remember { MutableInteractionSource() },
 				indication = rememberRipple(),

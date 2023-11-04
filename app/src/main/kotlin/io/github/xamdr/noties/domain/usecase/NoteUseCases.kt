@@ -94,17 +94,10 @@ class GetTrashedNotesUseCase @Inject constructor(private val noteRepository: Not
 	}
 }
 
-class EmptyTrashUseCase @Inject constructor(
-	private val noteRepository: NoteRepository,
-	private val mediaItemRepository: MediaItemRepository) {
+class EmptyTrashUseCase @Inject constructor(private val noteRepository: NoteRepository) {
 
-	suspend operator fun invoke(notes: List<Note>): Int {
-		val entities = notes.map { it.asDatabaseEntity() }
-		for (note in notes) {
-			val items = note.items.map { it.asDatabaseEntity() }
-			mediaItemRepository.deleteItems(items)
-		}
-		return noteRepository.deleteTrashedNotes(entities)
+	suspend operator fun invoke(): Int {
+		return noteRepository.deleteTrashedNotes()
 	}
 }
 
@@ -118,6 +111,16 @@ class MoveNotesToTrashUseCase @Inject constructor(private val noteRepository: No
 			trashedNotes.add(trashedNote)
 		}
 		return trashedNotes
+	}
+}
+
+class GetArchivedNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
+	operator fun invoke(): Flow<List<Note>> {
+		return noteRepository.getArchivedNotes().map { result ->
+			result.map { (note, items) ->
+				Note.create(note.asDomainModel(), items.map { it.asDomainModel() })
+			}
+		}
 	}
 }
 

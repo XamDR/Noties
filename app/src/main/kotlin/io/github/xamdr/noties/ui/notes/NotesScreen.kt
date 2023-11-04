@@ -10,8 +10,11 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Article
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteForever
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.GridView
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -45,16 +48,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.components.EmptyView
+import io.github.xamdr.noties.ui.components.OverflowMenu
 import io.github.xamdr.noties.ui.editor.NoteAction
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
 import io.github.xamdr.noties.ui.helpers.rememberMutableStateList
+import io.github.xamdr.noties.ui.media.ActionItem
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotesScreen(
+	screen: Screen,
 	query: String,
 	onQueryChange: (String) -> Unit,
 	onSearch: (String) -> Unit,
@@ -62,13 +68,14 @@ fun NotesScreen(
 	onActiveChange: (Boolean) -> Unit,
 	onLeadingIconClick: () -> Unit,
 	onTrailingIconClick: () -> Unit,
+	onNavigationIconClick: () -> Unit,
 	onFabClick: () -> Unit,
 	onItemClick: (Note) -> Unit,
 	noteAction: NoteAction,
 	searchContent: @Composable (ColumnScope.() -> Unit),
 	viewModel: NotesViewModel = hiltViewModel()
 ) {
-	val notes by viewModel.getNotesByTag(String.Empty).collectAsStateWithLifecycle(initialValue = null)
+	val notes by viewModel.getNotes(screen).collectAsStateWithLifecycle(initialValue = null)
 	val context = LocalContext.current
 	val scope = rememberCoroutineScope()
 	val snackbarHostState = remember { SnackbarHostState() }
@@ -81,6 +88,7 @@ fun NotesScreen(
 	val selectedIds = rememberMutableStateList<Long>()
 	val inSelectionMode by remember { derivedStateOf { selectedIds.isNotEmpty() } }
 	var showDeleteNotesDialog by rememberSaveable { mutableStateOf(value = false) }
+	val isRecycleBinEmpty by remember { derivedStateOf { notes.isNullOrEmpty() } }
 
 	LaunchedEffect(key1 = Unit) {
 		when (noteAction) {
@@ -101,37 +109,95 @@ fun NotesScreen(
 		}
 	}
 
+	fun emptyRecycleBin() {
+		scope.launch {
+			viewModel.emptyRecycleBin()
+			notes?.forEach { note -> MediaStorageManager.deleteItems(context, note.items) }
+		}
+	}
+
 	Scaffold(
 		topBar = {
 			if (inSelectionMode.not()) {
-				SearchBar(
-					query = query,
-					onQueryChange = onQueryChange,
-					onSearch = onSearch,
-					active = active,
-					onActiveChange = onActiveChange,
-					placeholder = { Text(text = stringResource(id = R.string.search_notes)) },
-					modifier = Modifier
-						.fillMaxWidth()
-						.padding(8.dp),
-					leadingIcon = {
-						IconButton(onClick = onLeadingIconClick) {
-							Icon(
-								imageVector = Icons.Filled.Menu,
-								contentDescription = "Open drawer"
-							)
+				if (screen.type == ScreenType.Main) {
+					SearchBar(
+						query = query,
+						onQueryChange = onQueryChange,
+						onSearch = onSearch,
+						active = active,
+						onActiveChange = onActiveChange,
+						placeholder = { Text(text = stringResource(id = R.string.search_notes)) },
+						modifier = Modifier
+							.fillMaxWidth()
+							.padding(8.dp),
+						leadingIcon = {
+							IconButton(onClick = onLeadingIconClick) {
+								Icon(
+									imageVector = Icons.Filled.Menu,
+									contentDescription = "Open drawer"
+								)
+							}
+						},
+						trailingIcon = {
+							IconButton(onClick = onTrailingIconClick) {
+								Icon(
+									imageVector = Icons.Outlined.GridView,
+									contentDescription = stringResource(id = R.string.grid_layout_view)
+								)
+							}
+						},
+						content = searchContent
+					)
+				}
+				else {
+					TopAppBar(
+						title = { Text(text = screen.title) },
+						navigationIcon = {
+							IconButton(onClick = onNavigationIconClick) {
+								Icon(
+									imageVector = Icons.Outlined.ArrowBack,
+									contentDescription = ""
+								)
+							}
+						},
+						actions = {
+							when (screen.type) {
+								ScreenType.Tag -> {
+									IconButton(onClick = {}) {
+										Icon(
+											imageVector = Icons.Outlined.Search,
+											contentDescription = stringResource(id = R.string.search_notes)
+										)
+									}
+									OverflowMenu(
+										items = listOf(
+											ActionItem(title = R.string.rename_tag, action = {}, icon = Icons.Outlined.Edit),
+											ActionItem(title = R.string.delete_tag, action = {}, icon = Icons.Outlined.Delete)
+										)
+									)
+								}
+								ScreenType.Trash -> {
+									if (isRecycleBinEmpty.not()) {
+										IconButton(onClick = ::emptyRecycleBin) {
+											Icon(
+												imageVector = Icons.Outlined.DeleteForever,
+												contentDescription = stringResource(id = R.string.empty_recycle_bin)
+											)
+										}
+									}
+								}
+								else -> {
+									IconButton(onClick = {}) {
+										Icon(
+											imageVector = Icons.Outlined.Search,
+											contentDescription = stringResource(id = R.string.search_notes)
+										)
+									}
+								}
+							}
 						}
-					},
-					trailingIcon = {
-						IconButton(onClick = onTrailingIconClick) {
-							Icon(
-								imageVector = Icons.Outlined.GridView,
-								contentDescription = stringResource(id = R.string.grid_layout_view)
-							)
-						}
-					},
-					content = searchContent
-				)
+					)
+				}
 			}
 			else {
 				TopAppBar(

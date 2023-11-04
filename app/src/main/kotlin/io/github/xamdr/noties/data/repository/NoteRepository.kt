@@ -35,8 +35,12 @@ class NoteRepository(private val noteDao: NoteDao) {
 		return noteDao.getTrashedNotes()
 	}
 
-	suspend fun deleteTrashedNotes(notes: List<DatabaseNoteEntity>): Int {
-		return noteDao.deleteNotes(notes)
+	fun getArchivedNotes(): Flow<Map<DatabaseNoteEntity, List<DatabaseMediaItemEntity>>> {
+		return noteDao.getArchivedNotes()
+	}
+
+	suspend fun deleteTrashedNotes(): Int {
+		return noteDao.deleteTrashedNotes()
 	}
 
 	suspend fun getNotesWithReminder(): List<DatabaseNoteEntity> {

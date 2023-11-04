@@ -131,19 +131,6 @@ fun EditorScreen(
 		onResult = ::openFile
 	)
 
-	val overflowItems = listOf(
-		ActionItem(
-			title = R.string.open_file,
-			action = { openFileLauncher.launch(arrayOf(Constants.MIME_TYPE_TEXT)) },
-			icon = Icons.Outlined.FileOpen
-		),
-		ActionItem(
-			title = R.string.add_tags,
-			action = onNavigatoToTags,
-			icon = Icons.Outlined.NewLabel
-		),
-	)
-
 	LaunchedEffect(key1 = Unit) {
 		scope.launch {
 			note = viewModel.getNote(noteId)
@@ -183,7 +170,20 @@ fun EditorScreen(
 							)
 						}
 					}
-					OverflowMenu(items = overflowItems)
+					OverflowMenu(
+						items = listOf(
+							ActionItem(
+								title = R.string.open_file,
+								action = { openFileLauncher.launch(arrayOf(Constants.MIME_TYPE_TEXT)) },
+								icon = Icons.Outlined.FileOpen
+							),
+							ActionItem(
+								title = R.string.add_tags,
+								action = onNavigatoToTags,
+								icon = Icons.Outlined.NewLabel
+							),
+						)
+					)
 				}
 			)
 		},
@@ -227,7 +227,9 @@ fun EditorScreen(
 				) { item ->
 					openMenu = false
 					when (item.id) {
-						R.id.attach_media -> pickMediaLauncher.launch(arrayOf("image/*", "video/*"))
+						R.id.attach_media -> pickMediaLauncher.launch(
+							arrayOf(Constants.MIME_TYPE_IMAGE, Constants.MIME_TYPE_VIDEO)
+						)
 						R.id.take_picture -> {} //takePictureLauncher.launch()
 					}
 				}

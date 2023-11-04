@@ -4,6 +4,7 @@ import android.net.Uri
 import android.view.View
 import androidx.core.view.ContentInfoCompat
 import androidx.core.view.OnReceiveContentListener
+import io.github.xamdr.noties.ui.helpers.Constants
 
 class ImageContentReceiverListener(
 	private val contentReceived: (uri: Uri, source: Int) -> Unit) : OnReceiveContentListener {
@@ -21,6 +22,6 @@ class ImageContentReceiverListener(
 	}
 
 	companion object {
-		val MIME_TYPES = arrayOf("image/*")
+		val MIME_TYPES = arrayOf(Constants.MIME_TYPE_IMAGE)
 	}
 }
