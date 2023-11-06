@@ -8,7 +8,7 @@
 	<string name="not_now_button">Not now</string>
 	<string name="continue_button">Continue</string>
 	<string name="save_button">Save</string>
-	<string name="move_button">Move</string>
+	<string name="update_button">Update</string>
 	<string name="go_to_settings_button">Go to settings</string>
 	<string name="delete_button">Delete</string>
 

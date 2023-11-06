@@ -47,6 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.Note
+import io.github.xamdr.noties.domain.model.Tag
 import io.github.xamdr.noties.ui.components.EmptyView
 import io.github.xamdr.noties.ui.components.OverflowMenu
 import io.github.xamdr.noties.ui.editor.NoteAction
@@ -71,6 +72,7 @@ fun NotesScreen(
 	onNavigationIconClick: () -> Unit,
 	onFabClick: () -> Unit,
 	onItemClick: (Note) -> Unit,
+	onRenameTag: (Tag) -> Unit,
 	noteAction: NoteAction,
 	searchContent: @Composable (ColumnScope.() -> Unit),
 	viewModel: NotesViewModel = hiltViewModel()
@@ -112,6 +114,7 @@ fun NotesScreen(
 	fun emptyRecycleBin() {
 		scope.launch {
 			viewModel.emptyRecycleBin()
+			// TODO: Add foreign key constraint to have on delete cascade
 			notes?.forEach { note -> MediaStorageManager.deleteItems(context, note.items) }
 		}
 	}
@@ -171,8 +174,16 @@ fun NotesScreen(
 									}
 									OverflowMenu(
 										items = listOf(
-											ActionItem(title = R.string.rename_tag, action = {}, icon = Icons.Outlined.Edit),
-											ActionItem(title = R.string.delete_tag, action = {}, icon = Icons.Outlined.Delete)
+											ActionItem(
+												title = R.string.rename_tag,
+												action = { onRenameTag(Tag(id = screen.id, name = screen.title)) },
+												icon = Icons.Outlined.Edit
+											),
+											ActionItem(
+												title = R.string.delete_tag,
+												action = {},
+												icon = Icons.Outlined.Delete
+											)
 										)
 									)
 								}

@@ -32,14 +32,14 @@ import kotlinx.coroutines.launch
 fun TagDialog(
 	tag: Tag,
 	onCancel: () -> Unit,
-	onSave: (String) -> Unit,
+	onSave: (Tag) -> Unit,
 	viewModel: TagsViewModel = hiltViewModel(),
 ) {
 	val scope = rememberCoroutineScope()
 	val tagNameState by viewModel.nameState.collectAsStateWithLifecycle(initialValue = TagNameState.EmptyOrUpdatingName)
 	var isConfirmButtonEnabled by rememberSaveable { mutableStateOf(false) }
 	var showError by rememberSaveable { mutableStateOf(false) }
-	var tagName by rememberSaveable { mutableStateOf(String.Empty) }
+	var tagName by rememberSaveable { mutableStateOf(tag.name) }
 	val focusRequester = remember { FocusRequester() }
 
 	when (tagNameState) {
@@ -56,10 +56,17 @@ fun TagDialog(
 		}
 	}
 
-	suspend fun createTag(tagName: String) {
-		val newTag = Tag(name = tagName)
-		viewModel.createTag(newTag)
-		onSave(tagName)
+	suspend fun createOrUpdateTag(tagName: String) {
+		if (tag.id == 0) {
+			val newTag = Tag(name = tagName)
+			viewModel.createTag(newTag)
+			onSave(newTag)
+		}
+		else {
+			val updatedTag = tag.copy(name = tagName)
+			viewModel.updateTag(updatedTag, tag)
+			onSave(updatedTag)
+		}
 	}
 
 	fun onDismiss() {
@@ -71,10 +78,10 @@ fun TagDialog(
 		onDismissRequest = ::onDismiss,
 		confirmButton = {
 			TextButton(
-				onClick = { scope.launch { createTag(tagName) } },
+				onClick = { scope.launch { createOrUpdateTag(tagName) } },
 				enabled = isConfirmButtonEnabled
 			) {
-				Text(text = stringResource(id = R.string.save_button))
+				Text(text = stringResource(id = if (tag.id == 0) R.string.save_button else R.string.update_button))
 			}
 		},
 		dismissButton = {
@@ -85,7 +92,7 @@ fun TagDialog(
 		title = { Text(text = stringResource(id = R.string.new_tag)) },
 		text = {
 			OutlinedTextField(
-				value = tag.name.ifEmpty { tagName },
+				value = tagName,
 				onValueChange = { s ->
 					tagName = s
 					viewModel.onTagNameChanged(s)

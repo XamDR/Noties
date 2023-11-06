@@ -15,6 +15,7 @@ sealed class ScreenType : Parcelable {
 
 @Parcelize
 data class Screen(
+	val id: Int = 0,
 	val type: ScreenType = ScreenType.Main,
 	val title: String = String.Empty
 ) : Parcelable

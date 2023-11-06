@@ -64,6 +64,16 @@ class NotesFragment : Fragment() {
 			val noteAction = getNavigationResult<NoteAction>(Constants.BUNDLE_ACTION) ?: NoteAction.NoAction
 			var screen by rememberSaveable { mutableStateOf(value = Screen()) }
 
+			fun onSave(tag: Tag) {
+				openDialog = false
+				if (tag.id == 0) {
+					context.showToast(context.getString(R.string.tag_created, tag.name))
+				}
+				else {
+					screen = screen.copy(title = tag.name)
+				}
+			}
+
 			NavigationDrawer(
 				drawerState = drawerState,
 				preferenceStorage = preferenceStorage,
@@ -96,6 +106,7 @@ class NotesFragment : Fragment() {
 						onNavigationIconClick = { screen = Screen() },
 						onFabClick = ::navigateToEditor,
 						onItemClick = ::navigateToEditor,
+						onRenameTag = { openDialog = true },
 						noteAction = noteAction,
 						searchContent = {
 
@@ -103,12 +114,9 @@ class NotesFragment : Fragment() {
 					)
 					if (openDialog) {
 						TagDialog(
-							tag = Tag(),
+							tag = Tag(id = screen.id, name = screen.title),
 							onCancel = { openDialog = false },
-							onSave = { tagName ->
-								openDialog = false
-								context.showToast(context.getString(R.string.tag_created, tagName))
-							}
+							onSave = ::onSave
 						)
 					}
 				}
@@ -138,7 +146,7 @@ class NotesFragment : Fragment() {
 					else -> throw IllegalArgumentException("Invalid ${item.id}.")
 				}
 			}
-			is DrawerItem.TagItem -> Screen(type = ScreenType.Tag, title = item.label)
+			is DrawerItem.TagItem -> Screen(id = item.id, type = ScreenType.Tag, title = item.label)
 			else -> throw IllegalArgumentException("$item shouldn't be clickable.")
 		}
 	}
