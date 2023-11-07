@@ -56,6 +56,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun NavigationDrawer(
 	drawerState: DrawerState,
+	screenType: ScreenType,
 	preferenceStorage: PreferenceStorage,
 	onItemClick: (DrawerItem) -> Unit,
 	content: @Composable () -> Unit,
@@ -111,7 +112,7 @@ fun NavigationDrawer(
 						val item = items[index]
 						DrawerItem(
 							item = item,
-							selected = item == selectedItem
+							selected = if (index == 0) screenType == ScreenType.Main else item == selectedItem && screenType != ScreenType.Main
 						) {
 							selectedItem = item
 							onItemClick(selectedItem)

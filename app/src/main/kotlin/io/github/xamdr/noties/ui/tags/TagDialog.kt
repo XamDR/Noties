@@ -19,12 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.Tag
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
-import io.github.xamdr.noties.ui.helpers.showSoftKeyboardOnFocus
+import io.github.xamdr.noties.ui.helpers.onFocusSelectAll
+import io.github.xamdr.noties.ui.helpers.onFocusShowSoftKeyboard
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
 
@@ -39,8 +41,10 @@ fun TagDialog(
 	val tagNameState by viewModel.nameState.collectAsStateWithLifecycle(initialValue = TagNameState.EmptyOrUpdatingName)
 	var isConfirmButtonEnabled by rememberSaveable { mutableStateOf(false) }
 	var showError by rememberSaveable { mutableStateOf(false) }
-	var tagName by rememberSaveable { mutableStateOf(tag.name) }
 	val focusRequester = remember { FocusRequester() }
+	val tagState = rememberSaveable(stateSaver = TextFieldValue.Saver) {
+		mutableStateOf(value = TextFieldValue(text = tag.name))
+	}
 
 	when (tagNameState) {
 		TagNameState.EditingName -> {
@@ -78,7 +82,7 @@ fun TagDialog(
 		onDismissRequest = ::onDismiss,
 		confirmButton = {
 			TextButton(
-				onClick = { scope.launch { createOrUpdateTag(tagName) } },
+				onClick = { scope.launch { createOrUpdateTag(tagState.value.text) } },
 				enabled = isConfirmButtonEnabled
 			) {
 				Text(text = stringResource(id = if (tag.id == 0) R.string.save_button else R.string.update_button))
@@ -92,12 +96,16 @@ fun TagDialog(
 		title = { Text(text = stringResource(id = R.string.new_tag)) },
 		text = {
 			OutlinedTextField(
-				value = tagName,
+				value = tagState.value,
 				onValueChange = { s ->
-					tagName = s
-					viewModel.onTagNameChanged(s)
+					if (s.text != tagState.value.text) {
+						viewModel.onTagNameChanged(s.text)
+					}
+					tagState.value = s
 				},
-				modifier = Modifier.showSoftKeyboardOnFocus(focusRequester),
+				modifier = Modifier
+					.onFocusShowSoftKeyboard(focusRequester)
+					.onFocusSelectAll(tagState),
 				label = { Text(text = stringResource(id = R.string.tag_name)) },
 				leadingIcon = {
 					Icon(

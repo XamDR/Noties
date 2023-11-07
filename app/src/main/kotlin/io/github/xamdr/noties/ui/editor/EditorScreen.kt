@@ -137,9 +137,11 @@ fun EditorScreen(
 			items.addAll(note.items.map(GridItem::Media))
 		}
 	}
+
 	BackHandler {
 		scope.launch { onNoteAction(viewModel.saveNote(note, noteId)) }
 	}
+
 	Scaffold(
 		topBar = {
 			TopAppBar(

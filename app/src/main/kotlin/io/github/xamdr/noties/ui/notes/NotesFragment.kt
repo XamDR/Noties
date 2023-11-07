@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.BackHandler
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.runtime.Composable
@@ -13,7 +14,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -27,7 +27,6 @@ import io.github.xamdr.noties.ui.editor.NoteAction
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.getNavigationResult
 import io.github.xamdr.noties.ui.helpers.inflateTransition
-import io.github.xamdr.noties.ui.helpers.showToast
 import io.github.xamdr.noties.ui.helpers.tryNavigate
 import io.github.xamdr.noties.ui.settings.PreferenceStorage
 import io.github.xamdr.noties.ui.tags.TagDialog
@@ -57,30 +56,35 @@ class NotesFragment : Fragment() {
 	@Composable
 	fun NotesFragmentContent() {
 		NotiesTheme {
-			val context = LocalContext.current
 			val scope = rememberCoroutineScope()
 			val drawerState = DrawerState(DrawerValue.Closed)
 			var openDialog by rememberSaveable { mutableStateOf(value = false) }
 			val noteAction = getNavigationResult<NoteAction>(Constants.BUNDLE_ACTION) ?: NoteAction.NoAction
 			var screen by rememberSaveable { mutableStateOf(value = Screen()) }
+			var isNewTag = true
 
 			fun onSave(tag: Tag) {
 				openDialog = false
-				if (tag.id == 0) {
-					context.showToast(context.getString(R.string.tag_created, tag.name))
-				}
-				else {
+				if (tag.id != 0) {
 					screen = screen.copy(title = tag.name)
 				}
 			}
 
+			BackHandler(enabled = screen.type != ScreenType.Main) {
+				screen = Screen()
+			}
+
 			NavigationDrawer(
 				drawerState = drawerState,
+				screenType = screen.type,
 				preferenceStorage = preferenceStorage,
 				onItemClick = { item ->
 					scope.launch {
 						when (item.id) {
-							R.id.create_tag -> openDialog = true
+							R.id.create_tag -> {
+								openDialog = true
+								isNewTag = true
+							}
 							else -> {
 								drawerState.close()
 								if (item.id == R.id.settings) {
@@ -103,10 +107,14 @@ class NotesFragment : Fragment() {
 						onActiveChange = {},
 						onLeadingIconClick = { scope.launch { drawerState.open() } },
 						onTrailingIconClick = {},
-						onNavigationIconClick = { screen = Screen() },
+						onNavigationIconClick = { scope.launch { drawerState.open() } },
 						onFabClick = ::navigateToEditor,
 						onItemClick = ::navigateToEditor,
-						onRenameTag = { openDialog = true },
+						onRenameTag = {
+							openDialog = true
+							isNewTag = false
+						},
+						onDeleteTag = {},
 						noteAction = noteAction,
 						searchContent = {
 
@@ -114,7 +122,7 @@ class NotesFragment : Fragment() {
 					)
 					if (openDialog) {
 						TagDialog(
-							tag = Tag(id = screen.id, name = screen.title),
+							tag = if (isNewTag) Tag() else Tag(id = screen.id, name = screen.title),
 							onCancel = { openDialog = false },
 							onSave = ::onSave
 						)
@@ -139,6 +147,7 @@ class NotesFragment : Fragment() {
 		return when (item) {
 			is DrawerItem.DefaultItem -> {
 				when (item.id) {
+					R.id.all_notes -> Screen()
 					R.id.reminders -> Screen(type = ScreenType.Reminder, title = getString(item.label))
 					R.id.protected_notes -> Screen(type = ScreenType.Protected, title = getString(item.label))
 					R.id.archived_notes -> Screen(type = ScreenType.Archived, title = getString(item.label))

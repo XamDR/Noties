@@ -26,6 +26,7 @@
 
 	<!-- Notes Fragment -->
 	<string name="notes_fragment_label">Notes</string>
+	<string name="open_drawer">Open drawer</string>
 	<string name="urls_fragment_label">Urls</string>
 	<string name="make_todo_list">Make to-do list</string>
 	<string name="add_note">Add a new note.</string>
@@ -63,7 +64,6 @@
 	<string name="rename_tag">Rename tag</string>
 	<string name="delete_tag">Delete tag</string>
 	<string name="delete_notes_message">The notes inside this tag have been moved to the trash.</string>
-	<string name="tag_created">Tag %s created</string>
 	<string name="back_button_description">Back to notes</string>
 	<string name="back_to_editor">Back to editor</string>
 

@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -33,10 +35,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.IntSize
 import androidx.core.text.getSpans
 
-fun Modifier.showSoftKeyboardOnFocus(focusRequester: FocusRequester): Modifier {
+fun Modifier.onFocusShowSoftKeyboard(focusRequester: FocusRequester): Modifier {
 	return this
 		.focusRequester(focusRequester)
 		.then(composed {
@@ -48,7 +52,7 @@ fun Modifier.showSoftKeyboardOnFocus(focusRequester: FocusRequester): Modifier {
 					}
 				}
 			}
-			this@showSoftKeyboardOnFocus
+			this@onFocusShowSoftKeyboard
 		})
 }
 
@@ -117,4 +121,21 @@ fun annotatedStringResource(
 		spanStyles(annotation)?.let { resultBuilder.addStyle(it, spanStart, spanEnd) }
 	}
 	return resultBuilder.toAnnotatedString()
+}
+
+fun Modifier.onFocusSelectAll(state: MutableState<TextFieldValue>): Modifier {
+	return this.composed {
+		var triggerEffect by remember { mutableStateOf<Boolean?>(value = null) }
+		if (triggerEffect != null) {
+			LaunchedEffect(triggerEffect) {
+				val value = state.value
+				state.value = value.copy(selection = TextRange(0, value.text.length))
+			}
+		}
+		Modifier.onFocusChanged { focusState ->
+			if (focusState.isFocused) {
+				triggerEffect = triggerEffect?.not() ?: true
+			}
+		}
+	}
 }

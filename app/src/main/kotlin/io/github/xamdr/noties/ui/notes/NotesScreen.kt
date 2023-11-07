@@ -14,6 +14,7 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.GridView
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,7 +48,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.Note
-import io.github.xamdr.noties.domain.model.Tag
 import io.github.xamdr.noties.ui.components.EmptyView
 import io.github.xamdr.noties.ui.components.OverflowMenu
 import io.github.xamdr.noties.ui.editor.NoteAction
@@ -72,7 +72,8 @@ fun NotesScreen(
 	onNavigationIconClick: () -> Unit,
 	onFabClick: () -> Unit,
 	onItemClick: (Note) -> Unit,
-	onRenameTag: (Tag) -> Unit,
+	onRenameTag: () -> Unit,
+	onDeleteTag: () -> Unit,
 	noteAction: NoteAction,
 	searchContent: @Composable (ColumnScope.() -> Unit),
 	viewModel: NotesViewModel = hiltViewModel()
@@ -137,7 +138,7 @@ fun NotesScreen(
 							IconButton(onClick = onLeadingIconClick) {
 								Icon(
 									imageVector = Icons.Filled.Menu,
-									contentDescription = "Open drawer"
+									contentDescription = stringResource(id = R.string.open_drawer)
 								)
 							}
 						},
@@ -158,8 +159,8 @@ fun NotesScreen(
 						navigationIcon = {
 							IconButton(onClick = onNavigationIconClick) {
 								Icon(
-									imageVector = Icons.Outlined.ArrowBack,
-									contentDescription = ""
+									imageVector = Icons.Outlined.Menu,
+									contentDescription = stringResource(id = R.string.open_drawer)
 								)
 							}
 						},
@@ -176,12 +177,12 @@ fun NotesScreen(
 										items = listOf(
 											ActionItem(
 												title = R.string.rename_tag,
-												action = { onRenameTag(Tag(id = screen.id, name = screen.title)) },
+												action = onRenameTag,
 												icon = Icons.Outlined.Edit
 											),
 											ActionItem(
 												title = R.string.delete_tag,
-												action = {},
+												action = onDeleteTag,
 												icon = Icons.Outlined.Delete
 											)
 										)
@@ -234,8 +235,10 @@ fun NotesScreen(
 		},
 		snackbarHost = { SnackbarHost(snackbarHostState) },
 		floatingActionButton = {
-			FloatingActionButton(onClick = onFabClick) {
-				Icon(imageVector = Icons.Outlined.Add, contentDescription = stringResource(id = R.string.add_note))
+			if (screen.type != ScreenType.Archived && screen.type != ScreenType.Trash) {
+				FloatingActionButton(onClick = onFabClick) {
+					Icon(imageVector = Icons.Outlined.Add, contentDescription = stringResource(id = R.string.add_note))
+				}
 			}
 		},
 		floatingActionButtonPosition = FabPosition.End,
