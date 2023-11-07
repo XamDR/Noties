@@ -104,19 +104,17 @@ fun NotesScreen(
 
 	fun deleteNotes() {
 		scope.launch {
-			viewModel.deleteNotes(selectedIds)
-			val selectedNotes = notes?.filter { note -> selectedIds.contains(note.id) }
-			selectedNotes?.forEach { note -> MediaStorageManager.deleteItems(context, note.items) }
+			if (selectedIds.isNotEmpty()) {
+				viewModel.deleteNotes(selectedIds)
+				val selectedNotes = notes?.filter { note -> selectedIds.contains(note.id) }
+				selectedNotes?.forEach { note -> MediaStorageManager.deleteItems(context, note.items) }
+				selectedIds.clear()
+			}
+			else {
+				viewModel.emptyRecycleBin()
+				notes?.forEach { note -> MediaStorageManager.deleteItems(context, note.items) }
+			}
 			showDeleteNotesDialog = false
-			selectedIds.clear()
-		}
-	}
-
-	fun emptyRecycleBin() {
-		scope.launch {
-			viewModel.emptyRecycleBin()
-			// TODO: Add foreign key constraint to have on delete cascade
-			notes?.forEach { note -> MediaStorageManager.deleteItems(context, note.items) }
 		}
 	}
 
@@ -190,7 +188,7 @@ fun NotesScreen(
 								}
 								ScreenType.Trash -> {
 									if (isRecycleBinEmpty.not()) {
-										IconButton(onClick = ::emptyRecycleBin) {
+										IconButton(onClick = { showDeleteNotesDialog = true }) {
 											Icon(
 												imageVector = Icons.Outlined.DeleteForever,
 												contentDescription = stringResource(id = R.string.empty_recycle_bin)

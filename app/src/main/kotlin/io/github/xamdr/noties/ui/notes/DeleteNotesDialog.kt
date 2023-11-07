@@ -8,7 +8,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import io.github.xamdr.noties.R
+import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.annotatedStringResource
+import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 @Composable
 fun DeleteNotesDialog(
@@ -42,4 +44,12 @@ fun DeleteNotesDialog(
 			)
 		}
 	)
+}
+
+@DevicePreviews
+@Composable
+private fun DeleteNotesDialogPreview() {
+	NotiesTheme {
+		DeleteNotesDialog(onDeleteNotes = {}, onDismiss = {})
+	}
 }

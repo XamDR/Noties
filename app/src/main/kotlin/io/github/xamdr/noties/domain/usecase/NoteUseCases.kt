@@ -69,16 +69,12 @@ class UpdateNoteUseCase @Inject constructor(
 	}
 }
 
-class DeleteNotesUseCase @Inject constructor(
-	private val noteRepository: NoteRepository,
-	private val mediaItemRepository: MediaItemRepository) {
+class DeleteNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
 
 	suspend operator fun invoke(ids: List<Long>) {
 		ids.forEach { id ->
 			val result = noteRepository.getNoteById(id).entries.first()
 			val note = result.key
-			val items = result.value
-			mediaItemRepository.deleteItems(items)
 			noteRepository.deleteNote(note)
 		}
 	}

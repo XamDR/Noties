@@ -32,7 +32,7 @@ interface NoteDao {
 	suspend fun updateNote(note: DatabaseNoteEntity)
 
 	@Delete
-	suspend fun deleteNotes(notes: List<DatabaseNoteEntity>): Int
+	suspend fun deleteNote(note: DatabaseNoteEntity)
 
 	@Query("SELECT * FROM Notes " +
 			"LEFT JOIN MediaItems ON Notes.id = MediaItems.note_id " +
