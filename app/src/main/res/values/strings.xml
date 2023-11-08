@@ -11,7 +11,6 @@
 	<string name="update_button">Update</string>
 	<string name="go_to_settings_button">Go to settings</string>
 	<string name="delete_button">Delete</string>
-	<string name="empty_trash_button">Empty Trash</string>
 
 	<!-- Navigation Drawer -->
 	<string name="all_notes">All Notes</string>
@@ -52,6 +51,13 @@
 	<string name="error_auth">Error. Unable to verify your identity.</string>
 	<string name="navigate_editor">Navigate to editor</string>
 	<string name="enter_multiselection_mode">Enter multiselection mode</string>
+	<string name="recycle_bin">Trash</string>
+	<string name="empty_trash">Empty Trash</string>
+	<string name="empty_trash_message">Trash is empty</string>
+	<string name="empty_trash_question">Empty Trash?</string>
+	<string name="empty_trash_message_warning">All notes in Trash will be permanently deleted.</string>
+	<string name="delete_forever">Delete forever</string>
+	<string name="restore_note">Restore notes</string>
 
 	<!-- Tags Fragment -->
 	<string name="tags">Tags</string>
@@ -64,18 +70,10 @@
 	<string name="error_message_tag_duplicate">The tag already exists</string>
 	<string name="rename_tag">Rename tag</string>
 	<string name="delete_tag">Delete tag</string>
-	<string name="delete_notes_message">The notes inside this tag have been moved to the trash.</string>
+	<string name="delete_tag_question">Delete tag?</string>
+	<string name="delete_tag_message">This tag will be deleted and removed from all notes associated with it. Notes will not be deleted.</string>
 	<string name="back_button_description">Back to notes</string>
 	<string name="back_to_editor">Back to editor</string>
-
-	<!-- RecycleBin Fragment -->
-	<string name="recycle_bin">Trash</string>
-	<string name="empty_trash">Empty Trash</string>
-	<string name="empty_trash_message">Trash is empty</string>
-	<string name="empty_trash_question">Empty Trash?</string>
-	<string name="empty_trash_message_warning">All notes in Trash will be permanently deleted.</string>
-	<string name="delete_forever">Delete forever</string>
-	<string name="restore_note">Restore notes</string>
 
 	<!-- Notes Contextual Action Bar -->
 	<string name="delete_notes">Delete notes</string>

@@ -21,7 +21,7 @@ fun DeleteNotesDialog(
 	AlertDialog(
 		onDismissRequest = onDismiss,
 		confirmButton = {
-			TextButton(onClick = { onDeleteNotes() }) {
+			TextButton(onClick = onDeleteNotes) {
 				Text(text = stringResource(id = if (isBatchDelete) R.string.ok_button else R.string.empty_trash))
 			}
 		},

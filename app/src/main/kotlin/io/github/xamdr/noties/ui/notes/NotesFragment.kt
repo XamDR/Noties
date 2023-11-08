@@ -58,13 +58,14 @@ class NotesFragment : Fragment() {
 		NotiesTheme {
 			val scope = rememberCoroutineScope()
 			val drawerState = DrawerState(DrawerValue.Closed)
-			var openDialog by rememberSaveable { mutableStateOf(value = false) }
+			var openTagDialog by rememberSaveable { mutableStateOf(value = false) }
 			val noteAction = getNavigationResult<NoteAction>(Constants.BUNDLE_ACTION) ?: NoteAction.NoAction
 			var screen by rememberSaveable { mutableStateOf(value = Screen()) }
+			var openDeleteTagDialog by rememberSaveable { mutableStateOf(value = false) }
 			var isNewTag = true
 
 			fun onSave(tag: Tag) {
-				openDialog = false
+				openTagDialog = false
 				if (tag.id != 0) {
 					screen = screen.copy(title = tag.name)
 				}
@@ -82,7 +83,7 @@ class NotesFragment : Fragment() {
 					scope.launch {
 						when (item.id) {
 							R.id.create_tag -> {
-								openDialog = true
+								openTagDialog = true
 								isNewTag = true
 							}
 							else -> {
@@ -111,20 +112,26 @@ class NotesFragment : Fragment() {
 						onFabClick = ::navigateToEditor,
 						onItemClick = ::navigateToEditor,
 						onRenameTag = {
-							openDialog = true
+							openTagDialog = true
 							isNewTag = false
 						},
-						onDeleteTag = {},
+						onDeleteTag = { openDeleteTagDialog = true },
 						noteAction = noteAction,
 						searchContent = {
 
 						}
 					)
-					if (openDialog) {
+					if (openTagDialog) {
 						TagDialog(
 							tag = if (isNewTag) Tag() else Tag(id = screen.id, name = screen.title),
-							onCancel = { openDialog = false },
+							onCancel = { openTagDialog = false },
 							onSave = ::onSave
+						)
+					}
+					if (openDeleteTagDialog) {
+						DeleteTagDialog(
+							onDeleteTag = {},
+							onDismiss = { openDeleteTagDialog = false }
 						)
 					}
 				}
