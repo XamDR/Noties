@@ -85,7 +85,7 @@ fun TagDialog(
 				onClick = { scope.launch { createOrUpdateTag(tagState.value.text) } },
 				enabled = isConfirmButtonEnabled
 			) {
-				Text(text = stringResource(id = if (tag.id == 0) R.string.save_button else R.string.update_button))
+				Text(text = stringResource(id = if (tag.id == 0) R.string.save_button else R.string.rename_button))
 			}
 		},
 		dismissButton = {
@@ -93,7 +93,7 @@ fun TagDialog(
 				Text(text = stringResource(id = R.string.cancel_button))
 			}
 		},
-		title = { Text(text = stringResource(id = R.string.new_tag)) },
+		title = { Text(text = stringResource(id = if (tag.id == 0) R.string.new_tag else R.string.update_tag)) },
 		text = {
 			OutlinedTextField(
 				value = tagState.value,

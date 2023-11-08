@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,12 +57,12 @@ class NotesFragment : Fragment() {
 	fun NotesFragmentContent() {
 		NotiesTheme {
 			val scope = rememberCoroutineScope()
-			val drawerState = DrawerState(DrawerValue.Closed)
+			val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 			var openTagDialog by rememberSaveable { mutableStateOf(value = false) }
 			val noteAction = getNavigationResult<NoteAction>(Constants.BUNDLE_ACTION) ?: NoteAction.NoAction
 			var screen by rememberSaveable { mutableStateOf(value = Screen()) }
 			var openDeleteTagDialog by rememberSaveable { mutableStateOf(value = false) }
-			var isNewTag = true
+			var isNewTag by rememberSaveable { mutableStateOf(value = true) }
 
 			fun onSave(tag: Tag) {
 				openTagDialog = false

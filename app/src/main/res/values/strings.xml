@@ -8,7 +8,7 @@
 	<string name="not_now_button">Not now</string>
 	<string name="continue_button">Continue</string>
 	<string name="save_button">Save</string>
-	<string name="update_button">Update</string>
+	<string name="rename_button">Rename</string>
 	<string name="go_to_settings_button">Go to settings</string>
 	<string name="delete_button">Delete</string>
 
@@ -66,6 +66,7 @@
 	<string name="search_tags">Search your tags</string>
 	<string name="more_options">More options</string>
 	<string name="new_tag">New tag</string>
+	<string name="update_tag">Update tag</string>
 	<string name="tag_name">Tag name</string>
 	<string name="error_message_tag_duplicate">The tag already exists</string>
 	<string name="rename_tag">Rename tag</string>

@@ -92,7 +92,7 @@ fun NotesScreen(
 	val inSelectionMode by remember { derivedStateOf { selectedIds.isNotEmpty() } }
 	var showDeleteNotesDialog by rememberSaveable { mutableStateOf(value = false) }
 	val isRecycleBinEmpty by remember { derivedStateOf { notes.isNullOrEmpty() } }
-	var isBatchDelete = false
+	var isBatchDelete by rememberSaveable { mutableStateOf(value = false) }
 
 	LaunchedEffect(key1 = Unit) {
 		when (noteAction) {
