@@ -42,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -50,26 +49,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.documentfile.provider.DocumentFile
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.MediaItem
-import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.components.OverflowMenu
 import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.ShareHelper
-import io.github.xamdr.noties.ui.helpers.UriHelper
 import io.github.xamdr.noties.ui.helpers.clickableWithoutRipple
-import io.github.xamdr.noties.ui.helpers.simpleName
 import io.github.xamdr.noties.ui.media.ActionItem
 import io.github.xamdr.noties.ui.media.MediaViewerActivity
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
-import timber.log.Timber
-import java.io.FileNotFoundException
 import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,16 +74,16 @@ fun EditorScreen(
 	onNoteAction: (NoteAction) -> Unit,
 	viewModel: EditorViewModel = hiltViewModel()
 ) {
-	var note by remember { mutableStateOf(Note()) }
 	val context = LocalContext.current
 	var titleInEditMode by rememberSaveable { mutableStateOf(value = false) }
 	var openMenu by rememberSaveable { mutableStateOf(value = false) }
 	val scope = rememberCoroutineScope()
 	val items = remember { mutableStateListOf<GridItem>() }
-	val modificationDate = if (note.modificationDate == 0L) DateTimeHelper.formatDateTime(Instant.now().toEpochMilli())
-		else DateTimeHelper.formatDateTime(note.modificationDate)
+	val modificationDate = DateTimeHelper.formatDateTime(
+		if (viewModel.note.modificationDate == 0L) Instant.now().toEpochMilli() else viewModel.note.modificationDate
+	)
 	val snackbarHostState = remember { SnackbarHostState() }
-	val noteEmpty by remember { derivedStateOf { note.isEmpty() } }
+	val noteEmpty by remember { derivedStateOf { viewModel.note.isEmpty() } }
 	val errorOpenFile = stringResource(id = R.string.error_open_file)
 
 	fun addItems(uris: List<Uri>) {
@@ -101,18 +94,15 @@ fun EditorScreen(
 	fun onItemCopied(mediaItem: MediaItem, index: Int) {
 		items[index] = GridItem.Media(data = mediaItem)
 		if (items.all { it is GridItem.Media }) {
-			note = addMediaItems(note, items)
+			viewModel.addMediaItems(items)
 		}
 	}
 
 	fun openFile(uri: Uri?) {
 		scope.launch {
-			readFileContent(
-				uri = uri,
-				context = context,
-				onFileSuccess = { note = it },
-				onFileError = { this.launch { snackbarHostState.showSnackbar(errorOpenFile) } }
-			)
+			viewModel.readFileContent(uri, context) {
+				this.launch { snackbarHostState.showSnackbar(errorOpenFile) }
+			}
 		}
 	}
 
@@ -133,13 +123,15 @@ fun EditorScreen(
 
 	LaunchedEffect(key1 = Unit) {
 		scope.launch {
-			note = viewModel.getNote(noteId)
-			items.addAll(note.items.map(GridItem::Media))
+			if (noteId != 0L) {
+				viewModel.getNote(noteId)
+				items.addAll(viewModel.note.items.map(GridItem::Media))
+			}
 		}
 	}
 
 	BackHandler {
-		scope.launch { onNoteAction(viewModel.saveNote(note, noteId)) }
+		scope.launch { onNoteAction(viewModel.saveNote(viewModel.note, noteId)) }
 	}
 
 	Scaffold(
@@ -147,7 +139,7 @@ fun EditorScreen(
 			TopAppBar(
 				title = {
 					Text(
-						text = note.title.ifEmpty { stringResource(id = R.string.editor) },
+						text = viewModel.note.title.ifEmpty { stringResource(id = R.string.editor) },
 						maxLines = 1,
 						overflow = TextOverflow.Ellipsis,
 						modifier = Modifier.clickableWithoutRipple { titleInEditMode = titleInEditMode.not() }
@@ -165,7 +157,7 @@ fun EditorScreen(
 				},
 				actions = {
 					if (noteEmpty.not()) {
-						IconButton(onClick = { ShareHelper.shareContent(context, note) }) {
+						IconButton(onClick = { ShareHelper.shareContent(context, viewModel.note) }) {
 							Icon(
 								imageVector = Icons.Outlined.Share,
 								contentDescription = stringResource(id = R.string.share_content)
@@ -199,8 +191,8 @@ fun EditorScreen(
 				AnimatedVisibility(visible = titleInEditMode) {
 					TextBox(
 						placeholder = stringResource(id = R.string.editor),
-						value = note.title,
-						onValueChange = { title -> note = note.copy(title = title) },
+						value = viewModel.note.title,
+						onValueChange = viewModel::updateNoteTitle,
 						modifier = Modifier.fillMaxWidth()
 					)
 				}
@@ -208,12 +200,17 @@ fun EditorScreen(
 					modifier = Modifier
 						.weight(1f)
 						.fillMaxWidth(),
-					note = note,
+					note = viewModel.note,
 					items = items,
-					onNoteContentChange = { text -> note = note.copy(text = text) },
+					onNoteContentChange = viewModel::updateNoteContent,
 					onItemCopied = ::onItemCopied,
 					onItemClick = { position ->
-						navigateToMediaViewer(context, mediaViewerLauncher, getMediaItems(items), position)
+						navigateToMediaViewer(
+							context = context,
+							launcher = mediaViewerLauncher,
+							items = items.filterIsInstance<GridItem.Media>().map { it.data },
+							position = position
+						)
 					}
 				)
 				EditorToolbar(
@@ -238,15 +235,6 @@ fun EditorScreen(
 			}
 		}
 	)
-}
-
-private fun getMediaItems(items: SnapshotStateList<GridItem>): List<MediaItem> {
-	return items.filterIsInstance<GridItem.Media>().map { it.data }
-}
-
-private fun addMediaItems(note: Note, items: SnapshotStateList<GridItem>): Note {
-	val mediaItems = getMediaItems(items).filter { it.id == 0 }
-	return note.copy(items = note.items + mediaItems)
 }
 
 private fun navigateToMediaViewer(
@@ -336,26 +324,4 @@ private fun EditorToolbar(
 			)
 		}
 	}
-}
-
-private suspend fun readFileContent(
-	uri: Uri?,
-	context: Context,
-	onFileSuccess: (Note) -> Unit,
-	onFileError: () -> Unit
-): Note? {
-	if (uri != null) {
-		try {
-			val file = DocumentFile.fromSingleUri(context, uri)
-			val text = UriHelper.readTextFromUri(context, uri)
-			return Note(title = file?.simpleName ?: String.Empty, text = text).also {
-				onFileSuccess(it)
-			}
-		}
-		catch (e: FileNotFoundException) {
-			Timber.e(e)
-			onFileError()
-		}
-	}
-	return null
 }

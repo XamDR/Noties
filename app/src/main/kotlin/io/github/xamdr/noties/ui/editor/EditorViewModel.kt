@@ -1,13 +1,24 @@
 package io.github.xamdr.noties.ui.editor
 
-import androidx.lifecycle.MutableLiveData
+import android.content.Context
+import android.net.Uri
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
-import io.github.xamdr.noties.domain.usecase.*
-import io.github.xamdr.noties.ui.helpers.Constants
+import io.github.xamdr.noties.domain.usecase.DeleteNotesUseCase
+import io.github.xamdr.noties.domain.usecase.GetNoteByIdUseCase
+import io.github.xamdr.noties.domain.usecase.InsertNoteUseCase
+import io.github.xamdr.noties.domain.usecase.UpdateNoteUseCase
+import io.github.xamdr.noties.ui.helpers.UriHelper
+import io.github.xamdr.noties.ui.helpers.simpleName
+import timber.log.Timber
+import java.io.FileNotFoundException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,22 +27,48 @@ class EditorViewModel @Inject constructor(
 	private val insertNoteUseCase: InsertNoteUseCase,
 	private val updateNoteUseCase: UpdateNoteUseCase,
 	private val deleteNotesUseCase: DeleteNotesUseCase,
-	private val deleteMediaItemsUseCase: DeleteMediaItemsUseCase,
-	private val savedState: SavedStateHandle) : ViewModel() {
+	savedState: SavedStateHandle) : ViewModel() {
 
-	val isTaskList = MutableLiveData(false)
+	@OptIn(SavedStateHandleSaveableApi::class)
+	var note by savedState.saveable { mutableStateOf(value = Note()) }
+		private set
 
-	suspend fun getNote(noteId: Long) = savedState.get<Note>(Constants.BUNDLE_NOTE)
-		?: (if (noteId == 0L) Note() else getNoteById(noteId))
+	fun updateNoteContent(text: String) {
+		note = note.copy(text = text)
+	}
+
+	fun updateNoteTitle(title: String) {
+		note = note.copy(title = title)
+	}
+
+	fun addMediaItems(items: SnapshotStateList<GridItem>) {
+		val mediaItems = items
+			.filterIsInstance<GridItem.Media>()
+			.map { it.data }
+			.filter { it.id == 0 }
+		note = note.copy(items = note.items + mediaItems)
+	}
+
+	suspend fun readFileContent(uri: Uri?, context: Context, onFileError: () -> Unit) {
+		if (uri != null) {
+			try {
+				val file = DocumentFile.fromSingleUri(context, uri)
+				val text = UriHelper.readTextFromUri(context, uri)
+				note = note.copy(title = file?.simpleName ?: String.Empty, text = text)
+			}
+			catch (e: FileNotFoundException) {
+				Timber.e(e)
+				onFileError()
+			}
+		}
+	}
+
+	suspend fun getNote(noteId: Long) {
+		note = getNoteById(noteId)
+	}
 
 	suspend fun saveNote(note: Note, noteId: Long) =
 		if (note.id == 0L) insertNote(note) else updateNote(note, noteId)
-
-	suspend fun deleteItems(items: List<MediaItem>) = deleteMediaItemsUseCase(items)
-
-	fun saveState(note: Note) {
-		savedState[Constants.BUNDLE_NOTE] = note
-	}
 
 	private suspend fun getNoteById(noteId: Long): Note = getNoteByIdUseCase(noteId)
 
