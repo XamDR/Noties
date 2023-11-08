@@ -11,6 +11,7 @@
 	<string name="update_button">Update</string>
 	<string name="go_to_settings_button">Go to settings</string>
 	<string name="delete_button">Delete</string>
+	<string name="empty_trash_button">Empty Trash</string>
 
 	<!-- Navigation Drawer -->
 	<string name="all_notes">All Notes</string>
@@ -69,10 +70,10 @@
 
 	<!-- RecycleBin Fragment -->
 	<string name="recycle_bin">Trash</string>
-	<string name="empty_recycle_bin">Empty Recycle Bin</string>
-	<string name="empty_trash_message">Recycle Bin is empty</string>
-	<string name="empty_trash_question">Empty Recycle Bin?</string>
-	<string name="empty_trash_message_warning">All the notes will be permanently deleted.</string>
+	<string name="empty_trash">Empty Trash</string>
+	<string name="empty_trash_message">Trash is empty</string>
+	<string name="empty_trash_question">Empty Trash?</string>
+	<string name="empty_trash_message_warning">All notes in Trash will be permanently deleted.</string>
 	<string name="delete_forever">Delete forever</string>
 	<string name="restore_note">Restore notes</string>
 

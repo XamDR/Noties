@@ -168,7 +168,8 @@ private fun DrawerHeader(src: Uri, onSetWallpaper: () -> Unit) {
 				model = ImageRequest.Builder(LocalContext.current)
 					.data(src)
 					.build(),
-				contentDescription = stringResource(id = R.string.user_wallpaper)
+				contentDescription = stringResource(id = R.string.user_wallpaper),
+				modifier = Modifier.fillMaxWidth()
 			)
 		}
 		IconButton(

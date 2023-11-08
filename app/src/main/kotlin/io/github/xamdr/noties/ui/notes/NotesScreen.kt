@@ -92,6 +92,7 @@ fun NotesScreen(
 	val inSelectionMode by remember { derivedStateOf { selectedIds.isNotEmpty() } }
 	var showDeleteNotesDialog by rememberSaveable { mutableStateOf(value = false) }
 	val isRecycleBinEmpty by remember { derivedStateOf { notes.isNullOrEmpty() } }
+	var isBatchDelete = false
 
 	LaunchedEffect(key1 = Unit) {
 		when (noteAction) {
@@ -188,10 +189,15 @@ fun NotesScreen(
 								}
 								ScreenType.Trash -> {
 									if (isRecycleBinEmpty.not()) {
-										IconButton(onClick = { showDeleteNotesDialog = true }) {
+										IconButton(
+											onClick = {
+												showDeleteNotesDialog = true
+												isBatchDelete = false
+											}
+										) {
 											Icon(
 												imageVector = Icons.Outlined.DeleteForever,
-												contentDescription = stringResource(id = R.string.empty_recycle_bin)
+												contentDescription = stringResource(id = R.string.empty_trash)
 											)
 										}
 									}
@@ -221,7 +227,12 @@ fun NotesScreen(
 						}
 					},
 					actions = {
-						IconButton(onClick = { showDeleteNotesDialog = true }) {
+						IconButton(
+							onClick = {
+								showDeleteNotesDialog = true
+								isBatchDelete = true
+							}
+						) {
 							Icon(
 								imageVector = Icons.Outlined.DeleteForever,
 								contentDescription = stringResource(id = R.string.delete_notes)
@@ -296,6 +307,7 @@ fun NotesScreen(
 			}
 			if (showDeleteNotesDialog) {
 				DeleteNotesDialog(
+					isBatchDelete = isBatchDelete,
 					onDeleteNotes = ::deleteNotes,
 					onDismiss = { showDeleteNotesDialog = false }
 				)

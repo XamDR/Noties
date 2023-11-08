@@ -14,6 +14,7 @@ import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 @Composable
 fun DeleteNotesDialog(
+	isBatchDelete: Boolean,
 	onDeleteNotes: () -> Unit,
 	onDismiss: () -> Unit
 ) {
@@ -21,7 +22,7 @@ fun DeleteNotesDialog(
 		onDismissRequest = onDismiss,
 		confirmButton = {
 			TextButton(onClick = { onDeleteNotes() }) {
-				Text(text = stringResource(id = R.string.ok_button))
+				Text(text = stringResource(id = if (isBatchDelete) R.string.ok_button else R.string.empty_trash))
 			}
 		},
 		dismissButton = {
@@ -29,27 +30,43 @@ fun DeleteNotesDialog(
 				Text(text = stringResource(id = R.string.cancel_button))
 			}
 		},
-		title = { Text(text = stringResource(id = R.string.delete_notes_title)) },
+		title = {
+			Text(text = stringResource(id = if (isBatchDelete) R.string.delete_notes_title else R.string.empty_trash_question))
+		},
 		text = {
-			Text(
-				text = annotatedStringResource(
-					id = R.string.delete_notes_question,
-					spanStyles = { annotation ->
-						when (annotation.value) {
-							"bold" -> SpanStyle(fontWeight = FontWeight.Bold)
-							else -> null
+			if (isBatchDelete) {
+				Text(
+					text = annotatedStringResource(
+						id = R.string.delete_notes_question,
+						spanStyles = { annotation ->
+							when (annotation.value) {
+								"bold" -> SpanStyle(fontWeight = FontWeight.Bold)
+								else -> null
+							}
 						}
-					}
+					)
 				)
-			)
+
+			}
+			else {
+				Text(text = stringResource(id = R.string.empty_trash_message_warning))
+			}
 		}
 	)
 }
 
 @DevicePreviews
 @Composable
-private fun DeleteNotesDialogPreview() {
+private fun DeleteNotesDialogBatchPreview() {
 	NotiesTheme {
-		DeleteNotesDialog(onDeleteNotes = {}, onDismiss = {})
+		DeleteNotesDialog(isBatchDelete = true, onDeleteNotes = {}, onDismiss = {})
+	}
+}
+
+@DevicePreviews
+@Composable
+private fun DeleteNotesDialogFromTrashPreview() {
+	NotiesTheme {
+		DeleteNotesDialog(isBatchDelete = false, onDeleteNotes = {}, onDismiss = {})
 	}
 }
