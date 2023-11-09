@@ -52,7 +52,7 @@
 	<fragment
 		android:id="@+id/nav_tags"
 		android:name="io.github.xamdr.noties.ui.tags.TagsFragment"
-		android:label="@string/tags" />
+		android:label="@string/tags_fragment_label" />
 
 	<fragment
 		android:id="@+id/nav_settings"

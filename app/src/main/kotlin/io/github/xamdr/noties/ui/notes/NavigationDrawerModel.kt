@@ -21,7 +21,7 @@ val DEFAULT_DRAWER_ITEMS = listOf(
 	DrawerItem.DefaultItem(id = R.id.all_notes, icon = Icons.Outlined.Article, label = R.string.all_notes),
 	DrawerItem.DefaultItem(id = R.id.reminders, icon = Icons.Outlined.Notifications, label = R.string.reminders),
 	DrawerItem.DefaultItem(id = R.id.protected_notes, icon = Icons.Outlined.Lock, label = R.string.protected_notes),
-	DrawerItem.Header(id = R.id.tags, label = R.string.tags),
+	DrawerItem.Header(id = R.id.tags, label = R.string.tags_fragment_label),
 	DrawerItem.DefaultItem(id = R.id.create_tag, icon = Icons.Outlined.NewLabel, label = R.string.create_tag),
 	DrawerItem.DefaultItem(id = R.id.archived_notes, icon = Icons.Outlined.Archive, label = R.string.archived_notes),
 	DrawerItem.DefaultItem(id = R.id.recycle_bin, icon = Icons.Outlined.Delete, label = R.string.recycle_bin),

@@ -35,7 +35,7 @@ fun TagsScreen(
 	Scaffold(
 		topBar = {
 			TopAppBar(
-				title = { Text(text = stringResource(id = R.string.tags)) },
+				title = { Text(text = stringResource(id = R.string.tags_fragment_label)) },
 				navigationIcon = {
 					IconButton(onClick = onNavigationIconClick) {
 						Icon(
@@ -74,7 +74,7 @@ private fun TagsScreen() {
 	Scaffold(
 		topBar = {
 			TopAppBar(
-				title = { Text(text = stringResource(id = R.string.tags)) },
+				title = { Text(text = stringResource(id = R.string.tags_fragment_label)) },
 				navigationIcon = {
 					IconButton(onClick = {}) {
 						Icon(

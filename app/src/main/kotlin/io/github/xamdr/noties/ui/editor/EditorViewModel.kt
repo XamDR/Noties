@@ -2,14 +2,15 @@ package io.github.xamdr.noties.ui.editor
 
 import android.content.Context
 import android.net.Uri
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.domain.usecase.DeleteNotesUseCase
 import io.github.xamdr.noties.domain.usecase.GetNoteByIdUseCase
@@ -21,6 +22,7 @@ import timber.log.Timber
 import java.io.FileNotFoundException
 import javax.inject.Inject
 
+@OptIn(SavedStateHandleSaveableApi::class)
 @HiltViewModel
 class EditorViewModel @Inject constructor(
 	private val getNoteByIdUseCase: GetNoteByIdUseCase,
@@ -29,9 +31,11 @@ class EditorViewModel @Inject constructor(
 	private val deleteNotesUseCase: DeleteNotesUseCase,
 	savedState: SavedStateHandle) : ViewModel() {
 
-	@OptIn(SavedStateHandleSaveableApi::class)
 	var note by savedState.saveable { mutableStateOf(value = Note()) }
 		private set
+
+	val items = mutableStateListOf<GridItem>()
+//	var items by mutableStateOf(value = linkedSetOf<GridItem>())
 
 	fun updateNoteContent(text: String) {
 		note = note.copy(text = text)
@@ -41,12 +45,20 @@ class EditorViewModel @Inject constructor(
 		note = note.copy(title = title)
 	}
 
-	fun addMediaItems(items: SnapshotStateList<GridItem>) {
-		val mediaItems = items
-			.filterIsInstance<GridItem.Media>()
-			.map { it.data }
-			.filter { it.id == 0 }
-		note = note.copy(items = note.items + mediaItems)
+	fun addItems(uris: List<Uri>) {
+		if (uris.isEmpty()) return
+		uris.forEach { uri -> items.add(GridItem.AndroidUri(src = uri)) }
+	}
+
+	fun onItemCopied(mediaItem: MediaItem, index: Int) {
+		items[index] = GridItem.Media(data = mediaItem)
+		if (items.all { it is GridItem.Media }) {
+			val mediaItems = items
+				.filterIsInstance<GridItem.Media>()
+				.map { it.data }
+				.filter { it.id == 0 && !note.items.contains(it) }
+			note = note.copy(items = note.items + mediaItems)
+		}
 	}
 
 	suspend fun readFileContent(uri: Uri?, context: Context, onFileError: () -> Unit) {
@@ -64,7 +76,10 @@ class EditorViewModel @Inject constructor(
 	}
 
 	suspend fun getNote(noteId: Long) {
-		note = getNoteById(noteId)
+		if (noteId != 0L) {
+			note = getNoteById(noteId)
+			items.addAll(note.items.map(GridItem::Media))
+		}
 	}
 
 	suspend fun saveNote(note: Note, noteId: Long) =

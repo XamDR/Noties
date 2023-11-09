@@ -60,7 +60,7 @@
 	<string name="restore_note">Restore notes</string>
 
 	<!-- Tags Fragment -->
-	<string name="tags">Tags</string>
+	<string name="tags_fragment_label">Tags</string>
 	<string name="empty_tags_message">No tags here</string>
 	<string name="create_tag">Create tag</string>
 	<string name="search_tags">Search your tags</string>
@@ -98,8 +98,6 @@
 	<string name="toolbar_back_button_description">Back to Notes</string>
 	<string name="clear_note_title_text">Clear note title text</string>
 	<string name="note_modified_date">Last edit: %s</string>
-	<string name="add_attachment">Add attachment</string>
-	<string name="add_tags">Add tags</string>
 	<string name="pick_note_color">Pick color for note</string>
 	<string name="color">Color</string>
 	<string name="share_content">Share content</string>
@@ -134,13 +132,15 @@
 
 	<!-- Add attachment Fragment -->
 	<string name="text_editor_menu_fragment_label">Text editor menu attachments</string>
-	<string name="attach_media">Attach multimedia </string>
-	<string name="take_picture">Take picture</string>
+	<string name="gallery">Gallery</string>
+	<string name="camera">Camera</string>
 	<string name="write_external_storage_permission_rationale">Noties needs permission to access your gallery in order to save the picture or video taken by the camera.</string>
+	<string name="take_picture">Take picture</string>
 	<string name="take_video">Record video</string>
-	<string name="talk_to_write">Talk to write</string>
-	<string name="add_todo_list">Add to-do list</string>
-	<string name="add_reminder">Add reminder</string>
+	<string name="audio">Audio</string>
+	<string name="todo_list">To-do list</string>
+	<string name="reminder">Reminder</string>
+	<string name="tags">Tags</string>
 	<string name="user_generated_image">Image added by the user</string>
 	<string name="image_saved">Picture saved</string>
 	<string name="error_take_picture">No photo was taken.</string>

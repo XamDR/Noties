@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 sealed class MediaType : Parcelable {
-	object Image : MediaType()
-	object Video : MediaType()
-	object Audio : MediaType()
+	data object Image : MediaType()
+	data object Video : MediaType()
+	data object Audio : MediaType()
 }

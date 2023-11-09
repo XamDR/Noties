@@ -19,7 +19,6 @@ import androidx.compose.material.icons.outlined.AddBox
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.FileOpen
-import androidx.compose.material.icons.outlined.NewLabel
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,7 +35,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -78,25 +76,12 @@ fun EditorScreen(
 	var titleInEditMode by rememberSaveable { mutableStateOf(value = false) }
 	var openMenu by rememberSaveable { mutableStateOf(value = false) }
 	val scope = rememberCoroutineScope()
-	val items = remember { mutableStateListOf<GridItem>() }
 	val modificationDate = DateTimeHelper.formatDateTime(
 		if (viewModel.note.modificationDate == 0L) Instant.now().toEpochMilli() else viewModel.note.modificationDate
 	)
 	val snackbarHostState = remember { SnackbarHostState() }
 	val noteEmpty by remember { derivedStateOf { viewModel.note.isEmpty() } }
 	val errorOpenFile = stringResource(id = R.string.error_open_file)
-
-	fun addItems(uris: List<Uri>) {
-		if (uris.isEmpty()) return
-		uris.forEach { uri -> items.add(GridItem.AndroidUri(src = uri)) }
-	}
-
-	fun onItemCopied(mediaItem: MediaItem, index: Int) {
-		items[index] = GridItem.Media(data = mediaItem)
-		if (items.all { it is GridItem.Media }) {
-			viewModel.addMediaItems(items)
-		}
-	}
 
 	fun openFile(uri: Uri?) {
 		scope.launch {
@@ -108,7 +93,7 @@ fun EditorScreen(
 
 	val pickMediaLauncher = rememberLauncherForActivityResult(
 		contract = ActivityResultContracts.OpenMultipleDocuments(),
-		onResult = ::addItems
+		onResult = viewModel::addItems
 	)
 
 	val mediaViewerLauncher = rememberLauncherForActivityResult(
@@ -122,12 +107,7 @@ fun EditorScreen(
 	)
 
 	LaunchedEffect(key1 = Unit) {
-		scope.launch {
-			if (noteId != 0L) {
-				viewModel.getNote(noteId)
-				items.addAll(viewModel.note.items.map(GridItem::Media))
-			}
-		}
+		scope.launch { viewModel.getNote(noteId) }
 	}
 
 	BackHandler {
@@ -170,12 +150,7 @@ fun EditorScreen(
 								title = R.string.open_file,
 								action = { openFileLauncher.launch(arrayOf(Constants.MIME_TYPE_TEXT)) },
 								icon = Icons.Outlined.FileOpen
-							),
-							ActionItem(
-								title = R.string.add_tags,
-								action = onNavigatoToTags,
-								icon = Icons.Outlined.NewLabel
-							),
+							)
 						)
 					)
 				}
@@ -201,14 +176,14 @@ fun EditorScreen(
 						.weight(1f)
 						.fillMaxWidth(),
 					note = viewModel.note,
-					items = items,
+					items = viewModel.items,
 					onNoteContentChange = viewModel::updateNoteContent,
-					onItemCopied = ::onItemCopied,
+					onItemCopied = viewModel::onItemCopied,
 					onItemClick = { position ->
 						navigateToMediaViewer(
 							context = context,
 							launcher = mediaViewerLauncher,
-							items = items.filterIsInstance<GridItem.Media>().map { it.data },
+							items = viewModel.items.filterIsInstance<GridItem.Media>().map { it.data },
 							position = position
 						)
 					}
@@ -226,10 +201,11 @@ fun EditorScreen(
 				) { item ->
 					openMenu = false
 					when (item.id) {
-						R.id.attach_media -> pickMediaLauncher.launch(
+						R.id.gallery -> pickMediaLauncher.launch(
 							arrayOf(Constants.MIME_TYPE_IMAGE, Constants.MIME_TYPE_VIDEO)
 						)
-						R.id.take_picture -> {} //takePictureLauncher.launch()
+						R.id.tags -> onNavigatoToTags()
+						R.id.camera -> {}
 					}
 				}
 			}
@@ -306,7 +282,7 @@ private fun EditorToolbar(
 		IconButton(onClick = onAddAttachmentIconClick) {
 			Icon(
 				imageVector = Icons.Outlined.AddBox,
-				contentDescription = stringResource(id = R.string.add_attachment),
+				contentDescription = stringResource(id = R.string.gallery),
 				modifier = Modifier.padding(start = 4.dp)
 			)
 		}

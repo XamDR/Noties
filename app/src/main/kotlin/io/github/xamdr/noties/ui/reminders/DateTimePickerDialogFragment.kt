@@ -70,7 +70,7 @@ class DateTimePickerDialogFragment : DialogFragment(), MaterialCheckBox.OnChecke
 			onSpinnerItemClick(spinnerDate, spinnerTime)
 		}
 		val builder = MaterialAlertDialogBuilder(requireContext())
-			.setTitle(R.string.add_reminder)
+			.setTitle(R.string.reminder)
 			.setView(binding.root)
 			.setNegativeButton(R.string.cancel_button, null)
 			.setPositiveButton(R.string.ok_button, null)
