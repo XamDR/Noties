@@ -29,13 +29,12 @@ class EditorViewModel @Inject constructor(
 	private val insertNoteUseCase: InsertNoteUseCase,
 	private val updateNoteUseCase: UpdateNoteUseCase,
 	private val deleteNotesUseCase: DeleteNotesUseCase,
-	savedState: SavedStateHandle) : ViewModel() {
+	private val savedState: SavedStateHandle) : ViewModel() {
 
 	var note by savedState.saveable { mutableStateOf(value = Note()) }
 		private set
 
 	val items = mutableStateListOf<GridItem>()
-//	var items by mutableStateOf(value = linkedSetOf<GridItem>())
 
 	fun updateNoteContent(text: String) {
 		note = note.copy(text = text)
@@ -76,14 +75,21 @@ class EditorViewModel @Inject constructor(
 	}
 
 	suspend fun getNote(noteId: Long) {
-		if (noteId != 0L) {
+		if (noteId != 0L && savedState.get<Note>("note") == null) {
 			note = getNoteById(noteId)
-			items.addAll(note.items.map(GridItem::Media))
 		}
+		if (note.items.isNotEmpty()) {
+			val itemsFromNote = note.items.map(GridItem::Media).filter { !items.contains(it) }
+			val result = items.addAll(itemsFromNote)
+			Timber.d("Result: $result")
+		}
+		Timber.d("Note: $note")
 	}
 
-	suspend fun saveNote(note: Note, noteId: Long) =
-		if (note.id == 0L) insertNote(note) else updateNote(note, noteId)
+	suspend fun saveNote(note: Note, noteId: Long): NoteAction {
+		Timber.d("Saved Note: $note")
+		return if (note.id == 0L) insertNote(note) else updateNote(note, noteId)
+	}
 
 	private suspend fun getNoteById(noteId: Long): Note = getNoteByIdUseCase(noteId)
 
