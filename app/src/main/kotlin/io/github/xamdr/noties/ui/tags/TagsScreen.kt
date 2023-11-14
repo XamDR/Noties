@@ -15,6 +15,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,17 +30,19 @@ import io.github.xamdr.noties.ui.theme.NotiesTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TagsScreen(
-	onNavigationIconClick: () -> Unit,
+	tagsFromNote: List<String>,
+	onNavigationIconClick: (List<String>) -> Unit,
 	viewModel: TagsViewModel = hiltViewModel()
 ) {
 	val tags by viewModel.getTags().collectAsState(initial = emptyList())
+	var selectedTags by remember { mutableStateOf(value = tagsFromNote) }
 
 	Scaffold(
 		topBar = {
 			TopAppBar(
 				title = { Text(text = stringResource(id = R.string.tags_fragment_label)) },
 				navigationIcon = {
-					IconButton(onClick = onNavigationIconClick) {
+					IconButton(onClick = { onNavigationIconClick(selectedTags) }) {
 						Icon(
 							imageVector = Icons.Outlined.ArrowBack,
 							contentDescription = stringResource(id = R.string.back_button_description)
@@ -60,8 +65,12 @@ fun TagsScreen(
 			}
 			else {
 				TagList(
-					modifier = Modifier.padding(innerPadding),
-					tags = tags
+					tags = tags,
+					selectedTags = selectedTags,
+					onTagSelected = { checked, tag ->
+						if (checked) selectedTags += tag else selectedTags -= tag
+					},
+					modifier = Modifier.padding(innerPadding)
 				)
 			}
 		}

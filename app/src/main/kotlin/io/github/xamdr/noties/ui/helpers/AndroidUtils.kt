@@ -1,29 +1,21 @@
 package io.github.xamdr.noties.ui.helpers
 
-import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.Window
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.ActivityResultRegistry
 import androidx.annotation.*
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
@@ -33,7 +25,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
-import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -54,9 +45,6 @@ fun Context.setNightMode() {
 	}
 }
 
-fun Context.getThemeColor(@AttrRes colorAttributeResId: Int) =
-	MaterialColors.getColor(this, colorAttributeResId, Color.TRANSPARENT)
-
 fun Fragment.inflateTransition(@TransitionRes resId: Int): Transition =
 	TransitionInflater.from(this.requireContext()).inflateTransition(resId)
 
@@ -65,8 +53,6 @@ fun Context.showToast(@StringRes text: Int, duration: Int = Toast.LENGTH_SHORT):
 
 fun Context.showToast(text: String, duration: Int = Toast.LENGTH_SHORT): Toast =
 	Toast.makeText(this.applicationContext, text, duration).also { it.show() }
-
-fun Context.getIntArray(@ArrayRes resId: Int) = this.resources.getIntArray(resId)
 
 @Suppress("DEPRECATION")
 fun <T : Parcelable> Bundle.getParcelableCompat(key: String, clazz: Class<T>): T {
@@ -151,41 +137,6 @@ fun NavController.tryNavigate(
 	}
 }
 
-val Fragment.supportActionBar: ActionBar?
-	get() = (this.activity as AppCompatActivity).supportActionBar
-
-val Fragment.activityResultRegistry: ActivityResultRegistry
-	get() = this.requireActivity().activityResultRegistry
-
-fun Fragment.addMenuProvider(provider: MenuProvider, owner: LifecycleOwner) {
-	this.requireActivity().addMenuProvider(provider, owner)
-}
-
-fun Fragment.addMenuProvider(provider: MenuProvider) {
-	this.requireActivity().addMenuProvider(provider)
-}
-
-fun Fragment.removeMenuProvider(provider: MenuProvider) {
-	this.requireActivity().removeMenuProvider(provider)
-}
-
-fun Fragment.showDialog(dialog: DialogFragment, tag: String) {
-	val previousDialog = this.childFragmentManager.findFragmentByTag(tag)
-	if (previousDialog == null) {
-		dialog.show(childFragmentManager, tag)
-	}
-}
-
-val Fragment.window: Window
-	get() = requireActivity().window
-
-fun ActionBar.show(title: String) {
-	this.apply {
-		show()
-		setTitle(title)
-	}
-}
-
 fun DialogFragment.getPositiveButton(): Button {
 	return (requireDialog() as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
 }
@@ -194,11 +145,11 @@ fun Context.isLandscape(): Boolean {
 	return this.resources.displayMetrics.heightPixels < this.resources.displayMetrics.widthPixels
 }
 
-fun <T : Parcelable> Fragment.getNavigationResult(key: String): T? {
+fun <T> Fragment.getNavigationResult(key: String): T? {
 	return this.findNavController().currentBackStackEntry?.savedStateHandle?.get(key)
 }
 
-fun <T : Parcelable> Fragment.setNavigationResult(key: String, value: T) {
+fun <T> Fragment.setNavigationResult(key: String, value: T) {
 	this.findNavController().previousBackStackEntry?.savedStateHandle?.set(key, value)
 }
 

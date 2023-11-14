@@ -67,8 +67,9 @@ import java.time.Instant
 @Composable
 fun EditorScreen(
 	noteId: Long,
+	selectedTags: List<String>?,
 	onNavigationIconClick: () -> Unit,
-	onNavigatoToTags: () -> Unit,
+	onNavigatoToTags: (tags: List<String>) -> Unit,
 	onNoteAction: (NoteAction) -> Unit,
 	viewModel: EditorViewModel = hiltViewModel()
 ) {
@@ -107,7 +108,7 @@ fun EditorScreen(
 	)
 
 	LaunchedEffect(key1 = Unit) {
-		scope.launch { viewModel.getNote(noteId) }
+		scope.launch { viewModel.getNote(noteId, selectedTags) }
 	}
 
 	BackHandler {
@@ -177,6 +178,7 @@ fun EditorScreen(
 						.fillMaxWidth(),
 					note = viewModel.note,
 					items = viewModel.items,
+					tags = viewModel.note.tags,
 					onNoteContentChange = viewModel::updateNoteContent,
 					onItemCopied = viewModel::onItemCopied,
 					onItemClick = { position ->
@@ -204,7 +206,7 @@ fun EditorScreen(
 						R.id.gallery -> pickMediaLauncher.launch(
 							arrayOf(Constants.MIME_TYPE_IMAGE, Constants.MIME_TYPE_VIDEO)
 						)
-						R.id.tags -> onNavigatoToTags()
+						R.id.tags -> onNavigatoToTags(viewModel.note.tags)
 						R.id.camera -> {}
 					}
 				}

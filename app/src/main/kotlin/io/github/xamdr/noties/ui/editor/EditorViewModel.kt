@@ -74,14 +74,16 @@ class EditorViewModel @Inject constructor(
 		}
 	}
 
-	suspend fun getNote(noteId: Long) {
+	suspend fun getNote(noteId: Long, tags: List<String>?) {
 		if (noteId != 0L && savedState.get<Note>("note") == null) {
 			note = getNoteById(noteId)
 		}
 		if (note.items.isNotEmpty()) {
 			val itemsFromNote = note.items.map(GridItem::Media).filter { !items.contains(it) }
-			val result = items.addAll(itemsFromNote)
-			Timber.d("Result: $result")
+			items.addAll(itemsFromNote)
+		}
+		if (tags != null && note.tags != tags) {
+			note = note.copy(tags = tags)
 		}
 		Timber.d("Note: $note")
 	}

@@ -1,12 +1,16 @@
 package io.github.xamdr.noties.ui.editor
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -20,11 +24,13 @@ import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 private const val SPAN_COUNT = 2
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Editor(
 	modifier: Modifier,
 	note: Note,
 	items: List<GridItem>,
+	tags: List<String>?,
 	onNoteContentChange: (String) -> Unit,
 	onItemCopied: (MediaItem, Int) -> Unit,
 	onItemClick: (Int) -> Unit
@@ -59,6 +65,21 @@ fun Editor(
 				onValueChange = onNoteContentChange,
 				modifier = Modifier.fillMaxWidth()
 			)
+		}
+		item(span = { GridItemSpan(SPAN_COUNT) }) {
+			if (!tags.isNullOrEmpty()) {
+				FlowRow(
+					modifier = Modifier.fillMaxWidth(),
+					horizontalArrangement = Arrangement.SpaceBetween
+				) {
+					tags.forEach { tag ->
+						SuggestionChip(
+							onClick = {},
+							label = { Text(text = tag) }
+						)
+					}
+				}
+			}
 		}
 	}
 }

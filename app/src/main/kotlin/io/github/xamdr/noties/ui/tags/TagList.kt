@@ -3,7 +3,6 @@ package io.github.xamdr.noties.ui.tags
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,29 +15,34 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.xamdr.noties.domain.model.Tag
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
-import io.github.xamdr.noties.ui.helpers.getDimensionFromAttrs
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 @Composable
 fun TagList(
-	modifier: Modifier,
-	tags: List<Tag>
+	tags: List<Tag>,
+	selectedTags: List<String>,
+	onTagSelected: (Boolean, String) -> Unit,
+	modifier: Modifier
 ) {
 	LazyColumn(
 		modifier = modifier,
 		contentPadding = PaddingValues(16.dp),
 		verticalArrangement = Arrangement.spacedBy(16.dp),
 	) {
+
 		items(
 			count = tags.size,
 			key = { index -> tags[index].id }
-		) {
-			index -> TagItem(tags[index])
+		) { index ->
+			TagItem(
+				checked = selectedTags.contains(tags[index].name),
+				tag = tags[index],
+				onTagSelected = onTagSelected
+			)
 		}
 	}
 }
@@ -62,7 +66,13 @@ fun TagList(modifier: Modifier) {
 		items(
 			count = tags.size,
 			key = { index -> tags[index].id }
-		) { index -> TagItem(tags[index]) }
+		) { index ->
+			TagItem(
+				checked = false,
+				tag = tags[index],
+				onTagSelected = { _, _ -> }
+			)
+		}
 	}
 }
 
@@ -71,17 +81,15 @@ fun TagList(modifier: Modifier) {
 private fun TagListPreview() = NotiesTheme { TagList(Modifier) }
 
 @Composable
-private fun TagItem(tag: Tag) {
-	val context = LocalContext.current
-	val startPadding = context.getDimensionFromAttrs(android.R.attr.listPreferredItemPaddingStart)
-	val endPadding = context.getDimensionFromAttrs(android.R.attr.listPreferredItemPaddingEnd)
-	val minHeight = context.getDimensionFromAttrs(android.R.attr.listPreferredItemHeight)
-
+private fun TagItem(
+	checked: Boolean,
+	tag: Tag,
+	onTagSelected: (Boolean, String) -> Unit
+) {
 	Row(
 		modifier = Modifier
 			.fillMaxWidth()
-			.padding(start = startPadding.dp, top = 8.dp, end = endPadding.dp, bottom = 8.dp)
-			.defaultMinSize(minHeight = minHeight.dp),
+			.padding(all = 8.dp),
 		verticalAlignment = Alignment.CenterVertically
 	) {
 		Icon(
@@ -98,6 +106,9 @@ private fun TagItem(tag: Tag) {
 				.weight(1f)
 				.padding(top = 6.dp, end = 8.dp, bottom = 8.dp)
 		)
-		Checkbox(checked = false, onCheckedChange = {})
+		Checkbox(
+			checked = checked,
+			onCheckedChange = { checked -> onTagSelected(checked, tag.name) }
+		)
 	}
 }
