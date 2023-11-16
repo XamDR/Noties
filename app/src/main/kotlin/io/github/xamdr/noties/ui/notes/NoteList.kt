@@ -10,6 +10,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,11 +21,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Alarm
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissState
@@ -32,6 +37,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
@@ -55,6 +61,7 @@ import coil.request.ImageRequest
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.domain.model.Note
+import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.theme.NotiesTheme
@@ -223,7 +230,7 @@ fun NoteList(modifier: Modifier) {
 @Composable
 private fun NoteListPreview() = NotiesTheme { NoteList(Modifier) }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 private fun NoteItem(
 	note: Note,
@@ -316,10 +323,46 @@ private fun NoteItem(
 					modifier = Modifier.padding(start = 16.dp, top = topDp, end = 16.dp, bottom = 16.dp)
 				)
 			}
+			if (note.tags.isNotEmpty() || note.reminderDate != null) {
+				val allTags = if (note.reminderDate == null) note.tags
+					else listOf(DateTimeHelper.formatDateTime(note.reminderDate)) + note.tags
+
+				FlowRow(
+					modifier = Modifier
+						.fillMaxWidth()
+						.padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp),
+					horizontalArrangement = Arrangement.Start
+				) {
+					allTags.forEach { tag ->
+						if (DateTimeHelper.isValidDate(tag)) {
+							AssistChip(
+								onClick = {},
+								label = { Text(text = tag) },
+								leadingIcon = {
+									Icon(
+										imageVector = Icons.Outlined.Alarm,
+										contentDescription = null,
+										modifier = Modifier.size(AssistChipDefaults.IconSize)
+									)
+								},
+								modifier = Modifier.padding(horizontal = 4.dp)
+							)
+						}
+						else {
+							SuggestionChip(
+								onClick = {},
+								label = { Text(text = tag) },
+								modifier = Modifier.padding(horizontal = 4.dp)
+							)
+						}
+					}
+				}
+			}
 		}
 	}
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun NoteItem() {
 	OutlinedCard(
@@ -380,6 +423,35 @@ private fun NoteItem() {
 				overflow = TextOverflow.Ellipsis,
 				modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp)
 			)
+			FlowRow(
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp),
+				horizontalArrangement = Arrangement.Start
+			) {
+				AssistChip(
+					onClick = {},
+					label = { Text(text = "14/11/2023 13:15") },
+					leadingIcon = {
+						Icon(
+							imageVector = Icons.Outlined.Alarm,
+							contentDescription = null,
+							modifier = Modifier.size(AssistChipDefaults.IconSize)
+						)
+					},
+					modifier = Modifier.padding(horizontal = 4.dp)
+				)
+				SuggestionChip(
+					onClick = {},
+					label = { Text(text = "Android") },
+					modifier = Modifier.padding(horizontal = 4.dp)
+				)
+				SuggestionChip(
+					onClick = {},
+					label = { Text(text = "Work") },
+					modifier = Modifier.padding(horizontal = 4.dp)
+				)
+			}
 		}
 	}
 }
