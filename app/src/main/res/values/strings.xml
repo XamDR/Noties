@@ -11,6 +11,7 @@
 	<string name="rename_button">Rename</string>
 	<string name="go_to_settings_button">Go to settings</string>
 	<string name="delete_button">Delete</string>
+	<string name="done_button">Done</string>
 
 	<!-- Navigation Drawer -->
 	<string name="all_notes">All Notes</string>

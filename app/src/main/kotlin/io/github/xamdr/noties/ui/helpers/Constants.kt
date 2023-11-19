@@ -2,7 +2,7 @@ package io.github.xamdr.noties.ui.helpers
 
 object Constants {
 	const val BUNDLE_NOTE_ID = "BUNDLE_NOTE_ID"
-	const val BUNDLE_NOTE = "BUNDLE_NOTE"
+	const val BUNDLE_NOTE_TEXT = "BUNDLE_NOTE_TEXT"
 	const val BUNDLE_ACTION = "BUNDLE_ACTION"
 	const val BUNDLE_TAGS = "BUNDLE_TAGS"
 	const val BUNDLE_SELECTED_TAGS = "BUNDLE_SELECTED_TAGS"

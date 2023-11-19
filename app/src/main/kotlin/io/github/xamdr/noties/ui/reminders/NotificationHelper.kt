@@ -17,17 +17,20 @@ import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.MainActivity
 import io.github.xamdr.noties.ui.editor.tasks.SpannableConverter
+import io.github.xamdr.noties.ui.helpers.Constants
 import timber.log.Timber
 import java.io.FileNotFoundException
 import java.time.Instant
 
 object NotificationHelper {
 
+	const val ACTION_CANCEL = "ACTION_CANCEL"
 	private const val CHANNEL_ID = "NOTIES_CHANNEL"
 
 	fun buildNotification(context: Context, note: Note): Notification {
 		val intent = Intent(context, MainActivity::class.java).apply {
 			flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+			putExtra(Constants.BUNDLE_NOTE_ID, note.id)
 		}
 		val pendingIntent = PendingIntent.getActivity(
 			context,
@@ -37,6 +40,16 @@ object NotificationHelper {
 		)
 		val `when` = note.reminderDate ?: Instant.now().toEpochMilli()
 		val contentText = if (note.hasTaskList) SpannableConverter.convertToSpannable(note.text) else note.text
+		val cancelIntent = Intent(context, AlarmNotificationReceiver::class.java).apply {
+			action = ACTION_CANCEL
+			putExtra(Constants.BUNDLE_NOTIFICATION_ID, note.id.toInt())
+		}
+		val cancelPendingIntent = PendingIntent.getBroadcast(
+			context,
+			note.id.toInt(),
+			cancelIntent,
+			PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+		)
 		return NotificationCompat.Builder(context, CHANNEL_ID)
 			.setSmallIcon(R.drawable.ic_noties_notification)
 			.setContentTitle(note.title.ifEmpty { context.getString(R.string.app_name) })
@@ -48,6 +61,8 @@ object NotificationHelper {
 			.setWhen(`when`)
 			.setDefaults(NotificationCompat.DEFAULT_ALL)
 			.setPriority(NotificationCompat.PRIORITY_DEFAULT)
+			.setCategory(NotificationCompat.CATEGORY_REMINDER)
+			.addAction(R.drawable.ic_check, context.getString(R.string.done_button), cancelPendingIntent)
 			.apply {
 				note.previewItem?.let { mediaItem ->
 					when (mediaItem.mediaType) {

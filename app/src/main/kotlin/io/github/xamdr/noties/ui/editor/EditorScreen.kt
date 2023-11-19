@@ -69,6 +69,7 @@ import java.time.Instant
 @Composable
 fun EditorScreen(
 	noteId: Long,
+	text: String?,
 	selectedTags: List<String>?,
 	onNavigationIconClick: () -> Unit,
 	onNavigatoToTags: (tags: List<String>) -> Unit,
@@ -111,7 +112,7 @@ fun EditorScreen(
 	)
 
 	LaunchedEffect(key1 = Unit) {
-		scope.launch { viewModel.getNote(noteId, selectedTags) }
+		scope.launch { viewModel.getNote(noteId, text, selectedTags) }
 	}
 
 	BackHandler {

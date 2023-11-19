@@ -26,6 +26,9 @@ class EditorFragment : Fragment() {
 	private val noteId by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getLong(Constants.BUNDLE_NOTE_ID, 0L)
 	}
+	private val text by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getString(Constants.BUNDLE_NOTE_TEXT)
+	}
 
 	override fun onCreateView(inflater: LayoutInflater,
 							  container: ViewGroup?,
@@ -42,6 +45,7 @@ class EditorFragment : Fragment() {
 			val selectedTags = getNavigationResult<List<String>>(Constants.BUNDLE_SELECTED_TAGS)
 			EditorScreen(
 				noteId = noteId,
+				text = text,
 				selectedTags = selectedTags,
 				onNavigationIconClick = ::onBackPressed,
 				onNavigatoToTags = ::navigateToTags,

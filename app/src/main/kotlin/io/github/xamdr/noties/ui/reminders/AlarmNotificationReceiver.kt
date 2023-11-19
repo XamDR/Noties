@@ -15,7 +15,10 @@ class AlarmNotificationReceiver : BroadcastReceiver() {
 
 	override fun onReceive(context: Context, intent: Intent?) {
 		if (intent != null) {
-			notify(context, intent)
+			when (intent.action) {
+				NotificationHelper.ACTION_CANCEL -> cancel(context, intent)
+				else -> notify(context, intent)
+			}
 		}
 	}
 
@@ -28,5 +31,11 @@ class AlarmNotificationReceiver : BroadcastReceiver() {
 		if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
 			notificationManager.notify(id, notification)
 		}
+	}
+
+	private fun cancel(context: Context, intent: Intent) {
+		val notificationManager = NotificationManagerCompat.from(context)
+		val id = intent.getIntExtra(Constants.BUNDLE_NOTIFICATION_ID, 0)
+		notificationManager.cancel(id)
 	}
 }
