@@ -39,7 +39,7 @@ fun TagDialog(
 ) {
 	val scope = rememberCoroutineScope()
 	val tagNameState by viewModel.nameState.collectAsStateWithLifecycle(initialValue = TagNameState.EmptyOrUpdatingName)
-	var isConfirmButtonEnabled by rememberSaveable { mutableStateOf(false) }
+	var isConfirmButtonEnabled by rememberSaveable { mutableStateOf(value = false) }
 	var showError by rememberSaveable { mutableStateOf(false) }
 	val focusRequester = remember { FocusRequester() }
 	val tagState = rememberSaveable(stateSaver = TextFieldValue.Saver) {

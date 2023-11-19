@@ -12,20 +12,7 @@ import io.github.xamdr.noties.ui.helpers.Constants
 
 object AlarmManagerHelper {
 
-	fun canScheduleExactAlarms(context: Context): Boolean {
-		val alarmManager = context.getSystemService<AlarmManager>()
-		return when {
-			alarmManager != null -> {
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-					alarmManager.canScheduleExactAlarms()
-				}
-				else true
-			}
-			else -> false
-		}
-	}
-
-	fun setAlarm(context: Context, note: Note, isExactAlarmEnabled: Boolean) {
+	fun setAlarm(context: Context, note: Note) {
 		val intent = Intent(context, AlarmNotificationReceiver::class.java).apply {
 			putExtra(Constants.BUNDLE_NOTIFICATION_ID, note.id.toInt())
 			putExtra(Constants.BUNDLE_NOTE_NOTIFICATION, note)
@@ -39,7 +26,7 @@ object AlarmManagerHelper {
 		val alarmManager = context.getSystemService<AlarmManager>() ?: return
 		val triggerAtMillis = note.reminderDate ?: return
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-			if (isExactAlarmEnabled && alarmManager.canScheduleExactAlarms()) {
+			if (alarmManager.canScheduleExactAlarms()) {
 				AlarmManagerCompat.setExactAndAllowWhileIdle(
 					alarmManager,
 					AlarmManager.RTC_WAKEUP,

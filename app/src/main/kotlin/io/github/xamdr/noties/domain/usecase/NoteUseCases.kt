@@ -142,3 +142,14 @@ class RestoreNotesUseCase @Inject constructor(private val noteRepository: NoteRe
 		}
 	}
 }
+
+class GetNotesWithReminderUseCase @Inject constructor(private val noteRepository: NoteRepository) {
+
+	operator fun invoke(): Flow<List<Note>> {
+		return noteRepository.getNotesWithReminder().map { result ->
+			result.map { (note, items) ->
+				Note.create(note.asDomainModel(), items.map { it.asDomainModel() })
+			}
+		}
+	}
+}

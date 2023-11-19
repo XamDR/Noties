@@ -18,8 +18,10 @@ import io.github.xamdr.noties.domain.usecase.InsertNoteUseCase
 import io.github.xamdr.noties.domain.usecase.UpdateNoteUseCase
 import io.github.xamdr.noties.ui.helpers.UriHelper
 import io.github.xamdr.noties.ui.helpers.simpleName
+import io.github.xamdr.noties.ui.reminders.AlarmManagerHelper
 import timber.log.Timber
 import java.io.FileNotFoundException
+import java.time.Instant
 import javax.inject.Inject
 
 @OptIn(SavedStateHandleSaveableApi::class)
@@ -91,6 +93,16 @@ class EditorViewModel @Inject constructor(
 	suspend fun saveNote(note: Note, noteId: Long): NoteAction {
 		Timber.d("Saved Note: $note")
 		return if (note.id == 0L) insertNote(note) else updateNote(note, noteId)
+	}
+
+	fun setReminder(dateTime: Instant) {
+		val value = dateTime.toEpochMilli()
+		note = note.copy(reminderDate = value)
+	}
+
+	fun cancelReminder(context: Context) {
+		note = note.copy(reminderDate = null)
+		AlarmManagerHelper.cancelAlarm(context, note.id)
 	}
 
 	private suspend fun getNoteById(noteId: Long): Note = getNoteByIdUseCase(noteId)

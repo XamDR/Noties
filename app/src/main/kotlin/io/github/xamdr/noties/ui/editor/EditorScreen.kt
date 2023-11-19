@@ -59,6 +59,8 @@ import io.github.xamdr.noties.ui.helpers.ShareHelper
 import io.github.xamdr.noties.ui.helpers.clickableWithoutRipple
 import io.github.xamdr.noties.ui.media.ActionItem
 import io.github.xamdr.noties.ui.media.MediaViewerActivity
+import io.github.xamdr.noties.ui.reminders.AlarmManagerHelper
+import io.github.xamdr.noties.ui.reminders.DateTimePickerDialog
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -83,6 +85,7 @@ fun EditorScreen(
 	val snackbarHostState = remember { SnackbarHostState() }
 	val noteEmpty by remember { derivedStateOf { viewModel.note.isEmpty() } }
 	val errorOpenFile = stringResource(id = R.string.error_open_file)
+	var openDateTimePicker by rememberSaveable { mutableStateOf(value = false) }
 
 	fun openFile(uri: Uri?) {
 		scope.launch {
@@ -112,7 +115,16 @@ fun EditorScreen(
 	}
 
 	BackHandler {
-		scope.launch { onNoteAction(viewModel.saveNote(viewModel.note, noteId)) }
+		scope.launch {
+			val action = viewModel.saveNote(viewModel.note, noteId)
+			when (action) {
+				NoteAction.DeleteEmptyNote -> {}
+				NoteAction.InsertNote -> AlarmManagerHelper.setAlarm(context, viewModel.note)
+				NoteAction.NoAction -> {}
+				NoteAction.UpdateNote -> AlarmManagerHelper.setAlarm(context, viewModel.note)
+			}
+			onNoteAction(action)
+		}
 	}
 
 	Scaffold(
@@ -179,6 +191,7 @@ fun EditorScreen(
 					text = viewModel.note.text,
 					items = viewModel.items,
 					tags = viewModel.note.tags,
+					reminder = viewModel.note.reminderDate,
 					onNoteContentChange = viewModel::updateNoteContent,
 					onItemCopied = viewModel::onItemCopied,
 					onItemClick = { position ->
@@ -189,6 +202,7 @@ fun EditorScreen(
 							position = position
 						)
 					},
+					onAssisChipClick = { openDateTimePicker = true },
 					onChipClick = { onNavigatoToTags(viewModel.note.tags) }
 				)
 				EditorToolbar(
@@ -209,8 +223,23 @@ fun EditorScreen(
 						)
 						R.id.tags -> onNavigatoToTags(viewModel.note.tags)
 						R.id.camera -> {}
+						R.id.reminder -> openDateTimePicker = true
 					}
 				}
+			}
+			if (openDateTimePicker) {
+				DateTimePickerDialog(
+					reminderDate = viewModel.note.reminderDate,
+					onReminderDateSet = { dateTime ->
+						viewModel.setReminder(dateTime)
+						openDateTimePicker = false
+					},
+					onCancelReminder = {
+						viewModel.cancelReminder(context)
+						openDateTimePicker = false
+					},
+					onDismiss = { openDateTimePicker = false }
+				)
 			}
 		}
 	)

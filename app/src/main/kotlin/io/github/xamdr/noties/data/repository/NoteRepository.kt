@@ -23,5 +23,5 @@ class NoteRepository(private val noteDao: NoteDao) {
 
 	suspend fun deleteTrashedNotes() = noteDao.deleteTrashedNotes()
 
-	suspend fun getNotesWithReminder() = noteDao.getNotesWithReminder()
+	fun getNotesWithReminder() = noteDao.getNotesWithReminder()
 }

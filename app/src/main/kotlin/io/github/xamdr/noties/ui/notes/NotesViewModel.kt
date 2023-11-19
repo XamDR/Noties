@@ -9,6 +9,7 @@ import io.github.xamdr.noties.domain.usecase.EmptyTrashUseCase
 import io.github.xamdr.noties.domain.usecase.GetAllNotesUseCase
 import io.github.xamdr.noties.domain.usecase.GetArchivedNotesUseCase
 import io.github.xamdr.noties.domain.usecase.GetNotesUseCase
+import io.github.xamdr.noties.domain.usecase.GetNotesWithReminderUseCase
 import io.github.xamdr.noties.domain.usecase.GetTrashedNotesUseCase
 import io.github.xamdr.noties.domain.usecase.MoveNotesToTrashUseCase
 import io.github.xamdr.noties.domain.usecase.RestoreNotesUseCase
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class NotesViewModel @Inject constructor(
 	private val getAllNotesUseCase: GetAllNotesUseCase,
 	private val getNotesUseCase: GetNotesUseCase,
+	private val getNotesWithReminderUseCase: GetNotesWithReminderUseCase,
 	private val getTrashedNotesUseCase: GetTrashedNotesUseCase,
 	private val getArchivedNotesUseCase: GetArchivedNotesUseCase,
 	private val moveNotesToTrashUseCase: MoveNotesToTrashUseCase,
@@ -32,7 +34,7 @@ class NotesViewModel @Inject constructor(
 			ScreenType.Archived -> getArchivedNotesUseCase()
 			ScreenType.Main -> getAllNotesUseCase()
 			ScreenType.Protected -> TODO()
-			ScreenType.Reminder -> TODO()
+			ScreenType.Reminder -> getNotesWithReminderUseCase()
 			ScreenType.Tag -> getNotesUseCase(screen.title)
 			ScreenType.Trash -> getTrashedNotesUseCase()
 		}

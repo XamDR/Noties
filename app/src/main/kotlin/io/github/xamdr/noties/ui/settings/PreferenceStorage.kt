@@ -20,8 +20,6 @@ class PreferenceStorage @Inject constructor(@ApplicationContext context: Context
 
 	var layoutType by StringPreference(preferences, PREF_LAYOUT_NOTES, LayoutType.Linear.name)
 
-	var isExactAlarmEnabled by BooleanPreference(preferences, PREF_EXACT_ALARM, false)
-
 	val appTheme by IntegerPreference(preferences, PREF_APP_THEME, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
 
 	val appColor by IntegerPreference(preferences, PREF_APP_COLOR, R.color.blue_600)
@@ -34,7 +32,6 @@ class PreferenceStorage @Inject constructor(@ApplicationContext context: Context
 		const val PREF_HIPERLINKS_ENABLED = "pref_hiperlinks_enabled"
 		private const val PREF_ONBOARDING = "pref_onboarding"
 		private const val PREF_LAYOUT_NOTES = "pref_layout_notes"
-		private const val PREF_EXACT_ALARM = "pref_exact_alarm"
 		private const val PREF_WALLPAPER = "pref_wallpaper"
 	}
 }

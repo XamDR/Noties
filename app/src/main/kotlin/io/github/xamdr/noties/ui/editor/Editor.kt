@@ -7,18 +7,26 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Alarm
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.components.TextBox
+import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
@@ -31,9 +39,11 @@ fun Editor(
 	text: String,
 	items: List<GridItem>,
 	tags: List<String>?,
+	reminder: Long?,
 	onNoteContentChange: (String) -> Unit,
 	onItemCopied: (MediaItem, Int) -> Unit,
 	onItemClick: (Int) -> Unit,
+	onAssisChipClick: () -> Unit,
 	onChipClick: () -> Unit
 ) {
 	LazyVerticalGrid(
@@ -68,19 +78,45 @@ fun Editor(
 			)
 		}
 		item(span = { GridItemSpan(SPAN_COUNT) }) {
-			if (!tags.isNullOrEmpty()) {
-				FlowRow(
-					modifier = Modifier
-						.fillMaxWidth()
-						.padding(all = 8.dp),
-					horizontalArrangement = Arrangement.Start
-				) {
-					tags.forEach { tag ->
-						SuggestionChip(
-							onClick = onChipClick,
-							label = { Text(text = tag) },
-							modifier = Modifier.padding(horizontal = 4.dp)
-						)
+			FlowRow(
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(all = 8.dp),
+				horizontalArrangement = Arrangement.Start
+			) {
+				if (!tags.isNullOrEmpty() || reminder != null) {
+					val allTags = when {
+						!tags.isNullOrEmpty() && reminder != null -> listOf(DateTimeHelper.formatDateTime(reminder)) + tags
+						reminder != null -> listOf(DateTimeHelper.formatDateTime(reminder))
+						else -> tags
+					}
+					allTags?.forEach { tag ->
+						if (DateTimeHelper.isValidDate(tag)) {
+							AssistChip(
+								onClick = onAssisChipClick,
+								label = {
+									Text(
+										text = tag,
+										textDecoration = if (DateTimeHelper.isPast(tag)) TextDecoration.LineThrough else null
+									)
+								},
+								leadingIcon = {
+									Icon(
+										imageVector = Icons.Outlined.Alarm,
+										contentDescription = null,
+										modifier = Modifier.size(AssistChipDefaults.IconSize)
+									)
+								},
+								modifier = Modifier.padding(horizontal = 4.dp)
+							)
+						}
+						else {
+							SuggestionChip(
+								onClick = onChipClick,
+								label = { Text(text = tag) },
+								modifier = Modifier.padding(horizontal = 4.dp)
+							)
+						}
 					}
 				}
 			}
