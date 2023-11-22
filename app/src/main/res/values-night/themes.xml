@@ -44,4 +44,6 @@
 	<style name="Theme.Noties.MediaViewer" parent="Theme.Noties">
 		<item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
 	</style>
+
+	<style name="Theme.Noties.DateTimePicker" parent="Theme.Material3.DayNight.Dialog"/>
 </resources>

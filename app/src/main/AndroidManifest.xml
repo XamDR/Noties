@@ -51,6 +51,13 @@
 			android:theme="@style/Theme.Noties.MediaViewer"
 			android:windowSoftInputMode="stateAlwaysHidden"/>
 
+		<activity
+			android:name=".ui.reminders.DateTimePickerActivity"
+			android:excludeFromRecents="true"
+			android:exported="false"
+			android:taskAffinity=""
+			android:theme="@style/Theme.Noties.DateTimePicker"/>
+
 		<receiver
 			android:name=".ui.reminders.AlarmNotificationReceiver"
 			android:enabled="true"

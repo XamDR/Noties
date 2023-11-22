@@ -54,4 +54,13 @@ interface NoteDao {
 			"WHERE reminder_date IS NOT NULL AND Notes.trashed <> 1 " +
 			"ORDER BY Notes.id DESC")
 	fun getNotesWithReminder(): Flow<Map<DatabaseNoteEntity, List<DatabaseMediaItemEntity>>>
+
+	@Query("SELECT * FROM Notes " +
+			"LEFT JOIN MediaItems ON Notes.id = MediaItems.note_id " +
+			"WHERE reminder_date IS NOT NULL AND reminder_date > CURRENT_TIMESTAMP AND Notes.trashed <> 1 " +
+			"ORDER BY Notes.id DESC")
+	fun getNotesWithReminderPastCurrentTime(): Flow<Map<DatabaseNoteEntity, List<DatabaseMediaItemEntity>>>
+
+	@Query("UPDATE Notes SET reminder_date = :reminderDate WHERE id = :noteId")
+	suspend fun updateReminderForNote(noteId: Long, reminderDate: Long?)
 }

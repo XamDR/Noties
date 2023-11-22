@@ -12,6 +12,7 @@
 	<string name="go_to_settings_button">Go to settings</string>
 	<string name="delete_button">Delete</string>
 	<string name="done_button">Done</string>
+	<string name="update_button">Update</string>
 
 	<!-- Navigation Drawer -->
 	<string name="all_notes">All Notes</string>

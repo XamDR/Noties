@@ -24,4 +24,8 @@ class NoteRepository(private val noteDao: NoteDao) {
 	suspend fun deleteTrashedNotes() = noteDao.deleteTrashedNotes()
 
 	fun getNotesWithReminder() = noteDao.getNotesWithReminder()
+
+	fun getNotesWithReminderPastCurrentTime() = noteDao.getNotesWithReminderPastCurrentTime()
+
+	suspend fun updateReminderForNote(noteId: Long, reminderDate: Long?) = noteDao.updateReminderForNote(noteId, reminderDate)
 }

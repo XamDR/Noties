@@ -153,3 +153,22 @@ class GetNotesWithReminderUseCase @Inject constructor(private val noteRepository
 		}
 	}
 }
+
+class GetNotesWithReminderPastCurrentTimeUseCase @Inject constructor(private val noteRepository: NoteRepository) {
+
+	operator fun invoke(): Flow<List<Note>> {
+		return noteRepository.getNotesWithReminderPastCurrentTime().map { result ->
+			result.map { (note, items) ->
+				Note.create(note.asDomainModel(), items.map { it.asDomainModel() })
+			}
+		}
+	}
+}
+
+class UpdateReminderUseCase @Inject constructor(private val noteRepository: NoteRepository) {
+
+	suspend operator fun invoke(noteId: Long, dateTime: Instant?) {
+		val reminderDate = dateTime?.toEpochMilli()
+		noteRepository.updateReminderForNote(noteId, reminderDate)
+	}
+}

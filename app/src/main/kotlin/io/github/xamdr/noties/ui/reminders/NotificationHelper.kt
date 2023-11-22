@@ -40,6 +40,19 @@ object NotificationHelper {
 		)
 		val `when` = note.reminderDate ?: Instant.now().toEpochMilli()
 		val contentText = if (note.hasTaskList) SpannableConverter.convertToSpannable(note.text) else note.text
+		val updateReminderIntent = Intent(context, DateTimePickerActivity::class.java).apply {
+			flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+		}
+		if (note.reminderDate != null) {
+			updateReminderIntent.putExtra(Constants.BUNDLE_NOTE_ID, note.id)
+			updateReminderIntent.putExtra(Constants.BUNDLE_REMINDER_DATE, note.reminderDate)
+		}
+		val updateReminderPendingIntent = PendingIntent.getActivity(
+			context,
+			note.id.toInt(),
+			updateReminderIntent,
+			PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+		)
 		val cancelIntent = Intent(context, AlarmNotificationReceiver::class.java).apply {
 			action = ACTION_CANCEL
 			putExtra(Constants.BUNDLE_NOTIFICATION_ID, note.id.toInt())
@@ -62,6 +75,7 @@ object NotificationHelper {
 			.setDefaults(NotificationCompat.DEFAULT_ALL)
 			.setPriority(NotificationCompat.PRIORITY_DEFAULT)
 			.setCategory(NotificationCompat.CATEGORY_REMINDER)
+			.addAction(R.drawable.ic_alarm, context.getString(R.string.update_button), updateReminderPendingIntent)
 			.addAction(R.drawable.ic_check, context.getString(R.string.done_button), cancelPendingIntent)
 			.apply {
 				note.previewItem?.let { mediaItem ->
