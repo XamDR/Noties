@@ -29,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,6 +53,7 @@ fun DateTimePickerDialog(
 	onDismiss: () -> Unit,
 	viewModel: DateTimePickerViewModel = hiltViewModel()
 ) {
+	val helper = DateTimePickerHelper()
 	var isConfirmButtonEnabled by rememberSaveable { mutableStateOf(value = false) }
 	val reminderDateState by viewModel.reminderState.collectAsStateWithLifecycle(initialValue = ReminderDateState.ReminderDateNotSet)
 	var dateExpanded by rememberSaveable { mutableStateOf(value = false) }
@@ -117,12 +119,12 @@ fun DateTimePickerDialog(
 						expanded = dateExpanded,
 						onDismissRequest = { dateExpanded = false }
 					) {
-						DATES.forEachIndexed { index, date ->
+						helper.dates.forEachIndexed { index, date ->
 							DropdownMenuItem(
-								text = { Text(text = stringResource(id = date.name)) },
+								text = { Text(text = stringArrayResource(id = R.array.reminder_date_options)[index]) },
 								onClick = {
 									dateExpanded = false
-									if (index == DATES.size - 1) {
+									if (index == helper.dates.size - 1) {
 										openDateDialog = true
 									}
 									else {
@@ -152,12 +154,12 @@ fun DateTimePickerDialog(
 						expanded = timeExpanded,
 						onDismissRequest = { timeExpanded = false }
 					) {
-						TIMES.forEachIndexed { index, time ->
+						helper.times.forEachIndexed { index, time ->
 							DropdownMenuItem(
-								text = { Text(text = stringResource(id = time.name)) },
+								text = { Text(text = stringArrayResource(id = R.array.reminder_time_options)[index]) },
 								onClick = {
 									timeExpanded = false
-									if (index == TIMES.size - 1) {
+									if (index == helper.times.size - 1) {
 										openTimeDialog = true
 									}
 									else {
@@ -281,15 +283,9 @@ private fun DateTimePickerDialog() {
 					)
 					ExposedDropdownMenu(
 						expanded = false,
-						onDismissRequest = {}
-					) {
-						DATES.forEach { date ->
-							DropdownMenuItem(
-								text = { Text(text = stringResource(id = date.name)) },
-								onClick = {}
-							)
-						}
-					}
+						onDismissRequest = {},
+						content = {}
+					)
 				}
 				ExposedDropdownMenuBox(
 					expanded = false,
@@ -307,15 +303,9 @@ private fun DateTimePickerDialog() {
 					)
 					ExposedDropdownMenu(
 						expanded = false,
-						onDismissRequest = {}
-					) {
-						TIMES.forEach { time ->
-							DropdownMenuItem(
-								text = { Text(text = stringResource(id = time.name)) },
-								onClick = {}
-							)
-						}
-					}
+						onDismissRequest = {},
+						content = {}
+					)
 				}
 			}
 		}
@@ -324,8 +314,4 @@ private fun DateTimePickerDialog() {
 
 @DevicePreviews
 @Composable
-private fun DateTimePickerDialogPreview() {
-	NotiesTheme {
-		DateTimePickerDialog()
-	}
-}
+private fun DateTimePickerDialogPreview() = NotiesTheme { DateTimePickerDialog() }

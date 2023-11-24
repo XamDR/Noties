@@ -3,7 +3,6 @@ package io.github.xamdr.noties.ui.reminders
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.domain.usecase.GetNoteByIdUseCase
 import io.github.xamdr.noties.domain.usecase.UpdateReminderUseCase
@@ -48,12 +47,12 @@ class DateTimePickerViewModel @Inject constructor(
 
 	fun onDateSet(selection: Long): ReminderDate {
 		val selectedDate = Instant.ofEpochMilli(selection).atZone(ZoneId.systemDefault()).toLocalDate()
-		return ReminderDate.CustomDate(R.string.select_date, selectedDate)
+		return ReminderDate.CustomDate(selectedDate)
 	}
 
 	fun onTimeSet(hour: Int, minute: Int): ReminderTime {
 		val selectedTime = LocalTime.of(hour, minute)
-		return ReminderTime.CustomTime(R.string.select_time, selectedTime)
+		return ReminderTime.CustomTime(selectedTime)
 	}
 
 	fun onDateTimeSet(selectedDateText: String, selectedTimeText: String): Instant {

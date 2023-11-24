@@ -12,10 +12,19 @@
 		<item>-1</item>
 	</string-array>
 
-	<array name="sort_mode">
-		<item>@string/sort_by_content</item>
-		<item>@string/sort_by_last_edit</item>
-		<item>@string/sort_by_title</item>
+	<array name="reminder_date_options">
+		<item>@string/today</item>
+		<item>@string/tomorrow</item>
+		<item>@string/next_week</item>
+		<item>@string/select_date</item>
+	</array>
+
+	<array name="reminder_time_options">
+		<item>@string/five_minutes</item>
+		<item>@string/fifteen_minutes</item>
+		<item>@string/thirty_minutes</item>
+		<item>@string/one_hour</item>
+		<item>@string/select_time</item>
 	</array>
 
 	<!-- Text Editor Style -->
