@@ -31,6 +31,8 @@ import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -416,5 +418,66 @@ private fun AlertDialogFlowRow(
 				}
 			}
 		}
+	}
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun <T> DropDown(
+	hint: String,
+	value: String,
+	items: List<T>,
+	entries: Array<String>,
+	modifier: Modifier = Modifier,
+	onItemClick: (T) -> Unit
+) {
+	var expanded by rememberSaveable { mutableStateOf(value = false) }
+
+	ExposedDropdownMenuBox(
+		expanded = expanded,
+		onExpandedChange = { expanded = !expanded },
+		modifier = modifier
+	) {
+		OutlinedTextField(
+			readOnly = true,
+			value = value,
+			onValueChange = {},
+			placeholder = { Text(text = hint) },
+			singleLine = true,
+			trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+			modifier = Modifier.menuAnchor()
+		)
+		if (items.isNotEmpty()) {
+			ExposedDropdownMenu(
+				expanded = expanded,
+				onDismissRequest = { expanded = false }
+			) {
+				items.forEachIndexed { index, item ->
+					DropdownMenuItem(
+						text = { Text(text = entries[index]) },
+						onClick = {
+							expanded = false
+							onItemClick(item)
+						},
+						modifier = Modifier.padding(ExposedDropdownMenuDefaults.ItemContentPadding)
+					)
+				}
+			}
+		}
+	}
+}
+
+@DevicePreviews
+@Composable
+private fun DropDownPreview() {
+	NotiesTheme {
+		DropDown(
+			hint = "Fecha",
+			value = "",
+			items = emptyList<Unit>(),
+			entries = emptyArray(),
+			onItemClick = {},
+			modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
+		)
 	}
 }

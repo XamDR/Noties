@@ -40,14 +40,14 @@ class DateTimePickerActivity : FragmentActivity() {
 	}
 
 	private fun updateReminder(noteId: Long, dateTime: Instant) {
-		viewModel.updateReminder(noteId = noteId, dateTime = dateTime) { note ->
+		viewModel.updateReminder(noteId = noteId, reminder = dateTime) { note ->
 			AlarmManagerHelper.setAlarm(context = this, note = note)
 			finish()
 		}
 	}
 
 	private fun deleteReminder(noteId: Long) {
-		viewModel.updateReminder(noteId = noteId, dateTime = null) {
+		viewModel.updateReminder(noteId = noteId, reminder = null) {
 			finish()
 		}
 	}

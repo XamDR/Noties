@@ -16,8 +16,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,14 +27,12 @@ class DateTimePickerViewModel @Inject constructor(
 	private val reminderDateState: MutableStateFlow<ReminderDateState> = MutableStateFlow(ReminderDateState.ReminderDateNotSet)
 	val reminderState = reminderDateState.asStateFlow()
 
-	fun onReminderDateSelected(date: String, time: String) {
-		if (date == String.Empty || time == String.Empty) {
+	fun onReminderDateSelected(date: LocalDate?, time: LocalTime?) {
+		if (date == null || time == null) {
 			reminderDateState.update { ReminderDateState.ReminderDateNotSet }
 		}
 		else {
-			val localDate = LocalDate.parse(date, DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
-			val localTime = LocalTime.parse(time, DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
-			if (DateTimeHelper.isPast(localDate, localTime)) {
+			if (DateTimeHelper.isPast(date, time)) {
 				reminderDateState.update { ReminderDateState.ReminderDateInvalid }
 			}
 			else {
@@ -45,27 +41,25 @@ class DateTimePickerViewModel @Inject constructor(
 		}
 	}
 
-	fun onDateSet(selection: Long): ReminderDate {
-		val selectedDate = Instant.ofEpochMilli(selection).atZone(ZoneId.systemDefault()).toLocalDate()
-		return ReminderDate.CustomDate(selectedDate)
+	fun onDateSet(selection: Long): LocalDate {
+		return Instant.ofEpochMilli(selection).atZone(ZoneId.systemDefault()).toLocalDate()
 	}
 
-	fun onTimeSet(hour: Int, minute: Int): ReminderTime {
-		val selectedTime = LocalTime.of(hour, minute)
-		return ReminderTime.CustomTime(selectedTime)
+	fun onTimeSet(hour: Int, minute: Int): LocalTime {
+		return LocalTime.of(hour, minute)
 	}
 
-	fun onDateTimeSet(selectedDateText: String, selectedTimeText: String): Instant {
-		val selectedDate = LocalDate.parse(selectedDateText, DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
-		val selectedTime = LocalTime.parse(selectedTimeText, DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
+	fun onDateTimeSet(date: LocalDate?, time: LocalTime?): Instant {
+		val selectedDate = date ?: throw IllegalArgumentException("date is null")
+		val selectedTime = time ?: throw IllegalArgumentException("time is null")
 		return LocalDateTime.of(selectedDate, selectedTime).atZone(ZoneId.systemDefault()).toInstant()
 	}
 
-	fun updateReminder(noteId: Long, dateTime: Instant?, onUpdate: (Note) -> Unit) {
+	fun updateReminder(noteId: Long, reminder: Instant?, onReminderUpdated: (Note) -> Unit) {
 		viewModelScope.launch {
-			updateReminderUseCase(noteId, dateTime)
+			updateReminderUseCase(noteId, reminder)
 			val updatedNote = getNoteByIdUseCase(noteId)
-			onUpdate(updatedNote)
+			onReminderUpdated(updatedNote)
 		}
 	}
 }

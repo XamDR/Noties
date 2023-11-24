@@ -10,11 +10,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -35,8 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.xamdr.noties.R
+import io.github.xamdr.noties.ui.components.DropDown
 import io.github.xamdr.noties.ui.components.TimePickerDialog
-import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import java.time.Instant
@@ -56,14 +52,8 @@ fun DateTimePickerDialog(
 	val helper = DateTimePickerHelper()
 	var isConfirmButtonEnabled by rememberSaveable { mutableStateOf(value = false) }
 	val reminderDateState by viewModel.reminderState.collectAsStateWithLifecycle(initialValue = ReminderDateState.ReminderDateNotSet)
-	var dateExpanded by rememberSaveable { mutableStateOf(value = false) }
-	var timeExpanded by rememberSaveable { mutableStateOf(value = false) }
-	var selectedDateText by rememberSaveable {
-		mutableStateOf(value = if (reminderDate != null) DateTimeHelper.formatDate(reminderDate) else String.Empty)
-	}
-	var selectedTimeText by rememberSaveable {
-		mutableStateOf(value = if (reminderDate != null) DateTimeHelper.formatTime(reminderDate) else String.Empty)
-	}
+	var selectedDate by rememberSaveable { mutableStateOf(value = reminderDate?.toLocalDate()) }
+	var selectedTime by rememberSaveable { mutableStateOf(value = reminderDate?.toLocalTime()) }
 	var openDateDialog by rememberSaveable { mutableStateOf(value = false) }
 	var openTimeDialog by rememberSaveable { mutableStateOf(value = false) }
 
@@ -92,7 +82,7 @@ fun DateTimePickerDialog(
 		},
 		confirmButton = {
 			TextButton(
-				onClick = { onReminderDateSet(viewModel.onDateTimeSet(selectedDateText, selectedTimeText)) },
+				onClick = { onReminderDateSet(viewModel.onDateTimeSet(selectedDate, selectedTime)) },
 				enabled = isConfirmButtonEnabled
 			) {
 				Text(text = stringResource(id = R.string.ok_button))
@@ -101,76 +91,38 @@ fun DateTimePickerDialog(
 		title = { Text(text = stringResource(id = R.string.reminder)) },
 		text = {
 			Column {
-				ExposedDropdownMenuBox(
-					expanded = dateExpanded,
-					onExpandedChange = { dateExpanded = !dateExpanded },
-					modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
-				) {
-					OutlinedTextField(
-						readOnly = true,
-						value = selectedDateText,
-						onValueChange = {},
-						label = { Text(text = stringResource(id = R.string.date_hint)) },
-						trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dateExpanded) },
-						colors = ExposedDropdownMenuDefaults.textFieldColors(),
-						modifier = Modifier.menuAnchor()
-					)
-					ExposedDropdownMenu(
-						expanded = dateExpanded,
-						onDismissRequest = { dateExpanded = false }
-					) {
-						helper.dates.forEachIndexed { index, date ->
-							DropdownMenuItem(
-								text = { Text(text = stringArrayResource(id = R.array.reminder_date_options)[index]) },
-								onClick = {
-									dateExpanded = false
-									if (index == helper.dates.size - 1) {
-										openDateDialog = true
-									}
-									else {
-										selectedDateText = date.toString()
-										viewModel.onReminderDateSelected(selectedDateText, selectedTimeText)
-									}
-								}
-							)
+				DropDown(
+					hint = stringResource(id = R.string.date_hint),
+					value = selectedDate.asString(),
+					items = helper.dates,
+					entries = stringArrayResource(id = R.array.reminder_date_options),
+					onItemClick = { date ->
+						if (date == null) {
+							openDateDialog = true
 						}
-					}
-				}
-				ExposedDropdownMenuBox(
-					expanded = timeExpanded,
-					onExpandedChange = { timeExpanded = !timeExpanded },
-					modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
-				) {
-					OutlinedTextField(
-						readOnly = true,
-						value = selectedTimeText,
-						onValueChange = {},
-						label = { Text(text = stringResource(id = R.string.time_hint)) },
-						trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = timeExpanded) },
-						colors = ExposedDropdownMenuDefaults.textFieldColors(),
-						modifier = Modifier.menuAnchor()
-					)
-					ExposedDropdownMenu(
-						expanded = timeExpanded,
-						onDismissRequest = { timeExpanded = false }
-					) {
-						helper.times.forEachIndexed { index, time ->
-							DropdownMenuItem(
-								text = { Text(text = stringArrayResource(id = R.array.reminder_time_options)[index]) },
-								onClick = {
-									timeExpanded = false
-									if (index == helper.times.size - 1) {
-										openTimeDialog = true
-									}
-									else {
-										selectedTimeText = time.toString()
-										viewModel.onReminderDateSelected(selectedDateText, selectedTimeText)
-									}
-								}
-							)
+						else {
+							selectedDate = date
+							viewModel.onReminderDateSelected(selectedDate, selectedTime)
 						}
-					}
-				}
+					},
+					modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
+				)
+				DropDown(
+					hint = stringResource(id = R.string.time_hint),
+					value = selectedTime.asString(),
+					items = helper.times,
+					entries = stringArrayResource(id = R.array.reminder_time_options),
+					onItemClick = { time ->
+						if (time == null) {
+							openTimeDialog = true
+						}
+						else {
+							selectedTime = time
+							viewModel.onReminderDateSelected(selectedDate, selectedTime)
+						}
+					},
+					modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
+				)
 			}
 			if (openDateDialog) {
 				val selection = if (reminderDate == 0L) null else reminderDate
@@ -191,9 +143,8 @@ fun DateTimePickerDialog(
 						TextButton(
 							onClick = {
 								openDateDialog = false
-								val selectedDate = datePickerState.selectedDateMillis?.let { viewModel.onDateSet(it) }
-								selectedDateText = selectedDate.toString()
-								viewModel.onReminderDateSelected(selectedDateText, selectedTimeText)
+								selectedDate = datePickerState.selectedDateMillis?.let { viewModel.onDateSet(it) }
+								viewModel.onReminderDateSelected(selectedDate, selectedTime)
 							},
 							enabled = confirmEnabled
 						) {
@@ -225,9 +176,8 @@ fun DateTimePickerDialog(
 						TextButton(
 							onClick = {
 								openTimeDialog = false
-								val selectedTime = viewModel.onTimeSet(timePickerState.hour, timePickerState.minute)
-								selectedTimeText = selectedTime.toString()
-								viewModel.onReminderDateSelected(selectedDateText, selectedTimeText)
+								selectedTime = viewModel.onTimeSet(timePickerState.hour, timePickerState.minute)
+								viewModel.onReminderDateSelected(selectedDate, selectedTime)
 							}
 						) {
 							Text(text = stringResource(id = R.string.ok_button))
@@ -241,7 +191,6 @@ fun DateTimePickerDialog(
 	)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DateTimePickerDialog() {
 	AlertDialog(
@@ -267,46 +216,22 @@ private fun DateTimePickerDialog() {
 		title = { Text(text = stringResource(id = R.string.reminder)) },
 		text = {
 			Column {
-				ExposedDropdownMenuBox(
-					expanded = false,
-					onExpandedChange = {},
+				DropDown(
+					hint = stringResource(id = R.string.date_hint),
+					value = "",
+					items = emptyList<Unit>(),
+					entries = emptyArray(),
+					onItemClick = {},
 					modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
-				) {
-					OutlinedTextField(
-						readOnly = true,
-						value = "",
-						onValueChange = {},
-						label = { Text(text = stringResource(id = R.string.date_hint)) },
-						trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) },
-						colors = ExposedDropdownMenuDefaults.textFieldColors(),
-						modifier = Modifier.menuAnchor()
-					)
-					ExposedDropdownMenu(
-						expanded = false,
-						onDismissRequest = {},
-						content = {}
-					)
-				}
-				ExposedDropdownMenuBox(
-					expanded = false,
-					onExpandedChange = {},
+				)
+				DropDown(
+					hint = stringResource(id = R.string.time_hint),
+					value = "",
+					items = emptyList<Unit>(),
+					entries = emptyArray(),
+					onItemClick = {},
 					modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
-				) {
-					OutlinedTextField(
-						readOnly = true,
-						value = "",
-						onValueChange = {},
-						label = { Text(text = stringResource(id = R.string.time_hint)) },
-						trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) },
-						colors = ExposedDropdownMenuDefaults.textFieldColors(),
-						modifier = Modifier.menuAnchor()
-					)
-					ExposedDropdownMenu(
-						expanded = false,
-						onDismissRequest = {},
-						content = {}
-					)
-				}
+				)
 			}
 		}
 	)

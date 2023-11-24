@@ -1,6 +1,10 @@
 package io.github.xamdr.noties.ui.helpers
 
-import java.time.*
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
 import java.time.chrono.IsoChronology
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
@@ -19,20 +23,6 @@ object DateTimeHelper {
 		return formatter.format(instant)
 	}
 
-	fun formatDate(value: Long): String {
-		val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
-		val zonedDateTime = Instant.ofEpochMilli(value).atZone(ZoneId.systemDefault())
-		val localDate = zonedDateTime.toLocalDate()
-		return formatter.format(localDate)
-	}
-
-	fun formatTime(value: Long): String {
-		val formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-		val zonedDateTime = Instant.ofEpochMilli(value).atZone(ZoneId.systemDefault())
-		val localTime = zonedDateTime.toLocalTime()
-		return formatter.format(localTime)
-	}
-
 	fun isValidDate(input: String): Boolean {
 		return try {
 			LocalDateTime.parse(input, formatter)
@@ -43,21 +33,14 @@ object DateTimeHelper {
 		}
 	}
 
-	fun isPast(localDate: LocalDate, localTime: LocalTime): Boolean {
-		return localDate.isBefore(LocalDate.now()) ||
-				(localDate.isEqual(LocalDate.now()) && localTime.isBefore(LocalTime.now()))
-	}
-
-	fun isPast(value: Long): Boolean {
-		val instant = Instant.ofEpochMilli(value)
-		val localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate()
-		val localTime = instant.atZone(ZoneId.systemDefault()).toLocalTime()
-		return isPast(localDate, localTime)
-	}
-
 	fun isPast(input: String): Boolean {
 		val localDateTime = LocalDateTime.parse(input, formatter)
 		return isPast(localDateTime.toLocalDate(), localDateTime.toLocalTime())
+	}
+
+	fun isPast(localDate: LocalDate, localTime: LocalTime): Boolean {
+		return localDate.isBefore(LocalDate.now()) ||
+				(localDate.isEqual(LocalDate.now()) && localTime.isBefore(LocalTime.now()))
 	}
 
 	private fun getDateTimeWithoutYear(`when`: Long, zoneId: ZoneId, locale: Locale): String {

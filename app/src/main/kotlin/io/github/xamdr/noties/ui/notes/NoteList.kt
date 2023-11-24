@@ -54,6 +54,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -337,7 +338,12 @@ private fun NoteItem(
 						if (DateTimeHelper.isValidDate(tag)) {
 							AssistChip(
 								onClick = {},
-								label = { Text(text = tag) },
+								label = {
+									Text(
+										text = tag,
+										textDecoration = if (DateTimeHelper.isPast(tag)) TextDecoration.LineThrough else null
+									)
+								},
 								leadingIcon = {
 									Icon(
 										imageVector = Icons.Outlined.Alarm,
