@@ -20,5 +20,5 @@ interface TagDao {
 	suspend fun updateTag(tagEntity: DatabaseTagEntity)
 
 	@Delete
-	suspend fun deleteTags(tagEntities: List<DatabaseTagEntity>)
+	suspend fun deleteTag(tagEntity: DatabaseTagEntity)
 }

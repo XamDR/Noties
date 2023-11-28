@@ -15,5 +15,5 @@ class TagRepository @Inject constructor(private val tagDao: TagDao) {
 
 	suspend fun updateTag(tagEntity: DatabaseTagEntity) = tagDao.updateTag(tagEntity)
 
-	suspend fun deleteTags(tagEntities: List<DatabaseTagEntity>) = tagDao.deleteTags(tagEntities)
+	suspend fun deleteTag(tagEntity: DatabaseTagEntity) = tagDao.deleteTag(tagEntity)
 }

@@ -130,8 +130,12 @@ class NotesFragment : Fragment() {
 					}
 					if (openDeleteTagDialog) {
 						DeleteTagDialog(
-							onDeleteTag = {},
-							onDismiss = { openDeleteTagDialog = false }
+							tag = Tag(id = screen.id, name = screen.title),
+							onDismiss = { openDeleteTagDialog = false },
+							onDeleteTag = {
+								openDeleteTagDialog = false
+								screen = Screen()
+							}
 						)
 					}
 				}

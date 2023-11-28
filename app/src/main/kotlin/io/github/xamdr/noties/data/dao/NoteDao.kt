@@ -63,4 +63,7 @@ interface NoteDao {
 
 	@Query("UPDATE Notes SET reminder_date = :reminderDate WHERE id = :noteId")
 	suspend fun updateReminderForNote(noteId: Long, reminderDate: Long?)
+
+	@Query("UPDATE NOTES SET tags = REPLACE(tags, :oldTag, :newTag)")
+	suspend fun updateTagForNote(newTag: String, oldTag: String)
 }

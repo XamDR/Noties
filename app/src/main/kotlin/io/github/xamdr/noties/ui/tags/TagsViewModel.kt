@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.xamdr.noties.domain.model.Tag
 import io.github.xamdr.noties.domain.usecase.CreateTagUseCase
-import io.github.xamdr.noties.domain.usecase.DeleteTagsUseCase
+import io.github.xamdr.noties.domain.usecase.DeleteTagUseCase
 import io.github.xamdr.noties.domain.usecase.GetTagNamesUseCase
 import io.github.xamdr.noties.domain.usecase.GetTagsUseCase
 import io.github.xamdr.noties.domain.usecase.UpdateTagUseCase
@@ -22,7 +22,7 @@ class TagsViewModel @Inject constructor(
 	private val getTagsUseCase: GetTagsUseCase,
 	private val getTagNamesUseCase: GetTagNamesUseCase,
 	private val updateTagUseCase: UpdateTagUseCase,
-	private val deleteTagsUseCase: DeleteTagsUseCase) : ViewModel() {
+	private val deleteTagUseCase: DeleteTagUseCase) : ViewModel() {
 
 	private val tagNameState: MutableStateFlow<TagNameState> = MutableStateFlow(TagNameState.EmptyOrUpdatingName)
 	val nameState = tagNameState.asStateFlow()
@@ -62,14 +62,14 @@ class TagsViewModel @Inject constructor(
 	}
 
 	suspend fun updateTag(tag: Tag, oldTag: Tag) {
-		updateTagUseCase(tag)
+		updateTagUseCase(tag, oldTag)
 		names.remove(oldTag.name)
 		names.add(tag.name)
 		clearNameState()
 	}
 
-	suspend fun deleteTags(tags: List<Tag>) {
-		deleteTagsUseCase(tags)
-		names.removeAll(tags.map { it.name }.toSet())
+	suspend fun deleteTag(tag: Tag) {
+		deleteTagUseCase(tag)
+		names.remove(tag.name)
 	}
 }

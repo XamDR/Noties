@@ -6,14 +6,15 @@ import io.github.xamdr.noties.data.entity.media.MediaType
 
 class StringArrayToStringConverter {
 	@TypeConverter
-	fun fromStringArray(strArray: List<String>): String = strArray.joinToString(SEPARATOR)
+	fun fromStringArray(strArray: List<String>): String = strArray.joinToString(separator = SEPARATOR, postfix = SEPARATOR)
 
 	@TypeConverter
-	fun toStringArray(value: String): List<String> = if (value.isEmpty()) emptyList() else value.split(DELIMITER)
+	fun toStringArray(value: String): List<String> =
+		if (value.isEmpty()) emptyList() else value.trimEnd(DELIMITER).split(DELIMITER)
 
 	private companion object {
 		private const val SEPARATOR = "|"
-		private const val DELIMITER = SEPARATOR
+		private const val DELIMITER = '|'
 	}
 }
 

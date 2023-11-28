@@ -28,4 +28,6 @@ class NoteRepository(private val noteDao: NoteDao) {
 	fun getNotesWithReminderPastCurrentTime() = noteDao.getNotesWithReminderPastCurrentTime()
 
 	suspend fun updateReminderForNote(noteId: Long, reminderDate: Long?) = noteDao.updateReminderForNote(noteId, reminderDate)
+
+	suspend fun updateTagForNote(newTag: String, oldTag: String) = noteDao.updateTagForNote(newTag, oldTag)
 }
