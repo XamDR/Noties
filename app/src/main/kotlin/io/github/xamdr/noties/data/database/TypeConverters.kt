@@ -6,7 +6,8 @@ import io.github.xamdr.noties.data.entity.media.MediaType
 
 class StringArrayToStringConverter {
 	@TypeConverter
-	fun fromStringArray(strArray: List<String>): String = strArray.joinToString(separator = SEPARATOR, postfix = SEPARATOR)
+	fun fromStringArray(strArray: List<String>): String =
+		if (strArray.isEmpty()) String.Empty else strArray.joinToString(separator = SEPARATOR, postfix = SEPARATOR)
 
 	@TypeConverter
 	fun toStringArray(value: String): List<String> =

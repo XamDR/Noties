@@ -24,8 +24,10 @@ fun DeleteTagDialog(
 	val scope = rememberCoroutineScope()
 
 	fun deleteTag() {
-		scope.launch { viewModel.deleteTag(tag) }
-		onDeleteTag()
+		scope.launch {
+			viewModel.deleteTag(tag)
+			onDeleteTag()
+		}
 	}
 
 	AlertDialog(
