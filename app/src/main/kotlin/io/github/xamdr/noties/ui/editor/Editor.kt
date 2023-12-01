@@ -32,7 +32,6 @@ import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 private const val SPAN_COUNT = 2
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Editor(
 	modifier: Modifier,
@@ -43,8 +42,8 @@ fun Editor(
 	onNoteContentChange: (String) -> Unit,
 	onItemCopied: (MediaItem, Int) -> Unit,
 	onItemClick: (Int) -> Unit,
-	onAssisChipClick: () -> Unit,
-	onChipClick: () -> Unit
+	onDateTagClick: () -> Unit,
+	onTagClick: () -> Unit
 ) {
 	LazyVerticalGrid(
 		modifier = modifier,
@@ -78,47 +77,17 @@ fun Editor(
 			)
 		}
 		item(span = { GridItemSpan(SPAN_COUNT) }) {
-			FlowRow(
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(all = 8.dp),
-				horizontalArrangement = Arrangement.Start
-			) {
-				if (!tags.isNullOrEmpty() || reminder != null) {
-					val allTags = when {
-						!tags.isNullOrEmpty() && reminder != null -> listOf(DateTimeHelper.formatDateTime(reminder)) + tags
-						reminder != null -> listOf(DateTimeHelper.formatDateTime(reminder))
-						else -> tags
-					}
-					allTags?.forEach { tag ->
-						if (DateTimeHelper.isValidDate(tag)) {
-							AssistChip(
-								onClick = onAssisChipClick,
-								label = {
-									Text(
-										text = tag,
-										textDecoration = if (DateTimeHelper.isPast(tag)) TextDecoration.LineThrough else null
-									)
-								},
-								leadingIcon = {
-									Icon(
-										imageVector = Icons.Outlined.Alarm,
-										contentDescription = null,
-										modifier = Modifier.size(AssistChipDefaults.IconSize)
-									)
-								},
-								modifier = Modifier.padding(horizontal = 4.dp)
-							)
-						}
-						else {
-							SuggestionChip(
-								onClick = onChipClick,
-								label = { Text(text = tag) },
-								modifier = Modifier.padding(horizontal = 4.dp)
-							)
-						}
-					}
+			if (!tags.isNullOrEmpty() || reminder != null) {
+				val allTags = when {
+					!tags.isNullOrEmpty() && reminder != null -> listOf(DateTimeHelper.formatDateTime(reminder)) + tags
+					reminder != null -> listOf(DateTimeHelper.formatDateTime(reminder))
+					else -> tags
 				}
+				TagList(
+					tags = allTags,
+					onDateTagClick = onDateTagClick,
+					onTagClick = onTagClick
+				)
 			}
 		}
 	}
@@ -156,3 +125,60 @@ fun Editor(modifier: Modifier) {
 @DevicePreviews
 @Composable
 private fun EditorPreview() = NotiesTheme { Editor(modifier = Modifier.fillMaxSize()) }
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun TagList(
+	tags: List<String>?,
+	onDateTagClick: () -> Unit,
+	onTagClick: () -> Unit
+) {
+	FlowRow(
+		modifier = Modifier
+			.fillMaxWidth()
+			.padding(all = 8.dp),
+		horizontalArrangement = Arrangement.Start
+	) {
+		tags?.forEach { tag ->
+			if (DateTimeHelper.isValidDate(tag)) {
+				AssistChip(
+					onClick = onDateTagClick,
+					label = {
+						Text(
+							text = tag,
+							textDecoration = if (DateTimeHelper.isPast(tag)) TextDecoration.LineThrough else null
+						)
+					},
+					leadingIcon = {
+						Icon(
+							imageVector = Icons.Outlined.Alarm,
+							contentDescription = null,
+							modifier = Modifier.size(AssistChipDefaults.IconSize)
+						)
+					},
+					modifier = Modifier.padding(horizontal = 4.dp)
+				)
+			}
+			else {
+				SuggestionChip(
+					onClick = onTagClick,
+					label = { Text(text = tag) },
+					modifier = Modifier.padding(horizontal = 4.dp)
+				)
+			}
+		}
+	}
+}
+
+@DevicePreviews
+@Composable
+private fun TagListPreview() {
+	val tags = listOf("Android", "iOS", "Windows")
+	NotiesTheme {
+		TagList(
+			tags = tags,
+			onDateTagClick = {},
+			onTagClick = {}
+		)
+	}
+}

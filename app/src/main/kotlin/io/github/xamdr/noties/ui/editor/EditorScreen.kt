@@ -203,8 +203,8 @@ fun EditorScreen(
 							position = position
 						)
 					},
-					onAssisChipClick = { openDateTimePicker = true },
-					onChipClick = { onNavigatoToTags(viewModel.note.tags) }
+					onDateTagClick = { openDateTimePicker = true },
+					onTagClick = { onNavigatoToTags(viewModel.note.tags) }
 				)
 				EditorToolbar(
 					onAddAttachmentIconClick = { openMenu = true },

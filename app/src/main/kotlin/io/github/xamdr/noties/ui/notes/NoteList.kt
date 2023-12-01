@@ -231,7 +231,7 @@ fun NoteList(modifier: Modifier) {
 @Composable
 private fun NoteListPreview() = NotiesTheme { NoteList(Modifier) }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun NoteItem(
 	note: Note,
@@ -327,48 +327,12 @@ private fun NoteItem(
 			if (note.tags.isNotEmpty() || note.reminderDate != null) {
 				val allTags = if (note.reminderDate == null) note.tags
 					else listOf(DateTimeHelper.formatDateTime(note.reminderDate)) + note.tags
-
-				FlowRow(
-					modifier = Modifier
-						.fillMaxWidth()
-						.padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp),
-					horizontalArrangement = Arrangement.Start
-				) {
-					allTags.forEach { tag ->
-						if (DateTimeHelper.isValidDate(tag)) {
-							AssistChip(
-								onClick = {},
-								label = {
-									Text(
-										text = tag,
-										textDecoration = if (DateTimeHelper.isPast(tag)) TextDecoration.LineThrough else null
-									)
-								},
-								leadingIcon = {
-									Icon(
-										imageVector = Icons.Outlined.Alarm,
-										contentDescription = null,
-										modifier = Modifier.size(AssistChipDefaults.IconSize)
-									)
-								},
-								modifier = Modifier.padding(horizontal = 4.dp)
-							)
-						}
-						else {
-							SuggestionChip(
-								onClick = {},
-								label = { Text(text = tag) },
-								modifier = Modifier.padding(horizontal = 4.dp)
-							)
-						}
-					}
-				}
+				TagList(tags = allTags)
 			}
 		}
 	}
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun NoteItem() {
 	OutlinedCard(
@@ -429,15 +393,30 @@ private fun NoteItem() {
 				overflow = TextOverflow.Ellipsis,
 				modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp)
 			)
-			FlowRow(
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp),
-				horizontalArrangement = Arrangement.Start
-			) {
+			TagList(tags = listOf("Android", "Work", "Personal"))
+		}
+	}
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun TagList(tags: List<String>) {
+	FlowRow(
+		modifier = Modifier
+			.fillMaxWidth()
+			.padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp),
+		horizontalArrangement = Arrangement.Start
+	) {
+		tags.forEach { tag ->
+			if (DateTimeHelper.isValidDate(tag)) {
 				AssistChip(
 					onClick = {},
-					label = { Text(text = "14/11/2023 13:15") },
+					label = {
+						Text(
+							text = tag,
+							textDecoration = if (DateTimeHelper.isPast(tag)) TextDecoration.LineThrough else null
+						)
+					},
 					leadingIcon = {
 						Icon(
 							imageVector = Icons.Outlined.Alarm,
@@ -447,14 +426,11 @@ private fun NoteItem() {
 					},
 					modifier = Modifier.padding(horizontal = 4.dp)
 				)
+			}
+			else {
 				SuggestionChip(
 					onClick = {},
-					label = { Text(text = "Android") },
-					modifier = Modifier.padding(horizontal = 4.dp)
-				)
-				SuggestionChip(
-					onClick = {},
-					label = { Text(text = "Work") },
+					label = { Text(text = tag) },
 					modifier = Modifier.padding(horizontal = 4.dp)
 				)
 			}

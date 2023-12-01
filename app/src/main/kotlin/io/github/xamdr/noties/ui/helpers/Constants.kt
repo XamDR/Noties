@@ -5,6 +5,7 @@ object Constants {
 	const val BUNDLE_NOTE_TEXT = "BUNDLE_NOTE_TEXT"
 	const val BUNDLE_ACTION = "BUNDLE_ACTION"
 	const val BUNDLE_TAGS = "BUNDLE_TAGS"
+	const val BUNDLE_TAG = "BUNDLE_TAG"
 	const val BUNDLE_SELECTED_TAGS = "BUNDLE_SELECTED_TAGS"
 	const val IMAGE_STORE_MANAGER = "IMAGE_STORE_MANAGER"
 	const val IO = "IO"

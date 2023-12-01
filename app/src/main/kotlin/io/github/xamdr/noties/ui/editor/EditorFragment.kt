@@ -26,6 +26,9 @@ class EditorFragment : Fragment() {
 	private val noteId by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getLong(Constants.BUNDLE_NOTE_ID, 0L)
 	}
+	private val tagName by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getString(Constants.BUNDLE_TAG, String.Empty)
+	}
 	private val text by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getString(Constants.BUNDLE_NOTE_TEXT)
 	}
@@ -43,10 +46,11 @@ class EditorFragment : Fragment() {
 	private fun EditorFragmentContent() {
 		NotiesTheme {
 			val selectedTags = getNavigationResult<List<String>>(Constants.BUNDLE_SELECTED_TAGS)
+			val allTags = if (tagName.isEmpty()) selectedTags else listOf(tagName) + selectedTags.orEmpty()
 			EditorScreen(
 				noteId = noteId,
 				text = text,
-				selectedTags = selectedTags,
+				selectedTags = allTags,
 				onNavigationIconClick = ::onBackPressed,
 				onNavigatoToTags = ::navigateToTags,
 				onNoteAction = ::onNoteAction

@@ -109,7 +109,7 @@ class NotesFragment : Fragment() {
 						onLeadingIconClick = { scope.launch { drawerState.open() } },
 						onTrailingIconClick = {},
 						onNavigationIconClick = { scope.launch { drawerState.open() } },
-						onFabClick = ::navigateToEditor,
+						onFabClick = { navigateToEditor(tagName = screen.title) },
 						onItemClick = ::navigateToEditor,
 						onRenameTag = {
 							openTagDialog = true
@@ -143,14 +143,17 @@ class NotesFragment : Fragment() {
 		}
 	}
 
-	private fun navigateToEditor(note: Note = Note()) {
+	private fun navigateToEditor(note: Note = Note(), tagName: String = String.Empty) {
 		exitTransition = MaterialElevationScale(false).apply {
 			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
 		}
 		reenterTransition = MaterialElevationScale(true).apply {
 			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
 		}
-		val args = bundleOf(Constants.BUNDLE_NOTE_ID to note.id)
+		val args = bundleOf(
+			Constants.BUNDLE_NOTE_ID to note.id,
+			Constants.BUNDLE_TAG to tagName
+		)
 		findNavController().tryNavigate(R.id.action_notes_to_editor, args)
 	}
 
