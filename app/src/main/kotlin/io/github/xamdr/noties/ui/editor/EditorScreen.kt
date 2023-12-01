@@ -87,6 +87,7 @@ fun EditorScreen(
 	val noteEmpty by remember { derivedStateOf { viewModel.note.isEmpty() } }
 	val errorOpenFile = stringResource(id = R.string.error_open_file)
 	var openDateTimePicker by rememberSaveable { mutableStateOf(value = false) }
+	var taskMode by rememberSaveable { mutableStateOf(value = false) }
 
 	fun openFile(uri: Uri?) {
 		scope.launch {
@@ -193,6 +194,8 @@ fun EditorScreen(
 					items = viewModel.items,
 					tags = viewModel.note.tags,
 					reminder = viewModel.note.reminderDate,
+					taskMode = taskMode,
+					tasks = viewModel.note.toTaskList(),
 					onNoteContentChange = viewModel::updateNoteContent,
 					onItemCopied = viewModel::onItemCopied,
 					onItemClick = { position ->
@@ -222,9 +225,10 @@ fun EditorScreen(
 						R.id.gallery -> pickMediaLauncher.launch(
 							arrayOf(Constants.MIME_TYPE_IMAGE, Constants.MIME_TYPE_VIDEO)
 						)
-						R.id.tags -> onNavigatoToTags(viewModel.note.tags)
 						R.id.camera -> {}
+						R.id.tasks -> taskMode = true
 						R.id.reminder -> openDateTimePicker = true
+						R.id.tags -> onNavigatoToTags(viewModel.note.tags)
 					}
 				}
 			}

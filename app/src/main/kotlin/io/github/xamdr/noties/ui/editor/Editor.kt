@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.MediaItem
+import io.github.xamdr.noties.domain.model.Task
 import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
@@ -39,6 +40,8 @@ fun Editor(
 	items: List<GridItem>,
 	tags: List<String>?,
 	reminder: Long?,
+	taskMode: Boolean,
+	tasks: List<Task>,
 	onNoteContentChange: (String) -> Unit,
 	onItemCopied: (MediaItem, Int) -> Unit,
 	onItemClick: (Int) -> Unit,
@@ -68,13 +71,25 @@ fun Editor(
 				)
 			}
 		)
-		item(span = { GridItemSpan(SPAN_COUNT) }) {
-			TextBox(
-				placeholder = stringResource(id = R.string.placeholder),
-				value = text,
-				onValueChange = onNoteContentChange,
-				modifier = Modifier.fillMaxWidth()
+		if (taskMode) {
+			val allTasks = tasks + Task.Footer
+			items(
+				count = allTasks.size,
+				span = { GridItemSpan(SPAN_COUNT) },
+				itemContent = {index ->
+					TaskItem(task = allTasks[index])
+				}
 			)
+		}
+		else {
+			item(span = { GridItemSpan(SPAN_COUNT) }) {
+				TextBox(
+					placeholder = stringResource(id = R.string.placeholder),
+					value = text,
+					onValueChange = onNoteContentChange,
+					modifier = Modifier.fillMaxWidth()
+				)
+			}
 		}
 		item(span = { GridItemSpan(SPAN_COUNT) }) {
 			if (!tags.isNullOrEmpty() || reminder != null) {
