@@ -78,7 +78,10 @@ class EditorViewModel @Inject constructor(
 
 	suspend fun getNote(noteId: Long, text: String?, tags: List<String>?) {
 		if (noteId != 0L && savedState.get<Note>("note") == null) {
-			note = getNoteById(noteId)
+			val noteDb = getNoteById(noteId)
+			if (note.id != noteDb.id) {
+				note = noteDb
+			}
 		}
 		else if (noteId == 0L) {
 			text?.let { note = note.copy(text = it) }
