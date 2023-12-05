@@ -1,6 +1,6 @@
 package io.github.xamdr.noties.ui.editor
 
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -94,18 +94,15 @@ fun Editor(
 				key = { _, item -> if (item is Task.Item) item.id else String.Empty },
 				span = { _, _ -> GridItemSpan(SPAN_COUNT) },
 				itemContent = { index, task ->
-					DraggableItem(dragDropState = dragDropState, index = index) { isDragging ->
-						val elevation by animateDpAsState(if (isDragging) 4.dp else 1.dp, label = "")
-						TaskItem(
-							task = task,
-							dragDropState = dragDropState,
-							elevation = elevation,
-							onContentChanged = {},
-							onItemDone = {},
-							onAddTask = onAddTask,
-							onRemoveTask = onRemoveTask
-						)
-					}
+					TaskItem(
+						task = task,
+						dragDropState = dragDropState,
+						index = index,
+						onContentChanged = {},
+						onItemDone = {},
+						onAddTask = onAddTask,
+						onRemoveTask = onRemoveTask
+					)
 				}
 			)
 		}

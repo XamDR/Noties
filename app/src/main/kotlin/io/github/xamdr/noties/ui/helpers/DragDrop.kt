@@ -1,3 +1,5 @@
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+
 package io.github.xamdr.noties.ui.helpers
 
 import androidx.compose.animation.core.Animatable
@@ -10,7 +12,7 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.grid.LazyGridItemInfo
-import androidx.compose.foundation.lazy.grid.LazyGridItemScope
+import androidx.compose.foundation.lazy.grid.LazyGridItemScopeImpl.animateItemPlacement
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -74,7 +76,7 @@ fun Modifier.dragContainerForHandle(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LazyGridItemScope.DraggableItem(
+fun DraggableItem(
 	dragDropState: DragDropState,
 	index: Int,
 	modifier: Modifier = Modifier,

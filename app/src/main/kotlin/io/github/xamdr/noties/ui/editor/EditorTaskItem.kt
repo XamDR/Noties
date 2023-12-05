@@ -1,5 +1,6 @@
 package io.github.xamdr.noties.ui.editor
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -7,23 +8,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.DragIndicator
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.Task
 import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.DragDropState
+import io.github.xamdr.noties.ui.helpers.DraggableItem
 import io.github.xamdr.noties.ui.helpers.dragContainerForHandle
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
@@ -31,7 +32,7 @@ import io.github.xamdr.noties.ui.theme.NotiesTheme
 fun TaskItem(
 	task: Task,
 	dragDropState: DragDropState,
-	elevation: Dp,
+	index: Int,
 	onContentChanged: (String) -> Unit,
 	onItemDone: (Boolean) -> Unit,
 	onAddTask: () -> Unit,
@@ -39,11 +40,12 @@ fun TaskItem(
 ) {
 	when (task) {
 		is Task.Item -> {
-			OutlinedCard(
-				elevation = CardDefaults.cardElevation(defaultElevation = elevation)
-			) {
+			DraggableItem(dragDropState = dragDropState, index = index) { isDragging ->
+				val alpha by animateFloatAsState(if (isDragging) 0.5f else 1f, label = "")
 				Row(
-					modifier = Modifier.fillMaxWidth(),
+					modifier = Modifier
+						.alpha(alpha)
+						.fillMaxWidth(),
 					verticalAlignment = Alignment.CenterVertically
 				) {
 					IconButton(

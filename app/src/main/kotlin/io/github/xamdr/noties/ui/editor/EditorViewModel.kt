@@ -115,8 +115,11 @@ class EditorViewModel @Inject constructor(
 	}
 
 	fun dragDropTask(from: Int, to: Int) {
-		val task = tasks.removeAt(index = from - items.size)
-		tasks.add(index = to - items.size, element = task)
+		val fromIndex = from - items.size
+		val toIndex = to - items.size
+		if (toIndex in 0..< tasks.size && fromIndex in 0..< tasks.size) {
+			tasks.add(toIndex, tasks.removeAt(fromIndex))
+		}
 	}
 
 	fun addTask() {
