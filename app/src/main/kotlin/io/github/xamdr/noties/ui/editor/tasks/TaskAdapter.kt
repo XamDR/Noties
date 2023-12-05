@@ -83,7 +83,7 @@ class TaskAdapter(
 
 		override fun afterTextChanged(s: Editable) {
 			val currentTask = binding.root.tag as? Task.Item ?: return
-			currentTask.content = s.toString()
+//			currentTask.content = s.toString()
 		}
 
 		private fun setItemStatus(view: View) {
@@ -91,7 +91,7 @@ class TaskAdapter(
 			binding.apply {
 				taskItem.strikethrough(isDone)
 				val currenTask = root.tag as? Task.Item ?: return
-				currenTask.done = isDone
+//				currenTask.done = isDone
 			}
 		}
 
@@ -182,7 +182,7 @@ class TaskAdapter(
 	fun markAllTasksAsDone(value: Boolean) {
 		val items = tasks.filterIsInstance<Task.Item>()
 		for (item in items) {
-			item.done = value
+//			item.done = value
 			notifyItemChanged(items.indexOf(item), PAYLOAD_DONE)
 		}
 	}

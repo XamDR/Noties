@@ -1,5 +1,6 @@
 package io.github.xamdr.noties.ui.editor
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Alarm
 import androidx.compose.material3.AssistChip
@@ -19,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -29,6 +33,8 @@ import io.github.xamdr.noties.domain.model.Task
 import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
+import io.github.xamdr.noties.ui.helpers.DraggableItem
+import io.github.xamdr.noties.ui.helpers.rememberDragDropState
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 private const val SPAN_COUNT = 2
@@ -46,10 +52,20 @@ fun Editor(
 	onItemCopied: (MediaItem, Int) -> Unit,
 	onItemClick: (Int) -> Unit,
 	onDateTagClick: () -> Unit,
-	onTagClick: () -> Unit
+	onTagClick: () -> Unit,
+	onDragDropTask: (Int, Int) -> Unit,
+	onAddTask: () -> Unit,
+	onRemoveTask: (Task) -> Unit
 ) {
+	val gridState = rememberLazyGridState()
+	val dragDropState = rememberDragDropState(
+		lazyGridState = gridState,
+		onMove = onDragDropTask
+	)
+	
 	LazyVerticalGrid(
 		modifier = modifier,
+		state = gridState,
 		contentPadding = PaddingValues(8.dp),
 		verticalArrangement = Arrangement.spacedBy(8.dp),
 		horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -73,11 +89,23 @@ fun Editor(
 		)
 		if (taskMode) {
 			val allTasks = tasks + Task.Footer
-			items(
-				count = allTasks.size,
-				span = { GridItemSpan(SPAN_COUNT) },
-				itemContent = {index ->
-					TaskItem(task = allTasks[index])
+			itemsIndexed(
+				items = allTasks,
+				key = { _, item -> if (item is Task.Item) item.id else String.Empty },
+				span = { _, _ -> GridItemSpan(SPAN_COUNT) },
+				itemContent = { index, task ->
+					DraggableItem(dragDropState = dragDropState, index = index) { isDragging ->
+						val elevation by animateDpAsState(if (isDragging) 4.dp else 1.dp, label = "")
+						TaskItem(
+							task = task,
+							dragDropState = dragDropState,
+							elevation = elevation,
+							onContentChanged = {},
+							onItemDone = {},
+							onAddTask = onAddTask,
+							onRemoveTask = onRemoveTask
+						)
+					}
 				}
 			)
 		}

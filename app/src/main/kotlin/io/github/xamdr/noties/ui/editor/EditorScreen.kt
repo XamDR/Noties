@@ -113,7 +113,7 @@ fun EditorScreen(
 	)
 
 	LaunchedEffect(key1 = Unit) {
-		scope.launch { viewModel.getNote(noteId, text, selectedTags) }
+		launch { viewModel.getNote(noteId, text, selectedTags) }
 	}
 
 	BackHandler {
@@ -195,7 +195,7 @@ fun EditorScreen(
 					tags = viewModel.note.tags,
 					reminder = viewModel.note.reminderDate,
 					taskMode = taskMode,
-					tasks = viewModel.note.toTaskList(),
+					tasks = viewModel.tasks,
 					onNoteContentChange = viewModel::updateNoteContent,
 					onItemCopied = viewModel::onItemCopied,
 					onItemClick = { position ->
@@ -207,7 +207,10 @@ fun EditorScreen(
 						)
 					},
 					onDateTagClick = { openDateTimePicker = true },
-					onTagClick = { onNavigatoToTags(viewModel.note.tags) }
+					onTagClick = { onNavigatoToTags(viewModel.note.tags) },
+					onDragDropTask = viewModel::dragDropTask,
+					onAddTask = viewModel::addTask,
+					onRemoveTask = viewModel::removeTask
 				)
 				EditorToolbar(
 					onAddAttachmentIconClick = { openMenu = true },

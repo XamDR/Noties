@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.compose.saveable
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
+import io.github.xamdr.noties.domain.model.Task
 import io.github.xamdr.noties.domain.usecase.DeleteNotesUseCase
 import io.github.xamdr.noties.domain.usecase.GetNoteByIdUseCase
 import io.github.xamdr.noties.domain.usecase.InsertNoteUseCase
@@ -37,6 +38,7 @@ class EditorViewModel @Inject constructor(
 		private set
 
 	val items = mutableStateListOf<GridItem>()
+	val tasks = mutableStateListOf<Task>()
 
 	fun updateNoteContent(text: String) {
 		note = note.copy(text = text)
@@ -93,6 +95,7 @@ class EditorViewModel @Inject constructor(
 		if (tags != null && note.tags != tags) {
 			note = note.copy(tags = tags)
 		}
+		tasks.addAll(note.toTaskList().filter { !tasks.contains(it) })
 		Timber.d("Note: $note")
 	}
 
@@ -109,6 +112,19 @@ class EditorViewModel @Inject constructor(
 	fun cancelReminder(context: Context) {
 		note = note.copy(reminderDate = null)
 		AlarmManagerHelper.cancelAlarm(context, note.id)
+	}
+
+	fun dragDropTask(from: Int, to: Int) {
+		val task = tasks.removeAt(index = from - items.size)
+		tasks.add(index = to - items.size, element = task)
+	}
+
+	fun addTask() {
+		tasks.add(Task.Item())
+	}
+
+	fun removeTask(task: Task) {
+		tasks.remove(task)
 	}
 
 	private suspend fun getNoteById(noteId: Long): Note = getNoteByIdUseCase(noteId)
