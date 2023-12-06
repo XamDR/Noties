@@ -167,11 +167,11 @@ fun EditorScreen(
 								),
 								ActionItem(
 									title = R.string.check_all_checkboxes,
-									action = {}
+									action = { viewModel.markAllTasksAsDone(value = true) }
 								),
 								ActionItem(
 									title = R.string.uncheck_all_checkboxes,
-									action = {}
+									action = { viewModel.markAllTasksAsDone(value = false) }
 								)
 							)
 						}
@@ -239,6 +239,7 @@ fun EditorScreen(
 			}
 			if (openMenu) {
 				EditorMenuBottomSheet(
+					items = if (viewModel.note.isTaskList) EDITOR_MENU_ITEMS_TASK_MODE else EDITOR_MENU_ITEMS_NORMAL,
 					sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 					onDismissRequest = { openMenu = false }
 				) { item ->

@@ -241,11 +241,7 @@ fun OverflowMenu(items: List<ActionItem>) {
 							overflowMenuExpanded = false
 							item.action()
 						},
-						leadingIcon = {
-							item.icon?.let {
-								Icon(imageVector = it, contentDescription = null)
-							}
-						},
+						leadingIcon = if (item.icon != null) { { Icon(imageVector = item.icon, contentDescription = null) } } else null,
 						modifier = Modifier.padding(start = 8.dp, top = 0.dp, bottom = 0.dp, end = 32.dp)
 					)
 				}

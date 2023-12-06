@@ -19,11 +19,19 @@ data class EditorMenuItem(
 	val description: Int
 )
 
-val EDITOR_MENU_ITEMS = listOf(
+val EDITOR_MENU_ITEMS_NORMAL = listOf(
 	EditorMenuItem(id = R.id.gallery, icon = Icons.Outlined.Image, description = R.string.gallery),
 	EditorMenuItem(id = R.id.camera, icon = Icons.Outlined.CameraAlt, description = R.string.camera),
 //	EditorMenuItem(id = R.id.record_video, icon = Icons.Outlined.Videocam, description = R.string.take_video),
 	EditorMenuItem(id = R.id.tasks, icon = Icons.Outlined.CheckBox, description = R.string.todo_list),
+	EditorMenuItem(id = R.id.reminder, icon = Icons.Outlined.NotificationAdd, description = R.string.reminder),
+	EditorMenuItem(id = R.id.tags, icon = Icons.Outlined.NewLabel, description = R.string.tags)
+)
+
+val EDITOR_MENU_ITEMS_TASK_MODE = listOf(
+	EditorMenuItem(id = R.id.gallery, icon = Icons.Outlined.Image, description = R.string.gallery),
+	EditorMenuItem(id = R.id.camera, icon = Icons.Outlined.CameraAlt, description = R.string.camera),
+//	EditorMenuItem(id = R.id.record_video, icon = Icons.Outlined.Videocam, description = R.string.take_video),
 	EditorMenuItem(id = R.id.reminder, icon = Icons.Outlined.NotificationAdd, description = R.string.reminder),
 	EditorMenuItem(id = R.id.tags, icon = Icons.Outlined.NewLabel, description = R.string.tags)
 )

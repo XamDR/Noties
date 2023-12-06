@@ -25,6 +25,7 @@ import io.github.xamdr.noties.ui.theme.NotiesTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorMenuBottomSheet(
+	items: List<EditorMenuItem>,
 	sheetState: SheetState,
 	onDismissRequest: () -> Unit,
 	onItemClick: (EditorMenuItem) -> Unit,
@@ -42,7 +43,7 @@ fun EditorMenuBottomSheet(
 		}
 	) {
 		Column {
-			EDITOR_MENU_ITEMS.forEach { item ->
+			items.forEach { item ->
 				EditorMenuItem(
 					item = item,
 					onClick = { onItemClick(item) }
@@ -71,7 +72,7 @@ private fun EditorMenuBottomSheet() {
 		}
 	) {
 		Column {
-			EDITOR_MENU_ITEMS.forEach { item ->
+			EDITOR_MENU_ITEMS_NORMAL.forEach { item ->
 				EditorMenuItem(item = item, onClick = {})
 			}
 		}

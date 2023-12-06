@@ -125,6 +125,10 @@ class EditorViewModel @Inject constructor(
 		note = note.copy(text = tasks.joinToString(), isTaskList = false)
 	}
 
+	fun markAllTasksAsDone(value: Boolean) {
+		tasks.replaceAll { (it as Task.Item).copy(done = value) }
+	}
+
 	fun updateTaskContent(index: Int, content: String) {
 		val task = tasks[index] as Task.Item
 		tasks[index] = task.copy(content = content)

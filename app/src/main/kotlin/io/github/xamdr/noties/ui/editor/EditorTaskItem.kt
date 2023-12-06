@@ -1,6 +1,7 @@
 package io.github.xamdr.noties.ui.editor
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -49,27 +50,26 @@ fun TaskItem(
 						.fillMaxWidth(),
 					verticalAlignment = Alignment.CenterVertically
 				) {
-					IconButton(
-						onClick = {},
-						modifier = Modifier.padding(vertical = 8.dp, horizontal = 2.dp)
-					) {
-						Icon(
-							imageVector = Icons.Outlined.DragIndicator,
-							contentDescription = stringResource(id = R.string.drag_item),
-							modifier = Modifier.dragContainerForHandle(dragDropState = dragDropState, key = task.id)
-						)
-					}
+					Icon(
+						imageVector = Icons.Outlined.DragIndicator,
+						contentDescription = stringResource(id = R.string.drag_item),
+						modifier = Modifier
+							.padding(start = 8.dp, end = 2.dp)
+							.dragContainerForHandle(dragDropState = dragDropState, key = task.id)
+					)
 					Checkbox(
 						checked = task.done,
 						onCheckedChange = onItemDone,
-						modifier = Modifier.padding(vertical = 8.dp, horizontal = 2.dp)
+						modifier = Modifier.padding(vertical = 8.dp)
 					)
 					TextBox(
 						placeholder = stringResource(id = R.string.placeholder),
 						value = task.content,
 						onValueChange = onContentChanged,
-						modifier = Modifier.padding(vertical = 4.dp),
-						textDecoration = if (task.done) TextDecoration.LineThrough else null
+						textDecoration = if (task.done) TextDecoration.LineThrough else null,
+						modifier = Modifier
+							.weight(weight = 1f)
+							.padding(vertical = 4.dp)
 					)
 					IconButton(
 						onClick = { onRemoveTask(task) },
@@ -85,18 +85,17 @@ fun TaskItem(
 		}
 		Task.Footer -> {
 			Row(
-				modifier = Modifier.fillMaxWidth(),
-				verticalAlignment = Alignment.CenterVertically
+				verticalAlignment = Alignment.CenterVertically,
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(all = 4.dp)
+					.clickable(onClick = onAddTask)
 			) {
-				IconButton(
-					onClick = onAddTask,
-					modifier = Modifier.padding(start = 48.dp, top = 8.dp, end = 16.dp, bottom = 8.dp)
-				) {
-					Icon(
-						imageVector = Icons.Outlined.Add,
-						contentDescription = null
-					)
-				}
+				Icon(
+					imageVector = Icons.Outlined.Add,
+					contentDescription = null,
+					modifier = Modifier.padding(start = 40.dp, top = 8.dp, end = 16.dp, bottom = 8.dp)
+				)
 				Text(
 					text = stringResource(id = R.string.new_todo_item),
 					modifier = Modifier.padding(top = 8.dp, end = 16.dp, bottom = 8.dp)
@@ -114,25 +113,23 @@ private fun TaskItem(task: Task) {
 				modifier = Modifier.fillMaxWidth(),
 				verticalAlignment = Alignment.CenterVertically
 			) {
-				IconButton(
-					onClick = {},
-					modifier = Modifier.padding(vertical = 8.dp, horizontal = 2.dp)
-				) {
-					Icon(
-						imageVector = Icons.Outlined.DragIndicator,
-						contentDescription = stringResource(id = R.string.drag_item)
-					)
-				}
+				Icon(
+					imageVector = Icons.Outlined.DragIndicator,
+					contentDescription = stringResource(id = R.string.drag_item),
+					modifier = Modifier.padding(start = 8.dp, end = 2.dp)
+				)
 				Checkbox(
 					checked = false,
 					onCheckedChange = {},
-					modifier = Modifier.padding(vertical = 8.dp, horizontal = 2.dp)
+					modifier = Modifier.padding(vertical = 8.dp)
 				)
 				TextBox(
 					placeholder = stringResource(id = R.string.placeholder),
 					value = "",
 					onValueChange = {},
-					modifier = Modifier.padding(vertical = 4.dp)
+					modifier = Modifier
+						.weight(weight = 1f)
+						.padding(vertical = 4.dp)
 				)
 				IconButton(
 					onClick = {},
@@ -147,18 +144,17 @@ private fun TaskItem(task: Task) {
 		}
 		Task.Footer -> {
 			Row(
-				modifier = Modifier.fillMaxWidth(),
-				verticalAlignment = Alignment.CenterVertically
+				verticalAlignment = Alignment.CenterVertically,
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(all = 4.dp)
+					.clickable(onClick = {})
 			) {
-				IconButton(
-					onClick = {},
-					modifier = Modifier.padding(start = 48.dp, top = 8.dp, end = 16.dp, bottom = 8.dp)
-				) {
-					Icon(
-						imageVector = Icons.Outlined.Add,
-						contentDescription = null
-					)
-				}
+				Icon(
+					imageVector = Icons.Outlined.Add,
+					contentDescription = null,
+					modifier = Modifier.padding(start = 40.dp, top = 8.dp, end = 16.dp, bottom = 8.dp)
+				)
 				Text(
 					text = stringResource(id = R.string.new_todo_item),
 					modifier = Modifier.padding(top = 8.dp, end = 16.dp, bottom = 8.dp)
