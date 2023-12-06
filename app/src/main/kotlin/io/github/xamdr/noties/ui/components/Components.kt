@@ -36,6 +36,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -63,6 +64,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -182,7 +184,8 @@ fun TextBox(
 	placeholder: String,
 	value: String,
 	onValueChange: (String) -> Unit,
-	modifier: Modifier
+	modifier: Modifier = Modifier,
+	textDecoration: TextDecoration? = null
 ) {
 	OutlinedTextField(
 		value = value,
@@ -194,7 +197,9 @@ fun TextBox(
 		colors = OutlinedTextFieldDefaults.colors(
 			focusedBorderColor = Color.Transparent,
 			unfocusedBorderColor = Color.Transparent
-		)
+		),
+		textStyle = if (textDecoration == null) LocalTextStyle.current
+			else LocalTextStyle.current.copy(textDecoration = textDecoration)
 	)
 }
 
@@ -236,7 +241,11 @@ fun OverflowMenu(items: List<ActionItem>) {
 							overflowMenuExpanded = false
 							item.action()
 						},
-						leadingIcon = { Icon(imageVector = item.icon, contentDescription = null) },
+						leadingIcon = {
+							item.icon?.let {
+								Icon(imageVector = it, contentDescription = null)
+							}
+						},
 						modifier = Modifier.padding(start = 8.dp, top = 0.dp, bottom = 0.dp, end = 32.dp)
 					)
 				}
@@ -257,7 +266,7 @@ private fun OverflowMenuPreview() {
 				DropdownMenuItem(
 					text = { Text(text = stringResource(id = item.title)) },
 					onClick = { item.action() },
-					leadingIcon = { Icon(imageVector = item.icon, contentDescription = null) }
+					leadingIcon = { Icon(imageVector = item.icon!!, contentDescription = null) }
 				)
 			}
 		}

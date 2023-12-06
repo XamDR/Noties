@@ -13,6 +13,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.domain.model.Task
+import io.github.xamdr.noties.domain.model.convertToString
+import io.github.xamdr.noties.domain.model.joinToString
 import io.github.xamdr.noties.domain.usecase.DeleteNotesUseCase
 import io.github.xamdr.noties.domain.usecase.GetNoteByIdUseCase
 import io.github.xamdr.noties.domain.usecase.InsertNoteUseCase
@@ -100,8 +102,9 @@ class EditorViewModel @Inject constructor(
 	}
 
 	suspend fun saveNote(note: Note, noteId: Long): NoteAction {
-		Timber.d("Saved Note: $note")
-		return if (note.id == 0L) insertNote(note) else updateNote(note, noteId)
+		val finalNote = if (note.isTaskList) note.copy(text = tasks.convertToString()) else note
+		Timber.d("Saved Note: $finalNote")
+		return if (finalNote.id == 0L) insertNote(finalNote) else updateNote(finalNote, noteId)
 	}
 
 	fun setReminder(dateTime: Instant) {
@@ -112,6 +115,24 @@ class EditorViewModel @Inject constructor(
 	fun cancelReminder(context: Context) {
 		note = note.copy(reminderDate = null)
 		AlarmManagerHelper.cancelAlarm(context, note.id)
+	}
+
+	fun enterTaskMode() {
+		note = note.copy(isTaskList = true)
+	}
+
+	fun exitTaskMode() {
+		note = note.copy(text = tasks.joinToString(), isTaskList = false)
+	}
+
+	fun updateTaskContent(index: Int, content: String) {
+		val task = tasks[index] as Task.Item
+		tasks[index] = task.copy(content = content)
+	}
+
+	fun setTaskStatus(index: Int, done: Boolean) {
+		val task = tasks[index] as Task.Item
+		tasks[index] = task.copy(done = done)
 	}
 
 	fun dragDropTask(from: Int, to: Int) {

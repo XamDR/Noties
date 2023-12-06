@@ -16,7 +16,7 @@ import io.github.xamdr.noties.R
 import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.MainActivity
-import io.github.xamdr.noties.ui.editor.tasks.SpannableConverter
+import io.github.xamdr.noties.ui.helpers.SpannableConverter
 import io.github.xamdr.noties.ui.helpers.Constants
 import timber.log.Timber
 import java.io.FileNotFoundException
@@ -39,7 +39,7 @@ object NotificationHelper {
 			PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
 		)
 		val `when` = note.reminderDate ?: Instant.now().toEpochMilli()
-		val contentText = if (note.hasTaskList) SpannableConverter.convertToSpannable(note.text) else note.text
+		val contentText = if (note.isTaskList) SpannableConverter.convertToSpannable(note.text) else note.text
 		val updateReminderIntent = Intent(context, DateTimePickerActivity::class.java).apply {
 			flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 		}

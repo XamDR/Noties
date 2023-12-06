@@ -14,3 +14,22 @@ sealed class Task : Parcelable {
 
 	data object Footer : Task()
 }
+
+fun List<Task>.convertToString(): String {
+	val items = this.filterIsInstance<Task.Item>()
+	return items.joinToString(Note.NEWLINE) {
+		if (it.done) {
+			if (it.content.startsWith(Note.PREFIX_DONE)) it.content
+			else "${Note.PREFIX_DONE}${it.content}"
+		}
+		else {
+			if (it.content.startsWith(Note.PREFIX_NOT_DONE)) it.content
+			else "${Note.PREFIX_NOT_DONE}${it.content}"
+		}
+	}
+}
+
+fun List<Task>.joinToString(): String {
+	val items = this.filterIsInstance<Task.Item>()
+	return items.joinToString(Note.NEWLINE) { it.content }
+}

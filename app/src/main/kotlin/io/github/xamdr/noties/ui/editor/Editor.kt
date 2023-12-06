@@ -1,6 +1,5 @@
 package io.github.xamdr.noties.ui.editor
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -22,7 +21,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
@@ -33,7 +31,6 @@ import io.github.xamdr.noties.domain.model.Task
 import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
-import io.github.xamdr.noties.ui.helpers.DraggableItem
 import io.github.xamdr.noties.ui.helpers.rememberDragDropState
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
@@ -46,13 +43,15 @@ fun Editor(
 	items: List<GridItem>,
 	tags: List<String>?,
 	reminder: Long?,
-	taskMode: Boolean,
+	isTaskList: Boolean,
 	tasks: List<Task>,
 	onNoteContentChange: (String) -> Unit,
 	onItemCopied: (MediaItem, Int) -> Unit,
 	onItemClick: (Int) -> Unit,
 	onDateTagClick: () -> Unit,
 	onTagClick: () -> Unit,
+	onTaskContentChanged: (Int, String) -> Unit,
+	onTaskDone: (Int, Boolean) -> Unit,
 	onDragDropTask: (Int, Int) -> Unit,
 	onAddTask: () -> Unit,
 	onRemoveTask: (Task) -> Unit
@@ -87,7 +86,7 @@ fun Editor(
 				)
 			}
 		)
-		if (taskMode) {
+		if (isTaskList) {
 			val allTasks = tasks + Task.Footer
 			itemsIndexed(
 				items = allTasks,
@@ -98,8 +97,8 @@ fun Editor(
 						task = task,
 						dragDropState = dragDropState,
 						index = index,
-						onContentChanged = {},
-						onItemDone = {},
+						onContentChanged = { onTaskContentChanged(index, it) },
+						onItemDone = { onTaskDone(index, it) },
 						onAddTask = onAddTask,
 						onRemoveTask = onRemoveTask
 					)

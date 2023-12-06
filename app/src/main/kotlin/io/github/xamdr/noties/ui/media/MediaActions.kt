@@ -23,7 +23,7 @@ import java.io.FileNotFoundException
 data class ActionItem(
 	@StringRes val title: Int,
 	val action: () -> Unit,
-	val icon: ImageVector
+	val icon: ImageVector? = null
 )
 
 fun shareMediaItem(item: MediaItem, context: Context) {

@@ -1,4 +1,4 @@
-package io.github.xamdr.noties.ui.editor.tasks
+package io.github.xamdr.noties.ui.helpers
 
 import android.text.SpannableString
 import android.text.SpannableStringBuilder

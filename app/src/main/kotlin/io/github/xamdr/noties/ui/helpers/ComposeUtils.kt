@@ -10,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -32,13 +33,21 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextIndent
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntSize
 import androidx.core.text.getSpans
+import io.github.xamdr.noties.domain.model.Note
 
 fun Modifier.onFocusShowSoftKeyboard(focusRequester: FocusRequester): Modifier {
 	return this
@@ -139,3 +148,37 @@ fun Modifier.onFocusSelectAll(state: MutableState<TextFieldValue>): Modifier {
 		}
 	}
 }
+
+@Composable
+fun makeBulletedList(input: String): AnnotatedString {
+	val textStyle = LocalTextStyle.current
+	val textMeasurer = rememberTextMeasurer()
+	val twoTabWidth = remember(textStyle, textMeasurer) {
+		textMeasurer.measure(text = GAP, style = textStyle).size.width
+	}
+	val restLine = with(LocalDensity.current) { twoTabWidth.toSp() }
+	val paragraphStyle = ParagraphStyle(textIndent = TextIndent(restLine = restLine))
+	val spanStyle = SpanStyle(textDecoration = TextDecoration.LineThrough)
+	val list = input.split(NEWLINE)
+
+	return buildAnnotatedString {
+		list.forEach {
+			withStyle(style = paragraphStyle) {
+				append(BULLET)
+				append(GAP)
+				if (it.startsWith(Note.PREFIX_NOT_DONE)) {
+					append(it.removePrefix(Note.PREFIX_NOT_DONE))
+				}
+				else {
+					withStyle(style = spanStyle) {
+						append(it.removePrefix(Note.PREFIX_DONE))
+					}
+				}
+			}
+		}
+	}
+}
+
+private const val GAP = "\t\t"
+private const val NEWLINE = "\n"
+private const val BULLET = "\u2022"

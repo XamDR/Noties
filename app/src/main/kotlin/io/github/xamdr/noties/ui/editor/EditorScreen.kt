@@ -87,7 +87,6 @@ fun EditorScreen(
 	val noteEmpty by remember { derivedStateOf { viewModel.note.isEmpty() } }
 	val errorOpenFile = stringResource(id = R.string.error_open_file)
 	var openDateTimePicker by rememberSaveable { mutableStateOf(value = false) }
-	var taskMode by rememberSaveable { mutableStateOf(value = false) }
 
 	fun openFile(uri: Uri?) {
 		scope.launch {
@@ -160,13 +159,31 @@ fun EditorScreen(
 						}
 					}
 					OverflowMenu(
-						items = listOf(
-							ActionItem(
-								title = R.string.open_file,
-								action = { openFileLauncher.launch(arrayOf(Constants.MIME_TYPE_TEXT)) },
-								icon = Icons.Outlined.FileOpen
+						items = if (viewModel.note.isTaskList) {
+							listOf(
+								ActionItem(
+									title = R.string.hide_checkboxes,
+									action = viewModel::exitTaskMode
+								),
+								ActionItem(
+									title = R.string.check_all_checkboxes,
+									action = {}
+								),
+								ActionItem(
+									title = R.string.uncheck_all_checkboxes,
+									action = {}
+								)
 							)
-						)
+						}
+						else {
+							listOf(
+								ActionItem(
+									title = R.string.open_file,
+									action = { openFileLauncher.launch(arrayOf(Constants.MIME_TYPE_TEXT)) },
+									icon = Icons.Outlined.FileOpen
+								)
+							)
+						}
 					)
 				}
 			)
@@ -194,7 +211,7 @@ fun EditorScreen(
 					items = viewModel.items,
 					tags = viewModel.note.tags,
 					reminder = viewModel.note.reminderDate,
-					taskMode = taskMode,
+					isTaskList = viewModel.note.isTaskList,
 					tasks = viewModel.tasks,
 					onNoteContentChange = viewModel::updateNoteContent,
 					onItemCopied = viewModel::onItemCopied,
@@ -208,6 +225,8 @@ fun EditorScreen(
 					},
 					onDateTagClick = { openDateTimePicker = true },
 					onTagClick = { onNavigatoToTags(viewModel.note.tags) },
+					onTaskContentChanged = viewModel::updateTaskContent,
+					onTaskDone = viewModel::setTaskStatus,
 					onDragDropTask = viewModel::dragDropTask,
 					onAddTask = viewModel::addTask,
 					onRemoveTask = viewModel::removeTask
@@ -229,7 +248,7 @@ fun EditorScreen(
 							arrayOf(Constants.MIME_TYPE_IMAGE, Constants.MIME_TYPE_VIDEO)
 						)
 						R.id.camera -> {}
-						R.id.tasks -> taskMode = true
+						R.id.tasks -> viewModel.enterTaskMode()
 						R.id.reminder -> openDateTimePicker = true
 						R.id.tags -> onNavigatoToTags(viewModel.note.tags)
 					}

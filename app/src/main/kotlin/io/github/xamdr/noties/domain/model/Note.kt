@@ -16,7 +16,7 @@ data class Note(
 	val trashed: Boolean = false,
 	val archived: Boolean = false,
 	val pinned: Boolean = false,
-	val hasTaskList: Boolean = false,
+	val isTaskList: Boolean = false,
 	val reminderDate: Long? = null,
 	val tags: List<String> = emptyList(),
 	val items: List<MediaItem> = emptyList()
@@ -34,7 +34,7 @@ data class Note(
 			trashed = this.trashed,
 			archived = this.archived,
 			pinned = this.pinned,
-			hasTaskList = this.hasTaskList,
+			isTaskList = this.isTaskList,
 			reminderDate = this.reminderDate,
 			tags = this.tags
 		)
@@ -72,7 +72,7 @@ data class Note(
 				protected = note.protected,
 				trashed = note.trashed,
 				pinned = note.pinned,
-				hasTaskList = note.hasTaskList,
+				isTaskList = note.isTaskList,
 				reminderDate = note.reminderDate,
 				tags = note.tags,
 				items = items

@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.Task
@@ -67,7 +68,8 @@ fun TaskItem(
 						placeholder = stringResource(id = R.string.placeholder),
 						value = task.content,
 						onValueChange = onContentChanged,
-						modifier = Modifier.padding(vertical = 4.dp)
+						modifier = Modifier.padding(vertical = 4.dp),
+						textDecoration = if (task.done) TextDecoration.LineThrough else null
 					)
 					IconButton(
 						onClick = { onRemoveTask(task) },

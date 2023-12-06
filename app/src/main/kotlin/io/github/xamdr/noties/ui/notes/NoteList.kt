@@ -64,6 +64,7 @@ import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
+import io.github.xamdr.noties.ui.helpers.makeBulletedList
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
@@ -316,13 +317,24 @@ private fun NoteItem(
 			}
 			if (note.text.isNotEmpty()) {
 				val topDp = if (note.title.isNotEmpty()) 8.dp else 16.dp
-				Text(
-					text = note.text,
-					style = MaterialTheme.typography.bodyLarge,
-					maxLines = 5,
-					overflow = TextOverflow.Ellipsis,
-					modifier = Modifier.padding(start = 16.dp, top = topDp, end = 16.dp, bottom = 16.dp)
-				)
+				if (note.isTaskList) {
+					Text(
+						text = makeBulletedList(input = note.text),
+						style = MaterialTheme.typography.bodyLarge,
+						maxLines = 5,
+						overflow = TextOverflow.Ellipsis,
+						modifier = Modifier.padding(start = 16.dp, top = topDp, end = 16.dp, bottom = 16.dp)
+					)
+				}
+				else {
+					Text(
+						text = note.text,
+						style = MaterialTheme.typography.bodyLarge,
+						maxLines = 5,
+						overflow = TextOverflow.Ellipsis,
+						modifier = Modifier.padding(start = 16.dp, top = topDp, end = 16.dp, bottom = 16.dp)
+					)
+				}
 			}
 			if (note.tags.isNotEmpty() || note.reminderDate != null) {
 				val allTags = if (note.reminderDate == null) note.tags
