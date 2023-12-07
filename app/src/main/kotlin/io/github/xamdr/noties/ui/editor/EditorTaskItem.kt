@@ -15,9 +15,19 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -40,6 +50,29 @@ fun TaskItem(
 	onAddTask: () -> Unit,
 	onRemoveTask: (Task) -> Unit,
 ) {
+	var showRemoveTaskButton by rememberSaveable { mutableStateOf(value = false) }
+
+	fun onEnterKeyPress(input: String) {
+		if (input.endsWith("\n")) {
+			input.removePrefix("\n")
+			onAddTask()
+		}
+		else {
+			onContentChanged(input)
+		}
+	}
+
+	fun onDeleteKeyPress(event: KeyEvent): Boolean {
+		if (event.type == KeyEventType.KeyUp &&
+			event.key == Key.Backspace &&
+			(task as Task.Item).content.isEmpty()
+		) {
+			onRemoveTask(task)
+			return true
+		}
+		return false
+	}
+
 	when (task) {
 		is Task.Item -> {
 			DraggableItem(dragDropState = dragDropState, index = index) { isDragging ->
@@ -65,20 +98,24 @@ fun TaskItem(
 					TextBox(
 						placeholder = stringResource(id = R.string.placeholder),
 						value = task.content,
-						onValueChange = onContentChanged,
+						onValueChange = ::onEnterKeyPress,
 						textDecoration = if (task.done) TextDecoration.LineThrough else null,
 						modifier = Modifier
 							.weight(weight = 1f)
 							.padding(vertical = 4.dp)
+							.onFocusChanged { showRemoveTaskButton = it.isFocused }
+							.onKeyEvent { event -> onDeleteKeyPress(event) }
 					)
-					IconButton(
-						onClick = { onRemoveTask(task) },
-						modifier = Modifier.padding(vertical = 8.dp, horizontal = 2.dp)
-					) {
-						Icon(
-							imageVector = Icons.Outlined.Close,
-							contentDescription = stringResource(id = R.string.remove_item)
-						)
+					if (showRemoveTaskButton) {
+						IconButton(
+							onClick = { onRemoveTask(task) },
+							modifier = Modifier.padding(vertical = 8.dp, horizontal = 2.dp)
+						) {
+							Icon(
+								imageVector = Icons.Outlined.Close,
+								contentDescription = stringResource(id = R.string.remove_item)
+							)
+						}
 					}
 				}
 			}

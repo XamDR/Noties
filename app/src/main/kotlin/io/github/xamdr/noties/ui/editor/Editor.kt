@@ -21,7 +21,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -31,6 +33,7 @@ import io.github.xamdr.noties.domain.model.Task
 import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
+import io.github.xamdr.noties.ui.helpers.onFocusShowSoftKeyboard
 import io.github.xamdr.noties.ui.helpers.rememberDragDropState
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
@@ -61,6 +64,7 @@ fun Editor(
 		lazyGridState = gridState,
 		onMove = onDragDropTask
 	)
+	val focusRequester = remember { FocusRequester() }
 	
 	LazyVerticalGrid(
 		modifier = modifier,
@@ -111,7 +115,9 @@ fun Editor(
 					placeholder = stringResource(id = R.string.placeholder),
 					value = text,
 					onValueChange = onNoteContentChange,
-					modifier = Modifier.fillMaxWidth()
+					modifier = Modifier
+						.fillMaxWidth()
+						.onFocusShowSoftKeyboard(focusRequester)
 				)
 			}
 		}
