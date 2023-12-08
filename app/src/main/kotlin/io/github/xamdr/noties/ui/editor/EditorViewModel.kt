@@ -95,10 +95,12 @@ class EditorViewModel @Inject constructor(
 			val itemsFromNote = note.items.map(GridItem::Media).filter { !items.contains(it) }
 			items.addAll(itemsFromNote)
 		}
+		if (note.text.isNotEmpty()) {
+			tasks.addAll(note.toTaskList().filter { !tasks.containsItem(it) })
+		}
 		if (tags != null && note.tags != tags) {
 			note = note.copy(tags = tags)
 		}
-		tasks.addAll(note.toTaskList().filter { !tasks.containsItem(it) })
 		Timber.d("Note: $note")
 	}
 
@@ -119,6 +121,7 @@ class EditorViewModel @Inject constructor(
 	}
 
 	fun enterTaskMode() {
+		tasks.addAll(note.toTaskList().filter { !tasks.containsItem(it) })
 		note = note.copy(isTaskList = true)
 	}
 
