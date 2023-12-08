@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.domain.model.Task
+import io.github.xamdr.noties.domain.model.containsItem
 import io.github.xamdr.noties.domain.model.convertToString
 import io.github.xamdr.noties.domain.model.joinToString
 import io.github.xamdr.noties.domain.usecase.DeleteNotesUseCase
@@ -97,7 +98,7 @@ class EditorViewModel @Inject constructor(
 		if (tags != null && note.tags != tags) {
 			note = note.copy(tags = tags)
 		}
-		tasks.addAll(note.toTaskList().filter { !tasks.contains(it) })
+		tasks.addAll(note.toTaskList().filter { !tasks.containsItem(it) })
 		Timber.d("Note: $note")
 	}
 

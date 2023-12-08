@@ -34,6 +34,7 @@ import androidx.compose.ui.zIndex
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @Composable
 fun rememberDragDropState(
@@ -79,10 +80,11 @@ fun Modifier.dragContainerForHandle(
 fun DraggableItem(
 	dragDropState: DragDropState,
 	index: Int,
+	offset: Int,
 	modifier: Modifier = Modifier,
 	content: @Composable (isDragging: Boolean) -> Unit
 ) {
-	val dragging = index == dragDropState.draggingItemIndex
+	val dragging = index == dragDropState.draggingItemIndex?.minus(offset)
 	val draggingModifier = if (dragging) {
 		Modifier
 			.zIndex(1f)

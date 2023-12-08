@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
@@ -28,6 +29,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -45,17 +47,29 @@ fun TaskItem(
 	task: Task,
 	dragDropState: DragDropState,
 	index: Int,
+	offset: Int,
 	onContentChanged: (String) -> Unit,
 	onItemDone: (Boolean) -> Unit,
 	onAddTask: () -> Unit,
 	onRemoveTask: (Task) -> Unit,
 ) {
 	var showRemoveTaskButton by rememberSaveable { mutableStateOf(value = false) }
+	val focusManager = LocalFocusManager.current
+
+	fun addTask() {
+		onAddTask()
+		focusManager.moveFocus(FocusDirection.Down)
+	}
+
+	fun removeTask() {
+		onRemoveTask(task)
+		focusManager.moveFocus(FocusDirection.Up)
+	}
 
 	fun onEnterKeyPress(input: String) {
-		if (input.endsWith("\n")) {
-			input.removePrefix("\n")
-			onAddTask()
+		if (input.contains("\n")) {
+			input.replace("\n", String.Empty)
+			addTask()
 		}
 		else {
 			onContentChanged(input)
@@ -67,7 +81,7 @@ fun TaskItem(
 			event.key == Key.Backspace &&
 			(task as Task.Item).content.isEmpty()
 		) {
-			onRemoveTask(task)
+			removeTask()
 			return true
 		}
 		return false
@@ -75,7 +89,7 @@ fun TaskItem(
 
 	when (task) {
 		is Task.Item -> {
-			DraggableItem(dragDropState = dragDropState, index = index) { isDragging ->
+			DraggableItem(dragDropState = dragDropState, index = index, offset = offset) { isDragging ->
 				val alpha by animateFloatAsState(if (isDragging) 0.5f else 1f, label = "")
 				Row(
 					modifier = Modifier
@@ -108,7 +122,7 @@ fun TaskItem(
 					)
 					if (showRemoveTaskButton) {
 						IconButton(
-							onClick = { onRemoveTask(task) },
+							onClick = ::removeTask,
 							modifier = Modifier.padding(vertical = 8.dp, horizontal = 2.dp)
 						) {
 							Icon(
@@ -126,7 +140,7 @@ fun TaskItem(
 				modifier = Modifier
 					.fillMaxWidth()
 					.padding(all = 4.dp)
-					.clickable(onClick = onAddTask)
+					.clickable(onClick = ::addTask)
 			) {
 				Icon(
 					imageVector = Icons.Outlined.Add,

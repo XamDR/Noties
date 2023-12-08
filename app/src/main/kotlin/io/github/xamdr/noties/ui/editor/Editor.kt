@@ -65,7 +65,7 @@ fun Editor(
 		onMove = onDragDropTask
 	)
 	val focusRequester = remember { FocusRequester() }
-	
+
 	LazyVerticalGrid(
 		modifier = modifier,
 		state = gridState,
@@ -101,6 +101,7 @@ fun Editor(
 						task = task,
 						dragDropState = dragDropState,
 						index = index,
+						offset = items.size,
 						onContentChanged = { onTaskContentChanged(index, it) },
 						onItemDone = { onTaskDone(index, it) },
 						onAddTask = onAddTask,

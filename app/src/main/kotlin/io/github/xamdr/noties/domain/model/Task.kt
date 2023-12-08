@@ -33,3 +33,8 @@ fun List<Task>.joinToString(): String {
 	val items = this.filterIsInstance<Task.Item>()
 	return items.joinToString(Note.NEWLINE) { it.content }
 }
+
+fun List<Task>.containsItem(item: Task.Item): Boolean {
+	val contents = this.filterIsInstance<Task.Item>().map { it.content }
+	return contents.contains(item.content)
+}
