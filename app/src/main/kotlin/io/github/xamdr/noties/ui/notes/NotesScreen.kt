@@ -16,6 +16,7 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.SelectAll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -236,6 +237,12 @@ fun NotesScreen(
 							Icon(
 								imageVector = Icons.Outlined.DeleteForever,
 								contentDescription = stringResource(id = R.string.delete_notes)
+							)
+						}
+						IconButton(onClick = {}) {
+							Icon(
+								imageVector = Icons.Outlined.SelectAll,
+								contentDescription = stringResource(id = R.string.select_all)
 							)
 						}
 					}
