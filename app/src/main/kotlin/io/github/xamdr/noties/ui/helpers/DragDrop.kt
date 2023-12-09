@@ -178,9 +178,11 @@ class DragDropState(
 		if (targetItem != null) {
 			val scrollToIndex = if (targetItem.index == state.firstVisibleItemIndex) {
 				draggingItem.index
-			} else if (draggingItem.index == state.firstVisibleItemIndex) {
+			}
+			else if (draggingItem.index == state.firstVisibleItemIndex) {
 				targetItem.index
-			} else {
+			}
+			else {
 				null
 			}
 			if (scrollToIndex != null) {
@@ -189,16 +191,20 @@ class DragDropState(
 					state.scrollToItem(scrollToIndex, state.firstVisibleItemScrollOffset)
 					onMove.invoke(draggingItem.index, targetItem.index)
 				}
-			} else {
+			}
+			else {
 				onMove.invoke(draggingItem.index, targetItem.index)
 			}
 			draggingItemIndex = targetItem.index
-		} else {
+		}
+		else {
 			val overscroll = when {
 				draggingItemDraggedDelta.y > 0 ->
 					(endOffset.y - state.layoutInfo.viewportEndOffset).coerceAtLeast(0f)
+
 				draggingItemDraggedDelta.y < 0 ->
 					(startOffset.y - state.layoutInfo.viewportStartOffset).coerceAtMost(0f)
+
 				else -> 0f
 			}
 			if (overscroll != 0f) {
