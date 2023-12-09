@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Label
@@ -104,15 +105,15 @@ fun NavigationDrawer(
 					contentPadding = PaddingValues(16.dp),
 					verticalArrangement = Arrangement.spacedBy(16.dp),
 				) {
-					items(
-						count = items.size,
-						key = { index -> items[index].id },
-						contentType = { index -> items[index].javaClass }
-					) { index ->
-						val item = items[index]
+					itemsIndexed(
+						items = items,
+						key = { _, item -> item.id },
+						contentType = { _, item -> item.javaClass }
+					) { index, item ->
 						DrawerItem(
 							item = item,
-							selected = if (index == 0) screenType == ScreenType.Main else item == selectedItem && screenType != ScreenType.Main
+							selected = if (index == 0) screenType == ScreenType.Main
+								else item == selectedItem && screenType != ScreenType.Main
 						) {
 							selectedItem = item
 							onItemClick(selectedItem)

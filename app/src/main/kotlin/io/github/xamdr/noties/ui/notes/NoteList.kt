@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Alarm
@@ -101,11 +102,11 @@ fun NoteList(
 		verticalArrangement = Arrangement.spacedBy(16.dp),
 	) {
 		items(
-			count = notes.size,
-			key = { index -> notes[index].id.toInt() }
-		) { index ->
-			val selected = selectedIds.contains(notes[index].id)
-			val currentNote by rememberUpdatedState(newValue = notes[index])
+			items = notes,
+			key = { note -> note.id.toInt() }
+		) { note ->
+			val selected = selectedIds.contains(note.id)
+			val currentNote by rememberUpdatedState(newValue = note)
 			val dismissState = rememberDismissState(confirmValueChange = { dissmissValue ->
 				when (dissmissValue) {
 					DismissValue.DismissedToEnd -> {
@@ -122,10 +123,10 @@ fun NoteList(
 				background = { DismissBackground(dismissState) },
 				dismissContent = {
 					NoteItem(
-						note = notes[index],
+						note = note,
 						selected = selected,
 						onClick = { note -> onClick(note, selected) },
-						onLongClick = { selectedIds.add(notes[index].id) }
+						onLongClick = { selectedIds.add(note.id) }
 					)
 				},
 				modifier = Modifier.animateItemPlacement()
@@ -221,8 +222,8 @@ fun NoteList(modifier: Modifier) {
 		verticalArrangement = Arrangement.spacedBy(16.dp),
 	) {
 		items(
-			count = notes.size,
-			key = { index -> notes[index].id.toInt() },
+			items = notes,
+			key = { note -> note.id.toInt() },
 			itemContent = { NoteItem() }
 		)
 	}

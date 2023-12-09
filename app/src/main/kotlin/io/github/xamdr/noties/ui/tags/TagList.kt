@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material3.Checkbox
@@ -35,12 +36,12 @@ fun TagList(
 	) {
 
 		items(
-			count = tags.size,
-			key = { index -> tags[index].id }
-		) { index ->
+			items = tags,
+			key = { tag -> tag.id }
+		) { tag ->
 			TagItem(
-				checked = selectedTags.contains(tags[index].name),
-				tag = tags[index],
+				checked = selectedTags.contains(tag.name),
+				tag = tag,
 				onTagSelected = onTagSelected
 			)
 		}
@@ -64,12 +65,12 @@ fun TagList(modifier: Modifier) {
 		verticalArrangement = Arrangement.spacedBy(16.dp),
 	) {
 		items(
-			count = tags.size,
-			key = { index -> tags[index].id }
-		) { index ->
+			items = tags,
+			key = { tag -> tag.id }
+		) { tag ->
 			TagItem(
 				checked = false,
-				tag = tags[index],
+				tag = tag,
 				onTagSelected = { _, _ -> }
 			)
 		}
