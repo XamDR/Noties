@@ -159,6 +159,10 @@ class EditorViewModel @Inject constructor(
 		tasks.remove(task)
 	}
 
+	fun restoreNote() {
+		note = note.copy(trashed = false)
+	}
+
 	private suspend fun getNoteById(noteId: Long): Note = getNoteByIdUseCase(noteId)
 
 	private suspend fun insertNote(note: Note): NoteAction {

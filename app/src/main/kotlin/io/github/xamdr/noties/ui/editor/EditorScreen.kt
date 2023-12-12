@@ -20,6 +20,7 @@ import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.FileOpen
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.RestoreFromTrash
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -159,7 +160,7 @@ fun EditorScreen(
 						}
 					}
 					OverflowMenu(
-						items = if (viewModel.note.isTaskList) {
+						items = if (viewModel.note.isTaskList && viewModel.note.trashed.not()) {
 							listOf(
 								ActionItem(
 									title = R.string.hide_checkboxes,
@@ -172,6 +173,15 @@ fun EditorScreen(
 								ActionItem(
 									title = R.string.uncheck_all_checkboxes,
 									action = { viewModel.markAllTasksAsDone(value = false) }
+								)
+							)
+						}
+						else if (viewModel.note.trashed) {
+							listOf(
+								ActionItem(
+									title = R.string.restore_from_trash,
+									action = viewModel::restoreNote,
+									icon = Icons.Outlined.RestoreFromTrash
 								)
 							)
 						}
@@ -207,11 +217,8 @@ fun EditorScreen(
 					modifier = Modifier
 						.weight(1f)
 						.fillMaxWidth(),
-					text = viewModel.note.text,
+					note = viewModel.note,
 					items = viewModel.items,
-					tags = viewModel.note.tags,
-					reminder = viewModel.note.reminderDate,
-					isTaskList = viewModel.note.isTaskList,
 					tasks = viewModel.tasks,
 					onNoteContentChange = viewModel::updateNoteContent,
 					onItemCopied = viewModel::onItemCopied,
@@ -231,11 +238,13 @@ fun EditorScreen(
 					onAddTask = viewModel::addTask,
 					onRemoveTask = viewModel::removeTask
 				)
-				EditorToolbar(
-					onAddAttachmentIconClick = { openMenu = true },
-					onPickColorIconClick = {},
-					dateModified = modificationDate
-				)
+				if (viewModel.note.trashed.not()) {
+					EditorToolbar(
+						onAddAttachmentIconClick = { openMenu = true },
+						onPickColorIconClick = {},
+						dateModified = modificationDate
+					)
+				}
 			}
 			if (openMenu) {
 				EditorMenuBottomSheet(

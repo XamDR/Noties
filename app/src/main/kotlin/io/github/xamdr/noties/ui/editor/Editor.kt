@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.MediaItem
+import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.domain.model.Task
 import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
@@ -39,14 +40,12 @@ import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 private const val SPAN_COUNT = 2
 
+@Suppress("USELESS_CAST")
 @Composable
 fun Editor(
 	modifier: Modifier,
-	text: String,
+	note: Note,
 	items: List<GridItem>,
-	tags: List<String>?,
-	reminder: Long?,
-	isTaskList: Boolean,
 	tasks: List<Task>,
 	onNoteContentChange: (String) -> Unit,
 	onItemCopied: (MediaItem, Int) -> Unit,
@@ -65,6 +64,9 @@ fun Editor(
 		onMove = onDragDropTask
 	)
 	val focusRequester = remember { FocusRequester() }
+	val textBoxModifier = Modifier
+		.fillMaxWidth()
+		.then(if (note.id == 0L) Modifier.onFocusShowSoftKeyboard(focusRequester) else Modifier)
 
 	LazyVerticalGrid(
 		modifier = modifier,
@@ -90,7 +92,7 @@ fun Editor(
 				)
 			}
 		)
-		if (isTaskList) {
+		if (note.isTaskList) {
 			val allTasks = tasks + Task.Footer
 			itemsIndexed(
 				items = allTasks,
@@ -98,6 +100,7 @@ fun Editor(
 				span = { _, _ -> GridItemSpan(SPAN_COUNT) },
 				itemContent = { index, task ->
 					TaskItem(
+						note = note,
 						task = task,
 						dragDropState = dragDropState,
 						index = index,
@@ -114,25 +117,24 @@ fun Editor(
 			item(span = { GridItemSpan(SPAN_COUNT) }) {
 				TextBox(
 					placeholder = stringResource(id = R.string.placeholder),
-					value = text,
+					value = note.text,
 					onValueChange = onNoteContentChange,
-					modifier = Modifier
-						.fillMaxWidth()
-						.onFocusShowSoftKeyboard(focusRequester)
+					readOnly = note.trashed,
+					modifier = textBoxModifier
 				)
 			}
 		}
 		item(span = { GridItemSpan(SPAN_COUNT) }) {
-			if (!tags.isNullOrEmpty() || reminder != null) {
+			if (note.tags.isNotEmpty() || note.reminderDate != null) {
 				val allTags = when {
-					!tags.isNullOrEmpty() && reminder != null -> listOf(DateTimeHelper.formatDateTime(reminder)) + tags
-					reminder != null -> listOf(DateTimeHelper.formatDateTime(reminder))
-					else -> tags
+					note.tags.isNotEmpty() && note.reminderDate != null -> listOf(DateTimeHelper.formatDateTime(note.reminderDate)) + note.tags
+					note.reminderDate != null -> listOf(DateTimeHelper.formatDateTime(note.reminderDate))
+					else -> note.tags
 				}
 				TagList(
 					tags = allTags,
-					onDateTagClick = onDateTagClick,
-					onTagClick = onTagClick
+					onDateTagClick = if (note.trashed) ({} as () -> Unit) else onDateTagClick,
+					onTagClick = if (note.trashed) ({} as () -> Unit) else onTagClick
 				)
 			}
 		}
@@ -175,7 +177,7 @@ private fun EditorPreview() = NotiesTheme { Editor(modifier = Modifier.fillMaxSi
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TagList(
-	tags: List<String>?,
+	tags: List<String>,
 	onDateTagClick: () -> Unit,
 	onTagClick: () -> Unit
 ) {
@@ -185,7 +187,7 @@ private fun TagList(
 			.padding(all = 8.dp),
 		horizontalArrangement = Arrangement.Start
 	) {
-		tags?.forEach { tag ->
+		tags.forEach { tag ->
 			if (DateTimeHelper.isValidDate(tag)) {
 				AssistChip(
 					onClick = onDateTagClick,

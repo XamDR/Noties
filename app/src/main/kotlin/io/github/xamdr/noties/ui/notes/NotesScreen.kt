@@ -257,7 +257,12 @@ fun NotesScreen(
 								contentDescription = stringResource(id = R.string.delete_notes)
 							)
 						}
-						IconButton(onClick = {}) {
+						IconButton(
+							onClick = {
+								val noSelectedIds = notes?.map { it.id }?.filter { !selectedIds.contains(it) }.orEmpty()
+								selectedIds.addAll(noSelectedIds)
+							}
+						) {
 							Icon(
 								imageVector = Icons.Outlined.SelectAll,
 								contentDescription = stringResource(id = R.string.select_all)

@@ -137,19 +137,29 @@ fun NoteList(
 					else -> false
 				}
 			})
-			SwipeToDismiss(
-				state = dismissState,
-				background = { DismissBackground(dismissState, currentNote) },
-				dismissContent = {
-					NoteItem(
-						note = note,
-						selected = selected,
-						onClick = { note -> onClick(note, selected) },
-						onLongClick = { selectedIds.add(note.id) }
-					)
-				},
-				modifier = Modifier.animateItemPlacement()
-			)
+			if (note.trashed) {
+				NoteItem(
+					note = note,
+					selected = selected,
+					onClick = { onClick(it, selected) },
+					onLongClick = { selectedIds.add(note.id) }
+				)
+			}
+			else {
+				SwipeToDismiss(
+					state = dismissState,
+					background = { DismissBackground(dismissState, currentNote) },
+					dismissContent = {
+						NoteItem(
+							note = note,
+							selected = selected,
+							onClick = { note -> onClick(note, selected) },
+							onLongClick = { selectedIds.add(note.id) }
+						)
+					},
+					modifier = Modifier.animateItemPlacement()
+				)
+			}
 		}
 	}
 }

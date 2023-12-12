@@ -185,6 +185,7 @@ fun TextBox(
 	value: String,
 	onValueChange: (String) -> Unit,
 	modifier: Modifier = Modifier,
+	readOnly: Boolean = false,
 	textDecoration: TextDecoration? = null
 ) {
 	OutlinedTextField(
@@ -193,6 +194,7 @@ fun TextBox(
 		modifier = modifier,
 		placeholder = { Text(text = placeholder) },
 		singleLine = false,
+		readOnly = readOnly,
 		keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
 		colors = OutlinedTextFieldDefaults.colors(
 			focusedBorderColor = Color.Transparent,

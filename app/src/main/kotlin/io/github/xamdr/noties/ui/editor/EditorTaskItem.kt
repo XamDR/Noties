@@ -13,6 +13,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import io.github.xamdr.noties.R
+import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.domain.model.Task
 import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
@@ -44,6 +46,7 @@ import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 @Composable
 fun TaskItem(
+	note: Note,
 	task: Task,
 	dragDropState: DragDropState,
 	index: Int,
@@ -90,7 +93,11 @@ fun TaskItem(
 	when (task) {
 		is Task.Item -> {
 			DraggableItem(dragDropState = dragDropState, index = index, offset = offset) { isDragging ->
-				val alpha by animateFloatAsState(if (isDragging) 0.5f else 1f, label = "")
+				val alpha by animateFloatAsState(if (isDragging) 0.5f else 1f, label = "alpha")
+				val modifier = Modifier
+					.padding(start = 8.dp, end = 2.dp)
+					.then(if (note.trashed) Modifier else Modifier.dragContainerForHandle(dragDropState = dragDropState, key = task.id))
+
 				Row(
 					modifier = Modifier
 						.alpha(alpha)
@@ -100,27 +107,28 @@ fun TaskItem(
 					Icon(
 						imageVector = Icons.Outlined.DragIndicator,
 						contentDescription = stringResource(id = R.string.drag_item),
-						modifier = Modifier
-							.padding(start = 8.dp, end = 2.dp)
-							.dragContainerForHandle(dragDropState = dragDropState, key = task.id)
+						modifier = modifier
 					)
 					Checkbox(
 						checked = task.done,
-						onCheckedChange = onItemDone,
-						modifier = Modifier.padding(vertical = 8.dp)
+						onCheckedChange = if (note.trashed) null else onItemDone,
+						modifier = Modifier
+							.minimumInteractiveComponentSize()
+							.padding(vertical = 8.dp)
 					)
 					TextBox(
 						placeholder = stringResource(id = R.string.placeholder),
 						value = task.content,
 						onValueChange = ::onEnterKeyPress,
 						textDecoration = if (task.done) TextDecoration.LineThrough else null,
+						readOnly = note.trashed,
 						modifier = Modifier
 							.weight(weight = 1f)
 							.padding(vertical = 4.dp)
 							.onFocusChanged { showRemoveTaskButton = it.isFocused }
 							.onKeyEvent { event -> onDeleteKeyPress(event) }
 					)
-					if (showRemoveTaskButton) {
+					if (showRemoveTaskButton && note.trashed.not()) {
 						IconButton(
 							onClick = ::removeTask,
 							modifier = Modifier.padding(vertical = 8.dp, horizontal = 2.dp)
@@ -135,22 +143,24 @@ fun TaskItem(
 			}
 		}
 		Task.Footer -> {
-			Row(
-				verticalAlignment = Alignment.CenterVertically,
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(all = 4.dp)
-					.clickable(onClick = ::addTask)
-			) {
-				Icon(
-					imageVector = Icons.Outlined.Add,
-					contentDescription = null,
-					modifier = Modifier.padding(start = 40.dp, top = 8.dp, end = 16.dp, bottom = 8.dp)
-				)
-				Text(
-					text = stringResource(id = R.string.new_todo_item),
-					modifier = Modifier.padding(top = 8.dp, end = 16.dp, bottom = 8.dp)
-				)
+			if (note.trashed.not()) {
+				Row(
+					verticalAlignment = Alignment.CenterVertically,
+					modifier = Modifier
+						.fillMaxWidth()
+						.padding(all = 4.dp)
+						.clickable(onClick = ::addTask)
+				) {
+					Icon(
+						imageVector = Icons.Outlined.Add,
+						contentDescription = null,
+						modifier = Modifier.padding(start = 40.dp, top = 8.dp, end = 16.dp, bottom = 8.dp)
+					)
+					Text(
+						text = stringResource(id = R.string.new_todo_item),
+						modifier = Modifier.padding(top = 8.dp, end = 16.dp, bottom = 8.dp)
+					)
+				}
 			}
 		}
 	}
