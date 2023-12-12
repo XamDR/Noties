@@ -15,8 +15,8 @@ import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.RestoreFromTrash
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.SelectAll
 import androidx.compose.material.icons.outlined.ViewAgenda
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -113,8 +113,8 @@ fun NotesScreen(
 		scope.launch {
 			if (selectedIds.isNotEmpty()) {
 				viewModel.deleteNotes(selectedIds)
-				val selectedNotes = notes?.filter { note -> selectedIds.contains(note.id) }
-				selectedNotes?.forEach { note -> MediaStorageManager.deleteItems(context, note.items) }
+				val selectedNotes = notes?.filter { note -> selectedIds.contains(note.id) }.orEmpty()
+				selectedNotes.forEach { note -> MediaStorageManager.deleteItems(context, note.items) }
 				selectedIds.clear()
 			}
 			else {
@@ -122,6 +122,16 @@ fun NotesScreen(
 				notes?.forEach { note -> MediaStorageManager.deleteItems(context, note.items) }
 			}
 			showDeleteNotesDialog = false
+		}
+	}
+
+	fun restoreNotes() {
+		scope.launch {
+			if (selectedIds.isNotEmpty()) {
+				val selectedNotes = notes?.filter { note -> selectedIds.contains(note.id) }.orEmpty()
+				viewModel.restoreNotesFromTrash(selectedNotes)
+				selectedIds.clear()
+			}
 		}
 	}
 
@@ -257,16 +267,13 @@ fun NotesScreen(
 								contentDescription = stringResource(id = R.string.delete_notes)
 							)
 						}
-						IconButton(
-							onClick = {
-								val noSelectedIds = notes?.map { it.id }?.filter { !selectedIds.contains(it) }.orEmpty()
-								selectedIds.addAll(noSelectedIds)
+						if (screen.type == ScreenType.Trash) {
+							IconButton(onClick = ::restoreNotes) {
+								Icon(
+									imageVector = Icons.Outlined.RestoreFromTrash,
+									contentDescription = stringResource(id = R.string.restore_from_trash)
+								)
 							}
-						) {
-							Icon(
-								imageVector = Icons.Outlined.SelectAll,
-								contentDescription = stringResource(id = R.string.select_all)
-							)
 						}
 					}
 				)

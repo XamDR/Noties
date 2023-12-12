@@ -137,7 +137,8 @@ fun EditorScreen(
 						text = viewModel.note.title.ifEmpty { stringResource(id = R.string.editor) },
 						maxLines = 1,
 						overflow = TextOverflow.Ellipsis,
-						modifier = Modifier.clickableWithoutRipple { titleInEditMode = titleInEditMode.not() }
+						modifier = if (viewModel.note.trashed) Modifier
+							else Modifier.clickableWithoutRipple { titleInEditMode = titleInEditMode.not() }
 					)
 				},
 				navigationIcon = {

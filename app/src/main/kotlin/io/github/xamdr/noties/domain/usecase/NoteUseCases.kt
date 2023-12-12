@@ -102,7 +102,7 @@ class MoveNotesToTrashUseCase @Inject constructor(private val noteRepository: No
 	suspend operator fun invoke(notes: List<Note>): List<Note> {
 		val trashedNotes = mutableListOf<Note>()
 		for (note in notes) {
-			val trashedNote = note.copy(trashed = true)
+			val trashedNote = if (note.archived) note.copy(trashed = true, archived = false) else note.copy(trashed = true)
 			noteRepository.updateNote(trashedNote.asDatabaseEntity())
 			trashedNotes.add(trashedNote)
 		}
