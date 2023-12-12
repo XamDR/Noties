@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SelectAll
+import androidx.compose.material.icons.outlined.ViewAgenda
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -56,6 +57,7 @@ import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
 import io.github.xamdr.noties.ui.helpers.rememberMutableStateList
 import io.github.xamdr.noties.ui.media.ActionItem
+import io.github.xamdr.noties.ui.settings.PreferenceStorage
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
 
@@ -69,13 +71,13 @@ fun NotesScreen(
 	active: Boolean,
 	onActiveChange: (Boolean) -> Unit,
 	onLeadingIconClick: () -> Unit,
-	onTrailingIconClick: () -> Unit,
 	onNavigationIconClick: () -> Unit,
 	onFabClick: () -> Unit,
 	onItemClick: (Note) -> Unit,
 	onRenameTag: () -> Unit,
 	onDeleteTag: () -> Unit,
 	noteAction: NoteAction,
+	preferenceStorage: PreferenceStorage,
 	searchContent: @Composable (ColumnScope.() -> Unit),
 	viewModel: NotesViewModel = hiltViewModel()
 ) {
@@ -85,6 +87,7 @@ fun NotesScreen(
 	val snackbarHostState = remember { SnackbarHostState() }
 	val deleteNoteMessage = stringResource(id = R.string.deleted_note)
 	val archivedNoteMessage = stringResource(id = R.string.archived_note)
+	val unarchivedNoteMessage = stringResource(id = R.string.unarchived_note)
 	val actionLabel = stringResource(id = R.string.undo)
 	val noteSavedMessage = stringResource(id = R.string.note_saved)
 	val noteUpdatedMessage = stringResource(id = R.string.note_updated)
@@ -94,6 +97,8 @@ fun NotesScreen(
 	var showDeleteNotesDialog by rememberSaveable { mutableStateOf(value = false) }
 	val isRecycleBinEmpty by remember { derivedStateOf { notes.isNullOrEmpty() } }
 	var isBatchDelete by rememberSaveable { mutableStateOf(value = false) }
+
+	var layoutType by rememberSaveable { mutableStateOf(value = LayoutType.valueOf(preferenceStorage.layoutType)) }
 
 	LaunchedEffect(key1 = Unit) {
 		when (noteAction) {
@@ -143,10 +148,23 @@ fun NotesScreen(
 							}
 						},
 						trailingIcon = {
-							IconButton(onClick = onTrailingIconClick) {
+							IconButton(onClick = {
+								when (layoutType) {
+									LayoutType.Linear -> {
+										layoutType = LayoutType.Grid
+										preferenceStorage.layoutType = LayoutType.Grid.name
+									}
+									LayoutType.Grid -> {
+										layoutType = LayoutType.Linear
+										preferenceStorage.layoutType = LayoutType.Linear.name
+									}
+								}
+							}) {
 								Icon(
-									imageVector = Icons.Outlined.GridView,
-									contentDescription = stringResource(id = R.string.grid_layout_view)
+									imageVector = if (layoutType == LayoutType.Linear) Icons.Outlined.GridView else Icons.Outlined.ViewAgenda,
+									contentDescription = stringResource(
+										id = if (layoutType == LayoutType.Linear) R.string.grid_layout_view else R.string.linear_layout_view
+									)
 								)
 							}
 						},
@@ -280,10 +298,11 @@ fun NotesScreen(
 					NoteList(
 						modifier = Modifier.padding(innerPadding),
 						notes = it,
+						layoutType = layoutType,
 						selectedIds = selectedIds,
 						inSelectionMode = inSelectionMode,
 						onNoteClick = onItemClick,
-						onNoteMovedToTrash = { note ->
+						onMoveNoteToTrash = { note ->
 							scope.launch {
 								val noteMovedToTrash = viewModel.moveNotesToTrash(listOf(note))
 								when (snackbarHostState.showSnackbar(
@@ -296,7 +315,7 @@ fun NotesScreen(
 								}
 							}
 						},
-						onNoteArchived = { note ->
+						onArchiveNote = { note ->
 							scope.launch {
 								val archivedNote = viewModel.archiveNotes(listOf(note))
 								when (snackbarHostState.showSnackbar(
@@ -307,6 +326,12 @@ fun NotesScreen(
 									SnackbarResult.ActionPerformed -> viewModel.restoreNotesArchived(archivedNote)
 									else -> {}
 								}
+							}
+						},
+						onUnarchiveNote = { note ->
+							scope.launch {
+								viewModel.restoreNotesArchived(listOf(note))
+								snackbarHostState.showSnackbar(message = unarchivedNoteMessage)
 							}
 						}
 					)

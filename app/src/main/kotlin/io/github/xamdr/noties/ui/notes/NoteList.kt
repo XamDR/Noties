@@ -20,6 +20,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Alarm
@@ -27,6 +30,7 @@ import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -69,16 +73,23 @@ import io.github.xamdr.noties.ui.helpers.makeBulletedList
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
+enum class LayoutType {
+	Linear,
+	Grid;
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun NoteList(
 	modifier: Modifier,
 	notes: List<Note>,
+	layoutType: LayoutType,
 	selectedIds: MutableList<Long>,
 	inSelectionMode: Boolean,
 	onNoteClick: (Note) -> Unit,
-	onNoteMovedToTrash: (Note) -> Unit,
-	onNoteArchived: (Note) -> Unit
+	onMoveNoteToTrash: (Note) -> Unit,
+	onArchiveNote: (Note) -> Unit,
+	onUnarchiveNote: (Note) -> Unit
 ) {
 	fun onClick(note: Note, selected: Boolean) {
 		if (inSelectionMode) {
@@ -96,10 +107,12 @@ fun NoteList(
 		}
 	}
 
-	LazyColumn(
+	LazyVerticalStaggeredGrid(
+		columns = StaggeredGridCells.Fixed(count = if (layoutType == LayoutType.Linear) 1 else 2),
 		modifier = modifier,
 		contentPadding = PaddingValues(16.dp),
-		verticalArrangement = Arrangement.spacedBy(16.dp),
+		verticalItemSpacing = 16.dp,
+		horizontalArrangement = Arrangement.spacedBy(8.dp)
 	) {
 		items(
 			items = notes,
@@ -110,17 +123,23 @@ fun NoteList(
 			val dismissState = rememberDismissState(confirmValueChange = { dissmissValue ->
 				when (dissmissValue) {
 					DismissValue.DismissedToEnd -> {
-						onNoteArchived(currentNote); true
+						if (currentNote.archived) {
+							onUnarchiveNote(currentNote)
+						}
+						else {
+							onArchiveNote(currentNote)
+						}
+						true
 					}
 					DismissValue.DismissedToStart -> {
-						onNoteMovedToTrash(currentNote); true
+						onMoveNoteToTrash(currentNote); true
 					}
 					else -> false
 				}
 			})
 			SwipeToDismiss(
 				state = dismissState,
-				background = { DismissBackground(dismissState) },
+				background = { DismissBackground(dismissState, currentNote) },
 				dismissContent = {
 					NoteItem(
 						note = note,
@@ -137,7 +156,7 @@ fun NoteList(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DismissBackground(state: DismissState) {
+private fun DismissBackground(state: DismissState, note: Note) {
 	val direction = state.dismissDirection ?: return
 	val alignment = when (direction) {
 		DismissDirection.StartToEnd -> Alignment.CenterStart
@@ -145,7 +164,7 @@ private fun DismissBackground(state: DismissState) {
 	}
 	val icon = when(state.targetValue) {
 		DismissValue.Default -> null
-		DismissValue.DismissedToEnd -> Icons.Outlined.Archive
+		DismissValue.DismissedToEnd -> if (note.archived)  Icons.Outlined.Unarchive else Icons.Outlined.Archive
 		DismissValue.DismissedToStart -> Icons.Outlined.Delete
 	}
 	val scale by animateFloatAsState(
@@ -153,7 +172,7 @@ private fun DismissBackground(state: DismissState) {
 		label = "scale"
 	)
 	val text = when(direction) {
-		DismissDirection.StartToEnd -> stringResource(id = R.string.archive_note)
+		DismissDirection.StartToEnd -> stringResource(id = if (note.archived) R.string.unarchive_note else R.string.archive_note)
 		DismissDirection.EndToStart -> stringResource(id = R.string.delete_note)
 	}
 	Box(

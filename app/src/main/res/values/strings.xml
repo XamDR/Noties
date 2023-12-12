@@ -35,8 +35,10 @@
 	<string name="empty_notes_message">No notes here</string>
 	<string name="delete_note">Delete</string>
 	<string name="archive_note">Archive</string>
+	<string name="unarchive_note">Unarchive</string>
 	<string name="deleted_note">Deleted note</string>
 	<string name="archived_note">Archived note</string>
+	<string name="unarchived_note">Unarchived note</string>
 	<string name="undo">Undo</string>
 	<string name="search_notes">Search your notes</string>
 	<string name="sort_notes">Sort notes…</string>

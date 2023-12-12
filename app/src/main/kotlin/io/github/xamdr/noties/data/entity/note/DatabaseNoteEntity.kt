@@ -32,6 +32,7 @@ data class DatabaseNoteEntity(
 			urls = this.urls,
 			protected = this.protected,
 			trashed = this.trashed,
+			archived = this.archived,
 			pinned = this.pinned,
 			isTaskList = this.isTaskList,
 			reminderDate = this.reminderDate,

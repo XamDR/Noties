@@ -71,6 +71,7 @@ data class Note(
 				urls = note.urls,
 				protected = note.protected,
 				trashed = note.trashed,
+				archived = note.archived,
 				pinned = note.pinned,
 				isTaskList = note.isTaskList,
 				reminderDate = note.reminderDate,

@@ -107,7 +107,6 @@ class NotesFragment : Fragment() {
 						active = false,
 						onActiveChange = {},
 						onLeadingIconClick = { scope.launch { drawerState.open() } },
-						onTrailingIconClick = {},
 						onNavigationIconClick = { scope.launch { drawerState.open() } },
 						onFabClick = { navigateToEditor(tagName = screen.title) },
 						onItemClick = ::navigateToEditor,
@@ -117,6 +116,7 @@ class NotesFragment : Fragment() {
 						},
 						onDeleteTag = { openDeleteTagDialog = true },
 						noteAction = noteAction,
+						preferenceStorage = preferenceStorage,
 						searchContent = {
 
 						}
