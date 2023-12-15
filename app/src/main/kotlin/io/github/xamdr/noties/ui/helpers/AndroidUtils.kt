@@ -1,8 +1,11 @@
 package io.github.xamdr.noties.ui.helpers
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -13,6 +16,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.getSystemService
+import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -157,3 +162,13 @@ tailrec fun Context.findActivity(): ComponentActivity? = when (this) {
 	is ComponentActivity -> this
 	else -> (this as? ContextWrapper)?.baseContext?.findActivity()
 }
+
+fun Context.copyUriToClipboard(@StringRes label: Int, uri: Uri, @StringRes copiedMsg: Int) {
+	val manager = this.getSystemService<ClipboardManager>() ?: return
+	val clip = ClipData.newUri(this.contentResolver, this.getString(label), uri)
+	manager.setPrimaryClip(clip)
+	this.showToast(copiedMsg)
+}
+
+val DocumentFile.simpleName: String?
+	get() = this.name?.substringBeforeLast('.')

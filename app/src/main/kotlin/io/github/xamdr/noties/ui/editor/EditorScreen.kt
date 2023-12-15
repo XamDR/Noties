@@ -1,12 +1,15 @@
 package io.github.xamdr.noties.ui.editor
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +22,8 @@ import androidx.compose.material.icons.outlined.AddBox
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.FileOpen
+import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.RestoreFromTrash
 import androidx.compose.material.icons.outlined.Share
@@ -56,8 +61,12 @@ import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
+import io.github.xamdr.noties.ui.helpers.PermissionRationaleDialog
 import io.github.xamdr.noties.ui.helpers.ShareHelper
 import io.github.xamdr.noties.ui.helpers.clickableWithoutRipple
+import io.github.xamdr.noties.ui.helpers.doActionOrRequestPermission
+import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
+import io.github.xamdr.noties.ui.helpers.showToast
 import io.github.xamdr.noties.ui.media.ActionItem
 import io.github.xamdr.noties.ui.media.MediaViewerActivity
 import io.github.xamdr.noties.ui.reminders.AlarmManagerHelper
@@ -66,6 +75,7 @@ import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
 import java.time.Instant
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorScreen(
@@ -87,7 +97,11 @@ fun EditorScreen(
 	val snackbarHostState = remember { SnackbarHostState() }
 	val noteEmpty by remember { derivedStateOf { viewModel.note.isEmpty() } }
 	val errorOpenFile = stringResource(id = R.string.error_open_file)
-	var openDateTimePicker by rememberSaveable { mutableStateOf(value = false) }
+	var showDateTimePicker by rememberSaveable { mutableStateOf(value = false) }
+	var writeExternalStorageRationaleDialog by rememberSaveable { mutableStateOf(value = false) }
+	var postNotificationRationaleDialog by rememberSaveable { mutableStateOf(value = false) }
+	val permissionDeniedMessage = stringResource(id = R.string.permission_denied)
+	var cameraUri by rememberSaveable { mutableStateOf<Uri?>(value = null) }
 
 	fun openFile(uri: Uri?) {
 		scope.launch {
@@ -110,6 +124,38 @@ fun EditorScreen(
 	val openFileLauncher = rememberLauncherForActivityResult(
 		contract = ActivityResultContracts.OpenDocument(),
 		onResult = ::openFile
+	)
+
+	val takePictureLauncher = rememberLauncherForActivityResult(
+		contract = ActivityResultContracts.TakePicture(),
+		onResult = { success ->
+			if (success && cameraUri != null) {
+				val tempUri = cameraUri ?: throw IllegalArgumentException("$cameraUri is null")
+				viewModel.addItems(listOf(tempUri))
+			}
+			else {
+				context.showToast(R.string.error_take_picture)
+			}
+		}
+	)
+
+	fun takePicture() {
+		cameraUri = MediaStorageManager.savePicture(context)
+		takePictureLauncher.launch(cameraUri)
+	}
+
+	val writeExternalStorageAction = doActionOrRequestPermission(
+		permission = Manifest.permission.WRITE_EXTERNAL_STORAGE,
+		condition = { Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q },
+		action = ::takePicture,
+		requestPermission = { writeExternalStorageRationaleDialog = true }
+	)
+
+	val postNotificationAction = doActionOrRequestPermission(
+		permission = Manifest.permission.POST_NOTIFICATIONS,
+		condition = { Build.VERSION.SDK_INT <= Build.VERSION_CODES.S },
+		action = { showDateTimePicker = true },
+		requestPermission = { postNotificationRationaleDialog = true }
 	)
 
 	LaunchedEffect(key1 = Unit) {
@@ -231,7 +277,7 @@ fun EditorScreen(
 							position = position
 						)
 					},
-					onDateTagClick = { openDateTimePicker = true },
+					onDateTagClick = { showDateTimePicker = true },
 					onTagClick = { onNavigatoToTags(viewModel.note.tags) },
 					onTaskContentChanged = viewModel::updateTaskContent,
 					onTaskDone = viewModel::setTaskStatus,
@@ -258,25 +304,49 @@ fun EditorScreen(
 						R.id.gallery -> pickMediaLauncher.launch(
 							arrayOf(Constants.MIME_TYPE_IMAGE, Constants.MIME_TYPE_VIDEO)
 						)
-						R.id.camera -> {}
+						R.id.camera -> writeExternalStorageAction()
 						R.id.tasks -> viewModel.enterTaskMode()
-						R.id.reminder -> openDateTimePicker = true
+						R.id.reminder -> postNotificationAction()
 						R.id.tags -> onNavigatoToTags(viewModel.note.tags)
 					}
 				}
 			}
-			if (openDateTimePicker) {
+			if (showDateTimePicker) {
 				DateTimePickerDialog(
 					reminderDate = viewModel.note.reminderDate,
 					onReminderDateSet = { dateTime ->
 						viewModel.setReminder(dateTime)
-						openDateTimePicker = false
+						showDateTimePicker = false
 					},
 					onCancelReminder = {
 						viewModel.cancelReminder(context)
-						openDateTimePicker = false
+						showDateTimePicker = false
 					},
-					onDismiss = { openDateTimePicker = false }
+					onDismiss = { showDateTimePicker = false }
+				)
+			}
+			if (writeExternalStorageRationaleDialog) {
+				PermissionRationaleDialog(
+					icon = Icons.Outlined.Folder,
+					message = R.string.write_external_storage_permission_rationale,
+					permission = Manifest.permission.WRITE_EXTERNAL_STORAGE,
+					onPermissionGranted = ::takePicture,
+					onPermissionDenied = {
+						scope.launch { snackbarHostState.showSnackbar(permissionDeniedMessage) }
+					},
+					onDismiss = { writeExternalStorageRationaleDialog = false },
+				)
+			}
+			if (postNotificationRationaleDialog) {
+				PermissionRationaleDialog(
+					icon = Icons.Outlined.Notifications,
+					message = R.string.post_notifications_permission_rationale,
+					permission = Manifest.permission.POST_NOTIFICATIONS,
+					onPermissionGranted = { showDateTimePicker = true },
+					onPermissionDenied = {
+						scope.launch { snackbarHostState.showSnackbar(permissionDeniedMessage) }
+					},
+					onDismiss = { postNotificationRationaleDialog = false },
 				)
 			}
 		}
