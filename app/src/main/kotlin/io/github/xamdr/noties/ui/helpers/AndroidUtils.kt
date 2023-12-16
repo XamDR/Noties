@@ -9,9 +9,11 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.Window
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.annotation.TransitionRes
@@ -27,6 +29,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
+import com.google.android.material.color.MaterialColors
+import io.github.xamdr.noties.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -39,9 +43,6 @@ fun Fragment.inflateTransition(@TransitionRes resId: Int): Transition =
 	TransitionInflater.from(this.requireContext()).inflateTransition(resId)
 
 fun Context.showToast(@StringRes text: Int, duration: Int = Toast.LENGTH_SHORT): Toast =
-	Toast.makeText(this.applicationContext, text, duration).also { it.show() }
-
-fun Context.showToast(text: String, duration: Int = Toast.LENGTH_SHORT): Toast =
 	Toast.makeText(this.applicationContext, text, duration).also { it.show() }
 
 @Suppress("DEPRECATION")
@@ -145,3 +146,13 @@ fun Context.copyUriToClipboard(@StringRes label: Int, uri: Uri, @StringRes copie
 
 val DocumentFile.simpleName: String?
 	get() = this.name?.substringBeforeLast('.')
+
+fun Window.setStatusBarColor(@ColorInt color: Int?) {
+	if (color == null) {
+		val defaultColor = MaterialColors.getColor(this.context, R.attr.colorSurface, String.Empty)
+		this.statusBarColor = defaultColor
+	}
+	else {
+		this.statusBarColor = color
+	}
+}

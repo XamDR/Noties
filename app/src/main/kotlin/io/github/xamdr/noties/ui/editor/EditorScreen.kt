@@ -1,6 +1,9 @@
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+
 package io.github.xamdr.noties.ui.editor
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -9,7 +12,6 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,7 +38,10 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.toColor
+import androidx.compose.material3.tokens.TopAppBarSmallTokens
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -48,7 +53,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.integerArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -75,7 +82,7 @@ import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
 import java.time.Instant
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@SuppressLint("InlinedApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorScreen(
@@ -85,6 +92,7 @@ fun EditorScreen(
 	onNavigationIconClick: () -> Unit,
 	onNavigatoToTags: (tags: List<String>) -> Unit,
 	onNoteAction: (NoteAction) -> Unit,
+	onEditorColorChanged: (Color?) -> Unit,
 	viewModel: EditorViewModel = hiltViewModel()
 ) {
 	val context = LocalContext.current
@@ -102,6 +110,8 @@ fun EditorScreen(
 	var postNotificationRationaleDialog by rememberSaveable { mutableStateOf(value = false) }
 	val permissionDeniedMessage = stringResource(id = R.string.permission_denied)
 	var cameraUri by rememberSaveable { mutableStateOf<Uri?>(value = null) }
+	var openColorSheet by rememberSaveable { mutableStateOf(value = false) }
+	var containerColor by rememberSaveable { mutableStateOf<Color?>(value = null) }
 
 	fun openFile(uri: Uri?) {
 		scope.launch {
@@ -176,8 +186,12 @@ fun EditorScreen(
 	}
 
 	Scaffold(
+		containerColor = containerColor ?: MaterialTheme.colorScheme.background,
 		topBar = {
 			TopAppBar(
+				colors = TopAppBarDefaults.topAppBarColors(
+					containerColor = containerColor ?: TopAppBarSmallTokens.ContainerColor.toColor()
+				),
 				title = {
 					Text(
 						text = viewModel.note.title.ifEmpty { stringResource(id = R.string.editor) },
@@ -245,112 +259,125 @@ fun EditorScreen(
 				}
 			)
 		},
-		snackbarHost = { SnackbarHost(snackbarHostState) },
-		content = { innerPadding ->
-			Column(
+		snackbarHost = { SnackbarHost(snackbarHostState) }
+	) { innerPadding ->
+		Column(
+			modifier = Modifier
+				.padding(innerPadding)
+				.fillMaxSize()
+		) {
+			AnimatedVisibility(visible = titleInEditMode) {
+				TextBox(
+					placeholder = stringResource(id = R.string.editor),
+					value = viewModel.note.title,
+					onValueChange = viewModel::updateNoteTitle,
+					modifier = Modifier.fillMaxWidth()
+				)
+			}
+			Editor(
 				modifier = Modifier
-					.padding(innerPadding)
-					.fillMaxSize()
-			) {
-				AnimatedVisibility(visible = titleInEditMode) {
-					TextBox(
-						placeholder = stringResource(id = R.string.editor),
-						value = viewModel.note.title,
-						onValueChange = viewModel::updateNoteTitle,
-						modifier = Modifier.fillMaxWidth()
+					.weight(1f)
+					.fillMaxWidth(),
+				note = viewModel.note,
+				items = viewModel.items,
+				tasks = viewModel.tasks,
+				onNoteContentChange = viewModel::updateNoteContent,
+				onItemCopied = viewModel::onItemCopied,
+				onItemClick = { position ->
+					navigateToMediaViewer(
+						context = context,
+						launcher = mediaViewerLauncher,
+						items = viewModel.items.filterIsInstance<GridItem.Media>().map { it.data },
+						position = position
 					)
-				}
-				Editor(
-					modifier = Modifier
-						.weight(1f)
-						.fillMaxWidth(),
-					note = viewModel.note,
-					items = viewModel.items,
-					tasks = viewModel.tasks,
-					onNoteContentChange = viewModel::updateNoteContent,
-					onItemCopied = viewModel::onItemCopied,
-					onItemClick = { position ->
-						navigateToMediaViewer(
-							context = context,
-							launcher = mediaViewerLauncher,
-							items = viewModel.items.filterIsInstance<GridItem.Media>().map { it.data },
-							position = position
-						)
-					},
-					onDateTagClick = { showDateTimePicker = true },
-					onTagClick = { onNavigatoToTags(viewModel.note.tags) },
-					onTaskContentChanged = viewModel::updateTaskContent,
-					onTaskDone = viewModel::setTaskStatus,
-					onDragDropTask = viewModel::dragDropTask,
-					onAddTask = viewModel::addTask,
-					onRemoveTask = viewModel::removeTask
-				)
-				if (viewModel.note.trashed.not()) {
-					EditorToolbar(
-						onAddAttachmentIconClick = { openMenu = true },
-						onPickColorIconClick = {},
-						dateModified = modificationDate
-					)
-				}
-			}
-			if (openMenu) {
-				EditorMenuBottomSheet(
-					items = if (viewModel.note.isTaskList) EDITOR_MENU_ITEMS_TASK_MODE else EDITOR_MENU_ITEMS_NORMAL,
-					sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-					onDismissRequest = { openMenu = false }
-				) { item ->
-					openMenu = false
-					when (item.id) {
-						R.id.gallery -> pickMediaLauncher.launch(
-							arrayOf(Constants.MIME_TYPE_IMAGE, Constants.MIME_TYPE_VIDEO)
-						)
-						R.id.camera -> writeExternalStorageAction()
-						R.id.tasks -> viewModel.enterTaskMode()
-						R.id.reminder -> postNotificationAction()
-						R.id.tags -> onNavigatoToTags(viewModel.note.tags)
-					}
-				}
-			}
-			if (showDateTimePicker) {
-				DateTimePickerDialog(
-					reminderDate = viewModel.note.reminderDate,
-					onReminderDateSet = { dateTime ->
-						viewModel.setReminder(dateTime)
-						showDateTimePicker = false
-					},
-					onCancelReminder = {
-						viewModel.cancelReminder(context)
-						showDateTimePicker = false
-					},
-					onDismiss = { showDateTimePicker = false }
-				)
-			}
-			if (writeExternalStorageRationaleDialog) {
-				PermissionRationaleDialog(
-					icon = Icons.Outlined.Folder,
-					message = R.string.write_external_storage_permission_rationale,
-					permission = Manifest.permission.WRITE_EXTERNAL_STORAGE,
-					onPermissionGranted = ::takePicture,
-					onPermissionDenied = {
-						scope.launch { snackbarHostState.showSnackbar(permissionDeniedMessage) }
-					},
-					onDismiss = { writeExternalStorageRationaleDialog = false },
-				)
-			}
-			if (postNotificationRationaleDialog) {
-				PermissionRationaleDialog(
-					icon = Icons.Outlined.Notifications,
-					message = R.string.post_notifications_permission_rationale,
-					permission = Manifest.permission.POST_NOTIFICATIONS,
-					onPermissionGranted = { showDateTimePicker = true },
-					onPermissionDenied = {
-						scope.launch { snackbarHostState.showSnackbar(permissionDeniedMessage) }
-					},
-					onDismiss = { postNotificationRationaleDialog = false },
+				},
+				onDateTagClick = { showDateTimePicker = true },
+				onTagClick = { onNavigatoToTags(viewModel.note.tags) },
+				onTaskContentChanged = viewModel::updateTaskContent,
+				onTaskDone = viewModel::setTaskStatus,
+				onDragDropTask = viewModel::dragDropTask,
+				onAddTask = viewModel::addTask,
+				onRemoveTask = viewModel::removeTask
+			)
+			if (viewModel.note.trashed.not()) {
+				EditorToolbar(
+					onAddAttachmentIconClick = { openMenu = true },
+					onPickColorIconClick = { openColorSheet = true },
+					dateModified = modificationDate
 				)
 			}
 		}
-	)
+		if (openMenu) {
+			EditorMenuBottomSheet(
+				items = if (viewModel.note.isTaskList) EDITOR_MENU_ITEMS_TASK_MODE else EDITOR_MENU_ITEMS_NORMAL,
+				sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+				onDismissRequest = { openMenu = false }
+			) { item ->
+				openMenu = false
+				when (item.id) {
+					R.id.gallery -> pickMediaLauncher.launch(
+						arrayOf(Constants.MIME_TYPE_IMAGE, Constants.MIME_TYPE_VIDEO)
+					)
+
+					R.id.camera -> writeExternalStorageAction()
+					R.id.tasks -> viewModel.enterTaskMode()
+					R.id.reminder -> postNotificationAction()
+					R.id.tags -> onNavigatoToTags(viewModel.note.tags)
+				}
+			}
+		}
+		if (showDateTimePicker) {
+			DateTimePickerDialog(
+				reminderDate = viewModel.note.reminderDate,
+				onReminderDateSet = { dateTime ->
+					viewModel.setReminder(dateTime)
+					showDateTimePicker = false
+				},
+				onCancelReminder = {
+					viewModel.cancelReminder(context)
+					showDateTimePicker = false
+				},
+				onDismiss = { showDateTimePicker = false }
+			)
+		}
+		if (writeExternalStorageRationaleDialog) {
+			PermissionRationaleDialog(
+				icon = Icons.Outlined.Folder,
+				message = R.string.write_external_storage_permission_rationale,
+				permission = Manifest.permission.WRITE_EXTERNAL_STORAGE,
+				onPermissionGranted = ::takePicture,
+				onPermissionDenied = {
+					scope.launch { snackbarHostState.showSnackbar(permissionDeniedMessage) }
+				},
+				onDismiss = { writeExternalStorageRationaleDialog = false },
+			)
+		}
+		if (postNotificationRationaleDialog) {
+			PermissionRationaleDialog(
+				icon = Icons.Outlined.Notifications,
+				message = R.string.post_notifications_permission_rationale,
+				permission = Manifest.permission.POST_NOTIFICATIONS,
+				onPermissionGranted = { showDateTimePicker = true },
+				onPermissionDenied = {
+					scope.launch { snackbarHostState.showSnackbar(permissionDeniedMessage) }
+				},
+				onDismiss = { postNotificationRationaleDialog = false },
+			)
+		}
+		if (openColorSheet) {
+			val colors = listOf<Color?>(null) + integerArrayResource(id = R.array.colors_editor).map { Color(it) }
+			EditorColorBottomSheet(
+				colors = colors,
+				editorColor = containerColor,
+				sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+				onColorSelected = { selectedColor ->
+					containerColor = selectedColor
+					onEditorColorChanged(selectedColor)
+				},
+				onDismiss = { openColorSheet = false }
+			)
+		}
+	}
 }
 
 private fun navigateToMediaViewer(

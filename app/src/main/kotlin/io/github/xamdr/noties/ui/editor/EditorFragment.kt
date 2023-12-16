@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
@@ -17,6 +18,7 @@ import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.getNavigationResult
 import io.github.xamdr.noties.ui.helpers.onBackPressed
 import io.github.xamdr.noties.ui.helpers.setNavigationResult
+import io.github.xamdr.noties.ui.helpers.setStatusBarColor
 import io.github.xamdr.noties.ui.helpers.tryNavigate
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
@@ -53,7 +55,10 @@ class EditorFragment : Fragment() {
 				selectedTags = allTags,
 				onNavigationIconClick = ::onBackPressed,
 				onNavigatoToTags = ::navigateToTags,
-				onNoteAction = ::onNoteAction
+				onNoteAction = ::onNoteAction,
+				onEditorColorChanged = { color ->
+					requireActivity().window.setStatusBarColor(color?.toArgb())
+				}
 			)
 		}
 	}
