@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.Composable
@@ -26,8 +27,8 @@ fun PreferenceList(
 	) {
 		items(
 			key = null,
-			count = items.size
-		) { index -> PreferenceItem(item = items[index]) }
+			items = items
+		) { item -> PreferenceItem(item = item) }
 	}
 }
 
@@ -73,7 +74,8 @@ private fun PreferenceItem(item: PreferenceItem) {
 			dialogTitle = item.dialogTitle,
 			icon = item.preference.icon,
 			key = item.preference.key,
-			entries = item.entries
+			entries = item.entries,
+			onItemSelected = ::setNightMode
 		)
 		is PreferenceItem.SimplePreference -> SimplePreference(
 			title = item.preference.title,

@@ -5,14 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
-import androidx.fragment.app.FragmentActivity
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.getParcelableArrayListCompat
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
-class MediaViewerActivity : FragmentActivity() {
+class MediaViewerActivity : AppCompatActivity() {
 
 	private val items by lazy(LazyThreadSafetyMode.NONE) {
 		intent.getParcelableArrayListCompat(Constants.BUNDLE_ITEMS, MediaItem::class.java)
@@ -21,7 +21,6 @@ class MediaViewerActivity : FragmentActivity() {
 		intent.getIntExtra(Constants.BUNDLE_POSITION, 0)
 	}
 	private val itemsToDelete = mutableListOf<MediaItem>()
-//	private val videoState = VideoState()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)

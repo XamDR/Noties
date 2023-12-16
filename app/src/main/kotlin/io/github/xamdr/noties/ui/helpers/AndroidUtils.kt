@@ -9,16 +9,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
-import android.widget.Button
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.*
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatDelegate
+import androidx.annotation.IdRes
+import androidx.annotation.StringRes
+import androidx.annotation.TransitionRes
 import androidx.core.content.getSystemService
 import androidx.documentfile.provider.DocumentFile
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
@@ -27,7 +25,6 @@ import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import kotlinx.coroutines.CoroutineScope
@@ -37,18 +34,6 @@ import timber.log.Timber
 
 fun FragmentActivity.findNavController(@IdRes id: Int) =
 	(this.supportFragmentManager.findFragmentById(id) as NavHostFragment).navController
-
-fun Context.setNightMode() {
-	val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-	when (preferences.getString("app_theme", "-1")?.toInt()) {
-		0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-		1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-		-1 -> AppCompatDelegate.setDefaultNightMode(
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-			else AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-		)
-	}
-}
 
 fun Fragment.inflateTransition(@TransitionRes resId: Int): Transition =
 	TransitionInflater.from(this.requireContext()).inflateTransition(resId)
@@ -103,14 +88,6 @@ fun FragmentActivity.launch(block: suspend CoroutineScope.() -> Unit): Job {
 	return this.lifecycleScope.launch(block = block)
 }
 
-fun Fragment.launch(block: suspend CoroutineScope.() -> Unit): Job {
-	return this.viewLifecycleOwner.lifecycleScope.launch(block = block)
-}
-
-fun DialogFragment.launch(block: suspend CoroutineScope.() -> Unit): Job {
-	return this.lifecycleScope.launch(block = block)
-}
-
 fun Fragment.onBackPressed(block: () -> Unit) {
 	this.requireActivity().onBackPressedDispatcher.addCallback(
 		this.viewLifecycleOwner,
@@ -140,10 +117,6 @@ fun NavController.tryNavigate(
 	catch (e: IllegalArgumentException) {
 		Timber.e(e)
 	}
-}
-
-fun DialogFragment.getPositiveButton(): Button {
-	return (requireDialog() as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
 }
 
 fun Context.isLandscape(): Boolean {

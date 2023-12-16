@@ -43,7 +43,8 @@ fun ListPreference(
 	dialogTitle: Int,
 	icon: ImageVector,
 	key: String,
-	entries: Map<Int, Int>
+	entries: Map<Int, Int>,
+	onItemSelected: (Int) -> Unit
 ) {
 	val context = LocalContext.current
 	val preferences = remember { PreferenceManager.getDefaultSharedPreferences(context) }
@@ -77,6 +78,7 @@ fun ListPreference(
 						selectedItem = item
 						openDialog = false
 						preferences.edit { putInt(key, items.indexOf(item)) }
+						onItemSelected(items.indexOf(item))
 					}
 				)
 			}

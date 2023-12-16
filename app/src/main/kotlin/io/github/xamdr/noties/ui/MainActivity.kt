@@ -2,9 +2,9 @@ package io.github.xamdr.noties.ui
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
@@ -13,15 +13,15 @@ import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.UriHelper
 import io.github.xamdr.noties.ui.helpers.findNavController
-import io.github.xamdr.noties.ui.helpers.setNightMode
 import io.github.xamdr.noties.ui.helpers.showToast
 import io.github.xamdr.noties.ui.helpers.tryNavigate
 import io.github.xamdr.noties.ui.settings.PreferenceStorage
+import io.github.xamdr.noties.ui.settings.setNightMode
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
 
 	@Inject lateinit var preferenceStorage: PreferenceStorage
 	private val binding by lazy(LazyThreadSafetyMode.NONE) { ActivityMainBinding.inflate(layoutInflater) }
@@ -30,7 +30,7 @@ class MainActivity : FragmentActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		installSplashScreen()
 		super.onCreate(savedInstanceState)
-		setNightMode()
+		setNightMode(preferenceStorage.appTheme)
 		setContentView(binding.root)
 		setupNavigation()
 		handleIntent()
