@@ -146,16 +146,16 @@ fun EditorScreen(
 
 	val writeExternalStorageAction = doActionOrRequestPermission(
 		permission = Manifest.permission.WRITE_EXTERNAL_STORAGE,
-		condition = { Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q },
 		action = ::takePicture,
-		requestPermission = { writeExternalStorageRationaleDialog = true }
+		requestPermission = { writeExternalStorageRationaleDialog = true },
+		condition = { Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q }
 	)
 
 	val postNotificationAction = doActionOrRequestPermission(
 		permission = Manifest.permission.POST_NOTIFICATIONS,
-		condition = { Build.VERSION.SDK_INT <= Build.VERSION_CODES.S },
 		action = { showDateTimePicker = true },
-		requestPermission = { postNotificationRationaleDialog = true }
+		requestPermission = { postNotificationRationaleDialog = true },
+		condition = { Build.VERSION.SDK_INT <= Build.VERSION_CODES.S },
 	)
 
 	LaunchedEffect(key1 = Unit) {

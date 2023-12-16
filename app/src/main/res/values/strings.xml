@@ -139,7 +139,7 @@
 	<string name="text_editor_menu_fragment_label">Text editor menu attachments</string>
 	<string name="gallery">Gallery</string>
 	<string name="camera">Camera</string>
-	<string name="write_external_storage_permission_rationale">Noties needs permission to access your gallery in order to save the picture or video taken by the camera.</string>
+	<string name="write_external_storage_permission_rationale">To keep your captured memories safe and accessible, Noties needs permission to access your gallery. This will allow Noties to save the picture or video you take with the camera, so you can view, edit, or share it later.</string>
 	<string name="take_picture">Take picture</string>
 	<string name="take_video">Record video</string>
 	<string name="audio">Audio</string>
@@ -152,7 +152,7 @@
 	<string name="error_take_video">No video was recorded.</string>
 	<string name="permission_denied">Permission denied.</string>
 	<string name="image_attachment">Image attached to the note.</string>
-	<string name="post_notifications_permission_rationale">Noties needs permission to post notifications for the reminders.</string>
+	<string name="post_notifications_permission_rationale">To ensure you never miss an important task, Noties needs permission to send notifications to your device. This way, you will receive alerts for all your reminders, keeping you organized.</string>
 
 	<!-- MediaViewer Fragment -->
 	<string name="share_item">Share</string>
@@ -232,6 +232,7 @@
 	<string name="error_record_speech">Error recording speech</string>
 	<string name="recording_finished">Recording finished</string>
 	<string name="developer_name">Max Díaz (xamdrsolutions@gmail.com)</string>
+	<string name="close_dialog">Close dialog</string>
 
 	<!-- Plurals -->
 	<plurals name="note_count">
