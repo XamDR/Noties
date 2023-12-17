@@ -70,10 +70,10 @@ class EditorFragment : Fragment() {
 
 	private fun navigateToTags(tags: List<String>) {
 		exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
-			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
+			duration = 300
 		}
 		reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
-			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
+			duration = 300
 		}
 		val args = bundleOf(Constants.BUNDLE_TAGS to ArrayList(tags))
 		findNavController().tryNavigate(R.id.action_editor_to_tags, args)

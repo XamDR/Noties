@@ -145,10 +145,10 @@ class NotesFragment : Fragment() {
 
 	private fun navigateToEditor(note: Note = Note(), tagName: String = String.Empty) {
 		exitTransition = MaterialElevationScale(false).apply {
-			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
+			duration = 300
 		}
 		reenterTransition = MaterialElevationScale(true).apply {
-			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
+			duration = 300
 		}
 		val args = bundleOf(
 			Constants.BUNDLE_NOTE_ID to note.id,

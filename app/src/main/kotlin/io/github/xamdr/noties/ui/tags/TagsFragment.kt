@@ -26,10 +26,10 @@ class TagsFragment : Fragment() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
-			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
+			duration = 300
 		}
 		returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
-			duration = resources.getInteger(R.integer.motion_duration_large).toLong()
+			duration = 300
 		}
 	}
 
