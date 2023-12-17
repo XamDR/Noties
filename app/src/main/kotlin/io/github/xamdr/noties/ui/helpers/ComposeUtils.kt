@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -107,6 +108,23 @@ fun <T: Any> rememberMutableStateList(vararg elements: T): SnapshotStateList<T> 
 	)) {
 		elements.toList().toMutableStateList()
 	}
+}
+
+val ColorSaver = run {
+	val redKey = "Red"
+	val greenKey = "Green"
+	val blueKey = "Blue"
+
+	mapSaver<Color?>(
+		save = { mapOf(redKey to it?.red, greenKey to it?.green, blueKey to it?.blue) },
+		restore = {
+			Color(
+				red = it[redKey] as Int,
+				green = it[greenKey] as Int,
+				blue = it[blueKey] as Int
+			)
+		}
+	)
 }
 
 @Composable

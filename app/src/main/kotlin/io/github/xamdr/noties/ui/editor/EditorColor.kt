@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.github.xamdr.noties.ui.components.CircularShapedBox
+import io.github.xamdr.noties.ui.helpers.ColorSaver
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
@@ -37,7 +38,7 @@ fun EditorColorBottomSheet(
 	onColorSelected: (Color?) -> Unit,
 	onDismiss: () -> Unit
 ) {
-	var selectedColor by rememberSaveable { mutableStateOf(value = editorColor) }
+	var selectedColor by rememberSaveable(stateSaver = ColorSaver) { mutableStateOf(value = editorColor) }
 
 	fun selectColor(color: Color?) {
 		selectedColor = color

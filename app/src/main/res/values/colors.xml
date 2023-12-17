@@ -1,48 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<!-- Icon color -->
 	<color name="md_theme_light_primary">#005AC3</color>
-	<color name="md_theme_light_onPrimary">#FFFFFF</color>
-	<color name="md_theme_light_primaryContainer">#D6E2FF</color>
-	<color name="md_theme_light_onPrimaryContainer">#001A43</color>
-	<color name="md_theme_light_secondary">#565E71</color>
-	<color name="md_theme_light_onSecondary">#FFFFFF</color>
-	<color name="md_theme_light_secondaryContainer">#DAE2F9</color>
-	<color name="md_theme_light_onSecondaryContainer">#131B2C</color>
-	<color name="md_theme_light_error">#BA1B1B</color>
-	<color name="md_theme_light_errorContainer">#FFDAD4</color>
-	<color name="md_theme_light_onError">#FFFFFF</color>
-	<color name="md_theme_light_onErrorContainer">#410001</color>
-	<color name="md_theme_light_background">#FDFBFF</color>
-	<color name="md_theme_light_onBackground">#1B1B1D</color>
-	<color name="md_theme_light_surface">#FDFBFF</color>
-	<color name="md_theme_light_onSurface">#1B1B1D</color>
-	<color name="md_theme_light_surfaceVariant">#FFFFFF</color>
-	<color name="md_theme_light_onSurfaceVariant">#44474F</color>
-	<color name="md_theme_light_outline">#74777F</color>
-	<color name="md_theme_light_inverseOnSurface">#F2F0F4</color>
-	<color name="md_theme_light_inverseSurface">#2F3033</color>
-	<color name="md_theme_light_primaryInverse">#58A6FF</color>
 
-	<color name="md_theme_dark_primary">#58A6FF</color>
-	<color name="md_theme_dark_onPrimary">#002E6B</color>
-	<color name="md_theme_dark_primaryContainer">#004395</color>
-	<color name="md_theme_dark_onPrimaryContainer">#D6E2FF</color>
-	<color name="md_theme_dark_secondary">#BEC6DC</color>
-	<color name="md_theme_dark_onSecondary">#283041</color>
-	<color name="md_theme_dark_secondaryContainer">#3F4759</color>
-	<color name="md_theme_dark_onSecondaryContainer">#DAE2F9</color>
-	<color name="md_theme_dark_error">#FFB4A9</color>
-	<color name="md_theme_dark_errorContainer">#930006</color>
-	<color name="md_theme_dark_onError">#680003</color>
-	<color name="md_theme_dark_onErrorContainer">#FFDAD4</color>
-	<color name="md_theme_dark_background">#1B1B1D</color>
-	<color name="md_theme_dark_onBackground">#E4E2E6</color>
-	<color name="md_theme_dark_surface">#1B1B1D</color>
-	<color name="md_theme_dark_onSurface">#E4E2E6</color>
-	<color name="md_theme_dark_surfaceVariant">#31343E</color>
-	<color name="md_theme_dark_onSurfaceVariant">#C4C6D0</color>
-	<color name="md_theme_dark_outline">#8E9099</color>
-	<color name="md_theme_dark_inverseOnSurface">#1B1B1D</color>
-	<color name="md_theme_dark_inverseSurface">#E4E2E6</color>
-	<color name="md_theme_dark_primaryInverse">#005AC3</color>
+	<!-- App colors -->
+	<color name="blue_600">#FF1E88E5</color>
+	<color name="red_600">#FFE53935</color>
+	<color name="pink_600">#FFD81B60</color>
+	<color name="purple_600">#FF8E24AA</color>
+	<color name="teal_600">#FF00897B</color>
+	<color name="green_600">#FF43A047</color>
+	<color name="yellow_200">#FFFFFF00</color>
+	<color name="brown_600">#FF6D4C41</color>
+	<color name="gray_700">#FF616161</color>
+
+	<!-- Editor background color light -->
+	<color name="blue_600_alpha_80">#CC1E88E5</color>
+	<color name="red_600_alpha_80">#CCE53935</color>
+	<color name="pink_600_alpha_60">#99D81B60</color>
+	<color name="purple_600_alpha_60">#998E24AA</color>
+	<color name="cyan_600_alpha_80">#CC00acc1</color>
+	<color name="teal_600_alpha_80">#CC00897B</color>
+	<color name="green_600_alpha_80">#CC43A047</color>
+	<color name="yellow_200_alpha_80">#CCFFFF00</color>
+	<color name="brown_600_alpha_60">#996D4C41</color>
+	<color name="gray_700_alpha_60">#99616161</color>
+
+	<!-- Editor background color dark -->
+	<color name="blue_600_alpha_60">#991E88E5</color>
+	<color name="red_600_alpha_60">#99E53935</color>
+	<color name="pink_600_alpha_80">#CCD81B60</color>
+	<color name="purple_600_alpha_80">#CC8E24AA</color>
+	<color name="cyan_600_alpha_55">#8C00acc1</color>
+	<color name="teal_600_alpha_60">#9900897B</color>
+	<color name="green_600_alpha_60">#9943A047</color>
+	<color name="orange_700_alpha_55">#8CF57C00</color>
+	<color name="brown_600_alpha_80">#CC6D4C41</color>
+	<color name="gray_700_alpha_80">#CC616161</color>
 </resources>

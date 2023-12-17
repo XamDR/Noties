@@ -65,6 +65,7 @@ import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.ui.components.OverflowMenu
 import io.github.xamdr.noties.ui.components.TextBox
+import io.github.xamdr.noties.ui.helpers.ColorSaver
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
@@ -111,7 +112,7 @@ fun EditorScreen(
 	val permissionDeniedMessage = stringResource(id = R.string.permission_denied)
 	var cameraUri by rememberSaveable { mutableStateOf<Uri?>(value = null) }
 	var openColorSheet by rememberSaveable { mutableStateOf(value = false) }
-	var containerColor by rememberSaveable { mutableStateOf<Color?>(value = null) }
+	var containerColor by rememberSaveable(stateSaver = ColorSaver) { mutableStateOf(value = null) }
 
 	fun openFile(uri: Uri?) {
 		scope.launch {
