@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
 		installSplashScreen()
 		super.onCreate(savedInstanceState)
 		setNightMode(preferenceStorage.appTheme)
+		WindowCompat.setDecorFitsSystemWindows(window, false)
 		setContentView(binding.root)
 		setupNavigation()
 		handleIntent()

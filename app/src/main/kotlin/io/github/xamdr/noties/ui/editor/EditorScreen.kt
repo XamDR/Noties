@@ -170,7 +170,11 @@ fun EditorScreen(
 	)
 
 	LaunchedEffect(key1 = Unit) {
-		launch { viewModel.getNote(noteId, text, selectedTags) }
+		launch {
+			viewModel.getNote(noteId, text, selectedTags)
+			containerColor = viewModel.note.color?.let { Color(it) }
+			onEditorColorChanged(containerColor)
+		}
 	}
 
 	BackHandler {
@@ -319,7 +323,6 @@ fun EditorScreen(
 					R.id.gallery -> pickMediaLauncher.launch(
 						arrayOf(Constants.MIME_TYPE_IMAGE, Constants.MIME_TYPE_VIDEO)
 					)
-
 					R.id.camera -> writeExternalStorageAction()
 					R.id.tasks -> viewModel.enterTaskMode()
 					R.id.reminder -> postNotificationAction()
@@ -373,6 +376,7 @@ fun EditorScreen(
 				sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
 				onColorSelected = { selectedColor ->
 					containerColor = selectedColor
+					viewModel.updateNoteColor(selectedColor)
 					onEditorColorChanged(selectedColor)
 				},
 				onDismiss = { openColorSheet = false }

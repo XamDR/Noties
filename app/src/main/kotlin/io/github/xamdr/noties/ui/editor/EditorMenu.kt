@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,15 +31,7 @@ fun EditorMenuBottomSheet(
 ) {
 	ModalBottomSheet(
 		onDismissRequest = onDismissRequest,
-		sheetState = sheetState,
-		dragHandle = {
-			Divider(
-				modifier = Modifier
-					.fillMaxWidth(0.2f)
-					.padding(8.dp),
-				thickness = 4.dp
-			)
-		}
+		sheetState = sheetState
 	) {
 		Column {
 			items.forEach { item ->
@@ -61,15 +52,7 @@ private fun EditorMenuBottomSheet() {
 		sheetState = SheetState(
 			skipPartiallyExpanded = true,
 			initialValue = SheetValue.Expanded
-		),
-		dragHandle = {
-			Divider(
-				modifier = Modifier
-					.fillMaxWidth(0.2f)
-					.padding(8.dp),
-				thickness = 4.dp
-			)
-		}
+		)
 	) {
 		Column {
 			EDITOR_MENU_ITEMS_NORMAL.forEach { item ->

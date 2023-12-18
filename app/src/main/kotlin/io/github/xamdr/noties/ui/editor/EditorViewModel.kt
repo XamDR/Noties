@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -161,6 +163,11 @@ class EditorViewModel @Inject constructor(
 
 	fun restoreNote() {
 		note = note.copy(trashed = false)
+	}
+
+	fun updateNoteColor(color: Color?) {
+		val newColor = color?.toArgb()
+		note = note.copy(color = newColor)
 	}
 
 	private suspend fun getNoteById(noteId: Long): Note = getNoteByIdUseCase(noteId)

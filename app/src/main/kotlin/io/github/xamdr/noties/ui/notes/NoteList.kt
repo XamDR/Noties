@@ -272,7 +272,9 @@ private fun NoteItem(
 ) {
 	OutlinedCard(
 		shape = RoundedCornerShape(16.dp),
-		colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+		colors = CardDefaults.cardColors(
+			containerColor = if (note.color == null) Color.Transparent else Color(note.color)
+		),
 		elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
 		border = BorderStroke(
 			width = 1.5.dp,

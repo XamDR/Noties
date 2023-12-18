@@ -118,11 +118,14 @@ val ColorSaver = run {
 	mapSaver<Color?>(
 		save = { mapOf(redKey to it?.red, greenKey to it?.green, blueKey to it?.blue) },
 		restore = {
-			Color(
-				red = it[redKey] as Int,
-				green = it[greenKey] as Int,
-				blue = it[blueKey] as Int
-			)
+			if (it[redKey] != null && it[greenKey] != null && it[blueKey] != null) {
+				Color(
+					red = it[redKey] as Float,
+					green = it[greenKey] as Float,
+					blue = it[blueKey] as Float
+				)
+			}
+			else null
 		}
 	)
 }
