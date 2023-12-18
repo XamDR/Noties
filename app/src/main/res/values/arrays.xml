@@ -13,35 +13,4 @@
 		<item>@string/one_hour</item>
 		<item>@string/select_time</item>
 	</array>
-
-	<!-- Text Editor Style -->
-<!--	<string-array name="editor_style_values">-->
-<!--		<item>blank</item>-->
-<!--		<item>striped</item>-->
-<!--	</string-array>-->
-
-	<integer-array name="app_colors">
-		<item>@color/blue_600</item>
-		<item>@color/red_600</item>
-		<item>@color/pink_600</item>
-		<item>@color/purple_600</item>
-		<item>@color/teal_600</item>
-		<item>@color/green_600</item>
-		<item>@color/yellow_200</item>
-		<item>@color/brown_600</item>
-		<item>@color/gray_700</item>
-	</integer-array>
-
-	<integer-array name="colors_editor">
-		<item>@color/blue_600_alpha_80</item>
-		<item>@color/red_600_alpha_80</item>
-		<item>@color/pink_600_alpha_60</item>
-		<item>@color/purple_600_alpha_60</item>
-		<item>@color/cyan_600_alpha_80</item>
-		<item>@color/teal_600_alpha_60</item>
-		<item>@color/green_600_alpha_80</item>
-		<item>@color/yellow_200_alpha_80</item>
-		<item>@color/brown_600_alpha_60</item>
-		<item>@color/gray_700_alpha_60</item>
-	</integer-array>
 </resources>

@@ -68,14 +68,11 @@ val DEFAULT_SETTINGS = listOf(
 		dialogTitle = R.string.app_color_dialog_title,
 		entries = listOf(
 			R.color.blue_600,
-			R.color.red_600,
 			R.color.pink_600,
 			R.color.purple_600,
 			R.color.teal_600,
-			R.color.green_600,
-			R.color.yellow_200,
-			R.color.brown_600,
-			R.color.gray_700
+			R.color.orange_600,
+			R.color.black
 		)
 	),
 	PreferenceItem.Category(category = PreferenceCategory(title = R.string.editor_header)),

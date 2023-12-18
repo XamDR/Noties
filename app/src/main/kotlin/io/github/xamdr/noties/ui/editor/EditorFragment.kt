@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
@@ -18,7 +19,6 @@ import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.getNavigationResult
 import io.github.xamdr.noties.ui.helpers.onBackPressed
 import io.github.xamdr.noties.ui.helpers.setNavigationResult
-import io.github.xamdr.noties.ui.helpers.setStatusBarColor
 import io.github.xamdr.noties.ui.helpers.tryNavigate
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
@@ -49,6 +49,7 @@ class EditorFragment : Fragment() {
 		NotiesTheme {
 			val selectedTags = getNavigationResult<List<String>>(Constants.BUNDLE_SELECTED_TAGS)
 			val allTags = if (tagName.isEmpty()) selectedTags else listOf(tagName) + selectedTags.orEmpty()
+			val defaultColor = MaterialTheme.colorScheme.surface
 			EditorScreen(
 				noteId = noteId,
 				text = text,
@@ -57,7 +58,7 @@ class EditorFragment : Fragment() {
 				onNavigatoToTags = ::navigateToTags,
 				onNoteAction = ::onNoteAction,
 				onEditorColorChanged = { color ->
-					requireActivity().window.setStatusBarColor(color?.toArgb())
+					requireActivity().window.statusBarColor = color?.toArgb() ?: defaultColor.toArgb()
 				}
 			)
 		}

@@ -125,7 +125,6 @@ fun ColorPreference(
 	val preferences = remember { PreferenceManager.getDefaultSharedPreferences(context) }
 	var selectedEntry by remember { mutableIntStateOf(preferences.getInt(key, entries[0])) }
 	var openDialog by rememberSaveable { mutableStateOf(false) }
-	val maxItemsInEachRow = entries.size.sqrt()
 
 	ListItem(
 		headlineContent = { Text(text = stringResource(id = title)) },
@@ -147,7 +146,8 @@ fun ColorPreference(
 				FlowRow(
 					modifier = Modifier.fillMaxWidth(),
 					horizontalArrangement = Arrangement.SpaceEvenly,
-					maxItemsInEachRow = maxItemsInEachRow
+					verticalArrangement = Arrangement.spacedBy(16.dp),
+					maxItemsInEachRow = entries.size / 2
 				) {
 					entries.forEach { entry ->
 						CircularShapedBox(
@@ -194,14 +194,11 @@ private fun ColorPreferencePreview() = NotiesTheme { ColorPreference() }
 private fun ColorPreferenceDialog() {
 	val entries = listOf(
 		R.color.blue_600,
-		R.color.red_600,
 		R.color.pink_600,
 		R.color.purple_600,
 		R.color.teal_600,
-		R.color.green_600,
-		R.color.yellow_200,
-		R.color.brown_600,
-		R.color.gray_700
+		R.color.orange_600,
+		R.color.black
 	)
 	AlertDialog(
 		onDismissRequest = {},
@@ -216,6 +213,7 @@ private fun ColorPreferenceDialog() {
 			FlowRow(
 				modifier = Modifier.fillMaxWidth(),
 				horizontalArrangement = Arrangement.SpaceEvenly,
+				verticalArrangement = Arrangement.spacedBy(16.dp),
 				maxItemsInEachRow = 3
 			) {
 				entries.forEach { entry ->

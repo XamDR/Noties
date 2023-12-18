@@ -29,6 +29,34 @@ import io.github.xamdr.noties.ui.helpers.ColorSaver
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
+val editorLightColors = listOf(
+	null,
+	Color(0xCC1E88E5),
+	Color(0xCCE53935),
+	Color(0x99D81B60),
+	Color(0x998E24AA),
+	Color(0xCC00acc1),
+	Color(0xCC00897B),
+	Color(0xCC43A047),
+	Color(0xCCFFFF00),
+	Color(0x996D4C41),
+	Color(0x99616161),
+)
+
+val editorDarkColors = listOf(
+	null,
+	Color(0x991E88E5),
+	Color(0x99E53935),
+	Color(0xCCD81B60),
+	Color(0xCC8E24AA),
+	Color(0x8C00acc1),
+	Color(0x9900897B),
+	Color(0x9943A047),
+	Color(0x8CF57C00),
+	Color(0xCC6D4C41),
+	Color(0xCC616161),
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorColorBottomSheet(
@@ -60,7 +88,7 @@ fun EditorColorBottomSheet(
 		) {
 			colors.forEach { color ->
 				CircularShapedBox(
-					color = color ?: MaterialTheme.colorScheme.surfaceVariant,
+					color = color ?: MaterialTheme.colorScheme.surface,
 					size = 48.dp,
 					modifier = Modifier.padding(all = 8.dp),
 					onClick = { selectColor(color) }
