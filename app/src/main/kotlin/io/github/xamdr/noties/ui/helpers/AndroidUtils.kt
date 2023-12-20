@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
@@ -142,3 +143,8 @@ fun Context.copyUriToClipboard(@StringRes label: Int, uri: Uri, @StringRes copie
 
 val DocumentFile.simpleName: String?
 	get() = this.name?.substringBeforeLast('.')
+
+fun extractUrls(input: String): List<String> = Regex(Patterns.WEB_URL.pattern())
+	.findAll(input)
+	.map { it.value }
+	.toList()

@@ -23,6 +23,7 @@ import io.github.xamdr.noties.domain.usecase.GetNoteByIdUseCase
 import io.github.xamdr.noties.domain.usecase.InsertNoteUseCase
 import io.github.xamdr.noties.domain.usecase.UpdateNoteUseCase
 import io.github.xamdr.noties.ui.helpers.UriHelper
+import io.github.xamdr.noties.ui.helpers.extractUrls
 import io.github.xamdr.noties.ui.helpers.simpleName
 import io.github.xamdr.noties.ui.reminders.AlarmManagerHelper
 import timber.log.Timber
@@ -107,7 +108,8 @@ class EditorViewModel @Inject constructor(
 	}
 
 	suspend fun saveNote(note: Note, noteId: Long): NoteAction {
-		val finalNote = if (note.isTaskList) note.copy(text = tasks.convertToString()) else note
+		val urls = extractUrls(note.text)
+		val finalNote = if (note.isTaskList) note.copy(text = tasks.convertToString(), urls = urls) else note.copy(urls = urls)
 		Timber.d("Saved Note: $finalNote")
 		return if (finalNote.id == 0L) insertNote(finalNote) else updateNote(finalNote, noteId)
 	}
