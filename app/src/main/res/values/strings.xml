@@ -134,6 +134,7 @@
 	<string name="note_unpinned">Note will be unpinned</string>
 	<string name="loading_text">Loading text…</string>
 	<string name="restore_from_trash">Restore note</string>
+	<string name="urls">%d urls</string>
 
 	<!-- Add attachment Fragment -->
 	<string name="text_editor_menu_fragment_label">Text editor menu attachments</string>

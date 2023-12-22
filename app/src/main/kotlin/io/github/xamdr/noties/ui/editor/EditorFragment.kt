@@ -64,7 +64,8 @@ class EditorFragment : Fragment() {
 		}
 	}
 
-	private fun onNoteAction(action: NoteAction) {
+	private fun onNoteAction(action: NoteAction, noteId: Long) {
+		setNavigationResult(Constants.BUNDLE_NOTE_ID, noteId)
 		setNavigationResult(Constants.BUNDLE_ACTION, action)
 		findNavController().popBackStack()
 	}

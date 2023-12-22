@@ -109,7 +109,12 @@ class EditorViewModel @Inject constructor(
 
 	suspend fun saveNote(note: Note, noteId: Long): NoteAction {
 		val urls = extractUrls(note.text)
-		val finalNote = if (note.isTaskList) note.copy(text = tasks.convertToString(), urls = urls) else note.copy(urls = urls)
+		val finalNote = if (note.isTaskList) {
+			note.copy(text = tasks.convertToString(), urls = urls)
+		}
+		else {
+			note.copy(urls = urls)
+		}
 		Timber.d("Saved Note: $finalNote")
 		return if (finalNote.id == 0L) insertNote(finalNote) else updateNote(finalNote, noteId)
 	}
@@ -172,25 +177,26 @@ class EditorViewModel @Inject constructor(
 		note = note.copy(color = newColor)
 	}
 
-	private suspend fun getNoteById(noteId: Long): Note = getNoteByIdUseCase(noteId)
+	private suspend fun getNoteById(noteId: Long) = getNoteByIdUseCase(noteId)
 
-	private suspend fun insertNote(note: Note): NoteAction {
-		return if (!note.isEmpty()) {
-			insertNoteUseCase(note)
+	private suspend fun insertNote(newNote: Note): NoteAction {
+		return if (!newNote.isEmpty()) {
+			val id = insertNoteUseCase(newNote)
+			note = note.copy(id = id)
 			NoteAction.InsertNote
 		}
 		else NoteAction.NoAction
 	}
 
-	private suspend fun updateNote(note: Note, noteId: Long): NoteAction {
+	private suspend fun updateNote(updatedNote: Note, noteId: Long): NoteAction {
 		val originalNote = getNoteById(noteId)
-		return if (note != originalNote) {
-			if (note.isEmpty()) {
-				deleteNotesUseCase(listOf(note.id))
+		return if (updatedNote != originalNote) {
+			if (updatedNote.isEmpty()) {
+				deleteNotesUseCase(listOf(updatedNote.id))
 				NoteAction.DeleteEmptyNote
 			}
 			else {
-				updateNoteUseCase(note)
+				updateNoteUseCase(updatedNote)
 				NoteAction.UpdateNote
 			}
 		}

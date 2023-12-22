@@ -115,6 +115,9 @@ dependencies {
 	implementation libs.coil.compose
 	implementation libs.androidx.ui.util
 
+	// Jsoup
+	implementation libs.jsoup
+
 	// Testing
 	testImplementation libs.junit4
 	androidTestImplementation libs.androidx.core.testing

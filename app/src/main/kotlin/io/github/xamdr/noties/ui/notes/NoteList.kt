@@ -89,7 +89,8 @@ fun NoteList(
 	onNoteClick: (Note) -> Unit,
 	onMoveNoteToTrash: (Note) -> Unit,
 	onArchiveNote: (Note) -> Unit,
-	onUnarchiveNote: (Note) -> Unit
+	onUnarchiveNote: (Note) -> Unit,
+	onUrlsTagClick: (List<String>) -> Unit
 ) {
 	fun onClick(note: Note, selected: Boolean) {
 		if (inSelectionMode) {
@@ -142,7 +143,8 @@ fun NoteList(
 					note = note,
 					selected = selected,
 					onClick = { onClick(it, selected) },
-					onLongClick = { selectedIds.add(note.id) }
+					onLongClick = { selectedIds.add(note.id) },
+					onUrlsTagClick = onUrlsTagClick
 				)
 			}
 			else {
@@ -154,7 +156,8 @@ fun NoteList(
 							note = note,
 							selected = selected,
 							onClick = { note -> onClick(note, selected) },
-							onLongClick = { selectedIds.add(note.id) }
+							onLongClick = { selectedIds.add(note.id) },
+							onUrlsTagClick = onUrlsTagClick
 						)
 					},
 					modifier = Modifier.animateItemPlacement()
@@ -267,8 +270,9 @@ private fun NoteListPreview() = NotiesTheme { NoteList(Modifier) }
 private fun NoteItem(
 	note: Note,
 	selected: Boolean,
-	onClick: (note: Note) -> Unit,
-	onLongClick: () -> Unit
+	onClick: (Note) -> Unit,
+	onLongClick: () -> Unit,
+	onUrlsTagClick: (List<String>) -> Unit
 ) {
 	OutlinedCard(
 		shape = RoundedCornerShape(16.dp),
@@ -368,10 +372,14 @@ private fun NoteItem(
 					)
 				}
 			}
-			if (note.tags.isNotEmpty() || note.reminderDate != null) {
-				val allTags = if (note.reminderDate == null) note.tags
-					else listOf(DateTimeHelper.formatDateTime(note.reminderDate)) + note.tags
-				TagList(tags = allTags)
+			if (note.tags.isNotEmpty() || note.reminderDate != null || note.urls.isNotEmpty()) {
+				val urlsTag = stringResource(id = R.string.urls, note.urls.size)
+				val allTags = if (note.reminderDate == null) listOf(urlsTag) + note.tags
+					else listOf(DateTimeHelper.formatDateTime(note.reminderDate)) + listOf(urlsTag) + note.tags
+				TagList(
+					tags = allTags,
+					onUrlsTagClick = { onUrlsTagClick(note.urls) }
+				)
 			}
 		}
 	}
@@ -437,14 +445,17 @@ private fun NoteItem() {
 				overflow = TextOverflow.Ellipsis,
 				modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 16.dp)
 			)
-			TagList(tags = listOf("Android", "Work", "Personal"))
+			TagList(tags = listOf("Android", "Work", "Personal"), onUrlsTagClick = {})
 		}
 	}
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun TagList(tags: List<String>) {
+private fun TagList(
+	tags: List<String>,
+	onUrlsTagClick: () -> Unit
+) {
 	FlowRow(
 		modifier = Modifier
 			.fillMaxWidth()
@@ -473,7 +484,7 @@ private fun TagList(tags: List<String>) {
 			}
 			else {
 				SuggestionChip(
-					onClick = {},
+					onClick = onUrlsTagClick,
 					label = { Text(text = tag) },
 					modifier = Modifier.padding(horizontal = 4.dp)
 				)

@@ -59,6 +59,7 @@ class NotesFragment : Fragment() {
 			val scope = rememberCoroutineScope()
 			val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 			var openTagDialog by rememberSaveable { mutableStateOf(value = false) }
+			val noteId = getNavigationResult<Long>(Constants.BUNDLE_NOTE_ID) ?: 0L
 			val noteAction = getNavigationResult<NoteAction>(Constants.BUNDLE_ACTION) ?: NoteAction.NoAction
 			var screen by rememberSaveable { mutableStateOf(value = Screen()) }
 			var openDeleteTagDialog by rememberSaveable { mutableStateOf(value = false) }
@@ -101,6 +102,7 @@ class NotesFragment : Fragment() {
 				content = {
 					NotesScreen(
 						screen = screen,
+						noteId = noteId,
 						query = "",
 						onQueryChange = {},
 						onSearch = {},

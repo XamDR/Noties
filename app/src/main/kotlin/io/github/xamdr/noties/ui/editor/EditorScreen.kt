@@ -92,7 +92,7 @@ fun EditorScreen(
 	selectedTags: List<String>?,
 	onNavigationIconClick: () -> Unit,
 	onNavigatoToTags: (tags: List<String>) -> Unit,
-	onNoteAction: (NoteAction) -> Unit,
+	onNoteAction: (NoteAction, Long) -> Unit,
 	onEditorColorChanged: (Color?) -> Unit,
 	viewModel: EditorViewModel = hiltViewModel()
 ) {
@@ -186,7 +186,7 @@ fun EditorScreen(
 				NoteAction.NoAction -> {}
 				NoteAction.UpdateNote -> AlarmManagerHelper.setAlarm(context, viewModel.note)
 			}
-			onNoteAction(action)
+			onNoteAction(action, viewModel.note.id)
 		}
 	}
 

@@ -32,6 +32,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -59,12 +60,14 @@ import io.github.xamdr.noties.ui.helpers.rememberMutableStateList
 import io.github.xamdr.noties.ui.media.ActionItem
 import io.github.xamdr.noties.ui.settings.PreferenceStorage
 import io.github.xamdr.noties.ui.theme.NotiesTheme
+import io.github.xamdr.noties.ui.urls.UrlsBottomSheet
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotesScreen(
 	screen: Screen,
+	noteId: Long,
 	query: String,
 	onQueryChange: (String) -> Unit,
 	onSearch: (String) -> Unit,
@@ -91,19 +94,22 @@ fun NotesScreen(
 	val actionLabel = stringResource(id = R.string.undo)
 	val noteSavedMessage = stringResource(id = R.string.note_saved)
 	val noteUpdatedMessage = stringResource(id = R.string.note_updated)
-
 	val selectedIds = rememberMutableStateList<Long>()
 	val inSelectionMode by remember { derivedStateOf { selectedIds.isNotEmpty() } }
 	var showDeleteNotesDialog by rememberSaveable { mutableStateOf(value = false) }
 	val isRecycleBinEmpty by remember { derivedStateOf { notes.isNullOrEmpty() } }
 	var isBatchDelete by rememberSaveable { mutableStateOf(value = false) }
-
 	var layoutType by rememberSaveable { mutableStateOf(value = LayoutType.valueOf(preferenceStorage.layoutType)) }
+	var showUrlsDialog by rememberSaveable { mutableStateOf(value = false) }
+	val urls = rememberMutableStateList<String>()
 
 	LaunchedEffect(key1 = Unit) {
 		when (noteAction) {
 			NoteAction.DeleteEmptyNote -> {}
-			NoteAction.InsertNote -> snackbarHostState.showSnackbar(noteSavedMessage)
+			NoteAction.InsertNote -> {
+				snackbarHostState.showSnackbar(noteSavedMessage)
+				viewModel.saveUrls(viewModel.getNoteById(noteId).urls)
+			}
 			NoteAction.NoAction -> {}
 			NoteAction.UpdateNote -> snackbarHostState.showSnackbar(noteUpdatedMessage)
 		}
@@ -345,6 +351,10 @@ fun NotesScreen(
 								viewModel.restoreNotesArchived(listOf(note))
 								snackbarHostState.showSnackbar(message = unarchivedNoteMessage)
 							}
+						},
+						onUrlsTagClick = { sources ->
+							urls.addAll(sources)
+							showUrlsDialog = true
 						}
 					)
 				}
@@ -354,6 +364,17 @@ fun NotesScreen(
 					isBatchDelete = isBatchDelete,
 					onDeleteNotes = ::deleteNotes,
 					onDismiss = { showDeleteNotesDialog = false }
+				)
+			}
+			if (showUrlsDialog) {
+				UrlsBottomSheet(
+					sources = urls,
+					sheetState = rememberModalBottomSheetState(),
+					viewModel = viewModel,
+					onDismiss = {
+						urls.clear()
+						showUrlsDialog = false
+					}
 				)
 			}
 		}

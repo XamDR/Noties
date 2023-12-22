@@ -13,12 +13,13 @@ class InsertNoteUseCase @Inject constructor(
 	private val noteRepository: NoteRepository,
 	private val mediaItemRepository: MediaItemRepository) {
 
-	suspend operator fun invoke(note: Note) {
+	suspend operator fun invoke(note: Note): Long {
 		val newNote = note.copy(modificationDate = Instant.now().toEpochMilli())
 		val id = noteRepository.insertNote(newNote.asDatabaseEntity())
 		val updatedItems = mutableListOf<MediaItem>()
 		newNote.items.forEach { item -> updatedItems.add(item.copy(noteId = id)) }
 		mediaItemRepository.insertItems(updatedItems.map { it.asDatabaseEntity() })
+		return id
 	}
 }
 
