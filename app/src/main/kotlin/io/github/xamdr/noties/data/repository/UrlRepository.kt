@@ -2,13 +2,22 @@ package io.github.xamdr.noties.data.repository
 
 import io.github.xamdr.noties.data.dao.UrlDao
 import io.github.xamdr.noties.data.entity.url.DatabaseUrlEntity
+import io.github.xamdr.noties.domain.model.Url
+import io.github.xamdr.noties.domain.model.UrlItem
+import io.github.xamdr.noties.domain.model.getMetadata
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class UrlRepository @Inject constructor(private val urlDao: UrlDao) {
 
-	suspend fun saveUrl(noteId: Long, src: String) {
-		val urlEntity = JsoupHelper.getMetadata(noteId, src)
+	suspend fun saveUrl(noteId: Long, url: String) {
+		val metadata = url.getMetadata()
+		val urlItem = UrlItem(
+			source = url,
+			metadata = metadata,
+			noteId = noteId
+		)
+		val urlEntity = urlItem.asDatabaseEntity()
 		urlDao.insertUrl(urlEntity)
 	}
 

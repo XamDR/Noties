@@ -374,8 +374,15 @@ private fun NoteItem(
 			}
 			if (note.tags.isNotEmpty() || note.reminderDate != null || note.urls.isNotEmpty()) {
 				val urlsTag = stringResource(id = R.string.urls, note.urls.size)
-				val allTags = if (note.reminderDate == null) listOf(urlsTag) + note.tags
-					else listOf(DateTimeHelper.formatDateTime(note.reminderDate)) + listOf(urlsTag) + note.tags
+				val allTags = if (note.reminderDate == null) {
+					if (note.urls.isNotEmpty()) listOf(urlsTag) + note.tags else note.tags
+				}
+				else {
+					if (note.urls.isNotEmpty()) {
+						listOf(DateTimeHelper.formatDateTime(note.reminderDate)) + listOf(urlsTag) + note.tags
+					}
+					else listOf(DateTimeHelper.formatDateTime(note.reminderDate)) + note.tags
+				}
 				TagList(
 					tags = allTags,
 					onUrlsTagClick = { onUrlsTagClick(note.urls) }

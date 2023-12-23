@@ -2,11 +2,13 @@ package io.github.xamdr.noties.ui.urls
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -14,6 +16,7 @@ import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
@@ -22,14 +25,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import io.github.xamdr.noties.domain.model.Url
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.notes.NotesViewModel
 import io.github.xamdr.noties.ui.theme.NotiesTheme
+import io.github.xamdr.noties.domain.model.UrlItem as Url
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +50,14 @@ fun UrlsBottomSheet(
 		sheetState = sheetState
 	) {
 		if (urls.isEmpty()) {
-			CircularProgressIndicator()
+			Box(
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(vertical = 8.dp),
+				contentAlignment = Alignment.Center
+			) {
+				CircularProgressIndicator()
+			}
 		}
 		else {
 			UrlList(urls = urls) { source ->
@@ -125,18 +136,21 @@ private fun UrlItem(
 			modifier = Modifier.padding(all = 4.dp)
 		) {
 			AsyncImage(
-				model = url.image,
+				model = url.metadata.image,
 				contentDescription = null,
-				modifier = Modifier.padding(horizontal = 16.dp)
+				contentScale = ContentScale.Crop,
+				modifier = Modifier.size(size = 64.dp)
 			)
 			Column {
 				Text(
-					text = url.title ?: "No title",
-					modifier = Modifier.padding(all = 2.dp)
+					text = url.metadata.title ?: "No title",
+					modifier = Modifier.padding(horizontal = 8.dp),
+					style = MaterialTheme.typography.bodyLarge
 				)
 				Text(
-					text = url.host ?: "No host",
-					modifier = Modifier.padding(all = 2.dp)
+					text = url.metadata.host ?: "No host",
+					modifier = Modifier.padding(horizontal = 8.dp),
+					style = MaterialTheme.typography.labelMedium
 				)
 			}
 		}
@@ -160,8 +174,16 @@ private fun UrlItem() {
 					modifier = Modifier.padding(horizontal = 16.dp)
 				)
 				Column {
-					Text(text = "ExtraEmily - Twitch", modifier = Modifier.padding(all = 2.dp))
-					Text(text = "www.twitch.tv", modifier = Modifier.padding(all = 2.dp))
+					Text(
+						text = "ExtraEmily - Twitch",
+						modifier = Modifier.padding(all = 2.dp),
+						style = MaterialTheme.typography.bodyLarge
+					)
+					Text(
+						text = "www.twitch.tv",
+						modifier = Modifier.padding(all = 2.dp),
+						style = MaterialTheme.typography.labelMedium
+					)
 				}
 			}
 		}

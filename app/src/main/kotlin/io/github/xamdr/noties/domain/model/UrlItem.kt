@@ -5,12 +5,10 @@ import io.github.xamdr.noties.data.entity.url.DatabaseUrlEntity
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Url(
+data class UrlItem(
 	val id: Int = 0,
-	val source: String = String.Empty,
-	val host: String? = null,
-	val title: String? = null,
-	val image: String? = null,
+	val source: Url = String.Empty,
+	val metadata: UrlMetadata = UrlMetadata(),
 	val noteId: Long = 0
 ) : Parcelable {
 
@@ -18,9 +16,9 @@ data class Url(
 		return DatabaseUrlEntity(
 			id = id,
 			source = source,
-			host = host,
-			title = title,
-			image = image,
+			host = metadata.host,
+			title = metadata.title,
+			image = metadata.image,
 			noteId = noteId
 		)
 	}

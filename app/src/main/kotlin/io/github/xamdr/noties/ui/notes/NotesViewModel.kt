@@ -3,7 +3,7 @@ package io.github.xamdr.noties.ui.notes
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.xamdr.noties.domain.model.Note
-import io.github.xamdr.noties.domain.model.Url
+import io.github.xamdr.noties.domain.model.UrlItem
 import io.github.xamdr.noties.domain.usecase.ArchiveNotesUseCase
 import io.github.xamdr.noties.domain.usecase.DeleteNotesUseCase
 import io.github.xamdr.noties.domain.usecase.EmptyTrashUseCase
@@ -63,5 +63,5 @@ class NotesViewModel @Inject constructor(
 
 	suspend fun saveUrls(noteId: Long, urls: List<String>) = saveUrlsUseCase(noteId, urls)
 
-	fun getUrls(sources: List<String>): Flow<List<Url>> = getUrlsUseCase(sources)
+	fun getUrls(sources: List<String>): Flow<List<UrlItem>> = getUrlsUseCase(sources)
 }

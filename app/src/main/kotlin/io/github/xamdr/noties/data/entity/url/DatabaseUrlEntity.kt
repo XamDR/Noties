@@ -6,7 +6,8 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import io.github.xamdr.noties.data.entity.note.DatabaseNoteEntity
-import io.github.xamdr.noties.domain.model.Url
+import io.github.xamdr.noties.domain.model.UrlItem
+import io.github.xamdr.noties.domain.model.UrlMetadata
 
 @Entity(
 	tableName = "Urls",
@@ -27,13 +28,11 @@ data class DatabaseUrlEntity(
 	@ColumnInfo(name = "note_id") val noteId: Long = 0
 ) {
 
-	fun asDomainModel(): Url {
-		return Url(
+	fun asDomainModel(): UrlItem {
+		return UrlItem(
 			id = id,
 			source = source,
-			host = host,
-			title = title,
-			image = image
+			metadata = UrlMetadata(host = host, title = title, image = image)
 		)
 	}
 }
