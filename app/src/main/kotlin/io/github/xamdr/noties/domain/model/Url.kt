@@ -10,7 +10,8 @@ data class Url(
 	val source: String = String.Empty,
 	val host: String? = null,
 	val title: String? = null,
-	val image: String? = null
+	val image: String? = null,
+	val noteId: Long = 0
 ) : Parcelable {
 
 	fun asDatabaseEntity(): DatabaseUrlEntity {
@@ -19,7 +20,8 @@ data class Url(
 			source = source,
 			host = host,
 			title = title,
-			image = image
+			image = image,
+			noteId = noteId
 		)
 	}
 }

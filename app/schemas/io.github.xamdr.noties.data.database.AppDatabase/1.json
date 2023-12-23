@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "734745faa283a65a8d081328af238ca4",
+    "identityHash": "d7f0ffc36d7697fb536195297424c92f",
     "entities": [
       {
         "tableName": "Tags",
@@ -194,12 +194,12 @@
         "indices": [
           {
             "name": "index_MediaItems_note_id",
-            "unique": true,
+            "unique": false,
             "columnNames": [
               "note_id"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_MediaItems_note_id` ON `${TABLE_NAME}` (`note_id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_MediaItems_note_id` ON `${TABLE_NAME}` (`note_id`)"
           }
         ],
         "foreignKeys": [
@@ -218,7 +218,7 @@
       },
       {
         "tableName": "Urls",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `source` TEXT NOT NULL, `host` TEXT, `title` TEXT, `image` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `source` TEXT NOT NULL, `host` TEXT, `title` TEXT, `image` TEXT, `note_id` INTEGER NOT NULL, FOREIGN KEY(`note_id`) REFERENCES `Notes`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -249,6 +249,12 @@
             "columnName": "image",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "noteId",
+            "columnName": "note_id",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -266,15 +272,36 @@
             ],
             "orders": [],
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Urls_source` ON `${TABLE_NAME}` (`source`)"
+          },
+          {
+            "name": "index_Urls_note_id",
+            "unique": false,
+            "columnNames": [
+              "note_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Urls_note_id` ON `${TABLE_NAME}` (`note_id`)"
           }
         ],
-        "foreignKeys": []
+        "foreignKeys": [
+          {
+            "table": "Notes",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "note_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '734745faa283a65a8d081328af238ca4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd7f0ffc36d7697fb536195297424c92f')"
     ]
   }
 }

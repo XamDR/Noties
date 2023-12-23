@@ -18,7 +18,7 @@ import io.github.xamdr.noties.domain.model.MediaItemMetadata
 		childColumns = ["note_id"],
 		onDelete = ForeignKey.CASCADE
 	)],
-	indices = [Index(value = ["note_id"], unique = true)]
+	indices = [Index(value = ["note_id"])]
 )
 data class DatabaseMediaItemEntity(
 	@PrimaryKey(autoGenerate = true) val id: Int = 0,

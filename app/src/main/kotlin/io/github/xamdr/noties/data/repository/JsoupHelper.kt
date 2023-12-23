@@ -11,7 +11,7 @@ import javax.inject.Singleton
 @Singleton
 object JsoupHelper {
 
-	suspend fun getMetadata(src: String): DatabaseUrlEntity = withContext(IO) {
+	suspend fun getMetadata(noteId: Long, src: String): DatabaseUrlEntity = withContext(IO) {
 		try {
 			val url = Uri.parse(src)
 			val document = Jsoup.connect(src).get()
@@ -21,7 +21,8 @@ object JsoupHelper {
 				source = src,
 				host = url.host,
 				title = titleElement?.attr("content"),
-				image = imageElement?.attr("content")
+				image = imageElement?.attr("content"),
+				noteId = noteId
 			)
 		}
 		catch (e: Exception) {

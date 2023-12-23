@@ -108,7 +108,7 @@ fun NotesScreen(
 			NoteAction.DeleteEmptyNote -> {}
 			NoteAction.InsertNote -> {
 				snackbarHostState.showSnackbar(noteSavedMessage)
-				viewModel.saveUrls(viewModel.getNoteById(noteId).urls)
+				viewModel.saveUrls(noteId, viewModel.getNoteById(noteId).urls)
 			}
 			NoteAction.NoAction -> {}
 			NoteAction.UpdateNote -> snackbarHostState.showSnackbar(noteUpdatedMessage)

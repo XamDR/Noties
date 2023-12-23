@@ -61,7 +61,7 @@ class NotesViewModel @Inject constructor(
 
 	suspend fun emptyRecycleBin(): Int = emptyTrashUseCase()
 
-	suspend fun saveUrls(urls: List<String>) = saveUrlsUseCase(urls)
+	suspend fun saveUrls(noteId: Long, urls: List<String>) = saveUrlsUseCase(noteId, urls)
 
 	fun getUrls(sources: List<String>): Flow<List<Url>> = getUrlsUseCase(sources)
 }

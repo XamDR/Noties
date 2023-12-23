@@ -7,8 +7,8 @@ import javax.inject.Inject
 
 class UrlRepository @Inject constructor(private val urlDao: UrlDao) {
 
-	suspend fun saveUrl(src: String) {
-		val urlEntity = JsoupHelper.getMetadata(src)
+	suspend fun saveUrl(noteId: Long, src: String) {
+		val urlEntity = JsoupHelper.getMetadata(noteId, src)
 		urlDao.insertUrl(urlEntity)
 	}
 

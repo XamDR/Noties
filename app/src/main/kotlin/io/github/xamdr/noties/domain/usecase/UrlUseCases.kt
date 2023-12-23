@@ -8,8 +8,8 @@ import javax.inject.Inject
 
 class SaveUrlsUseCase @Inject constructor(private val urlRepository: UrlRepository) {
 
-	suspend operator fun invoke(urls: List<String>) {
-		urls.forEach { url -> urlRepository.saveUrl(url) }
+	suspend operator fun invoke(noteId: Long, urls: List<String>) {
+		urls.forEach { url -> urlRepository.saveUrl(noteId, url) }
 	}
 }
 
