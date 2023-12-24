@@ -57,6 +57,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -373,7 +374,7 @@ private fun NoteItem(
 				}
 			}
 			if (note.tags.isNotEmpty() || note.reminderDate != null || note.urls.isNotEmpty()) {
-				val urlsTag = stringResource(id = R.string.urls, note.urls.size)
+				val urlsTag = pluralStringResource(id = R.plurals.number_urls, count = 1, note.urls.size)
 				val allTags = if (note.reminderDate == null) {
 					if (note.urls.isNotEmpty()) listOf(urlsTag) + note.tags else note.tags
 				}
@@ -389,6 +390,21 @@ private fun NoteItem(
 				)
 			}
 		}
+	}
+}
+
+private fun getTags(note: Note): List<String> {
+	return when  {
+		note.reminderDate == null -> {
+			if (note.urls.isNotEmpty()) {
+				listOf<String>() + note.tags
+			}
+			else note.tags
+		}
+		note.urls.isNotEmpty() -> {
+			listOf(DateTimeHelper.formatDateTime(note.reminderDate)) + note.tags
+		}
+		else -> emptyList()
 	}
 }
 

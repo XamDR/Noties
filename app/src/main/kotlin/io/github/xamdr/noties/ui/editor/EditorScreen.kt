@@ -56,6 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -72,6 +73,7 @@ import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.PermissionRationaleDialog
 import io.github.xamdr.noties.ui.helpers.ShareHelper
 import io.github.xamdr.noties.ui.helpers.clickableWithoutRipple
+import io.github.xamdr.noties.ui.helpers.copyTextToClipboard
 import io.github.xamdr.noties.ui.helpers.doActionOrRequestPermission
 import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
 import io.github.xamdr.noties.ui.helpers.showToast
@@ -113,6 +115,7 @@ fun EditorScreen(
 	var cameraUri by rememberSaveable { mutableStateOf<Uri?>(value = null) }
 	var openColorSheet by rememberSaveable { mutableStateOf(value = false) }
 	var containerColor by rememberSaveable(stateSaver = ColorSaver) { mutableStateOf(value = null) }
+	val uriHandler = LocalUriHandler.current
 
 	fun openFile(uri: Uri?) {
 		scope.launch {
@@ -286,6 +289,7 @@ fun EditorScreen(
 				note = viewModel.note,
 				items = viewModel.items,
 				tasks = viewModel.tasks,
+				urls = viewModel.urls,
 				onNoteContentChange = viewModel::updateNoteContent,
 				onItemCopied = viewModel::onItemCopied,
 				onItemClick = { position ->
@@ -296,6 +300,9 @@ fun EditorScreen(
 						position = position
 					)
 				},
+				onUrlClick = { source -> uriHandler.openUri(source) },
+				onCopyUrl = { source -> context.copyTextToClipboard(R.string.label_url, source, R.string.url_copied_msg) },
+				onDeleteUrl = {},
 				onDateTagClick = { showDateTimePicker = true },
 				onTagClick = { onNavigatoToTags(viewModel.note.tags) },
 				onTaskContentChanged = viewModel::updateTaskContent,

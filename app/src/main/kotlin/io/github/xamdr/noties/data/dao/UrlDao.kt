@@ -15,4 +15,7 @@ interface UrlDao {
 
 	@Query("SELECT * FROM Urls WHERE source IN (:sources) ORDER BY id")
 	fun getUrls(sources: List<String>): Flow<List<DatabaseUrlEntity>>
+
+	@Query("SELECT * FROM Urls WHERE source IN (:sources) ORDER BY id")
+	suspend fun getUrlsAsync(sources: List<String>): List<DatabaseUrlEntity>
 }

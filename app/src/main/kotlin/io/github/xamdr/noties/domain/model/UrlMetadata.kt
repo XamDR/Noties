@@ -20,12 +20,15 @@ suspend fun Url.getMetadata(): UrlMetadata = withContext(IO) {
 	try {
 		val uri = Uri.parse(this@getMetadata)
 		val document = Jsoup.connect(this@getMetadata).get()
+		val iconElement = document.head().select("link[href~=.*\\.(ico|png)]").first()
 		val titleElement = document.select("meta[property=og:title]").first()
 		val imageElement = document.select("meta[property=og:image]").first()
+		val title = titleElement?.attr("content") ?: document.title()
+		val image = imageElement?.attr("content") ?: iconElement?.attr("href")
 		UrlMetadata(
 			host = uri.host,
-			title = titleElement?.attr("content"),
-			image = imageElement?.attr("content")
+			title = title,
+			image = image
 		)
 	}
 	catch (e: Exception) {

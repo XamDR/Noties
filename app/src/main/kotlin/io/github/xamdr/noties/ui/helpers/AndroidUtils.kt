@@ -141,6 +141,13 @@ fun Context.copyUriToClipboard(@StringRes label: Int, uri: Uri, @StringRes copie
 	this.showToast(copiedMsg)
 }
 
+fun Context.copyTextToClipboard(@StringRes label: Int, text: String, @StringRes copiedMsg: Int) {
+	val manager = this.getSystemService<ClipboardManager>() ?: return
+	val clip = ClipData.newPlainText(this.getString(label), text)
+	manager.setPrimaryClip(clip)
+	this.showToast(copiedMsg)
+}
+
 val DocumentFile.simpleName: String?
 	get() = this.name?.substringBeforeLast('.')
 

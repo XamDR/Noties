@@ -21,3 +21,10 @@ class GetUrlsUseCase @Inject constructor(private val urlRepository: UrlRepositor
 		}
 	}
 }
+
+class GetUrlsAsyncUseCase @Inject constructor(private val urlRepository: UrlRepository) {
+
+	suspend operator fun invoke(sources: List<String>): List<UrlItem> {
+		return urlRepository.getUrlsAsync(sources).map { it.asDomainModel() }
+	}
+}

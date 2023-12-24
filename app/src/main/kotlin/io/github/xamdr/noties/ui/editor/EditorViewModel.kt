@@ -15,11 +15,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.domain.model.Task
+import io.github.xamdr.noties.domain.model.UrlItem
 import io.github.xamdr.noties.domain.model.containsItem
 import io.github.xamdr.noties.domain.model.convertToString
 import io.github.xamdr.noties.domain.model.joinToString
 import io.github.xamdr.noties.domain.usecase.DeleteNotesUseCase
 import io.github.xamdr.noties.domain.usecase.GetNoteByIdUseCase
+import io.github.xamdr.noties.domain.usecase.GetUrlsAsyncUseCase
 import io.github.xamdr.noties.domain.usecase.InsertNoteUseCase
 import io.github.xamdr.noties.domain.usecase.UpdateNoteUseCase
 import io.github.xamdr.noties.ui.helpers.UriHelper
@@ -38,6 +40,7 @@ class EditorViewModel @Inject constructor(
 	private val insertNoteUseCase: InsertNoteUseCase,
 	private val updateNoteUseCase: UpdateNoteUseCase,
 	private val deleteNotesUseCase: DeleteNotesUseCase,
+	private val getUrlsAsyncUseCase: GetUrlsAsyncUseCase,
 	private val savedState: SavedStateHandle) : ViewModel() {
 
 	var note by savedState.saveable { mutableStateOf(value = Note()) }
@@ -45,6 +48,7 @@ class EditorViewModel @Inject constructor(
 
 	val items = mutableStateListOf<GridItem>()
 	val tasks = mutableStateListOf<Task>()
+	val urls = mutableStateListOf<UrlItem>()
 
 	fun updateNoteContent(text: String) {
 		note = note.copy(text = text)
@@ -103,6 +107,9 @@ class EditorViewModel @Inject constructor(
 		}
 		if (tags != null && note.tags != tags) {
 			note = note.copy(tags = tags)
+		}
+		if (note.urls.isNotEmpty()) {
+			urls.addAll(getUrlsAsyncUseCase(note.urls))
 		}
 		Timber.d("Note: $note")
 	}

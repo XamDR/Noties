@@ -12,10 +12,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Android
+import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -27,10 +30,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import io.github.xamdr.noties.R
+import io.github.xamdr.noties.ui.components.OverflowMenu
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
+import io.github.xamdr.noties.ui.media.ActionItem
 import io.github.xamdr.noties.ui.notes.NotesViewModel
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import io.github.xamdr.noties.domain.model.UrlItem as Url
@@ -94,7 +101,7 @@ private fun UrlsBottomSheetPreview() {
 }
 
 @Composable
-fun UrlList(
+private fun UrlList(
 	urls: List<Url>,
 	onUrlClick: (String) -> Unit,
 ) {
@@ -122,9 +129,12 @@ private fun UrlList(size: Int = 5) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun UrlItem(
+fun UrlItem(
 	url: Url,
-	onItemClick: (String) -> Unit
+	onItemClick: (String) -> Unit,
+	hasMenu: Boolean = false,
+	onCopyUrl: ((String) -> Unit)? = null,
+	onDeleteUrl: ((String) -> Unit)? = null
 ) {
 	Card(
 		onClick = { onItemClick(url.source) },
@@ -135,22 +145,41 @@ private fun UrlItem(
 			verticalAlignment = Alignment.CenterVertically,
 			modifier = Modifier.padding(all = 4.dp)
 		) {
-			AsyncImage(
-				model = url.metadata.image,
-				contentDescription = null,
-				contentScale = ContentScale.Crop,
-				modifier = Modifier.size(size = 64.dp)
-			)
-			Column {
+			if (url.metadata.image != null) {
+				AsyncImage(
+					model = url.metadata.image,
+					contentDescription = null,
+					contentScale = ContentScale.Crop,
+					modifier = Modifier.size(size = 48.dp)
+				)
+			}
+			else {
+				Icon(
+					imageVector = Icons.Outlined.Language,
+					contentDescription = null,
+					modifier = Modifier.size(size = 48.dp)
+				)
+			}
+			Column(
+				modifier = Modifier.weight(weight = 1f)
+			) {
 				Text(
-					text = url.metadata.title ?: "No title",
+					text = url.metadata.title ?: stringResource(R.string.url_without_title_metadata),
 					modifier = Modifier.padding(horizontal = 8.dp),
 					style = MaterialTheme.typography.bodyLarge
 				)
 				Text(
-					text = url.metadata.host ?: "No host",
+					text = url.metadata.host ?: stringResource(R.string.url_without_host_metadata),
 					modifier = Modifier.padding(horizontal = 8.dp),
 					style = MaterialTheme.typography.labelMedium
+				)
+			}
+			if (hasMenu) {
+				OverflowMenu(
+					items = listOf(
+						ActionItem(title = R.string.copy_image, action = { onCopyUrl?.invoke(url.source) }),
+						ActionItem(title = R.string.delete_item, action = { onDeleteUrl?.invoke(url.source) })
+					)
 				)
 			}
 		}
@@ -169,11 +198,13 @@ private fun UrlItem() {
 				modifier = Modifier.padding(all = 4.dp)
 			) {
 				Image(
-					imageVector = Icons.Outlined.Android,
+					imageVector = Icons.Outlined.Language,
 					contentDescription = null,
 					modifier = Modifier.padding(horizontal = 16.dp)
 				)
-				Column {
+				Column(
+					modifier = Modifier.weight(weight = 1f)
+				) {
 					Text(
 						text = "ExtraEmily - Twitch",
 						modifier = Modifier.padding(all = 2.dp),
@@ -184,6 +215,9 @@ private fun UrlItem() {
 						modifier = Modifier.padding(all = 2.dp),
 						style = MaterialTheme.typography.labelMedium
 					)
+				}
+				IconButton(onClick = {}) {
+					Icon(imageVector = Icons.Outlined.MoreVert, contentDescription = null)
 				}
 			}
 		}

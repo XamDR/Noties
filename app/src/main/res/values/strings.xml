@@ -108,8 +108,8 @@
 	<string name="play">This image is a thumbnail of a video.</string>
 	<string name="empty_note_share">The note does not have content to share.</string>
 	<string name="open_url">Open</string>
-	<string name="label_link">Link</string>
-	<string name="url_copied_msg">Link copied to clipboard</string>
+	<string name="label_url">Url source</string>
+	<string name="url_copied_msg">Url copied to clipboard</string>
 	<string name="open_file">Open text file</string>
 	<string name="error_open_file">Error. File could not be opened.</string>
 	<string name="error_open_image">Error. Image not found.</string>
@@ -134,7 +134,8 @@
 	<string name="note_unpinned">Note will be unpinned</string>
 	<string name="loading_text">Loading text…</string>
 	<string name="restore_from_trash">Restore note</string>
-	<string name="urls">%d urls</string>
+	<string name="url_without_title_metadata">No title found for this url</string>
+	<string name="url_without_host_metadata">No host found for this url</string>
 
 	<!-- Add attachment Fragment -->
 	<string name="text_editor_menu_fragment_label">Text editor menu attachments</string>
@@ -166,7 +167,7 @@
 	<string name="set_image_as">Set image as</string>
 	<string name="delete_all_items">Delete all images</string>
 	<string name="delete_all_items_question">Are you sure you want to delete all the images attached to this note?</string>
-	<string name="image_item">Image</string>
+	<string name="label_image">Image</string>
 	<string name="image_copied_msg">Image copied to clipboard</string>
 	<string name="error_video_playback">Error. This video cannot be played.</string>
 	<string name="print_image">Print image</string>
@@ -247,7 +248,7 @@
 	</plurals>
 
 	<plurals name="number_urls">
-		<item quantity="one">%d hyperlink</item>
-		<item quantity="other">%d hyperlinks</item>
+		<item quantity="one">%d url</item>
+		<item quantity="other">%d urls</item>
 	</plurals>
 </resources>

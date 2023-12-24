@@ -41,7 +41,7 @@ fun toggleScreenOrientation(context: Context, activity: Activity) {
 }
 
 fun copyImageToClipboard(item: MediaItem, context: Context) {
-	context.copyUriToClipboard(R.string.image_item, item.uri, R.string.image_copied_msg)
+	context.copyUriToClipboard(R.string.label_image, item.uri, R.string.image_copied_msg)
 }
 
 suspend fun downloadMediaItem(item: MediaItem, context: Context) {

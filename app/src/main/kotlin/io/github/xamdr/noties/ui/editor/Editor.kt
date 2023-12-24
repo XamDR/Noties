@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
@@ -34,6 +35,8 @@ import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.rememberDragDropState
 import io.github.xamdr.noties.ui.theme.NotiesTheme
+import io.github.xamdr.noties.ui.urls.UrlItem
+import io.github.xamdr.noties.domain.model.UrlItem as Url
 
 private const val SPAN_COUNT = 2
 
@@ -44,9 +47,13 @@ fun Editor(
 	note: Note,
 	items: List<GridItem>,
 	tasks: List<Task>,
+	urls: List<Url>,
 	onNoteContentChange: (String) -> Unit,
 	onItemCopied: (MediaItem, Int) -> Unit,
 	onItemClick: (Int) -> Unit,
+	onUrlClick: (String) -> Unit,
+	onCopyUrl: (String) -> Unit,
+	onDeleteUrl: (String) -> Unit,
 	onDateTagClick: () -> Unit,
 	onTagClick: () -> Unit,
 	onTaskContentChanged: (Int, String) -> Unit,
@@ -79,16 +86,15 @@ fun Editor(
 			span = { index ->
 				val span = if (items.size.mod(SPAN_COUNT) == 1 && index == 0) SPAN_COUNT else 1
 				GridItemSpan(span)
-			},
-			itemContent = { index ->
-				EditorGridItem(
-					item = items[index],
-					onUriCopied = { item -> onItemCopied(item, index) },
-					onItemClick = { onItemClick(index) },
-					isFullWidth = items.size.mod(SPAN_COUNT) == 1 && index == 0
-				)
 			}
-		)
+		) { index ->
+			EditorGridItem(
+				item = items[index],
+				onUriCopied = { item -> onItemCopied(item, index) },
+				onItemClick = { onItemClick(index) },
+				isFullWidth = items.size.mod(SPAN_COUNT) == 1 && index == 0
+			)
+		}
 		if (note.isTaskList) {
 			val allTasks = tasks + Task.Footer
 			itemsIndexed(
@@ -120,6 +126,18 @@ fun Editor(
 					modifier = textBoxModifier
 				)
 			}
+		}
+		items(
+			items = urls,
+			span = { GridItemSpan(SPAN_COUNT) }
+		) {url ->
+			UrlItem(
+				url = url,
+				onItemClick = { onUrlClick(url.source) },
+				hasMenu = true,
+				onCopyUrl = onCopyUrl,
+				onDeleteUrl = onDeleteUrl
+			)
 		}
 		item(span = { GridItemSpan(SPAN_COUNT) }) {
 			if (note.tags.isNotEmpty() || note.reminderDate != null) {
