@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<!-- Light theme -->
+	<color name="md_theme_light_primary">#FF005AC3</color>
+	<color name="md_theme_light_surface">#FFFEFBFF</color>
+
+	<!-- Dark theme -->
+	<color name="md_theme_dark_primary">#FFAEC6FF</color>
+	<color name="md_theme_dark_surface">#FF1B1B1F</color>
+
 	<color name="blue_600">#FF005AC3</color>
 	<color name="pink_600">#FFD81B60</color>
 	<color name="purple_600">#FF8E24AA</color>
