@@ -48,6 +48,7 @@ fun Editor(
 	items: List<GridItem>,
 	tasks: List<Task>,
 	urls: List<Url>,
+	urlsEnabled: Boolean,
 	onNoteContentChange: (String) -> Unit,
 	onItemCopied: (MediaItem, Int) -> Unit,
 	onItemClick: (Int) -> Unit,
@@ -67,10 +68,6 @@ fun Editor(
 		lazyGridState = gridState,
 		onMove = onDragDropTask
 	)
-//	val focusRequester = remember { FocusRequester() }
-	val textBoxModifier = Modifier
-		.fillMaxWidth()
-//		.then(if (note.id == 0L) Modifier.onFocusShowSoftKeyboard(focusRequester) else Modifier)
 
 	LazyVerticalGrid(
 		modifier = modifier,
@@ -123,21 +120,23 @@ fun Editor(
 					value = note.text,
 					onValueChange = onNoteContentChange,
 					readOnly = note.trashed,
-					modifier = textBoxModifier
+					modifier = Modifier.fillMaxWidth()
 				)
 			}
 		}
-		items(
-			items = urls,
-			span = { GridItemSpan(SPAN_COUNT) }
-		) {url ->
-			UrlItem(
-				url = url,
-				onItemClick = { onUrlClick(url.source) },
-				hasMenu = true,
-				onCopyUrl = onCopyUrl,
-				onDeleteUrl = onDeleteUrl
-			)
+		if (urlsEnabled) {
+			items(
+				items = urls,
+				span = { GridItemSpan(SPAN_COUNT) }
+			) {url ->
+				UrlItem(
+					url = url,
+					onItemClick = { onUrlClick(url.source) },
+					hasMenu = true,
+					onCopyUrl = onCopyUrl,
+					onDeleteUrl = onDeleteUrl
+				)
+			}
 		}
 		item(span = { GridItemSpan(SPAN_COUNT) }) {
 			if (note.tags.isNotEmpty() || note.reminderDate != null) {

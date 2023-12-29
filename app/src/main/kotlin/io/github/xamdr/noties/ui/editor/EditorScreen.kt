@@ -81,6 +81,7 @@ import io.github.xamdr.noties.ui.media.ActionItem
 import io.github.xamdr.noties.ui.media.MediaViewerActivity
 import io.github.xamdr.noties.ui.reminders.AlarmManagerHelper
 import io.github.xamdr.noties.ui.reminders.DateTimePickerDialog
+import io.github.xamdr.noties.ui.settings.PreferenceStorage
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -92,6 +93,7 @@ fun EditorScreen(
 	noteId: Long,
 	text: String?,
 	selectedTags: List<String>?,
+	preferenceStorage: PreferenceStorage,
 	onNavigationIconClick: () -> Unit,
 	onNavigatoToTags: (tags: List<String>) -> Unit,
 	onNoteAction: (NoteAction, Long) -> Unit,
@@ -290,6 +292,7 @@ fun EditorScreen(
 				items = viewModel.items,
 				tasks = viewModel.tasks,
 				urls = viewModel.urls,
+				urlsEnabled = preferenceStorage.urlsEnabled,
 				onNoteContentChange = viewModel::updateNoteContent,
 				onItemCopied = viewModel::onItemCopied,
 				onItemClick = { position ->

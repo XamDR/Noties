@@ -56,7 +56,7 @@ fun SwitchPreference(
 ) {
 	val context = LocalContext.current
 	val preferences = remember { PreferenceManager.getDefaultSharedPreferences(context) }
-	var checked by remember { mutableStateOf(preferences.getBoolean(key, false)) }
+	var checked by remember { mutableStateOf(preferences.getBoolean(key, true)) }
 	val summary = if (checked) stringResource(id = summaryOn) else stringResource(id = summaryOff)
 
 	ListItem(

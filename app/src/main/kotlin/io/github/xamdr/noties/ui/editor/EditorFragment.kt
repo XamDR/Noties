@@ -20,7 +20,9 @@ import io.github.xamdr.noties.ui.helpers.getNavigationResult
 import io.github.xamdr.noties.ui.helpers.onBackPressed
 import io.github.xamdr.noties.ui.helpers.setNavigationResult
 import io.github.xamdr.noties.ui.helpers.tryNavigate
+import io.github.xamdr.noties.ui.settings.PreferenceStorage
 import io.github.xamdr.noties.ui.theme.NotiesTheme
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class EditorFragment : Fragment() {
@@ -34,6 +36,7 @@ class EditorFragment : Fragment() {
 	private val text by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getString(Constants.BUNDLE_NOTE_TEXT)
 	}
+	@Inject lateinit var preferenceStorage: PreferenceStorage
 
 	override fun onCreateView(inflater: LayoutInflater,
 							  container: ViewGroup?,
@@ -54,6 +57,7 @@ class EditorFragment : Fragment() {
 				noteId = noteId,
 				text = text,
 				selectedTags = allTags,
+				preferenceStorage = preferenceStorage,
 				onNavigationIconClick = ::onBackPressed,
 				onNavigatoToTags = ::navigateToTags,
 				onNoteAction = ::onNoteAction,

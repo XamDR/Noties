@@ -24,12 +24,12 @@ class PreferenceStorage @Inject constructor(@ApplicationContext context: Context
 
 	val appColor by IntegerPreference(preferences, PREF_APP_COLOR, R.color.blue_600)
 
-	val hiperlinksEnabled by BooleanPreference(preferences, PREF_HIPERLINKS_ENABLED, false)
+	val urlsEnabled by BooleanPreference(preferences, PREF_URLS_ENABLED, true)
 
 	companion object {
 		const val PREF_APP_THEME = "pref_app_theme"
 		const val PREF_APP_COLOR = "pref_app_color"
-		const val PREF_HIPERLINKS_ENABLED = "pref_hiperlinks_enabled"
+		const val PREF_URLS_ENABLED = "pref_urls_enabled"
 		private const val PREF_ONBOARDING = "pref_onboarding"
 		private const val PREF_LAYOUT_NOTES = "pref_layout_notes"
 		private const val PREF_WALLPAPER = "pref_wallpaper"

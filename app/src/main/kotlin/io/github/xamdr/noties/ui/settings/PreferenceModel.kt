@@ -78,7 +78,7 @@ val DEFAULT_SETTINGS = listOf(
 	PreferenceItem.Category(category = PreferenceCategory(title = R.string.editor_header)),
 	PreferenceItem.SwitchPreference(
 		preference = Preference(
-			key = PreferenceStorage.PREF_HIPERLINKS_ENABLED,
+			key = PreferenceStorage.PREF_URLS_ENABLED,
 			title = R.string.enable_links,
 			icon = Icons.Outlined.Link
 		),
