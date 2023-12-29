@@ -1,7 +1,9 @@
 package io.github.xamdr.noties.ui.editor
 
+import android.app.Activity
 import android.content.Context
 import android.net.Uri
+import androidx.activity.result.ActivityResult
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
@@ -19,13 +21,16 @@ import io.github.xamdr.noties.domain.model.UrlItem
 import io.github.xamdr.noties.domain.model.containsItem
 import io.github.xamdr.noties.domain.model.convertToString
 import io.github.xamdr.noties.domain.model.joinToString
+import io.github.xamdr.noties.domain.usecase.DeleteMediaItemsUseCase
 import io.github.xamdr.noties.domain.usecase.DeleteNotesUseCase
 import io.github.xamdr.noties.domain.usecase.GetNoteByIdUseCase
 import io.github.xamdr.noties.domain.usecase.GetUrlsAsyncUseCase
 import io.github.xamdr.noties.domain.usecase.InsertNoteUseCase
 import io.github.xamdr.noties.domain.usecase.UpdateNoteUseCase
+import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.UriHelper
 import io.github.xamdr.noties.ui.helpers.extractUrls
+import io.github.xamdr.noties.ui.helpers.getParcelableArrayListCompat
 import io.github.xamdr.noties.ui.helpers.simpleName
 import io.github.xamdr.noties.ui.reminders.AlarmManagerHelper
 import timber.log.Timber
@@ -41,14 +46,19 @@ class EditorViewModel @Inject constructor(
 	private val updateNoteUseCase: UpdateNoteUseCase,
 	private val deleteNotesUseCase: DeleteNotesUseCase,
 	private val getUrlsAsyncUseCase: GetUrlsAsyncUseCase,
+	private val deleteMediaItemsUseCase: DeleteMediaItemsUseCase,
 	private val savedState: SavedStateHandle) : ViewModel() {
 
 	var note by savedState.saveable { mutableStateOf(value = Note()) }
 		private set
 
 	val items = mutableStateListOf<GridItem>()
+
 	val tasks = mutableStateListOf<Task>()
+
 	val urls = mutableStateListOf<UrlItem>()
+
+	val itemsToDelete = mutableStateListOf<MediaItem>()
 
 	fun updateNoteContent(text: String) {
 		note = note.copy(text = text)
@@ -182,6 +192,18 @@ class EditorViewModel @Inject constructor(
 	fun updateNoteColor(color: Color?) {
 		val newColor = color?.toArgb()
 		note = note.copy(color = newColor)
+	}
+
+	suspend fun deleteItems(items: List<MediaItem>) = deleteMediaItemsUseCase(items)
+
+	fun handleItemsToDelete(result: ActivityResult) {
+		if (result.resultCode == Activity.RESULT_OK) {
+			val data = result.data ?: return
+			val itemsFromBundle = data.getParcelableArrayListCompat(Constants.BUNDLE_ITEMS_DELETE, MediaItem::class.java)
+			itemsToDelete.addAll(itemsFromBundle)
+			items.removeAll(itemsToDelete.map { item -> GridItem.Media(data = item) })
+			note = note.copy(items = note.items - itemsToDelete)
+		}
 	}
 
 	private suspend fun getNoteById(noteId: Long) = getNoteByIdUseCase(noteId)

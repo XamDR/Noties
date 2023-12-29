@@ -134,7 +134,7 @@ fun EditorScreen(
 
 	val mediaViewerLauncher = rememberLauncherForActivityResult(
 		contract = ActivityResultContracts.StartActivityForResult(),
-		onResult = {}
+		onResult = viewModel::handleItemsToDelete
 	)
 
 	val openFileLauncher = rememberLauncherForActivityResult(
@@ -186,10 +186,17 @@ fun EditorScreen(
 		scope.launch {
 			val action = viewModel.saveNote(viewModel.note, noteId)
 			when (action) {
-				NoteAction.DeleteEmptyNote -> {}
+				NoteAction.DeleteEmptyNote -> {
+					AlarmManagerHelper.cancelAlarm(context, noteId)
+					MediaStorageManager.deleteItems(context, viewModel.itemsToDelete)
+				}
 				NoteAction.InsertNote -> AlarmManagerHelper.setAlarm(context, viewModel.note)
+				NoteAction.UpdateNote -> {
+					AlarmManagerHelper.setAlarm(context, viewModel.note)
+					viewModel.deleteItems(viewModel.itemsToDelete)
+					MediaStorageManager.deleteItems(context, viewModel.itemsToDelete)
+				}
 				NoteAction.NoAction -> {}
-				NoteAction.UpdateNote -> AlarmManagerHelper.setAlarm(context, viewModel.note)
 			}
 			onNoteAction(action, viewModel.note.id)
 		}

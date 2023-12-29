@@ -156,7 +156,7 @@ object MediaStorageManager {
 		}
 	}
 
-	fun deleteItems(context: Context, items: List<MediaItem>) {
+	suspend fun deleteItems(context: Context, items: List<MediaItem>) {
 		for (item in items) {
 			val fileName = item.uri.let { DocumentFile.fromSingleUri(context, it)?.name }
 			val thumbnailFileName = item.metadata.thumbnail?.let { DocumentFile.fromSingleUri(context, it)?.name }
@@ -171,10 +171,14 @@ object MediaStorageManager {
 		}
 	}
 
-	private fun deleteItem(context: Context, itemFileName: String, isImage: Boolean): Boolean {
+	private suspend fun deleteItem(
+		context: Context,
+		itemFileName: String,
+		isImage: Boolean
+	) = withContext(IO) {
 		val directory = if (isImage) "${context.filesDir}/${Constants.DIRECTORY_IMAGES}"
 			else "${context.filesDir}/${Constants.DIRECTORY_VIDEOS}"
 		val file = File(directory, itemFileName)
-		return file.delete()
+		file.delete()
 	}
 }

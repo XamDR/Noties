@@ -17,6 +17,8 @@ class NoteRepository(private val noteDao: NoteDao) {
 
 	suspend fun deleteNote(note: DatabaseNoteEntity) = noteDao.deleteNote(note)
 
+	suspend fun deleteNoteById(noteId: Long) = noteDao.deleteNoteById(noteId)
+
 	fun getTrashedNotes() = noteDao.getTrashedNotes()
 
 	fun getArchivedNotes() = noteDao.getArchivedNotes()

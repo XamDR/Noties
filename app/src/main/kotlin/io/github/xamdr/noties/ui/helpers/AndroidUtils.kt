@@ -12,7 +12,6 @@ import android.os.Parcelable
 import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedCallback
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.annotation.TransitionRes
@@ -84,17 +83,6 @@ fun <T : Parcelable> Intent.getParcelableArrayListCompat(key: String, clazz: Cla
 
 fun FragmentActivity.launch(block: suspend CoroutineScope.() -> Unit): Job {
 	return this.lifecycleScope.launch(block = block)
-}
-
-fun Fragment.onBackPressed(block: () -> Unit) {
-	this.requireActivity().onBackPressedDispatcher.addCallback(
-		this.viewLifecycleOwner,
-		object : OnBackPressedCallback(true) {
-			override fun handleOnBackPressed() {
-				block()
-			}
-		}
-	)
 }
 
 fun Fragment.onBackPressed() {

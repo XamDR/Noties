@@ -81,6 +81,11 @@ class DeleteNotesUseCase @Inject constructor(private val noteRepository: NoteRep
 	}
 }
 
+class DeleteNoteByIdUseCase @Inject constructor(private val noteRepository: NoteRepository) {
+
+	suspend operator fun invoke(noteId: Long) = noteRepository.deleteNoteById(noteId)
+}
+
 class GetTrashedNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
 	operator fun invoke(): Flow<List<Note>> {
 		return noteRepository.getTrashedNotes().map { result ->

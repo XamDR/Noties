@@ -34,6 +34,9 @@ interface NoteDao {
 	@Delete
 	suspend fun deleteNote(note: DatabaseNoteEntity)
 
+	@Query("DELETE FROM Notes WHERE id = :noteId")
+	suspend fun deleteNoteById(noteId: Long)
+
 	@Query("SELECT * FROM Notes " +
 			"LEFT JOIN MediaItems ON Notes.id = MediaItems.note_id " +
 			"WHERE Notes.trashed = 1 " +

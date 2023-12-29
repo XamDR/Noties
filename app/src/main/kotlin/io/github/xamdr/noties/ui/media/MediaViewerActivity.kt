@@ -25,6 +25,7 @@ class MediaViewerActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContent { MediaViewerActivityContent() }
+		navigateUp()
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
@@ -48,7 +49,8 @@ class MediaViewerActivity : AppCompatActivity() {
 				items = items,
 				startIndex = position,
 				window = window,
-				onNavigationIconClick = ::navigateUp
+				onNavigationIconClick = { onBackPressedDispatcher.onBackPressed() },
+				onItemDeleted = { mediaItem -> itemsToDelete.add(mediaItem) }
 			)
 		}
 	}

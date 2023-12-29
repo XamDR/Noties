@@ -17,15 +17,18 @@ import io.github.xamdr.noties.ui.helpers.showToast
 import timber.log.Timber
 import java.io.FileNotFoundException
 
-interface MediaImageActions {
-	fun onCopy()
+interface MediaActions {
 	suspend fun onSave()
-	fun onDelete()
+}
+
+interface MediaImageActions : MediaActions {
+	fun onCopy()
 	fun onPrint()
 	fun onSetAs()
 }
 
 class ImageActions(private val context: Context, private val item: MediaItem) : MediaImageActions {
+
 	override fun onCopy() {
 		context.copyUriToClipboard(R.string.label_image, item.uri, R.string.image_copied_msg)
 	}
@@ -34,10 +37,6 @@ class ImageActions(private val context: Context, private val item: MediaItem) : 
 		val uri = item.uri
 		MediaStorageManager.downloadPicture(context, uri)
 		context.showToast(R.string.image_downloaded_message)
-	}
-
-	override fun onDelete() {
-		TODO("Not yet implemented")
 	}
 
 	override fun onPrint() {
@@ -65,22 +64,14 @@ class ImageActions(private val context: Context, private val item: MediaItem) : 
 	}
 }
 
-interface MediaVideoActions {
-	suspend fun onSave()
-	fun onDelete()
-}
+class VideoActions(private val context: Context, private val item: MediaItem) : MediaActions {
 
-class VideoActions(private val context: Context, private val item: MediaItem) : MediaVideoActions {
 	override suspend fun onSave() {
 		val uri = item.uri
 		ProgressDialogHelper.show(context, R.string.download_video_message, cancelable = true)
 		MediaStorageManager.downloadVideo(context, uri)
 		ProgressDialogHelper.dismiss()
 		context.showToast(R.string.video_downloaded_message)
-	}
-
-	override fun onDelete() {
-		TODO("Not yet implemented")
 	}
 }
 

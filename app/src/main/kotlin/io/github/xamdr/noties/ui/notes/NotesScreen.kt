@@ -94,6 +94,7 @@ fun NotesScreen(
 	val actionLabel = stringResource(id = R.string.undo)
 	val noteSavedMessage = stringResource(id = R.string.note_saved)
 	val noteUpdatedMessage = stringResource(id = R.string.note_updated)
+	val emptyNoteDeletedMessage = stringResource(id = R.string.empty_note_deleted)
 	val selectedIds = rememberMutableStateList<Long>()
 	val inSelectionMode by remember { derivedStateOf { selectedIds.isNotEmpty() } }
 	var showDeleteNotesDialog by rememberSaveable { mutableStateOf(value = false) }
@@ -105,13 +106,18 @@ fun NotesScreen(
 
 	LaunchedEffect(key1 = Unit) {
 		when (noteAction) {
-			NoteAction.DeleteEmptyNote -> {}
+			NoteAction.DeleteEmptyNote -> {
+				viewModel.deleteNoteById(noteId)
+				snackbarHostState.showSnackbar(emptyNoteDeletedMessage)
+			}
 			NoteAction.InsertNote -> {
 				snackbarHostState.showSnackbar(noteSavedMessage)
 				viewModel.saveUrls(noteId, viewModel.getNoteById(noteId).urls)
 			}
+			NoteAction.UpdateNote -> {
+				snackbarHostState.showSnackbar(noteUpdatedMessage)
+			}
 			NoteAction.NoAction -> {}
-			NoteAction.UpdateNote -> snackbarHostState.showSnackbar(noteUpdatedMessage)
 		}
 	}
 

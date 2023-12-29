@@ -5,6 +5,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.domain.model.UrlItem
 import io.github.xamdr.noties.domain.usecase.ArchiveNotesUseCase
+import io.github.xamdr.noties.domain.usecase.DeleteNoteByIdUseCase
 import io.github.xamdr.noties.domain.usecase.DeleteNotesUseCase
 import io.github.xamdr.noties.domain.usecase.EmptyTrashUseCase
 import io.github.xamdr.noties.domain.usecase.GetAllNotesUseCase
@@ -32,6 +33,7 @@ class NotesViewModel @Inject constructor(
 	private val archiveNotesUseCase: ArchiveNotesUseCase,
 	private val restoreNotesUseCase: RestoreNotesUseCase,
 	private val deleteNotesUseCase: DeleteNotesUseCase,
+	private val deleteNoteByIdUseCase: DeleteNoteByIdUseCase,
 	private val emptyTrashUseCase: EmptyTrashUseCase,
 	private val saveUrlsUseCase: SaveUrlsUseCase,
 	private val getUrlsUseCase: GetUrlsUseCase) : ViewModel() {
@@ -58,6 +60,8 @@ class NotesViewModel @Inject constructor(
 	suspend fun restoreNotesArchived(notes: List<Note>) = restoreNotesUseCase(notes, fromTrash = false)
 
 	suspend fun deleteNotes(ids: List<Long>) = deleteNotesUseCase(ids)
+
+	suspend fun deleteNoteById(noteId: Long) = deleteNoteByIdUseCase(noteId)
 
 	suspend fun emptyRecycleBin(): Int = emptyTrashUseCase()
 

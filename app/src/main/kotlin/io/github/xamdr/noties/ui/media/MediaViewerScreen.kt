@@ -54,6 +54,7 @@ import io.github.xamdr.noties.ui.components.ActionItem
 import io.github.xamdr.noties.ui.components.OverflowMenu
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.findActivity
+import io.github.xamdr.noties.ui.helpers.rememberMutableStateList
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -64,13 +65,15 @@ fun MediaViewerScreen(
 	items: List<MediaItem>,
 	startIndex: Int,
 	window: Window,
-	onNavigationIconClick: () -> Unit
+	onNavigationIconClick: () -> Unit,
+	onItemDeleted: (MediaItem) -> Unit,
 ) {
+	val mediaItems = rememberMutableStateList(*items.toTypedArray())
 	val pagerState = rememberPagerState(
 		initialPage = startIndex,
-		pageCount = { items.size }
+		pageCount = { mediaItems.size }
 	)
-	val currentItem = items[pagerState.currentPage]
+	val currentItem = mediaItems[pagerState.currentPage]
 	val context = LocalContext.current
 	val activity = context.findActivity() ?: return
 	val view = LocalView.current
@@ -78,11 +81,6 @@ fun MediaViewerScreen(
 	val imageActions = ImageActions(context, currentItem)
 	val videoActions = VideoActions(context, currentItem)
 	val snackbarHostState = remember { SnackbarHostState() }
-	val overflowItems = when (currentItem.mediaType) {
-		MediaType.Image -> getOverflowItemsForImage(imageActions, scope)
-		MediaType.Video -> getOverflowItemsForVideo(videoActions, scope)
-		MediaType.Audio -> throw IllegalArgumentException("Invalid media type: ${currentItem.mediaType}")
-	}
 	val errorPlaybackMsg = stringResource(id = R.string.error_video_playback)
 	var isFullScreen by rememberSaveable { mutableStateOf(value = false) }
 
@@ -99,6 +97,30 @@ fun MediaViewerScreen(
 		scope.launch { snackbarHostState.showSnackbar(errorPlaybackMsg) }
 	}
 
+	fun onDelete() {
+		if (!mediaItems.isSingleton()) {
+			val currentIndex = mediaItems.indexOf(currentItem)
+			mediaItems.remove(currentItem)
+			onItemDeleted(currentItem)
+
+			// Scroll to the previous item, since by default the Pager will try to
+			// scroll to the next item, which for the last element is nonexistent
+			if (currentIndex == mediaItems.size) {
+				scope.launch { pagerState.scrollToPage(currentIndex - 1) }
+			}
+		}
+		else {
+			onItemDeleted(currentItem)
+			activity.onBackPressedDispatcher.onBackPressed()
+		}
+	}
+
+	val overflowItems = when (currentItem.mediaType) {
+		MediaType.Image -> getOverflowItemsForImage(imageActions, scope, ::onDelete)
+		MediaType.Video -> getOverflowItemsForVideo(videoActions, scope, ::onDelete)
+		MediaType.Audio -> throw IllegalArgumentException("Invalid media type: ${currentItem.mediaType}")
+	}
+
 	Scaffold(
 		topBar = {
 			AnimatedVisibility(
@@ -113,7 +135,7 @@ fun MediaViewerScreen(
 				)
 			) {
 				TopAppBar(
-					title = { Text(text = "${pagerState.currentPage + 1}/${items.size}") },
+					title = { Text(text = "${pagerState.currentPage + 1}/${mediaItems.size}") },
 					navigationIcon = {
 						IconButton(onClick = onNavigationIconClick) {
 							Icon(
@@ -146,16 +168,16 @@ fun MediaViewerScreen(
 		content = { innerPadding ->
 			HorizontalPager(
 				state = pagerState,
-				key = { index -> items[index].uri },
+				key = { index -> mediaItems[index].uri },
 				modifier = Modifier.padding(innerPadding)
 			) { index ->
-				when (items[index].mediaType) {
+				when (mediaItems[index].mediaType) {
 					MediaType.Image -> ImageScreen(
-						item = items[index],
+						item = mediaItems[index],
 						onClick = ::toggleFullScreen
 					)
 					MediaType.Video -> VideoScreen(
-						item = items[index],
+						item = mediaItems[index],
 						playWhenReady = index == pagerState.currentPage,
 						window = window,
 						onFullScreen = ::toggleFullScreen,
@@ -170,7 +192,8 @@ fun MediaViewerScreen(
 
 private fun getOverflowItemsForImage(
 	imageActions: MediaImageActions,
-	scope: CoroutineScope
+	scope: CoroutineScope,
+	onDelete: () -> Unit,
 ): List<ActionItem> {
 	return listOf(
 		ActionItem(
@@ -185,7 +208,7 @@ private fun getOverflowItemsForImage(
 		),
 		ActionItem(
 			title = R.string.delete_item,
-			action = imageActions::onDelete,
+			action = onDelete,
 			icon = Icons.Outlined.DeleteForever
 		),
 		ActionItem(
@@ -202,8 +225,9 @@ private fun getOverflowItemsForImage(
 }
 
 private fun getOverflowItemsForVideo(
-	videoActions: MediaVideoActions,
-	scope: CoroutineScope
+	videoActions: MediaActions,
+	scope: CoroutineScope,
+	onDelete: () -> Unit
 ): List<ActionItem> {
 	return listOf(
 		ActionItem(
@@ -213,7 +237,7 @@ private fun getOverflowItemsForVideo(
 		),
 		ActionItem(
 			title = R.string.delete_item,
-			action = videoActions::onDelete,
+			action = onDelete,
 			icon = Icons.Outlined.DeleteForever
 		)
 	)
