@@ -1,6 +1,5 @@
 package io.github.xamdr.noties.ui.media
 
-import android.content.Context
 import android.view.View
 import android.view.Window
 import androidx.compose.animation.AnimatedVisibility
@@ -20,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.Print
 import androidx.compose.material.icons.outlined.SaveAlt
@@ -50,6 +50,7 @@ import androidx.core.view.WindowInsetsCompat
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.domain.model.MediaItem
+import io.github.xamdr.noties.ui.components.ActionItem
 import io.github.xamdr.noties.ui.components.OverflowMenu
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.findActivity
@@ -74,8 +75,14 @@ fun MediaViewerScreen(
 	val activity = context.findActivity() ?: return
 	val view = LocalView.current
 	val scope = rememberCoroutineScope()
+	val imageActions = ImageActions(context, currentItem)
+	val videoActions = VideoActions(context, currentItem)
 	val snackbarHostState = remember { SnackbarHostState() }
-	val overflowItems = getOverflowItems(currentItem, context, scope)
+	val overflowItems = when (currentItem.mediaType) {
+		MediaType.Image -> getOverflowItemsForImage(imageActions, scope)
+		MediaType.Video -> getOverflowItemsForVideo(videoActions, scope)
+		MediaType.Audio -> throw IllegalArgumentException("Invalid media type: ${currentItem.mediaType}")
+	}
 	val errorPlaybackMsg = stringResource(id = R.string.error_video_playback)
 	var isFullScreen by rememberSaveable { mutableStateOf(value = false) }
 
@@ -161,44 +168,55 @@ fun MediaViewerScreen(
 	)
 }
 
-private fun getOverflowItems(
-	item: MediaItem,
-	context: Context,
+private fun getOverflowItemsForImage(
+	imageActions: MediaImageActions,
 	scope: CoroutineScope
 ): List<ActionItem> {
-	return if (item.mediaType == MediaType.Image) {
-		listOf(
-			ActionItem(
-				title = R.string.copy_image,
-				action = { copyImageToClipboard(item, context) },
-				icon = Icons.Outlined.ContentCopy
-			),
-			ActionItem(
-				title = R.string.download_item,
-				action = { scope.launch { downloadMediaItem(item, context) } },
-				icon = Icons.Outlined.SaveAlt
-			),
-			ActionItem(
-				title = R.string.print_image,
-				action = { printImage(item, context) },
-				icon = Icons.Outlined.Print
-			),
-			ActionItem(
-				title = R.string.set_image_as,
-				action = { setImageAs(item, context) },
-				icon = Icons.Outlined.Image
-			)
+	return listOf(
+		ActionItem(
+			title = R.string.copy_image,
+			action = imageActions::onCopy,
+			icon = Icons.Outlined.ContentCopy
+		),
+		ActionItem(
+			title = R.string.download_item,
+			action = { scope.launch { imageActions.onSave() } },
+			icon = Icons.Outlined.SaveAlt
+		),
+		ActionItem(
+			title = R.string.delete_item,
+			action = imageActions::onDelete,
+			icon = Icons.Outlined.DeleteForever
+		),
+		ActionItem(
+			title = R.string.print_image,
+			action = imageActions::onPrint,
+			icon = Icons.Outlined.Print
+		),
+		ActionItem(
+			title = R.string.set_image_as,
+			action = imageActions::onSetAs,
+			icon = Icons.Outlined.Image
 		)
-	}
-	else {
-		listOf(
-			ActionItem(
-				title = R.string.download_item,
-				action = { scope.launch { downloadMediaItem(item, context) } },
-				icon = Icons.Outlined.SaveAlt
-			),
+	)
+}
+
+private fun getOverflowItemsForVideo(
+	videoActions: MediaVideoActions,
+	scope: CoroutineScope
+): List<ActionItem> {
+	return listOf(
+		ActionItem(
+			title = R.string.download_item,
+			action = { scope.launch { videoActions.onSave() } },
+			icon = Icons.Outlined.SaveAlt
+		),
+		ActionItem(
+			title = R.string.delete_item,
+			action = videoActions::onDelete,
+			icon = Icons.Outlined.DeleteForever
 		)
-	}
+	)
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)

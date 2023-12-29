@@ -57,7 +57,7 @@ import io.github.xamdr.noties.ui.editor.NoteAction
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
 import io.github.xamdr.noties.ui.helpers.rememberMutableStateList
-import io.github.xamdr.noties.ui.media.ActionItem
+import io.github.xamdr.noties.ui.components.ActionItem
 import io.github.xamdr.noties.ui.settings.PreferenceStorage
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import io.github.xamdr.noties.ui.urls.UrlsBottomSheet

@@ -77,7 +77,7 @@ import io.github.xamdr.noties.ui.helpers.copyTextToClipboard
 import io.github.xamdr.noties.ui.helpers.doActionOrRequestPermission
 import io.github.xamdr.noties.ui.helpers.media.MediaStorageManager
 import io.github.xamdr.noties.ui.helpers.showToast
-import io.github.xamdr.noties.ui.media.ActionItem
+import io.github.xamdr.noties.ui.components.ActionItem
 import io.github.xamdr.noties.ui.media.MediaViewerActivity
 import io.github.xamdr.noties.ui.reminders.AlarmManagerHelper
 import io.github.xamdr.noties.ui.reminders.DateTimePickerDialog

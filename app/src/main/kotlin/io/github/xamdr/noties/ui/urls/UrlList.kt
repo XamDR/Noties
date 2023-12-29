@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.ui.components.OverflowMenu
-import io.github.xamdr.noties.ui.media.ActionItem
+import io.github.xamdr.noties.ui.components.ActionItem
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import io.github.xamdr.noties.domain.model.UrlItem as Url
 

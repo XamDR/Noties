@@ -70,9 +70,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
-import io.github.xamdr.noties.ui.media.ActionItem
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 import kotlin.math.max
+
+data class ActionItem(
+	@StringRes val title: Int,
+	val action: () -> Unit,
+	val icon: ImageVector? = null
+)
 
 @Composable
 fun EmptyView(icon: ImageVector, @StringRes message: Int) {
