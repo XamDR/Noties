@@ -30,9 +30,9 @@ data class DatabaseUrlEntity(
 
 	fun asDomainModel(): UrlItem {
 		return UrlItem(
-			id = id,
-			source = source,
-			metadata = UrlMetadata(host = host, title = title, image = image)
+			id = this.id,
+			source = this.source,
+			metadata = UrlMetadata(host = this.host, title = this.title, image = this.image)
 		)
 	}
 }

@@ -258,7 +258,7 @@ fun EditorScreen(
 							listOf(
 								ActionItem(
 									title = R.string.restore_from_trash,
-									action = viewModel::restoreNote,
+									action = { scope.launch { viewModel.restoreNote() } },
 									icon = Icons.Outlined.RestoreFromTrash
 								)
 							)
@@ -306,13 +306,13 @@ fun EditorScreen(
 					navigateToMediaViewer(
 						context = context,
 						launcher = mediaViewerLauncher,
-						items = viewModel.items.filterIsInstance<GridItem.Media>().map { it.data },
+						items = viewModel.note.items,
 						position = position
 					)
 				},
 				onUrlClick = { source -> uriHandler.openUri(source) },
 				onCopyUrl = { source -> context.copyTextToClipboard(R.string.label_url, source, R.string.url_copied_msg) },
-				onDeleteUrl = {},
+				onDeleteUrl = { url -> scope.launch { viewModel.deleteUrl(url) } },
 				onDateTagClick = { showDateTimePicker = true },
 				onTagClick = { onNavigatoToTags(viewModel.note.tags) },
 				onTaskContentChanged = viewModel::updateTaskContent,

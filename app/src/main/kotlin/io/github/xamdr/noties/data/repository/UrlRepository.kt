@@ -16,11 +16,12 @@ class UrlRepository @Inject constructor(private val urlDao: UrlDao) {
 			metadata = metadata,
 			noteId = noteId
 		)
-		val urlEntity = urlItem.asDatabaseEntity()
-		urlDao.insertUrl(urlEntity)
+		urlDao.insertUrl(urlItem.asDatabaseEntity())
 	}
 
 	fun getUrls(sources: List<String>): Flow<List<DatabaseUrlEntity>> = urlDao.getUrls(sources)
 
 	suspend fun getUrlsAsync(sources: List<String>): List<DatabaseUrlEntity> = urlDao.getUrlsAsync(sources)
+
+	suspend fun deleteUrl(urlEntity: DatabaseUrlEntity) = urlDao.deleteUrl(urlEntity)
 }

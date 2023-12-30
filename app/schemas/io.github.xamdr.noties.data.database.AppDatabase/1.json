@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "d7f0ffc36d7697fb536195297424c92f",
+    "identityHash": "838b85a1af50df5309c54e59ebcb09e3",
     "entities": [
       {
         "tableName": "Tags",
@@ -134,7 +134,7 @@
       },
       {
         "tableName": "MediaItems",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uri` TEXT NOT NULL, `thumbnail_uri` TEXT, `mime_type` TEXT, `media_type` TEXT NOT NULL, `description` TEXT, `duration` INTEGER NOT NULL, `note_id` INTEGER NOT NULL, FOREIGN KEY(`note_id`) REFERENCES `Notes`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uri` TEXT NOT NULL, `thumbnail_uri` TEXT, `mime_type` TEXT, `media_type` TEXT NOT NULL, `description` TEXT, `duration` INTEGER NOT NULL, `trashed` INTEGER NOT NULL, `note_id` INTEGER NOT NULL, FOREIGN KEY(`note_id`) REFERENCES `Notes`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -175,6 +175,12 @@
           {
             "fieldPath": "duration",
             "columnName": "duration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "trashed",
+            "columnName": "trashed",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -301,7 +307,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd7f0ffc36d7697fb536195297424c92f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '838b85a1af50df5309c54e59ebcb09e3')"
     ]
   }
 }

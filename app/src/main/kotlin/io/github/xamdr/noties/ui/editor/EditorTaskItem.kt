@@ -71,7 +71,7 @@ fun TaskItem(
 
 	fun onEnterKeyPress(input: String) {
 		if (input.contains("\n")) {
-			input.replace("\n", String.Empty)
+			input.remove("\n")
 			addTask()
 		}
 		else {

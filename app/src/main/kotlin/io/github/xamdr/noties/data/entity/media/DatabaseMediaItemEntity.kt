@@ -28,6 +28,7 @@ data class DatabaseMediaItemEntity(
 	@ColumnInfo(name = "media_type") val mediaType: MediaType = MediaType.Image,
 	@ColumnInfo(name = "description") val description: String? = null,
 	@ColumnInfo(name = "duration") val duration: Long = 0,
+	@ColumnInfo(name = "trashed") val trashed: Boolean = false,
 	@ColumnInfo(name = "note_id") val noteId: Long = 0
 ) {
 
@@ -39,6 +40,7 @@ data class DatabaseMediaItemEntity(
 			mediaType = this.mediaType,
 			metadata = MediaItemMetadata(this.thumbnailUri, this.duration),
 			description = this.description,
+			trashed = this.trashed,
 			noteId = this.noteId
 		)
 	}

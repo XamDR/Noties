@@ -30,6 +30,7 @@ import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.MediaItem
 import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.domain.model.Task
+import io.github.xamdr.noties.domain.model.UrlItem
 import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
@@ -54,7 +55,7 @@ fun Editor(
 	onItemClick: (Int) -> Unit,
 	onUrlClick: (String) -> Unit,
 	onCopyUrl: (String) -> Unit,
-	onDeleteUrl: (String) -> Unit,
+	onDeleteUrl: (UrlItem) -> Unit,
 	onDateTagClick: () -> Unit,
 	onTagClick: () -> Unit,
 	onTaskContentChanged: (Int, String) -> Unit,
@@ -133,6 +134,7 @@ fun Editor(
 					url = url,
 					onItemClick = { onUrlClick(url.source) },
 					hasMenu = true,
+					trashed = note.trashed,
 					onCopyUrl = onCopyUrl,
 					onDeleteUrl = onDeleteUrl
 				)

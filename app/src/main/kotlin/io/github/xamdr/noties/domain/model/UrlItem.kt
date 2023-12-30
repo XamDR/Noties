@@ -14,12 +14,12 @@ data class UrlItem(
 
 	fun asDatabaseEntity(): DatabaseUrlEntity {
 		return DatabaseUrlEntity(
-			id = id,
-			source = source,
-			host = metadata.host,
-			title = metadata.title,
-			image = metadata.image,
-			noteId = noteId
+			id = this.id,
+			source = this.source,
+			host = this.metadata.host,
+			title = this.metadata.title,
+			image = this.metadata.image,
+			noteId = this.noteId
 		)
 	}
 }

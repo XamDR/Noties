@@ -22,10 +22,11 @@ import io.github.xamdr.noties.domain.model.containsItem
 import io.github.xamdr.noties.domain.model.convertToString
 import io.github.xamdr.noties.domain.model.joinToString
 import io.github.xamdr.noties.domain.usecase.DeleteMediaItemsUseCase
-import io.github.xamdr.noties.domain.usecase.DeleteNotesUseCase
+import io.github.xamdr.noties.domain.usecase.DeleteUrlUseCase
 import io.github.xamdr.noties.domain.usecase.GetNoteByIdUseCase
 import io.github.xamdr.noties.domain.usecase.GetUrlsAsyncUseCase
 import io.github.xamdr.noties.domain.usecase.InsertNoteUseCase
+import io.github.xamdr.noties.domain.usecase.RestoreNoteFromTrashUseCase
 import io.github.xamdr.noties.domain.usecase.UpdateNoteUseCase
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.UriHelper
@@ -44,8 +45,9 @@ class EditorViewModel @Inject constructor(
 	private val getNoteByIdUseCase: GetNoteByIdUseCase,
 	private val insertNoteUseCase: InsertNoteUseCase,
 	private val updateNoteUseCase: UpdateNoteUseCase,
-	private val deleteNotesUseCase: DeleteNotesUseCase,
+	private val restoreNoteFromTrashUseCase: RestoreNoteFromTrashUseCase,
 	private val getUrlsAsyncUseCase: GetUrlsAsyncUseCase,
+	private val deleteUrlUseCase: DeleteUrlUseCase,
 	private val deleteMediaItemsUseCase: DeleteMediaItemsUseCase,
 	private val savedState: SavedStateHandle) : ViewModel() {
 
@@ -185,13 +187,27 @@ class EditorViewModel @Inject constructor(
 		tasks.remove(task)
 	}
 
-	fun restoreNote() {
+	suspend fun restoreNote() {
 		note = note.copy(trashed = false)
+		if (note.items.isNotEmpty()) {
+			val restoreItems = mutableStateListOf<MediaItem>()
+			note.items.forEach { item -> restoreItems.add(item.copy(trashed = false)) }
+			note = note.copy(items = restoreItems)
+		}
+		val originalNote = getNoteById(note.id)
+		restoreNoteFromTrashUseCase(originalNote)
 	}
 
 	fun updateNoteColor(color: Color?) {
 		val newColor = color?.toArgb()
 		note = note.copy(color = newColor)
+	}
+
+	suspend fun deleteUrl(url: UrlItem) {
+		urls.remove(url)
+		deleteUrlUseCase(url)
+		val newText = note.text.remove(url.source)
+		note = note.copy(text = newText)
 	}
 
 	suspend fun deleteItems(items: List<MediaItem>) = deleteMediaItemsUseCase(items)
@@ -221,7 +237,6 @@ class EditorViewModel @Inject constructor(
 		val originalNote = getNoteById(noteId)
 		return if (updatedNote != originalNote) {
 			if (updatedNote.isEmpty()) {
-				deleteNotesUseCase(listOf(updatedNote.id))
 				NoteAction.DeleteEmptyNote
 			}
 			else {

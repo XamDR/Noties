@@ -10,6 +10,7 @@ data class NetworkMediaItemEntity(
 	val mediaType: MediaType = MediaType.Image,
 	val description: String? = null,
 	val duration: Long = 0,
+	val trashed: Boolean = false,
 	val noteId: Long = 0
 ) {
 
@@ -22,6 +23,7 @@ data class NetworkMediaItemEntity(
 			mediaType = this.mediaType,
 			description = this.description,
 			duration = this.duration,
+			trashed = this.trashed,
 			noteId = this.noteId
 		)
 	}

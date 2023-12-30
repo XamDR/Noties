@@ -11,12 +11,12 @@ data class NetworkUrlEntity(
 
 	fun asDatabaseEntity(): DatabaseUrlEntity {
 		return DatabaseUrlEntity(
-			id = id,
-			source = source,
-			title = title,
-			host = host,
-			image = image,
-			noteId = noteId
+			id = this.id,
+			source = this.source,
+			title = this.title,
+			host = this.host,
+			image = this.image,
+			noteId = this.noteId
 		)
 	}
 }

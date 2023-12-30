@@ -43,7 +43,7 @@ fun UrlList(
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
 		items(items = urls, key = { url -> url.id }) { url ->
-			UrlItem(url = url, onItemClick = onUrlClick)
+			UrlItem(url = url, hasMenu = false, onItemClick = onUrlClick)
 		}
 	}
 }
@@ -64,9 +64,10 @@ fun UrlList(size: Int = 5) {
 fun UrlItem(
 	url: Url,
 	onItemClick: (String) -> Unit,
-	hasMenu: Boolean = false,
+	hasMenu: Boolean,
+	trashed: Boolean = false,
 	onCopyUrl: ((String) -> Unit)? = null,
-	onDeleteUrl: ((String) -> Unit)? = null
+	onDeleteUrl: ((Url) -> Unit)? = null
 ) {
 	Card(
 		onClick = { onItemClick(url.source) },
@@ -110,10 +111,22 @@ fun UrlItem(
 			}
 			if (hasMenu) {
 				OverflowMenu(
-					items = listOf(
-						ActionItem(title = R.string.copy_image, action = { onCopyUrl?.invoke(url.source) }),
-						ActionItem(title = R.string.delete_item, action = { onDeleteUrl?.invoke(url.source) })
-					)
+					items = buildList {
+						add(
+							ActionItem(
+								title = R.string.copy_image,
+								action = { onCopyUrl?.invoke(url.source) }
+							)
+						)
+						if (trashed.not()) {
+							add(
+								ActionItem(
+									title = R.string.delete_item,
+									action = { onDeleteUrl?.invoke(url) }
+								)
+							)
+						}
+					}
 				)
 			}
 		}

@@ -87,6 +87,7 @@ class DeleteNoteByIdUseCase @Inject constructor(private val noteRepository: Note
 }
 
 class GetTrashedNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
+
 	operator fun invoke(): Flow<List<Note>> {
 		return noteRepository.getTrashedNotes().map { result ->
 			result.map { (note, items) ->
@@ -146,6 +147,14 @@ class RestoreNotesUseCase @Inject constructor(private val noteRepository: NoteRe
 			val restoredNote = if (fromTrash) note.copy(trashed = false) else note.copy(archived = false)
 			noteRepository.updateNote(restoredNote.asDatabaseEntity())
 		}
+	}
+}
+
+class RestoreNoteFromTrashUseCase @Inject constructor(private val noteRepository: NoteRepository) {
+
+	suspend operator fun invoke(note: Note) {
+		val restoreNote = note.copy(trashed = false)
+		noteRepository.updateNote(restoreNote.asDatabaseEntity())
 	}
 }
 

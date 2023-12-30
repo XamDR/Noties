@@ -28,3 +28,10 @@ class GetUrlsAsyncUseCase @Inject constructor(private val urlRepository: UrlRepo
 		return urlRepository.getUrlsAsync(sources).map { it.asDomainModel() }
 	}
 }
+
+class DeleteUrlUseCase @Inject constructor(private val urlRepository: UrlRepository) {
+
+	suspend operator fun invoke(urlItem: UrlItem) {
+		urlRepository.deleteUrl(urlItem.asDatabaseEntity())
+	}
+}

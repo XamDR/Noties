@@ -12,6 +12,7 @@ import io.github.xamdr.noties.data.dao.NoteDao
 import io.github.xamdr.noties.data.dao.TagDao
 import io.github.xamdr.noties.data.dao.UrlDao
 import io.github.xamdr.noties.data.database.AppDatabase
+import io.github.xamdr.noties.data.database.NotiesDatabaseCallback
 import io.github.xamdr.noties.data.repository.MediaItemRepository
 import io.github.xamdr.noties.data.repository.NoteRepository
 import io.github.xamdr.noties.data.repository.TagRepository
@@ -26,6 +27,7 @@ object DatabaseModule {
 	@Provides
 	fun providesAppDatabase(@ApplicationContext context: Context) =
 		Room.databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME)
+			.addCallback(NotiesDatabaseCallback())
 			.build()
 
 	@Provides

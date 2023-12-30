@@ -116,8 +116,8 @@ fun MediaViewerScreen(
 	}
 
 	val overflowItems = when (currentItem.mediaType) {
-		MediaType.Image -> getOverflowItemsForImage(imageActions, scope, ::onDelete)
-		MediaType.Video -> getOverflowItemsForVideo(videoActions, scope, ::onDelete)
+		MediaType.Image -> getOverflowItemsForImage(currentItem, imageActions, scope, ::onDelete)
+		MediaType.Video -> getOverflowItemsForVideo(currentItem, videoActions, scope, ::onDelete)
 		MediaType.Audio -> throw IllegalArgumentException("Invalid media type: ${currentItem.mediaType}")
 	}
 
@@ -191,56 +191,76 @@ fun MediaViewerScreen(
 }
 
 private fun getOverflowItemsForImage(
+	item: MediaItem,
 	imageActions: MediaImageActions,
 	scope: CoroutineScope,
 	onDelete: () -> Unit,
 ): List<ActionItem> {
-	return listOf(
-		ActionItem(
-			title = R.string.copy_image,
-			action = imageActions::onCopy,
-			icon = Icons.Outlined.ContentCopy
-		),
-		ActionItem(
-			title = R.string.download_item,
-			action = { scope.launch { imageActions.onSave() } },
-			icon = Icons.Outlined.SaveAlt
-		),
-		ActionItem(
-			title = R.string.delete_item,
-			action = onDelete,
-			icon = Icons.Outlined.DeleteForever
-		),
-		ActionItem(
-			title = R.string.print_image,
-			action = imageActions::onPrint,
-			icon = Icons.Outlined.Print
-		),
-		ActionItem(
-			title = R.string.set_image_as,
-			action = imageActions::onSetAs,
-			icon = Icons.Outlined.Image
+	return buildList {
+		add(
+			ActionItem(
+				title = R.string.copy_image,
+				action = imageActions::onCopy,
+				icon = Icons.Outlined.ContentCopy
+			)
 		)
-	)
+		add(
+			ActionItem(
+				title = R.string.download_item,
+				action = { scope.launch { imageActions.onSave() } },
+				icon = Icons.Outlined.SaveAlt
+			)
+		)
+		if (item.trashed.not()) {
+			add(
+				ActionItem(
+					title = R.string.delete_item,
+					action = onDelete,
+					icon = Icons.Outlined.DeleteForever
+				)
+			)
+		}
+		add(
+			ActionItem(
+				title = R.string.print_image,
+				action = imageActions::onPrint,
+				icon = Icons.Outlined.Print
+			)
+		)
+		add(
+			ActionItem(
+				title = R.string.set_image_as,
+				action = imageActions::onSetAs,
+				icon = Icons.Outlined.Image
+			)
+		)
+	}
 }
 
 private fun getOverflowItemsForVideo(
+	item: MediaItem,
 	videoActions: MediaActions,
 	scope: CoroutineScope,
 	onDelete: () -> Unit
 ): List<ActionItem> {
-	return listOf(
-		ActionItem(
-			title = R.string.download_item,
-			action = { scope.launch { videoActions.onSave() } },
-			icon = Icons.Outlined.SaveAlt
-		),
-		ActionItem(
-			title = R.string.delete_item,
-			action = onDelete,
-			icon = Icons.Outlined.DeleteForever
+	return buildList {
+		add(
+			ActionItem(
+				title = R.string.download_item,
+				action = { scope.launch { videoActions.onSave() } },
+				icon = Icons.Outlined.SaveAlt
+			)
 		)
-	)
+		if (item.trashed.not()) {
+			add(
+				ActionItem(
+					title = R.string.delete_item,
+					action = onDelete,
+					icon = Icons.Outlined.DeleteForever
+				)
+			)
+		}
+	}
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)

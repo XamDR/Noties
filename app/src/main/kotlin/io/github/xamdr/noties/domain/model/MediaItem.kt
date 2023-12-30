@@ -14,6 +14,7 @@ data class MediaItem(
 	val mediaType: MediaType = MediaType.Image,
 	val metadata: MediaItemMetadata = MediaItemMetadata(),
 	val description: String? = null,
+	val trashed: Boolean = false,
 	val noteId: Long = 0
 ) : Parcelable {
 
@@ -26,6 +27,7 @@ data class MediaItem(
 			mediaType = this.mediaType,
 			description = this.description,
 			duration = this.metadata.duration,
+			trashed = this.trashed,
 			noteId = this.noteId
 		)
 	}

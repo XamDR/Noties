@@ -8,6 +8,10 @@ class MediaItemRepository(private val mediaDao: MediaDao) {
 	suspend fun insertItems(items: List<DatabaseMediaItemEntity>) {
 		mediaDao.insertMediaItems(items)
 	}
+
+	suspend fun updateItems(items: List<DatabaseMediaItemEntity>) {
+		mediaDao.updateMediaItems(items)
+	}
 	
 	suspend fun deleteItems(items: List<DatabaseMediaItemEntity>) {
 		mediaDao.deleteMediaItems(items)
