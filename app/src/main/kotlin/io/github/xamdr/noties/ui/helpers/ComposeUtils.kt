@@ -1,7 +1,10 @@
 package io.github.xamdr.noties.ui.helpers
 
 import android.text.Annotation
+import android.text.SpannableString
 import android.text.SpannedString
+import android.text.style.URLSpan
+import android.text.util.Linkify
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -48,6 +51,7 @@ import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntSize
 import androidx.core.text.getSpans
+import androidx.core.text.util.LinkifyCompat
 import io.github.xamdr.noties.domain.model.Note
 
 fun Modifier.onFocusShowSoftKeyboard(focusRequester: FocusRequester): Modifier {
@@ -170,12 +174,16 @@ fun Modifier.onFocusSelectAll(state: MutableState<TextFieldValue>): Modifier {
 	}
 }
 
+private const val BULLET = "\u2022"
+private const val GAP = "\t\t"
+private const val NEWLINE = "\n"
+
 @Composable
 fun makeBulletedList(input: String): AnnotatedString {
 	val textStyle = LocalTextStyle.current
 	val textMeasurer = rememberTextMeasurer()
 	val twoTabWidth = remember(textStyle, textMeasurer) {
-		textMeasurer.measure(text = GAP, style = textStyle).size.width
+		textMeasurer.measure(text = "${BULLET}${GAP}", style = textStyle).size.width
 	}
 	val restLine = with(LocalDensity.current) { twoTabWidth.toSp() }
 	val paragraphStyle = ParagraphStyle(textIndent = TextIndent(restLine = restLine))
@@ -200,6 +208,18 @@ fun makeBulletedList(input: String): AnnotatedString {
 	}
 }
 
-private const val GAP = "\t\t"
-private const val NEWLINE = "\n"
-private const val BULLET = "\u2022"
+fun linkify(source: String, linkStyle: SpanStyle): AnnotatedString {
+	return buildAnnotatedString {
+		append(source)
+		val spannable = SpannableString(source)
+		LinkifyCompat.addLinks(spannable, Linkify.WEB_URLS)
+		val spans = spannable.getSpans<URLSpan>(0, spannable.length)
+
+		for (span in spans) {
+			val start = spannable.getSpanStart(span)
+			val end = spannable.getSpanEnd(span)
+			addStyle(style = linkStyle, start = start, end = end)
+			addStringAnnotation(tag = "URL", annotation = span.url, start = start, end = end)
+		}
+	}
+}
