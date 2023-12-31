@@ -1,16 +1,14 @@
 [![build-debug](https://github.com/XamDR/Noties/actions/workflows/build_debug_workflow.yaml/badge.svg)](https://github.com/XamDR/Noties/actions/workflows/build_debug_workflow.yaml)
 
 # Noties
-A free and open-source note taking app inspired by Google Keep made with Modern Android Development (MAD) skills. (Under development)
+A free and open-source note taking app inspired by Google Keep made with Jetpack Compose. (Under development)
 
 ## Jetpack Libraries:
 - Dagger-Hilt
-- Flows and Coroutines
-- LiveData and ViewBinding
-- Material 3
+- Material 3 for Compose
 - Navigation Component
 - Room
-- Splash Screen
 - ViewModel
+- Media
 
-The app is designed around the Clean Code, MVVM and Single Activity architectures.
+The app follows Clean Code, MVVM and Single Activity architectures.
