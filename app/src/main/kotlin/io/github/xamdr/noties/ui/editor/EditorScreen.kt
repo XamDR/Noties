@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.outlined.AddBox
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ArrowUpward
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.outlined.FileOpen
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.RestoreFromTrash
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -229,6 +231,12 @@ fun EditorScreen(
 					}
 				},
 				actions = {
+					IconButton(onClick = { viewModel.setPinnedValue(viewModel.note.pinned) }) {
+						Icon(
+							imageVector = if (viewModel.note.pinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+							contentDescription = stringResource(id = if (viewModel.note.pinned) R.string.unpin_note else R.string.pin_note)
+						)
+					}
 					if (noteEmpty.not()) {
 						IconButton(onClick = { ShareHelper.shareContent(context, viewModel.note) }) {
 							Icon(

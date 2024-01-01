@@ -222,6 +222,10 @@ class EditorViewModel @Inject constructor(
 		}
 	}
 
+	fun setPinnedValue(value: Boolean) {
+		note = note.copy(pinned = value.not())
+	}
+
 	private suspend fun getNoteById(noteId: Long) = getNoteByIdUseCase(noteId)
 
 	private suspend fun insertNote(newNote: Note): NoteAction {

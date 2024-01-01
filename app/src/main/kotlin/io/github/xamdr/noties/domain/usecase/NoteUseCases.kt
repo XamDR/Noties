@@ -187,3 +187,25 @@ class UpdateReminderUseCase @Inject constructor(private val noteRepository: Note
 		noteRepository.updateReminderForNote(noteId, reminderDate)
 	}
 }
+
+class PinNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
+
+	suspend operator fun invoke(notes: List<Note>) {
+		for (note in notes) {
+			if (note.pinned.not()) {
+				val pinnedNote = note.copy(pinned = true)
+				noteRepository.updateNote(pinnedNote.asDatabaseEntity())
+			}
+		}
+	}
+}
+
+class UnpinNotesUseCase @Inject constructor(private val noteRepository: NoteRepository) {
+
+	suspend operator fun invoke(notes: List<Note>) {
+		for (note in notes) {
+			val unpinnedNote = note.copy(pinned = false)
+			noteRepository.updateNote(unpinnedNote.asDatabaseEntity())
+		}
+	}
+}

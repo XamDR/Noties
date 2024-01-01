@@ -16,8 +16,10 @@ import io.github.xamdr.noties.domain.usecase.GetNotesWithReminderUseCase
 import io.github.xamdr.noties.domain.usecase.GetTrashedNotesUseCase
 import io.github.xamdr.noties.domain.usecase.GetUrlsUseCase
 import io.github.xamdr.noties.domain.usecase.MoveNotesToTrashUseCase
+import io.github.xamdr.noties.domain.usecase.PinNotesUseCase
 import io.github.xamdr.noties.domain.usecase.RestoreNotesUseCase
 import io.github.xamdr.noties.domain.usecase.SaveUrlsUseCase
+import io.github.xamdr.noties.domain.usecase.UnpinNotesUseCase
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -36,7 +38,9 @@ class NotesViewModel @Inject constructor(
 	private val deleteNoteByIdUseCase: DeleteNoteByIdUseCase,
 	private val emptyTrashUseCase: EmptyTrashUseCase,
 	private val saveUrlsUseCase: SaveUrlsUseCase,
-	private val getUrlsUseCase: GetUrlsUseCase) : ViewModel() {
+	private val getUrlsUseCase: GetUrlsUseCase,
+	private val pinNotesUseCase: PinNotesUseCase,
+	private val unpinNotesUseCase: UnpinNotesUseCase) : ViewModel() {
 
 	fun getNotes(screen: Screen): Flow<List<Note>> {
 		return when (screen.type) {
@@ -68,4 +72,13 @@ class NotesViewModel @Inject constructor(
 	suspend fun saveUrls(noteId: Long, urls: List<String>) = saveUrlsUseCase(noteId, urls)
 
 	fun getUrls(sources: List<String>): Flow<List<UrlItem>> = getUrlsUseCase(sources)
+
+	suspend fun togglePinnedValue(notes: List<Note>) {
+		if (notes.any { it.pinned.not() }) {
+			pinNotesUseCase(notes)
+		}
+		else {
+			unpinNotesUseCase(notes)
+		}
+	}
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Article
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.RestoreFromTrash
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.ViewAgenda
@@ -148,6 +150,14 @@ fun NotesScreen(
 		}
 	}
 
+	fun togglePinnedValue() {
+		scope.launch {
+			val selectedNotes = notes?.filter { note -> selectedIds.contains(note.id) }.orEmpty()
+			viewModel.togglePinnedValue(selectedNotes)
+			selectedIds.clear()
+		}
+	}
+
 	Scaffold(
 		topBar = {
 			if (inSelectionMode.not()) {
@@ -258,6 +268,9 @@ fun NotesScreen(
 				}
 			}
 			else {
+				val allPinned = notes?.filter { note -> selectedIds.contains(note.id) }
+					.orEmpty()
+					.all { it.pinned }
 				TopAppBar(
 					title = { Text(text = "${selectedIds.size}") },
 					navigationIcon = {
@@ -269,6 +282,12 @@ fun NotesScreen(
 						}
 					},
 					actions = {
+						IconButton(onClick = ::togglePinnedValue) {
+							Icon(
+								imageVector = if (allPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+								contentDescription = stringResource(id = if (allPinned) R.string.unpin_note else R.string.pin_note)
+							)
+						}
 						IconButton(
 							onClick = {
 								showDeleteNotesDialog = true
