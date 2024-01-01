@@ -83,7 +83,7 @@ enum class LayoutType {
 @Composable
 fun NoteList(
 	modifier: Modifier,
-	notes: List<Note>,
+	gridItems: List<GridItem>,
 	layoutType: LayoutType,
 	selectedIds: MutableList<Long>,
 	inSelectionMode: Boolean,
@@ -117,52 +117,62 @@ fun NoteList(
 		horizontalArrangement = Arrangement.spacedBy(8.dp)
 	) {
 		items(
-			items = notes,
-			key = { note -> note.id.toInt() }
-		) { note ->
-			val selected = selectedIds.contains(note.id)
-			val currentNote by rememberUpdatedState(newValue = note)
-			val dismissState = rememberDismissState(confirmValueChange = { dissmissValue ->
-				when (dissmissValue) {
-					DismissValue.DismissedToEnd -> {
-						if (currentNote.archived) {
-							onUnarchiveNote(currentNote)
-						}
-						else {
-							onArchiveNote(currentNote)
-						}
-						true
-					}
-					DismissValue.DismissedToStart -> {
-						onMoveNoteToTrash(currentNote); true
-					}
-					else -> false
+			items = gridItems,
+			key = { item -> item.id.toInt() }
+		) { item ->
+			when (item) {
+				is GridItem.Header -> {
+					Text(
+						text = stringResource(id = item.title),
+						style = MaterialTheme.typography.labelMedium
+					)
 				}
-			})
-			if (note.trashed) {
-				NoteItem(
-					note = note,
-					selected = selected,
-					onClick = { onClick(it, selected) },
-					onLongClick = { selectedIds.add(note.id) },
-					onUrlsTagClick = onUrlsTagClick
-				)
-			}
-			else {
-				SwipeToDismiss(
-					state = dismissState,
-					background = { DismissBackground(dismissState, currentNote) },
-					dismissContent = {
+				is GridItem.NoteItem -> {
+					val selected = selectedIds.contains(item.id)
+					val currentNote by rememberUpdatedState(newValue = item.note)
+					val dismissState = rememberDismissState(confirmValueChange = { dissmissValue ->
+						when (dissmissValue) {
+							DismissValue.DismissedToEnd -> {
+								if (currentNote.archived) {
+									onUnarchiveNote(currentNote)
+								}
+								else {
+									onArchiveNote(currentNote)
+								}
+								true
+							}
+							DismissValue.DismissedToStart -> {
+								onMoveNoteToTrash(currentNote); true
+							}
+							else -> false
+						}
+					})
+					if (item.note.trashed) {
 						NoteItem(
-							note = note,
+							note = item.note,
 							selected = selected,
-							onClick = { note -> onClick(note, selected) },
-							onLongClick = { selectedIds.add(note.id) },
+							onClick = { onClick(it, selected) },
+							onLongClick = { selectedIds.add(item.id) },
 							onUrlsTagClick = onUrlsTagClick
 						)
-					},
-					modifier = Modifier.animateItemPlacement()
-				)
+					}
+					else {
+						SwipeToDismiss(
+							state = dismissState,
+							background = { DismissBackground(dismissState, currentNote) },
+							dismissContent = {
+								NoteItem(
+									note = item.note,
+									selected = selected,
+									onClick = { note -> onClick(note, selected) },
+									onLongClick = { selectedIds.add(item.id) },
+									onUrlsTagClick = onUrlsTagClick
+								)
+							},
+							modifier = Modifier.animateItemPlacement()
+						)
+					}
+				}
 			}
 		}
 	}

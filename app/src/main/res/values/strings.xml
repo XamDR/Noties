@@ -62,6 +62,9 @@
 	<string name="empty_trash_message_warning">All notes in Trash will be permanently deleted.</string>
 	<string name="delete_forever">Delete forever</string>
 	<string name="restore_note">Restore notes</string>
+	<string name="pinned_notes_header">Pinned</string>
+	<string name="archived_notes_header">Archived</string>
+	<string name="other_notes_header">Other</string>
 
 	<!-- Tags Fragment -->
 	<string name="tags_fragment_label">Tags</string>

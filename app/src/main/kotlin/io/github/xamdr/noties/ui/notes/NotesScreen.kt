@@ -320,9 +320,10 @@ fun NotesScreen(
 			}
 			else {
 				notes?.let {
+					val gridItems = if (screen.type == ScreenType.Main) groupNotesByPinnedCondition(it) else groupNotesByNonArchivedCondition(it)
 					NoteList(
 						modifier = Modifier.padding(innerPadding),
-						notes = it,
+						gridItems = gridItems,
 						layoutType = layoutType,
 						selectedIds = selectedIds,
 						inSelectionMode = inSelectionMode,
