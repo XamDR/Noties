@@ -99,6 +99,9 @@ fun NotesScreen(
 	val emptyNoteDeletedMessage = stringResource(id = R.string.empty_note_deleted)
 	val selectedIds = rememberMutableStateList<Long>()
 	val inSelectionMode by remember { derivedStateOf { selectedIds.isNotEmpty() } }
+	val selectedNotes by remember {
+		derivedStateOf { notes?.filter { note -> selectedIds.contains(note.id) }.orEmpty() }
+	}
 	var showDeleteNotesDialog by rememberSaveable { mutableStateOf(value = false) }
 	val isRecycleBinEmpty by remember { derivedStateOf { notes.isNullOrEmpty() } }
 	var isBatchDelete by rememberSaveable { mutableStateOf(value = false) }
@@ -128,7 +131,6 @@ fun NotesScreen(
 		scope.launch {
 			if (selectedIds.isNotEmpty()) {
 				viewModel.deleteNotes(selectedIds)
-				val selectedNotes = notes?.filter { note -> selectedIds.contains(note.id) }.orEmpty()
 				selectedNotes.forEach { note -> MediaStorageManager.deleteItems(context, note.items) }
 				selectedIds.clear()
 			}
@@ -143,7 +145,6 @@ fun NotesScreen(
 	fun restoreNotes() {
 		scope.launch {
 			if (selectedIds.isNotEmpty()) {
-				val selectedNotes = notes?.filter { note -> selectedIds.contains(note.id) }.orEmpty()
 				viewModel.restoreNotesFromTrash(selectedNotes)
 				selectedIds.clear()
 			}
@@ -152,7 +153,6 @@ fun NotesScreen(
 
 	fun togglePinnedValue() {
 		scope.launch {
-			val selectedNotes = notes?.filter { note -> selectedIds.contains(note.id) }.orEmpty()
 			viewModel.togglePinnedValue(selectedNotes)
 			selectedIds.clear()
 		}
@@ -268,9 +268,7 @@ fun NotesScreen(
 				}
 			}
 			else {
-				val allPinned = notes?.filter { note -> selectedIds.contains(note.id) }
-					.orEmpty()
-					.all { it.pinned }
+				val allPinned = selectedNotes.all { it.pinned }
 				TopAppBar(
 					title = { Text(text = "${selectedIds.size}") },
 					navigationIcon = {
@@ -339,7 +337,7 @@ fun NotesScreen(
 			}
 			else {
 				notes?.let {
-					val gridItems = if (screen.type == ScreenType.Main) groupNotesByPinnedCondition(it) else groupNotesByNonArchivedCondition(it)
+					val gridItems = groupNotesByCondition(it, screen.type)
 					NoteList(
 						modifier = Modifier.padding(innerPadding),
 						gridItems = gridItems,

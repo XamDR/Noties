@@ -3,24 +3,36 @@ package io.github.xamdr.noties.ui.notes
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.Note
 
-sealed class GridItem(open val id: Long) {
-	data class Header(override val id: Long, val title: Int) : GridItem(id)
-	data class NoteItem(val note: Note) : GridItem(note.id)
+sealed class GridItem(val id: Int) {
+	data class Header(val title: Int) : GridItem(title.hashCode())
+	data class NoteItem(val note: Note) : GridItem(note.id.toInt())
 }
 
-fun groupNotesByPinnedCondition(notes: List<Note>): List<GridItem> {
-	val (first, second) = notes.partition { it.pinned }
-	val firstList = if (first.isEmpty()) first.map { GridItem.NoteItem(it) }
-		else listOf(GridItem.Header(id = 0, title = R.string.pinned_notes_header)) + first.map { GridItem.NoteItem(it) }
-	val secondList = if (first.isEmpty()) second.map { GridItem.NoteItem(it) }
-		else listOf(GridItem.Header(id = -1, title = R.string.other_notes_header)) + second.map { GridItem.NoteItem(it) }
+fun groupNotesByCondition(notes: List<Note>, screenType: ScreenType): List<GridItem> {
+	return when (screenType) {
+		ScreenType.Main, ScreenType.Protected, ScreenType.Reminder -> groupNotesByPinnedCondition(notes)
+		ScreenType.Tag -> groupNotesByNonArchivedCondition(notes)
+		ScreenType.Archived, ScreenType.Trash -> notes.map { GridItem.NoteItem(it) }
+	}
+}
+
+private fun groupNotesByPinnedCondition(notes: List<Note>): List<GridItem> {
+	val (pinned, nonPinned) = notes.partition { it.pinned }
+	val firstList = if (pinned.isEmpty()) pinned.map { GridItem.NoteItem(it) }
+		else listOf(GridItem.Header(title = R.string.pinned_notes_header)) + pinned.map { GridItem.NoteItem(it) }
+	val secondList = if (pinned.isEmpty()) nonPinned.map { GridItem.NoteItem(it) }
+		else listOf(GridItem.Header(title = R.string.other_notes_header)) + nonPinned.map { GridItem.NoteItem(it) }
 	return firstList + secondList
 }
 
-fun groupNotesByNonArchivedCondition(notes: List<Note>): List<GridItem> {
-	val (first, second) = notes.partition { it.archived.not() }
-	val firstList = first.map { GridItem.NoteItem(it) }
-	val secondList = if (second.isEmpty()) emptyList()
-		else listOf(GridItem.Header(id = -1, title = R.string.archived_notes_header)) + second.map { GridItem.NoteItem(it) }
-	return firstList + secondList
+private fun groupNotesByNonArchivedCondition(notes: List<Note>): List<GridItem> {
+	val (nonArchived, archived) = notes.partition { it.archived.not() }
+	val (pinned, nonPinned) = nonArchived.partition { it.pinned }
+	val firstListPinned = if (pinned.isEmpty()) emptyList() else
+		listOf(GridItem.Header(title = R.string.pinned_notes_header)) + pinned.map { GridItem.NoteItem(it) }
+	val firstListNonPinned = if (pinned.isEmpty()) nonPinned.map { GridItem.NoteItem(it) } else
+		listOf(GridItem.Header(title = R.string.other_notes_header)) + nonPinned.map { GridItem.NoteItem(it) }
+	val secondList = if (archived.isEmpty()) emptyList()
+		else listOf(GridItem.Header(title = R.string.archived_notes_header)) + archived.map { GridItem.NoteItem(it) }
+	return firstListPinned + firstListNonPinned + secondList
 }

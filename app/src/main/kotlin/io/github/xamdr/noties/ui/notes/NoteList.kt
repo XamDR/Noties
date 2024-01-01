@@ -118,7 +118,7 @@ fun NoteList(
 	) {
 		items(
 			items = gridItems,
-			key = { item -> item.id.toInt() }
+			key = { item -> item.id }
 		) { item ->
 			when (item) {
 				is GridItem.Header -> {
@@ -128,7 +128,7 @@ fun NoteList(
 					)
 				}
 				is GridItem.NoteItem -> {
-					val selected = selectedIds.contains(item.id)
+					val selected = selectedIds.contains(item.id.toLong())
 					val currentNote by rememberUpdatedState(newValue = item.note)
 					val dismissState = rememberDismissState(confirmValueChange = { dissmissValue ->
 						when (dissmissValue) {
@@ -152,7 +152,7 @@ fun NoteList(
 							note = item.note,
 							selected = selected,
 							onClick = { onClick(it, selected) },
-							onLongClick = { selectedIds.add(item.id) },
+							onLongClick = { selectedIds.add(item.id.toLong()) },
 							onUrlsTagClick = onUrlsTagClick
 						)
 					}
@@ -165,7 +165,7 @@ fun NoteList(
 									note = item.note,
 									selected = selected,
 									onClick = { note -> onClick(note, selected) },
-									onLongClick = { selectedIds.add(item.id) },
+									onLongClick = { selectedIds.add(item.id.toLong()) },
 									onUrlsTagClick = onUrlsTagClick
 								)
 							},
