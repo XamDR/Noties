@@ -2,14 +2,13 @@ package io.github.xamdr.noties.ui.helpers
 
 object Constants {
 	const val BUNDLE_NOTE_ID = "BUNDLE_NOTE_ID"
-	const val BUNDLE_NOTE_TEXT = "BUNDLE_NOTE_TEXT"
+	const val BUNDLE_NOTE = "BUNDLE_NOTE"
 	const val BUNDLE_ACTION = "BUNDLE_ACTION"
 	const val BUNDLE_TAGS = "BUNDLE_TAGS"
 	const val BUNDLE_TAG = "BUNDLE_TAG"
 	const val BUNDLE_SELECTED_TAGS = "BUNDLE_SELECTED_TAGS"
 	const val IMAGE_STORE_MANAGER = "IMAGE_STORE_MANAGER"
 	const val IO = "IO"
-	const val REQUEST_KEY = "REQUEST_KEY"
 	const val MIME_TYPE_IMAGE = "image/*"
 	const val MIME_TYPE_VIDEO = "video/*"
 	const val MIME_TYPE_TEXT = "text/plain"

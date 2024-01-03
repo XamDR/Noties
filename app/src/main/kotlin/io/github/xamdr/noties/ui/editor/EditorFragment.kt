@@ -15,8 +15,10 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.xamdr.noties.R
+import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.getNavigationResult
+import io.github.xamdr.noties.ui.helpers.getParcelableCompat
 import io.github.xamdr.noties.ui.helpers.onBackPressed
 import io.github.xamdr.noties.ui.helpers.setNavigationResult
 import io.github.xamdr.noties.ui.helpers.tryNavigate
@@ -33,8 +35,8 @@ class EditorFragment : Fragment() {
 	private val tagName by lazy(LazyThreadSafetyMode.NONE) {
 		requireArguments().getString(Constants.BUNDLE_TAG, String.Empty)
 	}
-	private val text by lazy(LazyThreadSafetyMode.NONE) {
-		requireArguments().getString(Constants.BUNDLE_NOTE_TEXT)
+	private val note by lazy(LazyThreadSafetyMode.NONE) {
+		requireArguments().getParcelableCompat(Constants.BUNDLE_NOTE, Note::class.java)
 	}
 	@Inject lateinit var preferenceStorage: PreferenceStorage
 
@@ -56,7 +58,7 @@ class EditorFragment : Fragment() {
 			val defaultColor = MaterialTheme.colorScheme.surface
 			EditorScreen(
 				noteId = noteId,
-				text = text,
+				noteFromIntent = note,
 				selectedTags = allTags,
 				preferenceStorage = preferenceStorage,
 				onNavigationIconClick = ::onBackPressed,

@@ -100,7 +100,7 @@ class EditorViewModel @Inject constructor(
 		}
 	}
 
-	suspend fun getNote(noteId: Long, text: String?, tags: List<String>?) {
+	suspend fun getNote(noteId: Long, noteFromIntent: Note?, tags: List<String>?) {
 		if (noteId != 0L && savedState.get<Note>("note") == null) {
 			val noteDb = getNoteById(noteId)
 			if (note.id != noteDb.id) {
@@ -108,7 +108,7 @@ class EditorViewModel @Inject constructor(
 			}
 		}
 		else if (noteId == 0L) {
-			text?.let { note = note.copy(text = it) }
+			noteFromIntent?.let { note = it }
 		}
 		if (note.items.isNotEmpty()) {
 			val itemsFromNote = note.items.map(GridItem::Media).filter { !items.contains(it) }

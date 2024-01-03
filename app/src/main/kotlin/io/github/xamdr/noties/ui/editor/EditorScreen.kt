@@ -66,6 +66,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.domain.model.MediaItem
+import io.github.xamdr.noties.domain.model.Note
 import io.github.xamdr.noties.ui.components.OverflowMenu
 import io.github.xamdr.noties.ui.components.TextBox
 import io.github.xamdr.noties.ui.helpers.ColorSaver
@@ -93,7 +94,7 @@ import java.time.Instant
 @Composable
 fun EditorScreen(
 	noteId: Long,
-	text: String?,
+	noteFromIntent: Note?,
 	selectedTags: List<String>?,
 	preferenceStorage: PreferenceStorage,
 	onNavigationIconClick: () -> Unit,
@@ -178,7 +179,7 @@ fun EditorScreen(
 
 	LaunchedEffect(key1 = Unit) {
 		launch {
-			viewModel.getNote(noteId, text, selectedTags)
+			viewModel.getNote(noteId, noteFromIntent, selectedTags)
 			containerColor = viewModel.note.color?.let { Color(it) }
 			onEditorColorChanged(containerColor)
 		}
