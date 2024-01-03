@@ -51,7 +51,8 @@ class EditorFragment : Fragment() {
 	private fun EditorFragmentContent() {
 		NotiesTheme {
 			val selectedTags = getNavigationResult<List<String>>(Constants.BUNDLE_SELECTED_TAGS)
-			val allTags = if (tagName.isEmpty()) selectedTags else listOf(tagName) + selectedTags.orEmpty()
+			val allTags = if (tagName.isEmpty()) selectedTags
+				else listOf(tagName) + selectedTags?.filter { it != tagName }.orEmpty()
 			val defaultColor = MaterialTheme.colorScheme.surface
 			EditorScreen(
 				noteId = noteId,

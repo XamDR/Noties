@@ -280,11 +280,21 @@ fun NotesScreen(
 						}
 					},
 					actions = {
-						IconButton(onClick = ::togglePinnedValue) {
-							Icon(
-								imageVector = if (allPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
-								contentDescription = stringResource(id = if (allPinned) R.string.unpin_note else R.string.pin_note)
-							)
+						if (screen.type == ScreenType.Trash) {
+							IconButton(onClick = ::restoreNotes) {
+								Icon(
+									imageVector = Icons.Outlined.RestoreFromTrash,
+									contentDescription = stringResource(id = R.string.restore_from_trash)
+								)
+							}
+						}
+						else {
+							IconButton(onClick = ::togglePinnedValue) {
+								Icon(
+									imageVector = if (allPinned) Icons.Filled.PushPin else Icons.Outlined.PushPin,
+									contentDescription = stringResource(id = if (allPinned) R.string.unpin_note else R.string.pin_note)
+								)
+							}
 						}
 						IconButton(
 							onClick = {
@@ -296,14 +306,6 @@ fun NotesScreen(
 								imageVector = Icons.Outlined.DeleteForever,
 								contentDescription = stringResource(id = R.string.delete_notes)
 							)
-						}
-						if (screen.type == ScreenType.Trash) {
-							IconButton(onClick = ::restoreNotes) {
-								Icon(
-									imageVector = Icons.Outlined.RestoreFromTrash,
-									contentDescription = stringResource(id = R.string.restore_from_trash)
-								)
-							}
 						}
 					}
 				)

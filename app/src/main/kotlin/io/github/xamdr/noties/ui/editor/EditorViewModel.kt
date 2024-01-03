@@ -121,7 +121,7 @@ class EditorViewModel @Inject constructor(
 			note = note.copy(tags = tags)
 		}
 		if (note.urls.isNotEmpty()) {
-			urls.addAll(getUrlsAsyncUseCase(note.urls))
+			urls.addAll(getUrlsAsyncUseCase(note.urls).filter { !urls.contains(it) })
 		}
 		Timber.d("Note: $note")
 	}

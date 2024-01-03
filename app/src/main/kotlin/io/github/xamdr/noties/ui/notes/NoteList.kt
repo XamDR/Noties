@@ -134,12 +134,11 @@ fun NoteList(
 						when (dissmissValue) {
 							DismissValue.DismissedToEnd -> {
 								if (currentNote.archived) {
-									onUnarchiveNote(currentNote)
+									onUnarchiveNote(currentNote); true
 								}
 								else {
-									onArchiveNote(currentNote)
+									onArchiveNote(currentNote); true
 								}
-								true
 							}
 							DismissValue.DismissedToStart -> {
 								onMoveNoteToTrash(currentNote); true
@@ -159,7 +158,7 @@ fun NoteList(
 					else {
 						SwipeToDismiss(
 							state = dismissState,
-							background = { DismissBackground(dismissState, currentNote) },
+							background = { DismissBackground(dismissState, currentNote.archived) },
 							dismissContent = {
 								NoteItem(
 									note = item.note,
@@ -180,7 +179,7 @@ fun NoteList(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DismissBackground(state: DismissState, note: Note) {
+private fun DismissBackground(state: DismissState, archived: Boolean) {
 	val direction = state.dismissDirection ?: return
 	val alignment = when (direction) {
 		DismissDirection.StartToEnd -> Alignment.CenterStart
@@ -188,7 +187,7 @@ private fun DismissBackground(state: DismissState, note: Note) {
 	}
 	val icon = when(state.targetValue) {
 		DismissValue.Default -> null
-		DismissValue.DismissedToEnd -> if (note.archived)  Icons.Outlined.Unarchive else Icons.Outlined.Archive
+		DismissValue.DismissedToEnd -> if (archived) Icons.Outlined.Unarchive else Icons.Outlined.Archive
 		DismissValue.DismissedToStart -> Icons.Outlined.Delete
 	}
 	val scale by animateFloatAsState(
@@ -196,7 +195,7 @@ private fun DismissBackground(state: DismissState, note: Note) {
 		label = "scale"
 	)
 	val text = when(direction) {
-		DismissDirection.StartToEnd -> stringResource(id = if (note.archived) R.string.unarchive_note else R.string.archive_note)
+		DismissDirection.StartToEnd -> stringResource(id = if (archived) R.string.unarchive_note else R.string.archive_note)
 		DismissDirection.EndToStart -> stringResource(id = R.string.delete_note)
 	}
 	Box(
