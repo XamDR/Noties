@@ -83,6 +83,7 @@ fun MediaViewerScreen(
 	val snackbarHostState = remember { SnackbarHostState() }
 	val errorPlaybackMsg = stringResource(id = R.string.error_video_playback)
 	var isFullScreen by rememberSaveable { mutableStateOf(value = false) }
+	var scrollEnabled by rememberSaveable { mutableStateOf(value = true) }
 
 	fun toggleFullScreen() {
 		if (isFullScreen) {
@@ -169,12 +170,14 @@ fun MediaViewerScreen(
 			HorizontalPager(
 				state = pagerState,
 				key = { index -> mediaItems[index].uri },
-				modifier = Modifier.padding(innerPadding)
+				modifier = Modifier.padding(innerPadding),
+				userScrollEnabled = scrollEnabled
 			) { index ->
 				when (mediaItems[index].mediaType) {
 					MediaType.Image -> ImageScreen(
 						item = mediaItems[index],
-						onClick = ::toggleFullScreen
+						onClick = ::toggleFullScreen,
+						onZoom = { isZoomed -> scrollEnabled = isZoomed.not() }
 					)
 					MediaType.Video -> VideoScreen(
 						item = mediaItems[index],
