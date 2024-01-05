@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import io.github.xamdr.noties.domain.model.MediaItem
@@ -23,6 +24,7 @@ class MediaViewerActivity : AppCompatActivity() {
 	private val itemsToDelete = mutableListOf<MediaItem>()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
+		enableEdgeToEdge()
 		super.onCreate(savedInstanceState)
 		setContent { MediaViewerActivityContent() }
 		navigateUp()

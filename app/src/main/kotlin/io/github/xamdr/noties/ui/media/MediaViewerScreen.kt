@@ -11,8 +11,8 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -28,11 +28,13 @@ import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +47,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import io.github.xamdr.noties.R
@@ -123,70 +126,78 @@ fun MediaViewerScreen(
 	}
 
 	Scaffold(
-		topBar = {
-			AnimatedVisibility(
-				visible = isFullScreen.not(),
-				enter = slideInVertically(
-					initialOffsetY = { fullHeight -> -fullHeight },
-					animationSpec = tween(durationMillis = 250, easing = LinearOutSlowInEasing)
-				),
-				exit = slideOutVertically(
-					targetOffsetY = { fullHeight -> -fullHeight },
-					animationSpec = tween(durationMillis = 400, easing = FastOutLinearInEasing)
-				)
-			) {
-				TopAppBar(
-					title = { Text(text = "${pagerState.currentPage + 1}/${mediaItems.size}") },
-					navigationIcon = {
-						IconButton(onClick = onNavigationIconClick) {
-							Icon(
-								imageVector = Icons.Outlined.ArrowBack,
-								contentDescription = stringResource(id = R.string.back_to_editor)
-							)
-						}
-					},
-					actions = {
-						IconButton(onClick = { shareMediaItem(currentItem, context) }) {
-							Icon(
-								imageVector = Icons.Outlined.Share,
-								contentDescription = stringResource(id = R.string.share_item)
-							)
-						}
-						if (currentItem.mediaType == MediaType.Image) {
-							IconButton(onClick = { toggleScreenOrientation(context, activity) }) {
-								Icon(
-									imageVector = Icons.Outlined.ScreenRotation,
-									contentDescription = stringResource(id = R.string.rotate)
-								)
-							}
-						}
-						OverflowMenu(items = overflowItems)
-					}
-				)
-			}
-		},
 		snackbarHost = { SnackbarHost(snackbarHostState) },
 		content = { innerPadding ->
-			HorizontalPager(
-				state = pagerState,
-				key = { index -> mediaItems[index].uri },
-				modifier = Modifier.padding(innerPadding),
-				userScrollEnabled = scrollEnabled
-			) { index ->
-				when (mediaItems[index].mediaType) {
-					MediaType.Image -> ImageScreen(
-						item = mediaItems[index],
-						onClick = ::toggleFullScreen,
-						onZoom = { isZoomed -> scrollEnabled = isZoomed.not() }
+			Box {
+				HorizontalPager(
+					state = pagerState,
+					key = { index -> mediaItems[index].uri },
+					userScrollEnabled = scrollEnabled
+				) { index ->
+					when (mediaItems[index].mediaType) {
+						MediaType.Image -> ImageScreen(
+							item = mediaItems[index],
+							onClick = ::toggleFullScreen,
+							onZoom = { isZoomed -> scrollEnabled = isZoomed.not() }
+						)
+						MediaType.Video -> VideoScreen(
+							item = mediaItems[index],
+							playWhenReady = index == pagerState.currentPage,
+							window = window,
+							onFullScreen = ::toggleFullScreen,
+							onPlayerError = ::onPlayerError
+						)
+						MediaType.Audio -> {}
+					}
+				}
+				AnimatedVisibility(
+					visible = isFullScreen.not(),
+					enter = slideInVertically(
+						initialOffsetY = { fullHeight -> -fullHeight },
+						animationSpec = tween(durationMillis = 250, easing = LinearOutSlowInEasing)
+					),
+					exit = slideOutVertically(
+						targetOffsetY = { fullHeight -> -fullHeight },
+						animationSpec = tween(durationMillis = 400, easing = FastOutLinearInEasing)
 					)
-					MediaType.Video -> VideoScreen(
-						item = mediaItems[index],
-						playWhenReady = index == pagerState.currentPage,
-						window = window,
-						onFullScreen = ::toggleFullScreen,
-						onPlayerError = ::onPlayerError
+				) {
+					TopAppBar(
+						windowInsets = WindowInsets(
+							left = 0.dp,
+							top = innerPadding.calculateTopPadding(),
+							right = 0.dp,
+							bottom = 0.dp
+						),
+						colors = TopAppBarDefaults.topAppBarColors(
+							containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
+						),
+						title = { Text(text = "${pagerState.currentPage + 1}/${mediaItems.size}") },
+						navigationIcon = {
+							IconButton(onClick = onNavigationIconClick) {
+								Icon(
+									imageVector = Icons.Outlined.ArrowBack,
+									contentDescription = stringResource(id = R.string.back_to_editor)
+								)
+							}
+						},
+						actions = {
+							IconButton(onClick = { shareMediaItem(currentItem, context) }) {
+								Icon(
+									imageVector = Icons.Outlined.Share,
+									contentDescription = stringResource(id = R.string.share_item)
+								)
+							}
+							if (currentItem.mediaType == MediaType.Image) {
+								IconButton(onClick = { toggleScreenOrientation(context, activity) }) {
+									Icon(
+										imageVector = Icons.Outlined.ScreenRotation,
+										contentDescription = stringResource(id = R.string.rotate)
+									)
+								}
+							}
+							OverflowMenu(items = overflowItems)
+						}
 					)
-					MediaType.Audio -> {}
 				}
 			}
 		}
