@@ -42,12 +42,12 @@ fun Context.showToast(@StringRes text: Int, duration: Int = Toast.LENGTH_SHORT):
 	Toast.makeText(this.applicationContext, text, duration).also { it.show() }
 
 @Suppress("DEPRECATION")
-fun <T : Parcelable> Bundle.getParcelableCompat(key: String, clazz: Class<T>): T {
+fun <T : Parcelable> Bundle.getParcelableCompat(key: String, clazz: Class<T>): T? {
 	return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-		(this.getParcelable(key, clazz) ?: clazz.newInstance()) as T
+		this.getParcelable(key, clazz)
 	}
 	else {
-		(this.getParcelable(key) ?: clazz.newInstance()) as T
+		this.getParcelable(key)
 	}
 }
 
