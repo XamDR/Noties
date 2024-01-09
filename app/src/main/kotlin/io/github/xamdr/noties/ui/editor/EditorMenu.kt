@@ -1,10 +1,12 @@
 package io.github.xamdr.noties.ui.editor
 
+import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -29,11 +31,14 @@ fun EditorMenuBottomSheet(
 	onDismissRequest: () -> Unit,
 	onItemClick: (EditorMenuItem) -> Unit,
 ) {
+	val modifier = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Modifier.navigationBarsPadding()
+		else Modifier.padding(bottom = 32.dp)
+
 	ModalBottomSheet(
 		onDismissRequest = onDismissRequest,
 		sheetState = sheetState
 	) {
-		Column {
+		Column(modifier = modifier) {
 			items.forEach { item ->
 				EditorMenuItem(
 					item = item,

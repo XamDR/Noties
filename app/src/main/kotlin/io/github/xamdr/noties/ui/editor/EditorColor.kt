@@ -1,8 +1,10 @@
 package io.github.xamdr.noties.ui.editor
 
+import android.os.Build
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
@@ -66,6 +68,9 @@ fun EditorColorBottomSheet(
 	onDismiss: () -> Unit
 ) {
 	var selectedColor by rememberSaveable(stateSaver = ColorSaver) { mutableStateOf(value = editorColor) }
+	val modifier = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Modifier
+		.navigationBarsPadding()
+		.padding(horizontal = 8.dp) else Modifier.padding(start = 8.dp, end = 8.dp, bottom = 32.dp)
 
 	fun selectColor(color: Color?) {
 		selectedColor = color
@@ -79,9 +84,7 @@ fun EditorColorBottomSheet(
 		Row(
 			horizontalArrangement = Arrangement.SpaceBetween,
 			verticalAlignment = Alignment.CenterVertically,
-			modifier = Modifier
-				.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
-				.horizontalScroll(state = rememberScrollState())
+			modifier = modifier.horizontalScroll(state = rememberScrollState())
 		) {
 			colors.forEach { color ->
 				CircularShapedBox(
