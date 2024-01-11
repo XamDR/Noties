@@ -1,5 +1,6 @@
 package io.github.xamdr.noties.ui.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Link
@@ -14,8 +15,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
@@ -36,13 +37,24 @@ fun PreferenceHeader(title: Int) {
 @Composable
 fun SimplePreference(
 	title: Int,
-	summary: Int,
-	icon: ImageVector
+	summary: Int?,
+	icon: Icon,
+	onClick: (() -> Unit)? = null
 ) {
 	ListItem(
 		headlineContent = { Text(text = stringResource(id = title)) },
-		supportingContent = { Text(text = stringResource(id = summary)) },
-		leadingContent = { Icon(imageVector = icon, contentDescription = null) }
+		supportingContent = {
+			if (summary != null) {
+				Text(text = stringResource(id = summary))
+			}
+		},
+		leadingContent = {
+			when (icon) {
+				is Icon.Drawable -> Icon(painter = painterResource(id = icon.resource), contentDescription = null)
+				is Icon.Vector -> Icon(imageVector = icon.imageVector, contentDescription = null)
+			}
+		},
+		modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
 	)
 }
 
@@ -51,7 +63,7 @@ fun SwitchPreference(
 	title: Int,
 	summaryOn: Int,
 	summaryOff: Int,
-	icon: ImageVector,
+	icon: Icon,
 	key: String
 ) {
 	val context = LocalContext.current
@@ -62,7 +74,12 @@ fun SwitchPreference(
 	ListItem(
 		headlineContent = { Text(text = stringResource(id = title)) },
 		supportingContent = { Text(text = summary) },
-		leadingContent = { Icon(imageVector = icon, contentDescription = null) },
+		leadingContent = {
+			when (icon) {
+				is Icon.Drawable -> Icon(painter = painterResource(id = icon.resource), contentDescription = null)
+				is Icon.Vector -> Icon(imageVector = icon.imageVector, contentDescription = null)
+			}
+		},
 		trailingContent = {
 			Switch(
 				checked = checked,

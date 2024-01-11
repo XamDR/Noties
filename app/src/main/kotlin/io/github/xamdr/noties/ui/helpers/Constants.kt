@@ -28,4 +28,6 @@ object Constants {
 	const val BUNDLE_NOTIFICATION_ID = "BUNDLE_NOTIFICATION_ID"
 	const val BUNDLE_NOTE_NOTIFICATION = "BUNDLE_NOTE_NOTIFICATION"
 	const val GIF = "image/gif"
+	const val LINKEDIN_PROFILE = "https://www.linkedin.com/in/max-christopher-d%C3%ADaz-roman%C3%AD-4b4362202"
+	const val GITHUB_REPOSITORY = "https://github.com/XamDR"
 }

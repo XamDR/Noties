@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
@@ -41,7 +42,7 @@ import io.github.xamdr.noties.ui.theme.NotiesTheme
 fun ListPreference(
 	title: Int,
 	dialogTitle: Int,
-	icon: ImageVector,
+	icon: Icon,
 	key: String,
 	entries: Map<Int, Int>,
 	onItemSelected: (Int) -> Unit
@@ -57,7 +58,12 @@ fun ListPreference(
 	ListItem(
 		headlineContent = { Text(text = stringResource(id = title)) },
 		supportingContent = { Text(text = selectedItem) },
-		leadingContent = { Icon(imageVector = icon, contentDescription = null) },
+		leadingContent = {
+			when (icon) {
+				is Icon.Drawable -> Icon(painter = painterResource(id = icon.resource), contentDescription = null)
+				is Icon.Vector -> Icon(imageVector = icon.imageVector, contentDescription = null)
+			}
+		},
 		modifier = Modifier.clickable { openDialog = true }
 	)
 	if (openDialog) {
@@ -117,7 +123,7 @@ private fun ListPreferenceDialogPreview() = NotiesTheme { ListPreferenceDialog()
 fun ColorPreference(
 	title: Int,
 	dialogTitle: Int,
-	icon: ImageVector,
+	icon: Icon,
 	key: String,
 	entries: List<Int>
 ) {
@@ -128,7 +134,12 @@ fun ColorPreference(
 
 	ListItem(
 		headlineContent = { Text(text = stringResource(id = title)) },
-		leadingContent = { Icon(imageVector = icon, contentDescription = null) },
+		leadingContent = {
+			when (icon) {
+				is Icon.Drawable -> Icon(painter = painterResource(id = icon.resource), contentDescription = null)
+				is Icon.Vector -> Icon(imageVector = icon.imageVector, contentDescription = null)
+			}
+		},
 		trailingContent = { CircularShapedBox(color = colorResource(id = selectedEntry), size = 32.dp) },
 		modifier = Modifier.clickable { openDialog = true }
 	)

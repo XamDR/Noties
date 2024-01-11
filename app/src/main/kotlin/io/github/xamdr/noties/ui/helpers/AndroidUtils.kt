@@ -27,6 +27,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
+import io.github.xamdr.noties.domain.model.Url
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -143,3 +144,7 @@ fun extractUrls(input: String): List<String> = Regex(Patterns.WEB_URL.pattern())
 	.findAll(input)
 	.map { it.value }
 	.toList()
+
+fun Context.openUrl(url: Url) {
+	this.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+}

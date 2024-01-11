@@ -15,4 +15,3 @@ fun setNightMode(appTheme: Int) {
 		2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 	}
 }
-

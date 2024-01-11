@@ -1,5 +1,6 @@
 package io.github.xamdr.noties.ui.settings
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material.icons.Icons
@@ -8,38 +9,47 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.os.BuildCompat
 import io.github.xamdr.noties.R
+import io.github.xamdr.noties.ui.helpers.Constants
+
+sealed interface Icon {
+	data class Vector(val imageVector: ImageVector) : Icon
+	@JvmInline value class Drawable(@DrawableRes val resource: Int) : Icon
+}
 
 data class Preference(
 	val key: String,
 	@StringRes val title: Int,
-	@StringRes val summary: Int = 0,
-	val icon: ImageVector
+	@StringRes val summary: Int? = null,
+	val icon: Icon,
+	val tag: Any? = null
 )
 
 data class PreferenceCategory(@StringRes val title: Int)
 
-sealed interface PreferenceItem {
-	data class Category(val category: PreferenceCategory) : PreferenceItem
+sealed class PreferenceItem(open val preference: Preference?) {
 
-	data class SimplePreference(val preference: Preference) : PreferenceItem
+	data class Category(val category: PreferenceCategory) : PreferenceItem(null)
+
+	data class SimplePreference(override val preference: Preference) : PreferenceItem(preference)
 
 	data class SwitchPreference(
-		val preference: Preference,
+		override val preference: Preference,
 		val summaryOn: Int,
-		val summaryOff: Int) : PreferenceItem
+		val summaryOff: Int) : PreferenceItem(preference)
 
 	data class ListPreference(
-		val preference: Preference,
+		override val preference: Preference,
 		val dialogTitle: Int,
-		val entries: Map<Int, Int>) : PreferenceItem
+		val entries: Map<Int, Int>) : PreferenceItem(preference)
 
 	data class ColorPreference(
-		val preference: Preference,
+		override val preference: Preference,
 		val dialogTitle: Int,
-		val entries: List<Int>) : PreferenceItem
+		val entries: List<Int>) : PreferenceItem(preference)
 }
 
 @Suppress("DEPRECATION")
@@ -49,7 +59,7 @@ val DEFAULT_SETTINGS = listOf(
 		preference = Preference(
 			key = PreferenceStorage.PREF_APP_THEME,
 			title = R.string.app_theme_title,
-			icon = Icons.Outlined.BrightnessMedium,
+			icon = Icon.Vector(imageVector = Icons.Outlined.BrightnessMedium)
 		),
 		dialogTitle = R.string.app_theme_dialog_title,
 		entries = mapOf(
@@ -63,7 +73,7 @@ val DEFAULT_SETTINGS = listOf(
 		preference = Preference(
 			key = PreferenceStorage.PREF_APP_COLOR,
 			title = R.string.app_color_title,
-			icon = Icons.Outlined.Palette
+			icon = Icon.Vector(imageVector = Icons.Outlined.Palette)
 		),
 		dialogTitle = R.string.app_color_dialog_title,
 		entries = listOf(
@@ -80,26 +90,50 @@ val DEFAULT_SETTINGS = listOf(
 		preference = Preference(
 			key = PreferenceStorage.PREF_URLS_ENABLED,
 			title = R.string.enable_links,
-			icon = Icons.Outlined.Link
+			icon = Icon.Vector(imageVector = Icons.Outlined.Link)
 		),
 		summaryOn = R.string.links_enabled,
 		summaryOff = R.string.links_disabled
 	),
-	PreferenceItem.Category(category = PreferenceCategory(title = R.string.about_header)),
-	PreferenceItem.SimplePreference(
-		preference = Preference(
-			key = String.Empty,
-			title = R.string.developer,
-			summary = R.string.developer_name,
-			icon = Icons.Outlined.Person
-		)
-	),
+	PreferenceItem.Category(category = PreferenceCategory(title = R.string.about_app)),
 	PreferenceItem.SimplePreference(
 		preference = Preference(
 			key = String.Empty,
 			title = R.string.version,
 			summary = R.string.app_version,
-			icon = Icons.Outlined.Info,
+			icon = Icon.Vector(imageVector = Icons.Outlined.Info)
 		)
-	)
+	),
+	PreferenceItem.SimplePreference(
+		preference = Preference(
+			key = String.Empty,
+			title = R.string.app_privacy_policy,
+			icon = Icon.Vector(imageVector = Icons.Outlined.PrivacyTip)
+		)
+	),
+	PreferenceItem.SimplePreference(
+		preference = Preference(
+			key = String.Empty,
+			title = R.string.app_github,
+			icon = Icon.Drawable(resource = R.drawable.ic_fab_github),
+			tag = Constants.GITHUB_REPOSITORY
+		)
+	),
+	PreferenceItem.Category(category = PreferenceCategory(title = R.string.about_developer)),
+	PreferenceItem.SimplePreference(
+		preference = Preference(
+			key = String.Empty,
+			title = R.string.developer_name,
+			summary = R.string.developer_email,
+			icon = Icon.Vector(imageVector = Icons.Outlined.Person)
+		)
+	),
+	PreferenceItem.SimplePreference(
+		preference = Preference(
+			key = String.Empty,
+			title = R.string.developer_linkedin,
+			icon = Icon.Drawable(resource = R.drawable.ic_fab_linkedin),
+			tag = Constants.LINKEDIN_PROFILE
+		)
+	),
 )

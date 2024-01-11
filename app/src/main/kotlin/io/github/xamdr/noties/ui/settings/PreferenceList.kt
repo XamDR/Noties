@@ -10,9 +10,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import io.github.xamdr.noties.R
+import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
+import io.github.xamdr.noties.ui.helpers.openUrl
 import io.github.xamdr.noties.ui.theme.NotiesTheme
 
 @Composable
@@ -20,6 +23,7 @@ fun PreferenceList(
 	modifier: Modifier,
 	items: List<PreferenceItem>
 ) {
+	val context = LocalContext.current
 	LazyColumn(
 		modifier = modifier,
 		contentPadding = PaddingValues(16.dp),
@@ -28,7 +32,18 @@ fun PreferenceList(
 		items(
 			key = null,
 			items = items
-		) { item -> PreferenceItem(item = item) }
+		) { item ->
+			PreferenceItem(
+				item = item,
+				onClick = {
+					when (item.preference?.tag) {
+						Constants.LINKEDIN_PROFILE -> context.openUrl(Constants.LINKEDIN_PROFILE)
+						Constants.GITHUB_REPOSITORY -> context.openUrl(Constants.GITHUB_REPOSITORY)
+						else -> {}
+					}
+				}
+			)
+		}
 	}
 }
 
@@ -41,13 +56,13 @@ fun PreferenceList(modifier: Modifier = Modifier) {
 	) {
 		items.forEach { item ->
 			if (item % 3 == 0) {
-				PreferenceHeader(title = R.string.about_header)
+				PreferenceHeader(title = R.string.about_app)
 			}
 			else {
 				SimplePreference(
-					title = R.string.developer,
+					title = R.string.developer_name,
 					summary = R.string.developer_name,
-					icon = Icons.Outlined.Person
+					icon = Icon.Vector(imageVector = Icons.Outlined.Person)
 				)
 			}
 		}
@@ -59,7 +74,10 @@ fun PreferenceList(modifier: Modifier = Modifier) {
 private fun PreferenceListPreview() = NotiesTheme { PreferenceList() }
 
 @Composable
-private fun PreferenceItem(item: PreferenceItem) {
+private fun PreferenceItem(
+	item: PreferenceItem,
+	onClick: (() -> Unit)? = null
+) {
 	when (item) {
 		is PreferenceItem.Category -> PreferenceHeader(title = item.category.title)
 		is PreferenceItem.ColorPreference -> ColorPreference(
@@ -80,7 +98,8 @@ private fun PreferenceItem(item: PreferenceItem) {
 		is PreferenceItem.SimplePreference -> SimplePreference(
 			title = item.preference.title,
 			summary = item.preference.summary,
-			icon = item.preference.icon
+			icon = item.preference.icon,
+			onClick = if (item.preference.tag != null) onClick else null
 		)
 		is PreferenceItem.SwitchPreference -> SwitchPreference(
 			title = item.preference.title,
