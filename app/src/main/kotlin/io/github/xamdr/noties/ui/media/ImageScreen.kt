@@ -24,8 +24,7 @@ import pl.droidsonroids.gif.GifDrawable
 @Composable
 fun ImageScreen(
 	item: MediaItem,
-	onClick: () -> Unit,
-	onZoom: (Boolean) -> Unit
+	onClick: () -> Unit
 ) {
 	val context = LocalContext.current
 	val mimeType = MediaHelper.getMediaMimeType(context, item.uri)
@@ -42,12 +41,12 @@ fun ImageScreen(
 				.fillMaxSize()
 				.zoomable(
 					zoomState = zoomState,
-					onTap = onClick,
-					onDoubleTap = { offset ->
-						zoomState.toggleScale(2f, offset)
-						onZoom(zoomState.isZoomed)
-					}
-				)
+					onTap = { onClick() },
+					onDoubleTap = { offset -> zoomState.toggleScale(2f, offset) }
+				),
+			onSuccess = { state ->
+				zoomState.setContentSize(state.painter.intrinsicSize)
+			}
 		)
 	}
 }

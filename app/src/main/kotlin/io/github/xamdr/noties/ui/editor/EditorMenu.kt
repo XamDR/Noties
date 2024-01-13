@@ -31,7 +31,7 @@ fun EditorMenuBottomSheet(
 	onDismissRequest: () -> Unit,
 	onItemClick: (EditorMenuItem) -> Unit,
 ) {
-	val modifier = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Modifier.navigationBarsPadding()
+	val modifier = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) Modifier.navigationBarsPadding()
 		else Modifier.padding(bottom = 32.dp)
 
 	ModalBottomSheet(

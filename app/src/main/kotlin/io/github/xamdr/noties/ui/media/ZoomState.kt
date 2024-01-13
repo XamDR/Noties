@@ -49,8 +49,6 @@ class ZoomState(
 
 	private var _offsetX = Animatable(0f)
 
-	val isZoomed: Boolean
-		get() = _scale.value > 1.0f
 	/**
 	 * The horizontal offset of the content.
 	 */
@@ -76,6 +74,16 @@ class ZoomState(
 	 */
 	fun setLayoutSize(size: Size) {
 		layoutSize = size
+		updateFitContentSize()
+	}
+
+	/**
+	 * Set the content size.
+	 *
+	 * @param size The content size, for example an image size in pixel.
+	 */
+	fun setContentSize(size: Size) {
+		contentSize = size
 		updateFitContentSize()
 	}
 
@@ -266,7 +274,6 @@ class ZoomState(
 			}
 		}
 	}
-
 }
 
 /**

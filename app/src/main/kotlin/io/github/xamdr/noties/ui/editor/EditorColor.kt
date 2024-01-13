@@ -68,7 +68,7 @@ fun EditorColorBottomSheet(
 	onDismiss: () -> Unit
 ) {
 	var selectedColor by rememberSaveable(stateSaver = ColorSaver) { mutableStateOf(value = editorColor) }
-	val modifier = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Modifier
+	val modifier = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) Modifier
 		.navigationBarsPadding()
 		.padding(horizontal = 8.dp) else Modifier.padding(start = 8.dp, end = 8.dp, bottom = 32.dp)
 

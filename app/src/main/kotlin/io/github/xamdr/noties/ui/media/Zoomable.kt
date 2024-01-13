@@ -36,7 +36,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
 	onGesture: (centroid: Offset, pan: Offset, zoom: Float, timeMillis: Long) -> Boolean,
 	onGestureStart: () -> Unit = {},
 	onGestureEnd: () -> Unit = {},
-	onTap: () -> Unit = {},
+	onTap: (position: Offset) -> Unit = {},
 	onDoubleTap: (position: Offset) -> Unit = {},
 	enableOneFingerZoom: Boolean = true,
 ) = awaitEachGesture {
@@ -51,7 +51,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
 			val zoomChange = event.calculateZoom()
 			val panChange = event.calculatePan()
 			if (zoomChange != 1f || panChange != Offset.Zero) {
-				val centroid = event.calculateCentroid(useCurrent = false)
+				val centroid = event.calculateCentroid(useCurrent = true)
 				val timeMillis = event.changes[0].uptimeMillis
 				val canConsume = onGesture(centroid, panChange, zoomChange, timeMillis)
 				if (canConsume) {
@@ -74,8 +74,9 @@ private suspend fun PointerInputScope.detectTransformGestures(
 	if (isTap) {
 		val secondDown = awaitSecondDown(firstUp)
 		if (secondDown == null) {
-			onTap()
-		} else {
+			onTap(firstUp.position)
+		}
+		else {
 			var isDoubleTap = true
 			var secondUp: PointerInputChange = secondDown
 			val secondTouchSlop = TouchSlop(viewConfiguration.touchSlop)
@@ -85,7 +86,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
 						val panChange = event.calculatePan()
 						val zoomChange = 1f + panChange.y * 0.004f
 						if (zoomChange != 1f) {
-							val centroid = event.calculateCentroid(useCurrent = false)
+							val centroid = event.calculateCentroid(useCurrent = true)
 							val timeMillis = event.changes[0].uptimeMillis
 							val canConsume = onGesture(centroid, Offset.Zero, zoomChange, timeMillis)
 							if (canConsume) {
@@ -185,7 +186,7 @@ private class TouchSlop(private val threshold: Float) {
 
 		zoom *= event.calculateZoom()
 		pan += event.calculatePan()
-		val zoomMotion = abs(1 - zoom) * event.calculateCentroidSize(useCurrent = false)
+		val zoomMotion = abs(1 - zoom) * event.calculateCentroidSize(useCurrent = true)
 		val panMotion = pan.getDistance()
 		_isPast = zoomMotion > threshold || panMotion > threshold
 
@@ -207,7 +208,7 @@ private class TouchSlop(private val threshold: Float) {
 fun Modifier.zoomable(
 	zoomState: ZoomState,
 	enableOneFingerZoom: Boolean = true,
-	onTap: () -> Unit = {},
+	onTap: (position: Offset) -> Unit = {},
 	onDoubleTap: suspend (position: Offset) -> Unit = { position -> zoomState.toggleScale(2.5f, position) },
 ): Modifier = composed(
 	inspectorInfo = debugInspectorInfo {
