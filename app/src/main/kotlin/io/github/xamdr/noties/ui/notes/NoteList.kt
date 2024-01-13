@@ -29,6 +29,7 @@ import androidx.compose.material.icons.outlined.Alarm
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Gif
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material.ripple.rememberRipple
@@ -68,6 +69,7 @@ import coil.request.ImageRequest
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.domain.model.Note
+import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.DateTimeHelper
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.makeBulletedList
@@ -284,6 +286,9 @@ private fun NoteItem(
 	onLongClick: () -> Unit,
 	onUrlsTagClick: (List<String>) -> Unit
 ) {
+	val context = LocalContext.current
+	val isGif = note.previewItem?.uri?.let { MediaHelper.getMediaMimeType(context, it) } == Constants.GIF
+
 	OutlinedCard(
 		shape = RoundedCornerShape(16.dp),
 		colors = CardDefaults.cardColors(
@@ -310,20 +315,21 @@ private fun NoteItem(
 			if (note.previewItem != null) {
 				Box(
 					modifier = Modifier.fillMaxWidth(),
-					contentAlignment = Alignment.TopEnd
+					contentAlignment = Alignment.BottomStart
 				) {
 					AsyncImage(
 						contentScale = ContentScale.Crop,
-						model = ImageRequest.Builder(LocalContext.current)
+						model = ImageRequest.Builder(context)
 							.data(
 								if (note.previewItem?.mediaType == MediaType.Image) note.previewItem?.uri
 								else note.previewItem?.metadata?.thumbnail ?: R.drawable.ic_image_not_supported
 							)
+							.size(400, 400)
 							.build(),
 						contentDescription = stringResource(id = R.string.user_generated_image),
 						modifier = Modifier.fillMaxWidth()
 					)
-					if (note.previewItem?.mediaType == MediaType.Video) {
+					if (note.previewItem?.mediaType == MediaType.Video || isGif) {
 						Box(
 							modifier = Modifier.padding(8.dp)
 						) {
@@ -333,19 +339,28 @@ private fun NoteItem(
 									shape = RoundedCornerShape(8.dp)
 								)
 							) {
-								Icon(
-									imageVector = Icons.Outlined.PlayCircle,
-									contentDescription = null,
-									modifier = Modifier.padding(4.dp)
-								)
-								Text(
-									text = MediaHelper.formatDuration(note.previewItem?.metadata?.duration),
-									style = MaterialTheme.typography.labelSmall,
-									fontWeight = FontWeight.Bold,
-									modifier = Modifier
-										.align(Alignment.CenterVertically)
-										.padding(end = 8.dp)
-								)
+								if (isGif) {
+									Icon(
+										imageVector = Icons.Outlined.Gif,
+										contentDescription = null,
+										modifier = Modifier.padding(4.dp)
+									)
+								}
+								else {
+									Icon(
+										imageVector = Icons.Outlined.PlayCircle,
+										contentDescription = null,
+										modifier = Modifier.padding(4.dp)
+									)
+									Text(
+										text = MediaHelper.formatDuration(note.previewItem?.metadata?.duration),
+										style = MaterialTheme.typography.labelSmall,
+										fontWeight = FontWeight.Bold,
+										modifier = Modifier
+											.align(Alignment.CenterVertically)
+											.padding(end = 8.dp)
+									)
+								}
 							}
 						}
 					}

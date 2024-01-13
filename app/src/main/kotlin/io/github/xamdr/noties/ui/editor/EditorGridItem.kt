@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Android
+import androidx.compose.material.icons.outlined.Gif
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +39,7 @@ import coil.request.ImageRequest
 import io.github.xamdr.noties.R
 import io.github.xamdr.noties.data.entity.media.MediaType
 import io.github.xamdr.noties.domain.model.MediaItem
+import io.github.xamdr.noties.ui.helpers.Constants
 import io.github.xamdr.noties.ui.helpers.DevicePreviews
 import io.github.xamdr.noties.ui.helpers.media.MediaHelper
 import io.github.xamdr.noties.ui.helpers.shimmer
@@ -115,24 +117,27 @@ private fun EditorGridItemPreview() = NotiesTheme { EditorGridItem() }
 
 @Composable
 private fun EditorMediaItem(item: MediaItem, isFullWidth: Boolean, onItemClick: () -> Unit) {
+	val context = LocalContext.current
 	val modifier = if (isFullWidth) Modifier.fillMaxWidth() else Modifier.size(200.dp)
+	val isGif = MediaHelper.getMediaMimeType(context, item.uri) == Constants.GIF
 
 	Box(
 		modifier = Modifier.fillMaxWidth(),
-		contentAlignment = Alignment.TopEnd
+		contentAlignment = Alignment.BottomStart
 	) {
 		AsyncImage(
 			contentScale = ContentScale.Crop,
-			model = ImageRequest.Builder(LocalContext.current)
+			model = ImageRequest.Builder(context)
 				.data(
 					if (item.mediaType == MediaType.Image) item.uri
 					else item.metadata.thumbnail ?: R.drawable.ic_image_not_supported
 				)
+				.size(200, 200)
 				.build(),
 			contentDescription = stringResource(id = R.string.user_generated_image),
 			modifier = modifier.clickable(onClick = onItemClick)
 		)
-		if (item.mediaType == MediaType.Video) {
+		if (item.mediaType == MediaType.Video || isGif) {
 			Box(
 				modifier = Modifier.padding(8.dp)
 			) {
@@ -142,19 +147,28 @@ private fun EditorMediaItem(item: MediaItem, isFullWidth: Boolean, onItemClick: 
 						shape = RoundedCornerShape(8.dp)
 					)
 				) {
-					Icon(
-						imageVector = Icons.Outlined.PlayCircle,
-						contentDescription = null,
-						modifier = Modifier.padding(4.dp)
-					)
-					Text(
-						text = MediaHelper.formatDuration(item.metadata.duration),
-						style = MaterialTheme.typography.labelSmall,
-						fontWeight = FontWeight.Bold,
-						modifier = Modifier
-							.align(Alignment.CenterVertically)
-							.padding(end = 8.dp)
-					)
+					if (isGif) {
+						Icon(
+							imageVector = Icons.Outlined.Gif,
+							contentDescription = null,
+							modifier = Modifier.padding(4.dp)
+						)
+					}
+					else {
+						Icon(
+							imageVector = Icons.Outlined.PlayCircle,
+							contentDescription = null,
+							modifier = Modifier.padding(4.dp)
+						)
+						Text(
+							text = MediaHelper.formatDuration(item.metadata.duration),
+							style = MaterialTheme.typography.labelSmall,
+							fontWeight = FontWeight.Bold,
+							modifier = Modifier
+								.align(Alignment.CenterVertically)
+								.padding(end = 8.dp)
+						)
+					}
 				}
 			}
 		}
